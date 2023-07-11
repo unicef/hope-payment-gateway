@@ -1,0 +1,111 @@
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+  | snapshots
+)/
+'''
+
+[tool.isort]
+profile = "black"
+default_section = "THIRDPARTY"
+known_first_party = []
+known_django = "django"
+sections = ["FUTURE","STDLIB","DJANGO","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
+include_trailing_comma = true
+skip = ["migrations", "snapshots", ".venv"]
+
+
+[tool.django-stubs]
+django_settings_module = "hope_payment_gateway.config.settings"
+
+
+[tool.poetry]
+name = "HOPE-Payment-Gateway"
+version = "2023.6.1"
+description = "Country Report on top of HOPE platform."
+authors = ['ddinicola']
+
+[tool.poetry.dependencies]
+python = "3.11.*"
+
+Django = "*"
+celery = {extras = ["redis"], version = "*"}
+django-admin-extra-buttons = "*"
+django-admin-sync = "*"
+django-adminactions = "*"
+django-adminfilters = "*"
+django-advanced-filters = "*"
+django-celery-beat = "*"
+django-celery-results = "*"
+django-concurrency = "*"
+django-cors-headers = "*"
+django-csp = "*"
+django-debug-toolbar = "*"
+django-environ = "*"
+django-extensions = "*"
+django-filter = "*"
+django-import-export = "*"
+django-mptt = "*"
+django-smart-admin = "*"
+dj-static = "*"
+factory-boy = "*"
+gunicorn = "*"
+newrelic = "*"
+natural-keys = "*"
+pre_commit = "*"
+psycopg2 = "*"
+sentry-sdk = "*"
+social-auth-app-django = "*"
+social-auth-core = "*"
+tablib = "*"
+unicef-security = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+argh = "*"
+black = "*"
+django-webtest = "*"
+faker = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-formatter-junit-xml = "*"
+flake8-html = "*"
+freezegun = "*"
+graphene-stubs = "*"
+ipdb = "*"
+isort = "*"
+openpyxl-stubs = "*"
+parameterized = "*"
+parso = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-django = "*"
+pytest-echo = "*"
+pytest-xdist = "*"
+requests-mock = "*"
+responses = "*"
+snapshottest = "*"
+types-freezegun = "*"
+types-requests = "*"
+types-python-dateutil = "*"
+types-pytz = "*"
+types-redis = "*"
+unittest-xml-reporting = "*"
+watchdog = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
