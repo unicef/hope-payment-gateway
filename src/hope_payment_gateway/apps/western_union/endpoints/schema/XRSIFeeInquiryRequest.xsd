@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<xs:complexType name="fee-inquiry-request">
+		<xs:complexContent>
+			<xs:extension base="xrsi:store_request_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
+					<xs:element minOccurs="0" name="sender" type="xrsi:sender"/>
+					<xs:element minOccurs="0" name="receiver" type="xrsi:receiver"/>
+					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
+					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
+					<xs:element minOccurs="0" name="promotions" type="xrsi:promotions"/>
+					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>
+					
+					<!-- <xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
+					<xs:element name="receiver" type="xrsi:receiver" minOccurs="0"/>
+					<xs:element name="emea_ii" type="xrsi:emea_ii" minOccurs="0"/> -->
+					
+					<xs:element minOccurs="0" name="qp_company" type="xrsi:qp_company"/>
+					<xs:element minOccurs="0" name="wu_card_number" type="xrsi:wu_card_number"/>
+        			<xs:element minOccurs="0" name="level_code" type="xrsi:level_code"/>
+        			<!--  10  digit MTCN -->
+					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
+					<!--  16  digit MTCN -->
+					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>
+        			
+        			<xs:element minOccurs="0" name="sender_name_type" type="xrsi:name_type"/>
+        			<xs:element minOccurs="0" name="receiver_name_type" type="xrsi:name_type"/>
+					<!--<xs:element name="preferred_customer" type="xrsi:preferred_customer" minOccurs="0"/>-->
+					<!-- The following elements belong to "transaction_details" -->
+					<!--<xs:element name="action" type="xrsi:action" minOccurs="0"/>
+					<xs:element name="transfer_type" minOccurs="0">
+						<xs:simpleType>
+							<xs:restriction base="xrsi:transaction_type"/>
+						</xs:simpleType>
+					</xs:element>-->
+					<!--<xs:element name="preferred_customer_no" type="xrsi:pref_cust_account_number" minOccurs="0"/>
+					<xs:element name="delivery_services_code" type="xrsi:delivery_service_code" minOccurs="0"/>
+					<xs:element name="sender_promo_code" type="xrsi:sender_promo_code" minOccurs="0"/>
+					<xs:element name="promotion_sequence_no" type="xrsi:promotion_sequence_no" minOccurs="0"/>
+					<xs:element name="wu_account" type="xrsi:pref_cust_account_number" minOccurs="0"/>-->
+					<xs:element minOccurs="0" name="proxy_request" type="xrsi:yes_no"/>
+					<xs:element minOccurs="0" name="poo_conversion" type="xrsi:yes_no"/>
+					<xs:element minOccurs="0" name="julian_date" type="xrsi:julian_date"/>
+                    <xs:element minOccurs="0" name="yellow_phone_label" type="xrsi:yellow_phone_lable"/>
+                    <xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>								                    
+                    <xs:element minOccurs="0" name="money_tranfer_type" type="xrsi:money_tranfer_type"/>	                   
+					
+					<xs:element minOccurs="0" name="add_message" type="xrsi:name_base"/>	                    
+					
+					<xs:element minOccurs="0" name="preferred_customer_no" type="xrsi:pref_cust_account_number"/>
+					<xs:element minOccurs="0" name="mywu_number" type="xrsi:pref_cust_account_number"/>					
+					 <xs:element minOccurs="0" name="splitpay_charges_buffer" type="xrsi:additional_buffer_charges_type"/>
+                     <xs:element minOccurs="0" name="misc_buffer_details" type="xrsi:misc_buffer_type"/>
+					 <xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>				
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="fee-inquiry-request" type="xrsi:fee-inquiry-request">
+  </xs:element>
+</xs:schema>

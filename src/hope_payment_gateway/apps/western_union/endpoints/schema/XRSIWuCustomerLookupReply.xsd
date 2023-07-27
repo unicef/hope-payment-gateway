@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="wu-customer-lookup-reply">
+		<xs:complexContent>
+			<xs:extension base="xrsi:reply_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="emea_ii" type="xrsi:emea_ii"/>
+					<xs:element maxOccurs="10" minOccurs="0" name="sender" type="xrsi:sender"/>
+					<xs:element maxOccurs="10" minOccurs="0" name="receiver" type="xrsi:receiver"/>
+					<xs:element minOccurs="0" name="bank_details" type="xrsi:bank_details"/>
+					<xs:element minOccurs="0" name="wu_card" type="xrsi:wu_card"/>
+					<!-- The following elements belong to "transaction_details" -->
+					<!--<xs:element name="receiver_card_type" type="xrsi:receiver_card_type" minOccurs="0"/>-->
+					<xs:element name="qp_company" type="xrsi:qp_company" minOccurs="0"/>
+					<xs:element minOccurs="0" name="receiver_index_number" type="xrsi:receiver_index_number"/>
+					<!--<xs:element name="preferred_customer_no" type="xrsi:preferred_customer_no" minOccurs="0"/>
+					<xs:element name="wu_card_class" type="xrsi:wu_card_class" minOccurs="0"/>-->
+					<!--<xs:element name="marketing_code" type="xrsi:marketing_code" minOccurs="0"/>
+					<xs:element name="preferred_language" type="xrsi:preferred_language" minOccurs="0"/>-->
+					<xs:element minOccurs="0" name="enrollment_source" type="xrsi:enrollment_source"/>
+					<!--<xs:element name="card_status" type="xrsi:card_status" minOccurs="0"/>-->
+					<!--<xs:element name="sender_promo_code" type="xrsi:sender_promo_code" minOccurs="0"/>
+					<xs:element name="customer_interest_area" type="xrsi:customer_interest_area" minOccurs="0"/>-->
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element minOccurs="0" name="number_matches" type="xrsi:number_matches"/>
+					<xs:element minOccurs="0" name="wu_card_lookup_context" type="xrsi:wu_card_lookup_context"/>
+					<xs:element minOccurs="0" name="convenience_search" type="xrsi:convenience_search"/>
+					<xs:element minOccurs="0" name="save_key" type="xrsi:save_position_key"/>
+					<xs:element minOccurs="0" name="more_flag" type="xrsi:more_flag"/>
+					<xs:element minOccurs="0" name="conv_session_cookie" type="xrsi:cookie"/>
+					<xs:element minOccurs="0" name="is_multi_sender_response" type="xrsi:flag_type"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="wu-customer-lookup-reply" type="xrsi:wu-customer-lookup-reply">
+  </xs:element>
+</xs:schema>

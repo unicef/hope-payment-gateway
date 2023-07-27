@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/NisNotification" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="NisNotification_WSDL" targetNamespace="http://www.westernunion.com/NisNotification">
+	<types>
+		<xsd:schema xmlns:mrm="http://www.westernunion.com/FeeInq_Msgset" targetNamespace="http://www.example.org/NisNotification" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0">
+			<xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/NISNotificationReply.xsd"/>
+			<xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/NISNotificationRequest.xsd"/>
+			<xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/NISErrorReply.xsd"/>
+		</xsd:schema>
+	</types>
+	<message name="NisNotification_in">
+		<part name="nis-notification-request" element="xrsi:nis-notification-request"/>
+	</message>
+	<message name="NisNotification_out">
+		<part name="nis-notification-reply" element="xrsi:nis-notification-reply"/>
+	</message>
+	<message name="NisNotification_fault">
+		<part name="error-reply" element="xrsi:error-reply"/>
+	</message>
+	<portType name="NisNotifPortType">
+		<operation name="NotifService">
+			<input name="NisNotification_input" message="tns:NisNotification_in"/>
+			<output name="NisNotification_output" message="tns:NisNotification_out"/>
+			<fault name="fault" message="tns:NisNotification_fault"/>
+		</operation>
+	</portType>
+	<binding name="NisNotificationSOAP_HTTP_Binding" type="tns:NisNotifPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="NotifService">
+			<soap:operation soapAction="NotifAction"/>
+			<input name="NisNotification_input">
+				<soap:body parts="nis-notification-request" use="literal"/>
+			</input>
+			<output name="NisNotification_output">
+				<soap:body parts="nis-notification-reply" use="literal"/>
+			</output>
+			<fault name="fault">
+				<soap:fault name="fault" use="literal"/>
+			</fault>
+		</operation>
+	</binding>
+	<wsdl:service name="NisNotification">
+		<wsdl:port name="NisNotificationSOAP" binding="tns:NisNotificationSOAP_HTTP_Binding">
+			<soap:address location="https://wugateway2pi.westernunion.com/NisNotification/"/>
+		</wsdl:port>
+	</wsdl:service>
+</definitions>

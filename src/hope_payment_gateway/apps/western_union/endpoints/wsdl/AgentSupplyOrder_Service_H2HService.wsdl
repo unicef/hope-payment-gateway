@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/AgentSupplyOrder_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="AgentSupplyOrder_Service_H2H" targetNamespace="http://www.westernunion.com/AgentSupplyOrder_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/AgentSupplyOrder_H2H" targetNamespace="http://www.westernunion.com/AgentSupplyOrder_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0" >
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIAgentSupplyOrderRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIAgentSupplyOrderReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="AgentSupplyOrder_in">
+    <wsdl:part element="xrsi:agent-supply-order-request" name="agent-supply-order-request"/>
+  </wsdl:message>
+  <wsdl:message name="AgentSupplyOrder_out">
+    <wsdl:part element="xrsi:agent-supply-order-reply" name="agent-supply-order-reply"/>
+  </wsdl:message>
+  <wsdl:message name="AgentSupplyOrder_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="AgentSupplyOrderPortType">
+    <wsdl:operation name="AgentSupplyOrder">
+      <wsdl:input message="tns:AgentSupplyOrder_in" name="AgentSupplyOrder_Input"/>
+      <wsdl:output message="tns:AgentSupplyOrder_out" name="AgentSupplyOrder_Output"/>
+      <wsdl:fault message="tns:AgentSupplyOrder_fault1" name="AgentSupplyOrder_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AgentSupplyOrder_H2H_SOAP_HTTP_Binding" type="tns:AgentSupplyOrderPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="AgentSupplyOrder">
+      <soap:operation/>
+      <wsdl:input name="AgentSupplyOrder_Input">
+        <soap:body parts="agent-supply-order-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="AgentSupplyOrder_Output">
+        <soap:body parts="agent-supply-order-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AgentSupplyOrder_Fault">
+        <soap:fault name="AgentSupplyOrder_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AgentSupplyOrder_Service_H2H">
+    <wsdl:port binding="tns:AgentSupplyOrder_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

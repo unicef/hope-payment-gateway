@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="fulfill-send-save-reply">
+		<xs:complexContent>
+			<xs:extension base="xrsi:reply_transaction_base">
+				<xs:sequence>
+				    <xs:element minOccurs="0" name="sender" type="xrsi:sender"/>
+					<xs:element minOccurs="0" name="receiver" type="xrsi:receiver"/>
+					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
+					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
+					<xs:element minOccurs="0" name="company" type="xrsi:qp_company"/>
+					<xs:element minOccurs="0" name="promotions" type="xrsi:promotions"/>
+					<!-- The following elements belong to "transaction_details" -->
+					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
+					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>
+					<xs:element minOccurs="0" name="filing_date" type="xrsi:date"/>
+					<xs:element minOccurs="0" name="filing_time" type="xrsi:time"/>
+					<xs:element maxOccurs="3" minOccurs="0" name="pin_text_message_set_2" type="xrsi:pin_text"/>
+					<xs:element maxOccurs="6" minOccurs="0" name="promo_text_message" type="xrsi:promo_text"/>
+					<xs:element minOccurs="0" name="new_points_earned" type="xrsi:count"/>
+					<xs:element minOccurs="0" name="phone_pin" type="xrsi:pin"/>
+					<xs:element minOccurs="0" name="phone_pin_text" type="xrsi:pin_text"/>
+					<xs:element maxOccurs="3" minOccurs="0" name="wu_card_pin_text" type="xrsi:pin_text"/>
+					<xs:element maxOccurs="3" minOccurs="0" name="auto_enroll_text" type="xrsi:auto_enroll_text"/>
+					<xs:element minOccurs="0" name="auto_enroll_flag" type="xrsi:auto_enroll_flag"/>
+					<xs:element minOccurs="0" name="receipt_option" type="xrsi:receipt_option"/>
+					<xs:element minOccurs="0" name="phone_reward_amount" type="xrsi:phone_reward_amount"/>
+					<xs:element minOccurs="0" name="phone_reward_currency" type="xrsi:phone_reward_currency"/>
+					<xs:element minOccurs="0" name="points_earned" type="xrsi:points_earned"/>
+					<xs:element minOccurs="0" name="wu_card" type="xrsi:wu_card"/>
+					<xs:element minOccurs="0" name="dc_pin" type="xrsi:dc_pin"/>
+					<xs:element minOccurs="0" name="status_code" type="xrsi:status_code"/>
+					<xs:element minOccurs="0" name="address_verification_reply" type="xrsi:yes_no"/>
+					<xs:element minOccurs="0" name="nabanco_auth_flag" type="xrsi:yes_no"/>
+					<xs:element minOccurs="0" name="slot_number" type="xrsi:slot_number"/>
+					<xs:element minOccurs="0" name="system_trace" type="xrsi:system_trace"/>
+					<xs:element minOccurs="0" name="validation_queue_flag" type="xrsi:yes_no"/>
+					<xs:element minOccurs="0" name="last_score" type="xrsi:last_score_value"/>
+					<xs:element minOccurs="0" name="network_exchange_rate" type="xrsi:network_exchange_rate"/>
+					<xs:element minOccurs="0" name="ips_card_balance" type="xrsi:ips_card_balance"/>
+					<xs:element minOccurs="0" name="ips_funds_loaded" type="xrsi:ips_funds_loaded"/>
+					<xs:element minOccurs="0" name="device_id" type="xrsi:device_id"/>
+					<xs:element minOccurs="0" name="refund_details" type="xrsi:refund_details"/>
+					<xs:element minOccurs="0" name="unisys_customer_id" type="xrsi:unisys_customer_id"/>
+					<xs:element minOccurs="0" name="connection_id" type="xrsi:connection_id"/>
+					<xs:element minOccurs="0" name="ccscan_transaction_id" type="xrsi:ccscan_transaction_id"/>
+					<xs:element minOccurs="0" name="shared_global" type="xrsi:shared_global"/>
+					<xs:element minOccurs="0" name="dest_ctry_limit" type="xrsi:limit"/>
+					<xs:element minOccurs="0" name="dest_ctry_qqc_limit" type="xrsi:limit"/>
+					<xs:element minOccurs="0" name="customer_limit" type="xrsi:limit"/>
+					<xs:element minOccurs="0" name="test_question_reqd_flag" type="xrsi:test_question"/>
+					<xs:element minOccurs="0" name="tmt_staging" type="xrsi:tmt_staging"/>
+					<xs:element minOccurs="0" name="line_out" type="xrsi:line_out"/>
+					<xs:element minOccurs="0" name="refund" type="xrsi:refund_details"/>
+					<xs:element minOccurs="0" name="validation_code" type="xrsi:validation_code"/>
+                    <xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />
+                                        <xs:element minOccurs="0" name="bank_details" type="xrsi:bank_details"/>
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element minOccurs="0" name="current_fx" type="xrsi:current_fx"/>
+					<xs:element minOccurs="0" name="number_matches" type="xrsi:number_matches"/>
+					<xs:element minOccurs="0" name="delivery_service_code" type="xrsi:delivery_service_code"/>
+					<xs:element minOccurs="0" name="fixed_on_send" type="xrsi:fixed_on_send"/>
+					<xs:element maxOccurs="3" minOccurs="0" name="host_message_set1" type="xrsi:host_message_set1"/>
+					<xs:element maxOccurs="3" minOccurs="0" name="host_message_set3" type="xrsi:host_message_set3"/>
+					<xs:element minOccurs="0" name="promo_message_set1" type="xrsi:promo_message_set1"/>
+					<xs:element minOccurs="0" name="pos_message" type="xrsi:pos_message"/>	
+					<xs:element maxOccurs="30" minOccurs="0" name="receipt_text" type="xrsi:receipt_text"/>	
+					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="fulfill-send-save-reply" type="xrsi:fulfill-send-save-reply">
+    </xs:element>
+</xs:schema>

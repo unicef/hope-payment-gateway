@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/KYCCustomerLookup"
+	xmlns:xrsi="http://www.westernunion.com/kyc/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xsi="http://www.westernunion.com/schema/xrsi"
+	name="KYCCustomerLookup_Service" targetNamespace="http://www.westernunion.com/KYCCustomerLookup">
+	<wsdl:types>
+		<xsd:schema xmlns:mrm="http://www.westernunion.com/KYCCustomerLookup" targetNamespace="http://www.westernunion.com/KYCCustomerLookup" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+			<xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi"  schemaLocation="../schema/XRSIKYCCustomerLookupReply.xsd" />
+			<xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi" schemaLocation="../schema/XRSIKYCCustomerLookupRequest.xsd" />
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="KYCCustomerLookup_in">
+		<wsdl:part element="xrsi:kyc-customer-lookup-request" name="kyc-customer-lookup-request" />
+	</wsdl:message>
+	<wsdl:message name="KYCCustomerLookup_out">
+		<wsdl:part element="xrsi:kyc-customer-lookup-reply" name="kyc-customer-lookup-reply" />
+	</wsdl:message>
+	<wsdl:message name="KYCCustomerLookup_fault1">
+		<wsdl:part element="xsi:error-reply" name="error-reply" />
+	</wsdl:message>
+	<wsdl:portType name="KYCCustomerLookupPortType">
+		<wsdl:operation name="KYCCustomerLookup">
+			<wsdl:input message="tns:KYCCustomerLookup_in" name="KYCCustomerLookup_Input" />
+			<wsdl:output message="tns:KYCCustomerLookup_out" name="KYCCustomerLookup_Output" />
+			<wsdl:fault message="tns:KYCCustomerLookup_fault1" name="KYCCustomerLookup_Fault" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="KYCCustomerLookup_SOAP_HTTP_Binding"
+		type="tns:KYCCustomerLookupPortType">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="KYCCustomerLookup">
+			<soap:operation />
+			<wsdl:input name="KYCCustomerLookup_Input">
+				<soap:body parts="kyc-customer-lookup-request" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="KYCCustomerLookup_Output">
+				<soap:body parts="kyc-customer-lookup-reply" use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="KYCCustomerLookup_Fault">
+				<soap:fault name="KYCCustomerLookup_Fault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="KYCCustomerLookup_Service">
+		<wsdl:port binding="tns:KYCCustomerLookup_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+			<soap:address location="http://www.westernunion.com/KYCCustomerLookup_Service" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

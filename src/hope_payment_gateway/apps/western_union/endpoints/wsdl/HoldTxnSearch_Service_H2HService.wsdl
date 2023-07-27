@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="HoldTxnSearch_Service_H2HService" targetNamespace="http://www.westernunion.com/HoldTxnSearch_Service_H2HService/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/HoldTxnSearch_Service_H2HService/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/HoldTxnSearch_Service_H2HService" targetNamespace="http://www.westernunion.com/HoldTxnSearch_Service_H2HService" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIHoldTxnSearchRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIHoldTxnSearchReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+ 
+  <wsdl:message name="HoldTxnSearch_in">
+    <wsdl:part element="xrsi:hold-txn-search-request" name="hold-txn-search-request"/>
+  </wsdl:message>
+  <wsdl:message name="HoldTxnSearch_out">
+    <wsdl:part element="xrsi:hold-txn-search-reply" name="hold-txn-search-reply"/>
+  </wsdl:message>
+  <wsdl:message name="HoldTxnSearch_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="HoldTxnSearchPortType">
+    <wsdl:operation name="HoldTxnSearch">
+      <wsdl:input message="tns:HoldTxnSearch_in" name="HoldTxnSearch_Input"/>
+      <wsdl:output message="tns:HoldTxnSearch_out" name="HoldTxnSearch_Output"/>
+      <wsdl:fault message="tns:HoldTxnSearch_fault1" name="HoldTxnSearch_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+   <wsdl:binding name="HoldTxnSearch_SOAP_HTTP_Binding" type="tns:HoldTxnSearchPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="HoldTxnSearch">
+      <soap:operation/>
+      <wsdl:input name="HoldTxnSearch_Input">
+        <soap:body parts="hold-txn-search-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HoldTxnSearch_Output">
+        <soap:body parts="hold-txn-search-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="HoldTxnSearch_Fault">
+        <soap:fault name="HoldTxnSearch_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="HoldTxnSearch_Service_H2HService">
+    <wsdl:port binding="tns:HoldTxnSearch_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/HoldTxnSearch_Service_H2HService"/>
+    </wsdl:port>
+  </wsdl:service>  
+</wsdl:definitions>

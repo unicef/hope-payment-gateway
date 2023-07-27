@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/QuickPayValidate_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="QuickPayValidate_Service_H2H" targetNamespace="http://www.westernunion.com/QuickPayValidate_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/QuickPayValidate" targetNamespace="http://www.westernunion.com/QuickPayValidate" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIQuickPayValidationReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIQuickPayValidationRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="quickPayValidate_in">
+    <wsdl:part element="xrsi:quick-pay-validation-request" name="quick-pay-validation-request"/>
+  </wsdl:message>
+  <wsdl:message name="quickPayValidate_out">
+    <wsdl:part element="xrsi:quick-pay-validation-reply" name="quick-pay-validation-reply"/>
+  </wsdl:message>
+  <wsdl:message name="quickPayValidate_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="QuickPayValidatePortType">
+    <wsdl:operation name="quickPayValidate">
+      <wsdl:input message="tns:quickPayValidate_in" name="quickPayValidate_Input"/>
+      <wsdl:output message="tns:quickPayValidate_out" name="quickPayValidate_Output"/>
+      <wsdl:fault message="tns:quickPayValidate_fault1" name="quickPayValidate_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="QuickPayValidate_H2H_SOAP_HTTP_Binding" type="tns:QuickPayValidatePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="quickPayValidate">
+      <soap:operation soapAction="QuickPayValidateAction"/>
+      <wsdl:input name="quickPayValidate_Input">
+        <soap:body parts="quick-pay-validation-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="quickPayValidate_Output">
+        <soap:body parts="quick-pay-validation-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="quickPayValidate_Fault">
+        <soap:fault name="quickPayValidate_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="QuickPayValidate_Service_H2H">
+    <wsdl:port binding="tns:QuickPayValidate_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/QuickPayValidate_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

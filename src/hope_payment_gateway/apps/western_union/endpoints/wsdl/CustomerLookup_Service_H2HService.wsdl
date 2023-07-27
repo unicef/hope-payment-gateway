@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/CustomerLookup_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="CustomerLookup_Service_H2H" targetNamespace="http://www.westernunion.com/CustomerLookup_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://tempuri.org/CustomerLookupRequestReply_MSet" targetNamespace="http://www.westernunion.com/CustomerLookup" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIWuCustomerLookupRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIWuCustomerLookupReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CustomerLookup_in">
+    <wsdl:part element="xrsi:wu-customer-lookup-request" name="wu-customer-lookup-request"/>
+  </wsdl:message>
+  <wsdl:message name="CustomerLookup_out">
+    <wsdl:part element="xrsi:wu-customer-lookup-reply" name="wu-customer-lookup-reply"/>
+  </wsdl:message>
+  <wsdl:message name="CustomerLookup_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="CustomerLookupPortType">
+    <wsdl:operation name="CustomerLookup">
+      <wsdl:input message="tns:CustomerLookup_in" name="CustomerLookup_Input"/>
+      <wsdl:output message="tns:CustomerLookup_out" name="CustomerLookup_Output"/>
+      <wsdl:fault message="tns:CustomerLookup_fault1" name="CustomerLookup_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CustomerLookupRequest_H2H_SOAP_HTTP_Binding" type="tns:CustomerLookupPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="CustomerLookup">
+      <soap:operation soapAction="CustomerLookupAction"/>
+      <wsdl:input name="CustomerLookup_Input">
+        <soap:body parts="wu-customer-lookup-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CustomerLookup_Output">
+        <soap:body parts="wu-customer-lookup-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CustomerLookup_Fault">
+        <soap:fault name="CustomerLookup_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CustomerLookup_Service_H2H">
+    <wsdl:port binding="tns:CustomerLookupRequest_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/CustomerLookup_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

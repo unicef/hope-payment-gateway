@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="make-payment-store-request">
+		<xs:complexContent>
+			<xs:extension base="xrsi:store_request_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
+					<xs:element name="payment_transactions" type="xrsi:payment_transactions" minOccurs="0"/>	
+					<xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>	
+					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />	
+					<xs:element minOccurs="0" name="consumer_fraud_prompts" type="xrsi:consumer_fraud_prompts"/>								
+					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
+                                        <xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
+					<xs:element minOccurs="0" name="partner_security_token" type="xrsi:partner_security_token"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>
+					
+					<!-- The following elements belong to "transaction_details" -->
+					<!--<xs:element name="action" type="xrsi:action" minOccurs="0"/>
+					<xs:element name="transfer_type">
+						<xs:simpleType>
+							<xs:restriction base="xrsi:transaction_type"/>
+						</xs:simpleType>
+					</xs:element>-->
+					<!--<xs:element name="receiver_index_number" type="xrsi:receiver_index_number" minOccurs="0" maxOccurs="10"/>-->
+					<!--<xs:element name="auto_refile_buffer" type="xrsi:auto_refile_buffer" minOccurs="0"/>
+					<xs:element name="corr_error_queue_flag" type="xrsi:yes_no" minOccurs="0"/>
+					<xs:element name="queue_flag" type="xrsi:yes_no" minOccurs="0"/> -->
+					
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="make-payment-store-request" type="xrsi:make-payment-store-request"/>
+</xs:schema>

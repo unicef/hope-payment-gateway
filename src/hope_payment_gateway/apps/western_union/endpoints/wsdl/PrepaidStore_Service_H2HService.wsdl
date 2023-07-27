@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://westernunion.com/PrepaidStore_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PrepaidStoreService_H2H" targetNamespace="http://westernunion.com/PrepaidStore_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://westernunion.com/PrepaidStore" targetNamespace="http://westernunion.com/PrepaidStore" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIPrepaidStoreRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIPrepaidStoreReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="PrepaidStore_in">
+    <wsdl:part element="xrsi:prepaid-store-request" name="prepaid-store-request"/>
+  </wsdl:message>
+  <wsdl:message name="PrepaidStore_out">
+    <wsdl:part element="xrsi:prepaid-store-reply" name="prepaid-store-reply"/>
+  </wsdl:message>
+  <wsdl:message name="PrepaidStore_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="PrepaidStorePortType">
+    <wsdl:operation name="PrepaidStore">
+      <wsdl:input message="tns:PrepaidStore_in" name="PrepaidStore_Input"/>
+      <wsdl:output message="tns:PrepaidStore_out" name="PrepaidStore_Output"/>
+      <wsdl:fault message="tns:PrepaidStore_fault1" name="PrepaidStore_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PrepaidStore_H2H_SOAP_HTTP_Binding" type="tns:PrepaidStorePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PrepaidStore">
+      <soap:operation soapAction="PrepaidStoreAction"/>
+      <wsdl:input name="PrepaidStore_Input">
+        <soap:body parts="prepaid-store-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PrepaidStore_Output">
+        <soap:body parts="prepaid-store-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PrepaidStore_Fault">
+        <soap:fault name="PrepaidStore_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PrepaidStoreService_H2H">
+    <wsdl:port binding="tns:PrepaidStore_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/PrepaidStoreService_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

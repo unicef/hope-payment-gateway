@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/ReceiveMoneyPay_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ReceiveMoneyPay_Service_H2H" targetNamespace="http://www.westernunion.com/ReceiveMoneyPay_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/ReceiveMoneyPay" targetNamespace="http://www.westernunion.com/ReceiveMoneyPay" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiveMoneyPayRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiveMoneyPayReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ReceiveMoneyPay_in">
+    <wsdl:part element="xrsi:receive-money-pay-request" name="receive-money-pay-request"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiveMoneyPay_out">
+    <wsdl:part element="xrsi:receive-money-pay-reply" name="receive-money-pay-reply"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiveMoneyPay_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="ReceiveMoneyPayPortType">
+    <wsdl:operation name="ReceiveMoneyPay">
+      <wsdl:input message="tns:ReceiveMoneyPay_in" name="ReceiveMoneyPay_Input"/>
+      <wsdl:output message="tns:ReceiveMoneyPay_out" name="ReceiveMoneyPay_Output"/>
+      <wsdl:fault message="tns:ReceiveMoneyPay_fault1" name="ReceiveMoneyPay_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ReceiveMoneyPay_H2H_SOAP_HTTP_Binding" type="tns:ReceiveMoneyPayPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="ReceiveMoneyPay">
+      <soap:operation soapAction="ReceiveMoneyPay_Action"/>
+      <wsdl:input name="ReceiveMoneyPay_Input">
+        <soap:body parts="receive-money-pay-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ReceiveMoneyPay_Output">
+        <soap:body parts="receive-money-pay-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ReceiveMoneyPay_Fault">
+        <soap:fault name="ReceiveMoneyPay_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ReceiveMoneyPay_Service_H2H">
+    <wsdl:port binding="tns:ReceiveMoneyPay_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/ReceiveMoneyPay_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

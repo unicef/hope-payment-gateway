@@ -67,3 +67,8 @@ def payment_plan():
 @pytest.fixture()
 def programme():
     return factories.ProgrammeFactory()
+
+
+@pytest.fixture()
+def corridor():
+    return factories.CorridorFactory()

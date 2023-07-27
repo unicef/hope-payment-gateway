@@ -43,6 +43,7 @@ python = "3.11.*"
 
 Django = "*"
 celery = {extras = ["redis"], version = "*"}
+djangorestframework = "*"
 django-admin-extra-buttons = "*"
 django-admin-sync = "*"
 django-adminactions = "*"
@@ -51,6 +52,7 @@ django-advanced-filters = "*"
 django-celery-beat = "*"
 django-celery-results = "*"
 django-concurrency = "*"
+django-constance = "*"
 django-cors-headers = "*"
 django-csp = "*"
 django-debug-toolbar = "*"
@@ -66,12 +68,16 @@ gunicorn = "*"
 newrelic = "*"
 natural-keys = "*"
 pre_commit = "*"
-psycopg2 = "*"
 sentry-sdk = "*"
 social-auth-app-django = "*"
 social-auth-core = "*"
 tablib = "*"
 unicef-security = "*"
+zeep = "*"
+djangorestframework-xml = "^2.0.0"
+psycopg = {extras = ["binary"], version = "^3.1.10"}
+wheel = "^0.41.2"
+django-model-utils = "^4.3.1"
 
 
 [tool.poetry.group.dev.dependencies]

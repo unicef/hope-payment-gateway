@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="quick-pay-store-request">
+		<xs:complexContent>
+			<xs:extension base="xrsi:store_request_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
+					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
+					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
+					<xs:element name="receiver" type="xrsi:receiver" minOccurs="0"/>
+					<xs:element name="qp_company" type="xrsi:qp_company" minOccurs="0"/>
+					<xs:element name="bank_details" type="xrsi:bank_details" minOccurs="0"/>
+					<xs:element name="billing_details" type="xrsi:billing_details" minOccurs="0"/>
+					<xs:element name="emea_ii" type="xrsi:emea_ii" minOccurs="0"/>
+					<xs:element name="promotions" type="xrsi:promotions" minOccurs="0"/>
+					<xs:element name="financials" type="xrsi:financials" minOccurs="0"/>
+					<xs:element name="payment_details" type="xrsi:payment_details" minOccurs="0"/>
+					<!-- The following elements belong to "transaction_details" -->
+					<!--<xs:element name="action" type="xrsi:action" minOccurs="0"/>
+					<xs:element name="transfer_type">
+						<xs:simpleType>
+							<xs:restriction base="xrsi:transaction_type"/>
+						</xs:simpleType>
+					</xs:element>-->
+					<!--<xs:element name="receiver_index_number" type="xrsi:receiver_index_number" minOccurs="0" maxOccurs="10"/>-->
+					<xs:element name="delivery_services" type="xrsi:delivery_services" minOccurs="0"/>
+					<xs:element name="link_share" type="xrsi:link_share" minOccurs="0"/>
+					<xs:element name="mtcn" type="xrsi:mtcn" minOccurs="0"/>
+					<xs:element name="ccscan_transaction_id" type="xrsi:ccscan_transaction_id" minOccurs="0"/>
+					<xs:element name="encompass_status" type="xrsi:encompass_status" minOccurs="0"/>
+					<xs:element name="encompass_reason_code" type="xrsi:encompass_reason_code" minOccurs="0"/>
+					<!-- Refactoring it to Sender -->
+					<!--<xs:element name="sms_notification" type="xrsi:sms_notification" minOccurs="0"/>-->
+					<xs:element name="universal_buffer" type="xrsi:compliance_data_buffer" minOccurs="0"/>
+					<!-- Operator Comments  -->
+					<xs:element name="comments" type="xrsi:comments" minOccurs="0"/>
+					<xs:element name="unisys_customer_id" type="xrsi:unisys_customer_id" minOccurs="0"/>
+					<xs:element name="new_mtcn" type="xrsi:mtcn" minOccurs="0"/>
+					<xs:element name="stage_mtcn" type="xrsi:mtcn" minOccurs="0"/>
+					<xs:element name="first_tmt_flag" type="xrsi:yes_no" minOccurs="0"/>
+					<xs:element name="fixed_flag" type="xrsi:fixed_flag" minOccurs="0"/>
+					<xs:element name="cust_acct_no" type="xrsi:pcp_qqc_account_number" minOccurs="0"/>
+					<xs:element name="cancel_reason" type="xrsi:cancel_reason" minOccurs="0"/>
+					<xs:element name="mocc_comments" type="xrsi:comments" minOccurs="0" maxOccurs="4"/>
+					<xs:element name="yellow_phone_label" type="xrsi:yellow_phone_lable" minOccurs="0"/>
+					<xs:element name="money_transfer_key" type="xrsi:money_transfer_key" minOccurs="0"/>
+					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />					
+					<xs:element name="auto_refile_buffer" type="xrsi:auto_refile_buffer" minOccurs="0"/>
+					<xs:element name="corr_error_queue_flag" type="xrsi:yes_no" minOccurs="0"/>
+					<xs:element name="queue_flag" type="xrsi:yes_no" minOccurs="0"/>
+					<xs:element minOccurs="0" name="partner_security_token" type="xrsi:partner_security_token"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>
+					<xs:element minOccurs="0" name="GDPR_enabled" type="xrsi:GDPR_enabled"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="quick-pay-store-request" type="xrsi:quick-pay-store-request"/>
+</xs:schema>

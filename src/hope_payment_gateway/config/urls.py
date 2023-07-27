@@ -9,6 +9,7 @@ api_patterns = [
     path(r"social/", include("social_django.urls", namespace="social")),
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"adminactions/", include("adminactions.urls")),
+    path(r"wu/", include("hope_payment_gateway.apps.western_union.urls")),
 ]
 
 urlpatterns = [path("api/", include(api_patterns))]

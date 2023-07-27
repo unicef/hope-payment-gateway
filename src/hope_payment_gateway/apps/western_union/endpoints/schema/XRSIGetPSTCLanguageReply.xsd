@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xrsi="http://www.westernunion.com/kyc/schema/xrsi" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" targetNamespace="http://www.westernunion.com/kyc/schema/xrsi"
+	jxb:version="1.0">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIKYCBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIKYCClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="get_PSTCLanguage_reply">
+		<xs:sequence>
+			 <xs:element name="channel" type="xrsi:channel" minOccurs="1"/>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:sequence>
+				  		<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+				   	</xs:sequence>			   
+				   	<xs:sequence>
+						<xs:element name="partner" type="xrsi:channel_partner"/>
+						<xs:element minOccurs="0" name="device" type="xrsi:device"/>
+						<xs:element minOccurs="0" name="external_reference_no" type="xrsi:external_reference_no"/>
+					</xs:sequence>
+				</xs:choice>	
+			<xs:element name="language_list" type="xrsi:language_list" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="get_PSTCLanguage_reply" type="xrsi:get_PSTCLanguage_reply"/>
+</xs:schema>

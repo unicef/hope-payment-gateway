@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/ReceiptReprintSearch_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ReceiptReprintSearch_Service_H2H" targetNamespace="http://www.westernunion.com/ReceiptReprintSearch_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/ReceiptReprintSearch" targetNamespace="http://www.westernunion.com/ReceiptReprintSearch" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiptReprintSearchReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiptReprintSearchRequest.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ReceiptReprintSearch_Service_H2H_in">
+    <wsdl:part element="xrsi:receipt-reprint-search-request" name="receipt-reprint-search-request"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiptReprintSearch_Service_H2H_out">
+    <wsdl:part element="xrsi:receipt-reprint-search-reply" name="receipt-reprint-search-reply"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiptReprintSearch_Service_H2H_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="ReceiptReprintPortType">
+    <wsdl:operation name="ReceiptReprintSearch_Service_H2H">
+      <wsdl:input message="tns:ReceiptReprintSearch_Service_H2H_in" name="ReceiptReprintSearch_Service_H2H_Input"/>
+      <wsdl:output message="tns:ReceiptReprintSearch_Service_H2H_out" name="ReceiptReprintSearch_Service_H2H_Output"/>
+      <wsdl:fault message="tns:ReceiptReprintSearch_Service_H2H_fault1" name="ReceiptReprintSearch_Service_H2H_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ReceiptReprintSearch_H2H_SOAP_HTTP_Binding" type="tns:ReceiptReprintPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="ReceiptReprintSearch_Service_H2H">
+      <soap:operation soapAction="ReceiptReprintSearch_Service_H2H"/>
+      <wsdl:input name="ReceiptReprintSearch_Service_H2H_Input">
+        <soap:body parts="receipt-reprint-search-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ReceiptReprintSearch_Service_H2H_Output">
+        <soap:body parts="receipt-reprint-search-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ReceiptReprintSearch_Service_H2H_Fault">
+        <soap:fault name="ReceiptReprintSearch_Service_H2H_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ReceiptReprintSearch_Service_H2H">
+    <wsdl:port binding="tns:ReceiptReprintSearch_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/ReceiptReprintSearch_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

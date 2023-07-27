@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			$Revision: 1.1 $
+			$Date: 2014/07/02 19:22:48 $
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="error-reply">
+		<xs:sequence>
+			<xs:element name="error">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="1000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ExternalReferenceNumber" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PartnerID" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+                        <xs:minLength value="0"/>
+                        <xs:maxLength value="32"/>
+                    </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="error-reply" type="xrsi:error-reply"/>
+</xs:schema>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<xs:complexType name="receipt-reprint-select-reply">
+		<xs:complexContent>
+			<xs:extension base="xrsi:reply_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="payment_transactions" type="xrsi:payment_transactions"/>
+					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>
+					<xs:element minOccurs="0" name="misc_buffer_details" type="xrsi:misc_buffer_type"/>
+					<xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>
+					<xs:element maxOccurs="1" minOccurs="0" name="df_fields" type="xrsi:df_fields"/>										
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element maxOccurs="3" minOccurs="0" name="host_message_set3" type="xrsi:host_message_set3"/>
+					<xs:element maxOccurs="6" minOccurs="0" name="promo_message_set1" type="xrsi:promo_message_set1"/>
+					<xs:element minOccurs="0" name="bank_details" type="xrsi:bank_details"/>
+					<xs:element minOccurs="0" name="confirmation_number" type="xrsi:confirmation_number"/>
+					<xs:element minOccurs="0" name="company_name" type="xrsi:qp_company_name"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="receipt-reprint-select-reply" type="xrsi:receipt-reprint-select-reply">
+  </xs:element>
+</xs:schema>

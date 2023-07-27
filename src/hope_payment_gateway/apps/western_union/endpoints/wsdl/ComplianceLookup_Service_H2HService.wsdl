@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/complianceLookup_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="complianceLookup_Service_H2H" targetNamespace="http://www.westernunion.com/complianceLookup_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/ComplianceLookup" targetNamespace="http://www.westernunion.com/ComplianceLookup" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIComplianceLookupRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIComplianceLookupReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="complianceLookup_in">
+    <wsdl:part element="xrsi:compliance-lookup-request" name="compliance-lookup-request"/>
+  </wsdl:message>
+  <wsdl:message name="complianceLookup_out">
+    <wsdl:part element="xrsi:compliance-lookup-reply" name="compliance-lookup-reply"/>
+  </wsdl:message>
+  <wsdl:message name="complianceLookup_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="ComplianceLookupPortType">
+    <wsdl:operation name="complianceLookup">
+      <wsdl:input message="tns:complianceLookup_in" name="complianceLookup_Input"/>
+      <wsdl:output message="tns:complianceLookup_out" name="complianceLookup_Output"/>
+      <wsdl:fault message="tns:complianceLookup_fault1" name="complianceLookup_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ComplianceLookup_H2H_SOAP_HTTP_Binding" type="tns:ComplianceLookupPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="complianceLookup">
+      <soap:operation/>
+      <wsdl:input name="complianceLookup_Input">
+        <soap:body parts="compliance-lookup-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="complianceLookup_Output">
+        <soap:body parts="compliance-lookup-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="complianceLookup_Fault">
+        <soap:fault name="complianceLookup_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ComplianceLookup_Service_H2H">
+    <wsdl:port binding="tns:ComplianceLookup_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/ComplianceLookup_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="send-money-validation-request">
+		<xs:complexContent>
+			<xs:extension base="xrsi:store_request_transaction_base">
+				<xs:sequence>
+				    
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
+					<xs:element minOccurs="0" name="sender" type="xrsi:sender"/>
+					<xs:element minOccurs="0" name="receiver" type="xrsi:receiver"/>
+					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
+					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
+					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>
+					<xs:element minOccurs="0" name="promotions" type="xrsi:promotions"/>
+					<!--<xs:element name="compliance_details" type="xrsi:compliance_details" minOccurs="0"/>-->
+					<xs:element minOccurs="0" name="billing_details" type="xrsi:billing_details"/>
+					<xs:element minOccurs="0" name="bank_details" type="xrsi:bank_details"/>
+					<xs:element minOccurs="0" name="wallet_details" type="xrsi:wallet_details"/>
+					<xs:element minOccurs="0" name="card_details" type="xrsi:card_details"/>
+					<xs:element minOccurs="0" name="emea_ii" type="xrsi:emea_ii"/>
+					<!-- The following elements belong to "transaction_details" -->
+					<xs:element minOccurs="0" name="encompass_status" type="xrsi:encompass_status"/>
+					<xs:element minOccurs="0" name="encompass_reason_code" type="xrsi:encompass_reason_code"/>
+					<!-- Refactoring it to Sender -->
+					<!--<xs:element name="sms_notification" type="xrsi:sms_notification" minOccurs="0"/>-->
+					<xs:element minOccurs="0" name="acs_verification_id" type="xrsi:acs_verification_id"/>
+					<xs:element minOccurs="0" name="electronic_commerce_indicator" type="xrsi:electronic_commerce_indicator"/>
+					<xs:element minOccurs="0" name="universal_buffer" type="xrsi:compliance_data_buffer"/>
+					<!-- Operator Comments  -->
+					<xs:element minOccurs="0" name="comments" type="xrsi:comments"/>
+					<!--  10  digit MTCN -->
+					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
+					<!--  16  digit MTCN -->
+					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>
+                                        <xs:element minOccurs="0" name="stage_mtcn" type="xrsi:mtcn"/>
+					<xs:element minOccurs="0" name="customer_affidavit_number" type="xrsi:customer_affidavit_number"/>
+					<xs:element minOccurs="0" name="customer_affidavit" type="xrsi:customer_affidavit"/>
+					<xs:element minOccurs="0" name="client_record_key" type="xrsi:client_record_key"/>
+					<xs:element minOccurs="0" name="fusion" type="xrsi:fusion"/>
+					<xs:element minOccurs="0" name="payer_fx_buffer" type="xrsi:payer_fx_buffer"/>
+					<xs:element minOccurs="0" name="cuba" type="xrsi:cuba"/>
+					<xs:element minOccurs="0" name="consumer_fraud_prompts" type="xrsi:consumer_fraud_prompts"/>
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>								
+					<xs:element minOccurs="0" name="visa_flag" type="xrsi:visa_flag"/>
+					<xs:element minOccurs="0" name="visa_number" type="xrsi:visa_number"/>
+					<xs:element minOccurs="0" name="visa_date" type="xrsi:visa_date"/>
+					<xs:element minOccurs="0" name="receiver_in_selected_method" type="xrsi:receiver_in_selected_method"/>
+					<xs:element minOccurs="0" name="delivery_service_tag" type="xrsi:delivery_service_tag"/>
+					<xs:element minOccurs="0" name="tax_id" type="xrsi:tax_id"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>
+					<xs:element minOccurs="0" name="mtcn_digest" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="GDPR_enabled" type="xrsi:GDPR_enabled"/>
+					
+					 <!--  -->
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="send-money-validation-request" type="xrsi:send-money-validation-request">
+  </xs:element>
+</xs:schema>
