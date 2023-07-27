@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xrsi="http://www.westernunion.com/schema/xrsi"
+	targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:include schemaLocation="XRSIAgentLocationSearchRequest_2_0.xsd" />
+	<!--<xs:include schemaLocation="XRSIBasicTypes.xsd" />-->
+	<xs:include schemaLocation="XRSIClasses.xsd" />
+	<xs:complexType name="AgentLocationSearch_reply_2_0">
+		<xs:complexContent>
+			<xs:extension base="xrsi:reply_transaction_base">
+				<xs:sequence>
+					<xs:element name="LocationSearchResponse" minOccurs="0" type="xrsi:LocationSearchResponse" />
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="AgentLocationSearch_reply_2_0" type="xrsi:AgentLocationSearch_reply_2_0"/>
+</xs:schema>

@@ -1,0 +1,2133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" jxb:version="1.0" targetNamespace="http://www.westernunion.com/schema/xrsi">
+  <xsd:annotation>
+    <xsd:documentation>
+			$Revision: 1.1 $
+			$Date: 2014/07/02 19:22:48 $</xsd:documentation>
+  </xsd:annotation>
+  
+  <xsd:simpleType name="gwp_gbs_device_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ATM"/>
+      <xsd:enumeration value="WEB"/>
+      <xsd:enumeration value="AGENT"/>
+      <xsd:enumeration value="CSR"/>
+      <xsd:enumeration value="IVR"/>
+      <xsd:enumeration value="MOBILE"/>
+      <!-- START - Added New Enumerations - SIVAJI G -->
+	  <xsd:enumeration value="KIOSK"/>
+	  <xsd:enumeration value="RETAIL"/>
+	  <!-- END -->
+      <xsd:enumeration value="OTHER"/>
+      <xsd:enumeration value="SYSTEM"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+    <xsd:simpleType name="external_reference_no">
+    <xsd:annotation>
+      <xsd:documentation>partner / remote transaction ref number</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="48"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="ip_address">
+    <xsd:annotation>
+      <xsd:documentation>IP address</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="7"/>
+      <xsd:maxLength value="17"/>
+    </xsd:restriction>
+  </xsd:simpleType>  
+  
+  <xsd:simpleType name="pin_verification_time">
+    <xsd:annotation>
+      <xsd:documentation>UTC timestamp that user pin was verified by sending bank</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:dateTime"/>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="amount">
+    <xsd:annotation>
+      <xsd:documentation>Basic Type for Amount</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:long"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="float_amount">
+    <xsd:annotation>
+      <xsd:documentation>Basic Type for Float Amount</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:double"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="count">
+    <xsd:annotation>
+      <xsd:documentation>Basic Type for Count</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:integer"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="city">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="qualifying_for_reward">
+    <xsd:annotation>
+      <xsd:documentation>qualifying for reward</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="redemption_status">
+    <xsd:annotation>
+      <xsd:documentation>redemption status</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pin">
+    <xsd:annotation>
+      <xsd:documentation>phone pin or promo code</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="csr_id">
+    <xsd:annotation>
+      <xsd:documentation>csr id</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xrsi:id">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="12"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="special_pricing_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="special_pricing_description">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="15"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="device_flag">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="local_amount">
+    <xsd:annotation>
+      <xsd:documentation>amount in local currency</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="name_base">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="country_name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="country_iso_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="currency_iso_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="language_iso_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="state_iso_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="5"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+ 
+  <xsd:simpleType name="postal_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="state_province">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="phone">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="31"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="yes_no">
+    <xsd:restriction base="xsd:boolean"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="documents_verified">
+    <xsd:restriction base="xrsi:yes_no"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="email">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="address_line_short">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="address_line_long">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="84"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="currency">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="84"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="date">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="52"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="time">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  
+  <xsd:simpleType name="frequency_of_transfers">
+    <xsd:annotation>
+      <xsd:documentation>frequency of transfers per year(emea ii)</xsd:documentation>
+      <xsd:documentation>frequency of transfers using wu(emea ii)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="more_flag">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="preferred_mode_to_receive_info">
+    <xsd:annotation>
+      <xsd:documentation>preferred mode to receive info (emea ii)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="reason_for_transfer">
+    <xsd:annotation>
+      <xsd:documentation>reason for transfer (emea ii)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_on_file">
+    <xsd:annotation>
+      <xsd:documentation>id on file (emea ii)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="preferred_language">
+    <xsd:annotation>
+      <xsd:documentation>preferred language - ISO language code</xsd:documentation>
+      <xsd:documentation>Enumeration - EN etc.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string">
+    <xsd:annotation>
+      <xsd:documentation>Generic string type</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="300"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="card_status">
+    <xsd:annotation>
+      <xsd:documentation>EFP FID  - card status</xsd:documentation>
+      <xsd:documentation>Enumeration: I=Inactive,A=Active,T=Temporarily Active,S=Suspended,R=Replacement/Reorder,N=New</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enrollment_source">
+    <xsd:annotation>
+      <xsd:documentation>MOM FID G3,EFP FID 249</xsd:documentation>
+      <xsd:documentation>Enumeration - P,G,B,M</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="marketing_code">
+    <xsd:annotation>
+      <xsd:documentation>marketing code- preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="gender">
+    <xsd:annotation>
+      <xsd:appinfo>
+        <jxb:typesafeEnumClass>
+          <jxb:typesafeEnumMember name="SPACE" value=" "/>
+          <jxb:typesafeEnumMember name="EMPTY" value=""/>
+        </jxb:typesafeEnumClass>
+      </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+      <xsd:enumeration value="M"/>
+      <xsd:enumeration value="F"/>
+      <xsd:enumeration value="S"/>
+      <xsd:enumeration value=" "/>
+      <xsd:enumeration value=""/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="name_raw">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="first_name">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="last_name">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="middle_name">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="maternal_name">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="paternal_name">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="business_name">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="attention">
+    <xsd:restriction base="xrsi:name_base"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="empty_string">
+    <xsd:restriction base="xsd:string">
+      <xsd:length value="0"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="name_prefix_val">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="(M(R|r)\.)|           (M(S|s)\.)|           (M(RS|rs)\.)"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="name_prefix">
+    <xsd:union memberTypes="xrsi:name_prefix_val xrsi:empty_string"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="name_suffix">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Jr."/>
+      <xsd:enumeration value="Sr."/>
+      <xsd:enumeration value="I"/>
+      <xsd:enumeration value="II"/>
+      <xsd:enumeration value="III"/>
+      <xsd:enumeration value="Esq."/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="wu_card_number">
+    <xsd:annotation>
+      <xsd:documentation>wu card number</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="bank_name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="branch_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="18"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="swift_bic">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="11"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="bank_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="9"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="sort_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="9"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="bank_account_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="28"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="bank_routing_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="account_prefix">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="14"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="account_suffix">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="14"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="mtcn">
+    <xsd:annotation>
+      <xsd:documentation>Money Transfer Control Number</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="10"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+ <!-- START: Acxsys Fields --> 
+  <xsd:simpleType name="payout_agent_id">
+    <xsd:restriction base="xsd:string">
+	<xsd:pattern value="[a-zA-Z0-9]"/>
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="12"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="payout_city">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="28"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="payout_state">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="payout_country">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="payout_postal_code">
+    <xsd:restriction base="xsd:string">
+	<xsd:pattern value="[a-zA-Z0-9]"/>
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  
+  <!-- END -->
+  
+  <xsd:simpleType name="number_matches">
+    <xsd:annotation>
+      <xsd:documentation>Number Matches</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:integer"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="transaction_type">
+    <xsd:annotation>
+      <xsd:documentation>Transaction type - wmo, mod</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+      <xsd:enumeration value=""/>
+      <xsd:enumeration value="WMF"/>
+      <xsd:enumeration value="WMN"/>
+      <xsd:enumeration value="WMO"/>
+      <xsd:enumeration value="MOD"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="mocn">
+    <xsd:annotation>
+      <xsd:documentation>Money Order Control Number</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="16"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="receiver_index_number">
+    <xsd:annotation>
+      <xsd:documentation>receiver index number - send money store</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="convenience_search_type">
+    <xsd:annotation>
+      <xsd:documentation>Convenience Search Type</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="convenience_search_key">
+    <xsd:annotation>
+      <xsd:documentation>Convenience Search Key</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="wu_card_lookup_context">
+    <xsd:annotation>
+      <xsd:documentation>Context</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="4"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="card_lookup_search_type">
+    <xsd:annotation>
+      <xsd:documentation>Card Lookup Search Type</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="fusion_screen">
+    <xsd:annotation>
+      <xsd:documentation>Fusion Screen</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pfc_filter_flag">
+    <xsd:annotation>
+      <xsd:documentation>PFC Filter Flag</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="flag_type">
+    <xsd:annotation>
+      <xsd:documentation>Generic Flag</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="add_track_one_data">
+    <xsd:annotation>
+      <xsd:documentation>Add Track One Data</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="sender_filter">
+    <xsd:annotation>
+      <xsd:documentation>Sender Filter</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="receiver_filter">
+    <xsd:annotation>
+      <xsd:documentation>Receiver Filter</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="reply_type">
+    <xsd:annotation>
+      <xsd:documentation>Reply Type</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="save_position_key">
+    <xsd:annotation>
+      <xsd:documentation>MOM FID 10 - preferred lookup sender reply</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="65"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="question_answer">
+    <xsd:annotation>
+      <xsd:documentation>Identification/Test question and Answer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="comments">
+    <xsd:annotation>
+      <xsd:documentation>Operator comments, Generic comments</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="message">
+    <xsd:annotation>
+      <xsd:documentation>Promo Message/Message Banner/Message</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pref_cust_account_number">
+    <xsd:annotation>
+      <xsd:documentation>Preferred Customer Account Number</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="11"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="database_key">
+    <xsd:annotation>
+      <xsd:documentation>Database Key</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="reference_key">
+    <xsd:annotation>
+      <xsd:documentation>Reference key contains recording agent + time stamp or db_key</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="banking_regulations_data">
+    <xsd:annotation>
+      <xsd:documentation>Banking regulations data - compliance</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="99"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="level_code">
+    <xsd:annotation>
+      <xsd:documentation>Level code</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="points_assigned_redeemed">
+    <xsd:annotation>
+      <xsd:documentation>Points assigned redeemed</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="wu_card_total_points_earned">
+    <xsd:annotation>
+      <xsd:documentation>Wu Card Total Points Earned</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="32"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="interests">
+    <xsd:annotation>
+      <xsd:documentation>Customer Interests (emea ii)</xsd:documentation>
+      <xsd:documentation>Enumeration - A, B, C, E, M, P, R, S, T, U</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_issue_date">
+    <xsd:annotation>
+      <xsd:documentation>senders id issue date</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="8"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_expiration_date">
+    <xsd:annotation>
+      <xsd:documentation>senders id expiration date</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="8"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="compliance_comments">
+    <xsd:annotation>
+      <xsd:documentation>senders compliance comments</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="48"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="bank_account_type">
+    <xsd:annotation>
+      <xsd:documentation>Bank Account Type</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="nationality">
+    <xsd:annotation>
+      <xsd:documentation>Nationality</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="card_class">
+    <xsd:annotation>
+      <xsd:documentation>Card Class - Preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="sender_orig_card_type">
+    <xsd:annotation>
+      <xsd:documentation>Sender original card type - Preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pref_cust_status">
+    <xsd:annotation>
+      <xsd:documentation>sender PFC status - Preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="rate_modifier">
+    <xsd:annotation>
+      <xsd:documentation>rate modifier for sender- Preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="promo_code">
+    <xsd:annotation>
+      <xsd:documentation>promo code</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="context">
+    <xsd:annotation>
+      <xsd:documentation>MOM FID 10(TCPLAN only) - WuCard information(lookup)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="200"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_document_type_data">
+    <xsd:annotation>
+      <xsd:documentation>sender id document types and data - compliance</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="money_transfer_key">
+    <xsd:annotation>
+      <xsd:documentation>EFP FID 55- receive money</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="card_update_indicator">
+    <xsd:annotation>
+      <xsd:documentation>EnrollWuCard[E]  -&gt;  Enroll both sender and Receiver</xsd:documentation>
+      <xsd:documentation>DeleteWuCard[S]  -&gt; Permanent Sender Change , no Receiver Change</xsd:documentation>
+      <xsd:documentation>UpdateWuCard[S] -&gt; Permanent Sender Change , no Receiver Change</xsd:documentation>
+      <xsd:documentation>LookUp[P] -&gt; Redemption Only / LookUp</xsd:documentation>
+      <xsd:documentation>AddAssociate[R] -&gt; Permanent Receiver Change , no Sender Change</xsd:documentation>
+      <xsd:documentation>UpdateAssociate[R] -&gt; Permanent Receiver Change , no Sender Change</xsd:documentation>
+      <xsd:documentation>Store[A] -&gt; Permanent Receiver Change , No Sender Change</xsd:documentation>
+      <xsd:documentation>None[N] -&gt; No Changes in either Sender or Receiver</xsd:documentation>
+      <xsd:documentation>UpdateSenderAssociate[B] -&gt; Changes to both Sender and Receiver</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="EnrollWuCard"/>
+      <xsd:enumeration value="DeleteWuCard"/>
+      <xsd:enumeration value="UpdateWuCard"/>
+      <xsd:enumeration value="LookUp"/>
+      <xsd:enumeration value="AddAssociate"/>
+      <xsd:enumeration value="UpdateAssociate"/>
+      <xsd:enumeration value="Store"/>
+      <xsd:enumeration value="UpdateSenderAssociate"/>
+      <xsd:enumeration value="None"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="preferred_customer_discount">
+    <xsd:annotation>
+      <xsd:documentation>MOM FID B0 - preferred_customer_discount</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="preferred_customer_name_altkey">
+    <xsd:annotation>
+      <xsd:documentation>MOM FID 49 - preferred lookup</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="37"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="operation">
+    <xsd:annotation>
+      <xsd:documentation>preferred customer operation</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="social_security_no">
+    <xsd:annotation>
+      <xsd:documentation>EFP FID 127</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="short_date">
+    <xsd:annotation>
+      <xsd:documentation>short date</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="8"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="max_number_receivers_allowed">
+    <xsd:annotation>
+      <xsd:documentation>max number of receivers allowed - preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="last_change_source">
+    <xsd:annotation>
+      <xsd:documentation>last change source- preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="auto_enroll">
+    <xsd:annotation>
+      <xsd:documentation>auto enroll flag - preferred customer</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="update">
+    <xsd:annotation>
+      <xsd:documentation>update flag for sender - preferred lookup reply</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="opt_in_out">
+    <xsd:annotation>
+      <xsd:documentation>opt in out flag - preferred lookup reply</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="rcv_financial_id">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="11"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="city_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="6"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="local_area">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="phone_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="14"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="phone_country_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="mobile_transaction_id">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="16"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_document_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="PASSPORT"/>
+      <xsd:enumeration value="DRIVER_LICENSE"/>
+      <xsd:enumeration value="NATIONAL_ID"/>
+      <xsd:enumeration value="ALIEN_ID"/>
+      <xsd:enumeration value="STATE_ID"/>
+      <xsd:enumeration value="SSN"/>
+      <xsd:enumeration value="PRC_ID"/>
+      <xsd:enumeration value="IBP_ID"/>
+      <xsd:enumeration value="NBI_CLEARANCE"/>
+      <xsd:enumeration value="POLICE_CLEARANCE_CERTIFICATE"/>
+      <xsd:enumeration value="POSTAL_ID"/>
+      <xsd:enumeration value="VOTERS_ID"/>
+      <xsd:enumeration value="GSIS_E_CARD"/>
+      <xsd:enumeration value="SSS_CARD"/>
+      <xsd:enumeration value="SENIOR_CITIZEN_CARD"/>
+      <xsd:enumeration value="OWWA_ID"/>
+      <xsd:enumeration value="OFW_ID"/>
+      <xsd:enumeration value="SEAMANS_BOOK"/>
+      <xsd:enumeration value="FIRE_ARM_LICENSE"/>
+      <xsd:enumeration value="EMPLOYMENT_ID"/>
+      <xsd:enumeration value="STUDENT_ID"/>
+      <xsd:enumeration value="OTHER_GOVERNMENT_ID"/>
+      <xsd:enumeration value="OTHER_ID"/>
+      <xsd:enumeration value="GOVERNMENT STATE CENTRAL EMPLOYEE ID"/>
+      <xsd:enumeration value="PAN CARD"/>
+      <xsd:enumeration value="ELECTION VOTER ID CARD"/>
+      <xsd:enumeration value="REFUGEE CARD"/>
+      <xsd:enumeration value="DRIVING LICENSE"/>
+      <xsd:enumeration value="OTHERS"/>
+      <!-- START - Added New Enumerations - SIVAJI G -->
+	  <xsd:enumeration value="18_PLUS_CARD"/>
+      <xsd:enumeration value="NON_NZ_PASSPORT"/>
+      <xsd:enumeration value="CREDIT_DEBIT_CARD"/>
+      <xsd:enumeration value="BIRTH_CERTIFICATE"/>
+      <xsd:enumeration value="CITIZENSHIP_CERTIFICATE"/>
+      <xsd:enumeration value="SUPER_GOLD_CARD"/>
+      <xsd:enumeration value="HEALTH_ENTITLEMENT_CARD"/>
+      <xsd:enumeration value="RATES_NOTICE"/>
+      <xsd:enumeration value="BANK_STATEMENT"/>
+      <xsd:enumeration value="UTILITY_NOTICE"/>
+      <xsd:enumeration value="INSURANCE_CERTIFICATE"/>
+      <xsd:enumeration value="NZ_GOVERNMENT_ISSUED_LETTER"/>
+      <xsd:enumeration value="TRAVEL_ITINERARY"/>
+      <xsd:enumeration value="HOTEL_HOSTEL_BOOKING_CONFIRMATION"/>
+      <xsd:enumeration value="FOREIGN_DRIVER_LICENSE"/>
+      <xsd:enumeration value="STUDENT_LETTER"/>
+      <xsd:enumeration value="UAE_DRIVING_LICENSE"/>
+      <xsd:enumeration value="EMIRATES_ID"/>
+      <xsd:enumeration value="GCC_ID"/>
+      <xsd:enumeration value="LABOR_CARD"/>
+      <xsd:enumeration value="FZA_CARD"/>
+      <xsd:enumeration value="EMPLOYER_CARD"/>
+      <xsd:enumeration value="UAE_FAMILY_BOOK"/>
+      <xsd:enumeration value="BEDOUINS_ID"/>
+      <xsd:enumeration value="TRADE_LICENSE"/>
+      <xsd:enumeration value="MILITARY_ID"/>
+      <xsd:enumeration value="PERMANENT_RESIDENCE_BOOKLET"/>
+      <xsd:enumeration value="TRAVEL_PERMIT_HK_MACAU_RESIDENTS"/>
+      <xsd:enumeration value="TRAVEL_PERMIT_TAIWAN_RESIDENTS"/>
+	  <xsd:enumeration value="DIPLOMATIC_PASSPORT"/>
+	  <xsd:enumeration value="RESIDENCY_TITLE"/>
+	  <xsd:enumeration value="RESIDENCY_CARD_WORK"/>
+	  <xsd:enumeration value="RESIDENCY_CARD_NOWORK"/>
+	  <xsd:enumeration value="RECEIPT_LOSS_ID"/>
+	  <xsd:enumeration value="TAX_REGN_NO"/>
+	  <!-- END  -->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="mobile_phone_identity_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="TMSI"/>
+      <xsd:enumeration value="IMSI"/>
+      <xsd:enumeration value="MSISDN"/>
+      <xsd:enumeration value="ESN"/>
+      <xsd:enumeration value="IMEI"/>
+      <xsd:enumeration value="MEID"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="mobile_phone_identity_data">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="48"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="paid_status">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="PAID"/>
+      <xsd:enumeration value="NOT PAID"/>
+      <xsd:enumeration value="ON HOLD"/>
+      <xsd:enumeration value="NOT AVAILABLE"/>
+      <xsd:enumeration value="AVAILABLE"/>
+      <xsd:enumeration value="PAID_OTHER"/>
+      <xsd:enumeration value="QUEUED"/>
+      <xsd:enumeration value="CANCELLED"/>
+      <xsd:enumeration value="SUSPENDED"/>
+      <xsd:enumeration value="UNKNOWN"/>
+      <xsd:enumeration value="PURGED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="country_unisys_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="route_designator">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="41"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="control_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="25"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="phone_pin">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="24"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="sender_receiver_relationship">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="source_of_funds">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="charges">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="transaction_digest">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="state_zip">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="8"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="delivery_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="WORK"/>
+      <xsd:enumeration value="RESIDENTIAL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="delivery_name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="35"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pickup_status_code">
+    <xsd:restriction base="xsd:integer">
+      <xsd:enumeration value="0000">
+        <xsd:annotation>
+          <xsd:documentation>Successful or likely to be successful</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+ <!--  <xsd:enumeration value="1000">
+        <xsd:annotation>
+          <xsd:documentation>Rejected</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="2000">
+        <xsd:annotation>
+          <xsd:documentation>Queued or likely to be queued</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration> -->
+      <!-- START - Added New Enumerations - SIVAJI G -->
+      <xsd:enumeration value="1000">
+        <xsd:annotation>
+          <xsd:documentation>MTCN not found</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+       <xsd:enumeration value="1010">
+        <xsd:annotation>
+          <xsd:documentation>Partner System Error</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+	  <xsd:enumeration value="2000">
+        <xsd:annotation>
+          <xsd:documentation>Temporary Partner System Error, Retry</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <!-- END -->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="transaction_status">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SUCCESS">
+        <xsd:annotation>
+          <xsd:documentation>Transaction successfully cancelled/suspended/resumed</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="FAILURE">
+        <xsd:annotation>
+          <xsd:documentation>Failure while canceling/suspending/resuming Transaction</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="transaction_date">
+    <xsd:annotation>
+      <xsd:documentation>Transaction date format is MMDDYY</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="queue_allowed">
+    <xsd:restriction base="xrsi:yes_no"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="gbs_transaction_id">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="16"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+
+  <xsd:simpleType name="wu_product_name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="wu_product_code">
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="fee_survey_pricing_digest">
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="consumer_notification_preference">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NONE"/>
+      <xsd:enumeration value="EMAIL"/>
+      <xsd:enumeration value="AUTOMATED_PHONE_CALL"/>
+      <xsd:enumeration value="SMS"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="payout_method">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="CASH"/>
+      <xsd:enumeration value="MOBILE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="heartbeat_status_code">
+    <xsd:restriction base="xsd:integer">
+      <xsd:enumeration value="0000">
+        <xsd:annotation>
+          <xsd:documentation>Successful or likely to be successful</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="1000">
+        <xsd:annotation>
+          <xsd:documentation>Rejected</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="channel_customer_identity_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="MOBILE_ACCOUNT"/>
+      <xsd:enumeration value="BANK_ACCOUNT"/>
+      <xsd:enumeration value="PREPAID_CARD_NUMBER"/>
+      <xsd:enumeration value="EMAIL_ADDRESS"/>
+      <xsd:enumeration value="LOYALTY_CARD_NUMBER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="channel_customer_identity_data">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="48"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="reminder_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="FIRST_REMINDER"/>
+      <xsd:enumeration value="SECOND_REMINDER"/>
+      <xsd:enumeration value="THIRD_REMINDER"/>
+      <xsd:enumeration value="FOURTH_REMINDER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="sender_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="35"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="cookie">
+    <xsd:annotation>
+      <xsd:documentation>Sender or Receiver Cookie</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="500"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="source_fdi_csc_pos_etc">
+    <xsd:annotation>
+      <xsd:documentation>MOM FID 44 - preferred lookup -enumeration</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="returned_mail_status">
+    <xsd:annotation>
+      <xsd:documentation>MOM FID 32- preferred lookup</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="export_status">
+    <xsd:annotation>
+      <xsd:documentation>export status - preferred lookup reply</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="delete_code">
+    <xsd:annotation>
+      <xsd:documentation>delete code - preferred lookup reply</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="address_type">
+    <xsd:annotation>
+      <xsd:documentation>address type - preferred lookup reply</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="h"/>
+      <xsd:enumeration value="p"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="phone_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Home Phone"/>
+      <xsd:enumeration value="Business Phone"/>
+      <xsd:enumeration value="Cell Phone"/>
+      <xsd:enumeration value="Pay Phone"/>
+      <xsd:enumeration value="Other"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="listing_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Listed"/>
+      <xsd:enumeration value="Not Listed"/>
+      <xsd:enumeration value="UnPublished"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="employment_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Employed"/>
+      <xsd:enumeration value="Self Employed"/>
+      <xsd:enumeration value="Unemployed"/>
+      <xsd:enumeration value="Retired"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="universal_buffer">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="300"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="zero_one_int">
+    <xsd:restriction base="xsd:integer">
+      <xsd:enumeration value="0"/>
+      <xsd:enumeration value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="yes_no_flag_string">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Y"/>
+      <xsd:enumeration value="N"/>
+      <xsd:enumeration value="true"/>
+      <xsd:enumeration value="false"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="yes_no_flag">
+    <xsd:union memberTypes="xrsi:yes_no_flag_string xrsi:zero_one_int xrsi:empty_string"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="TStreet">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="40"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pref_cust_search_key">
+    <xsd:annotation>
+      <xsd:documentation>preferred customer(sender) search key</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="25"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="test_question_flag_type">
+    <xsd:annotation>
+      <xsd:documentation>test question flag</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="message_word_limit">
+    <xsd:annotation>
+      <xsd:documentation>message service - base, incremental word limit</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="attn_message">
+    <xsd:annotation>
+      <xsd:documentation>Quick Pay Attention Message/Send Money Store Message</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="69"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="customer_affidavit_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="09"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="mobile_number">
+    <xsd:annotation>
+      <xsd:documentation>Mobile Number</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="11"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="reason_for_sending">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Family support"/>
+      <xsd:enumeration value="Special Occasion"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="sms_notification">
+    <xsd:annotation>
+      <xsd:documentation>sms notification value (must be y if sent)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Y"/>
+      <xsd:enumeration value="N"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="visa_flag">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="visa_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="13"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="visa_date">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="occupation">
+    <xsd:annotation>
+      <xsd:documentation>third party occupation</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="transaction_reason">
+    <xsd:annotation>
+      <xsd:documentation>transaction reason</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="host_message_set1">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="700"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="host_message_set2">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="700"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="host_message_set3">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="700"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Country_of_Birth">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="44"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Customer_type_Alpha_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Customer_type_Numeric_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Location">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="24"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Valuta_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Valuta_Amount">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Send_Money_Form_Serial_Number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="address_validation">
+    <xsd:annotation>
+      <xsd:documentation>EFP FID 279 - address validation flag (valid values are y or blank)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="true"/>
+      <xsd:enumeration value="false"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ID_Description_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Identity_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="4"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Fathers_Name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="mothers_name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="24"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Member_or_Associate_to_Government">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Money_Transfer_Category">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Other">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Province">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="fiscal_code">
+    <xsd:annotation>
+      <xsd:documentation>fiscal code</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="16"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Name_of_Employer_Business">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Nature_of_Work_Business">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="24"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Relationship_to_Receiver_Sender">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Other_Relationship_to_Sender">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="45"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="RFC">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="CURP">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="18"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Address_verification_document_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="City_of_Birth">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Personal_Identification_Number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Tax_payers_registration_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="12"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="I_act_on_My_Behalf">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Classifier_of_the_Purpose_of_MT_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="User_Equipment_ID_Type">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="User_Equipment_ID_Data">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="48"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="EAS_Consumer_ID_Key">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="21"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Consumer_ID_Key">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="White_List_Key">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="address_verification_document_issue_date">
+    <xsd:annotation>
+      <xsd:documentation>Address Verification Document Issue Date</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="address_verification_document">
+    <xsd:annotation>
+      <xsd:documentation>Address Verification Document</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="reason_for_alternative_id">
+    <xsd:annotation>
+      <xsd:documentation>Reason For Alternative ID</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="International_Bank_Account_Number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="35"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Routing_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="12"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Residence_Permit_Type">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Residence_Permit_Series_And_Number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="35"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Residence_Permit_Issue_Date">
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Residence_Permit_Expiration_Date">
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Migration_Card_Number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="35"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Migration_Card_Issue_Date">
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Migration_Card_Expiration_Date">
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Funds_Sender_Code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Beneficiary_Code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Beneficiary_Profession">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="45"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Beneficiary_Nationality">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="44"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="other_Occupation">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="STD_Phone_Number_Code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="7"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Mobile_Phone_Number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Marital_Status">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Country_Code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="4"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="WU_COM_Electronic_Validation">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="50"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Date_of_Birth">
+    <xsd:annotation>
+      <xsd:documentation>Date of Birtht</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Place_of_Birth">
+    <xsd:annotation>
+      <xsd:documentation>Place of Birth</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="organization">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="25"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="flag_pay">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="80"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="relationship">
+    <xsd:annotation>
+      <xsd:documentation>Relationship</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Place_of_Organization">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Remarks">
+    <xsd:annotation>
+      <xsd:documentation>Remarks</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="46"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ID_Expiration_Date">
+    <xsd:restriction base="xrsi:date">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="10"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_country_of_issue">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="id_number">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Ccity">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="24"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="CStreet">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="25"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Cpostal_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="9"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="state_name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="24"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="state_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="district">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="24"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="sms_flag">
+    <xsd:annotation>
+      <xsd:documentation>SMS Flag</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="fx">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="17"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="popup_buffer">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="500"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="notification_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="BIS001"/>
+      <xsd:enumeration value="BIS002"/>
+      <xsd:enumeration value="BIS003"/>
+      <xsd:enumeration value="BIS004"/>
+      <xsd:enumeration value="BIS005"/>
+      <xsd:enumeration value="BIS006"/>
+      <xsd:enumeration value="BIS007"/>
+      <xsd:enumeration value="BIS008"/>
+      <xsd:enumeration value="BIS009"/>
+      <xsd:enumeration value="BIS010"/>
+       <!-- START - Added New Enumerations - SIVAJI G -->
+	  <xsd:enumeration value="BIS011"/>
+	  <xsd:enumeration value="BIS012"/>
+	  <!-- END -->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="message_code">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="380"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+    <xsd:simpleType name="message_text">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="380"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ack_message">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="380"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="timestamp">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>  
+  <xsd:simpleType name="queue_name">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="8"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="send_device_id">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pay_device_id">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="multicsc_indicator">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>  
+  <xsd:simpleType name="access_token">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>  
+  <xsd:simpleType name="created">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0"/>
+      <xsd:maxLength value="30"/>
+    </xsd:restriction>
+  </xsd:simpleType>    
+  <xsd:element name="ip_address">
+    <xsd:annotation>
+      <xsd:appinfo source="WMQI_APPINFO">
+        <MRMessage messageDefinition="/0/ip_address;XSDElementDeclaration$MRObject" schemaObject="/0/ip_address;XSDElementDeclaration">
+          <xmlMsgRep messageSetDefaultRep="XML1" outputPolicyForXsiTypeAttribute="Never"/>
+        </MRMessage>
+      </xsd:appinfo>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xrsi:ip_address"/>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

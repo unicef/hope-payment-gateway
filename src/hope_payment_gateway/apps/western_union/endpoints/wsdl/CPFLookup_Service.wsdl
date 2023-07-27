@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/CPFLookup" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="CPFLookup_Service" targetNamespace="http://www.westernunion.com/CPFLookup">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/CPFLookup" targetNamespace="http://www.westernunion.com/CPFLookup" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSICPFLookupRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSICPFLookupReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CPFLookup_in">
+    <wsdl:part element="xrsi:cpf-lookup-request" name="cpf-lookup-request"/>
+  </wsdl:message>
+  <wsdl:message name="CPFLookup_out">
+    <wsdl:part element="xrsi:cpf-lookup-reply" name="cpf-lookup-reply"/>
+  </wsdl:message>
+  <wsdl:message name="CPFLookup_fault">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="CPFLookupPortType">
+    <wsdl:operation name="CPFLookup">
+      <wsdl:input message="tns:CPFLookup_in" name="CPFLookup_Input"/>
+      <wsdl:output message="tns:CPFLookup_out" name="CPFLookup_Output"/>
+      <wsdl:fault message="tns:CPFLookup_fault" name="CPFLookup_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CPFLookup_SOAP_HTTP_Binding" type="tns:CPFLookupPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="CPFLookup">
+      <soap:operation/>
+      <wsdl:input name="CPFLookup_Input">
+        <soap:body parts="cpf-lookup-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CPFLookup_Output">
+        <soap:body parts="cpf-lookup-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CPFLookup_Fault">
+        <soap:fault name="CPFLookup_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+   <wsdl:service name="CPFLookup_Service">
+    <wsdl:port binding="tns:CPFLookup_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/CPFLookup_Service"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

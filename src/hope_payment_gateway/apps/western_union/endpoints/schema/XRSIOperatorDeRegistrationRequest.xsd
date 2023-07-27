@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/operator/schema/xrsi" targetNamespace="http://www.westernunion.com/operator/schema/xrsi">
+<xs:include schemaLocation="XRSIOperatorClasses.xsd"></xs:include>
+	<xs:include schemaLocation="XRSIOperatorBasicTypes.xsd"></xs:include>
+
+	<xs:element name="operator_deregistration_request"
+		type="xrsi:operator_deregistration_request">
+	</xs:element>
+
+	<xs:complexType name="operator_deregistration_request">
+		<xs:sequence>
+			<xs:element name="channel" type="xrsi:channel" maxOccurs="1" minOccurs="0"></xs:element>
+			<xs:element name="foreign_remote_system"
+				type="xrsi:foreign_remote_system" maxOccurs="1" minOccurs="1">
+			</xs:element>
+			<xs:element name="operator" type="xrsi:operator_type" maxOccurs="1"
+				minOccurs="1">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

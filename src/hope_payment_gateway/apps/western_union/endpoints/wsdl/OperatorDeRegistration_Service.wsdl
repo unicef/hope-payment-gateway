@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/OperatorDeRegistration_H2H" xmlns:xrsi="http://www.westernunion.com/operator/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.westernunion.com/schema/xrsi" name="OperatorDeRegistration_Service_H2H" targetNamespace="http://www.westernunion.com/OperatorDeRegistration_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/OperatorDeRegistration_H2H" targetNamespace="http://www.westernunion.com/OperatorDeRegistration_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/operator/schema/xrsi" schemaLocation="../schema/XRSIOperatorDeRegistrationRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/operator/schema/xrsi" schemaLocation="../schema/XRSIOperatorDeRegistrationReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="OperatorDeRegistration_in">
+    <wsdl:part element="xrsi:operator_deregistration_request" name="operator_deregistration_request"/>
+  </wsdl:message>
+  <wsdl:message name="OperatorDeRegistration_out">
+    <wsdl:part element="xrsi:operator_deregistration_reply" name="operator_deregistration_reply"/>
+  </wsdl:message>
+  <wsdl:message name="OperatorDeRegistration_fault">
+    <wsdl:part element="xsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="OperatorDeRegistrationPortType">
+    <wsdl:operation name="OperatorDeRegistration">
+      <wsdl:input message="tns:OperatorDeRegistration_in" name="OperatorDeRegistration_Input"/>
+      <wsdl:output message="tns:OperatorDeRegistration_out" name="OperatorDeRegistration_Output"/>
+      <wsdl:fault message="tns:OperatorDeRegistration_fault" name="OperatorDeRegistration_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="OperatorDeRegistration_H2H_SOAP_HTTP_Binding" type="tns:OperatorDeRegistrationPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="OperatorDeRegistration">
+      <soap:operation soapAction="OperatorDeRegistration_Action"/>
+      <wsdl:input name="OperatorDeRegistration_Input">
+        <soap:body parts="operator_deregistration_request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="OperatorDeRegistration_Output">
+        <soap:body parts="operator_deregistration_reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="OperatorDeRegistration_Fault">
+        <soap:fault name="OperatorDeRegistration_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="OperatorDeRegistration_Service_H2H">
+    <wsdl:port binding="tns:OperatorDeRegistration_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/OperatorDeRegistration_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

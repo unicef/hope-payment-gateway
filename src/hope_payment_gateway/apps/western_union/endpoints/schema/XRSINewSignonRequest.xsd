@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="signon-request">
+		<xs:complexContent>
+			<xs:extension base="xrsi:request_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
+					<xs:element minOccurs="0" name="application" type="xrsi:application"/>
+					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element minOccurs="0" name="action" type="xrsi:action"/>
+					<xs:element minOccurs="0" name="databases" type="xrsi:databases"/>
+					<xs:element minOccurs="0" name="node_id" type="xrsi:node_id"/>
+					<!--<xs:element name="credit_card_entry" type="xrsi:credit_card_entry" minOccurs="0"/>
+					<xs:element name="error_message_file_log_time" type="xrsi:error_message_file_log_time" minOccurs="0"/>
+					<xs:element name="mocn" type="xrsi:mocn" minOccurs="0"/>
+					<xs:element name="dedicated_term" type="xrsi:dedicated_term" minOccurs="0"/>
+					<xs:element name="watchdog_timer" type="xrsi:watchdog_timer" minOccurs="0"/>
+					<xs:element name="ctb_originated" type="xrsi:ctb_originated" minOccurs="0"/>-->
+					<!--	<xs:element name="account_mom_eid_number" type="xrsi:account_mom_eid_number" minOccurs="0"/>
+					<xs:element name="user_name" type="xrsi:user_name" minOccurs="0"/>-->
+					<!--<xs:element name="disconnect_type" type="xrsi:disconnect_type" minOccurs="0"/>
+					<xs:element name="network_signon_data" type="xrsi:network_signon_data" minOccurs="0"/>-->
+					<!--	<xs:element name="operator_screen_color_code" type="xrsi:operator_screen_color_code" minOccurs="0"/>
+					<xs:element name="node_id" type="xrsi:node_id" minOccurs="0"/>-->
+					<!--<xs:element name="et_install_complete" type="xrsi:et_install_complete" minOccurs="0"/>-->
+					<!--<xs:element name="carrier_version_number" type="xrsi:carrier_version_number" minOccurs="0"/>-->
+					<!--<xs:element name="cash_drawer_country_code" type="xrsi:cash_drawer_country_code" minOccurs="0"/>-->
+					<!--<xs:element name="agent_phone_extension_number" type="xrsi:agent_phone_extension_number" minOccurs="0"/>-->
+					<!--<xs:element name="soft_phone" type="xrsi:soft_phone" minOccurs="0"/>-->
+					<!-- EFP Fields -->
+					<!--	<xs:element name="reference_number" type="xrsi:reference_number" minOccurs="0"/>
+					<xs:element name="foreign_system_identifier" type="xrsi:foreign_system_identifier" minOccurs="0"/>
+					<xs:element name="action" type="xrsi:action" minOccurs="0"/>
+					<xs:element name="transaction_type" type="xrsi:transaction_type" minOccurs="0"/>
+					<xs:element name="wu_operator_password" type="xrsi:wu_operator_password" minOccurs="0"/>
+					<xs:element name="tph_version_number" type="xrsi:tph_version_number" minOccurs="0"/>
+					<xs:element name="wu_terminal_id" type="xrsi:wu_terminal_id" minOccurs="0"/>
+					<xs:element name="wu_operator_id" type="xrsi:wu_operator_id" minOccurs="0"/>-->
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="signon-request" type="xrsi:signon-request">
+  </xs:element>
+</xs:schema>

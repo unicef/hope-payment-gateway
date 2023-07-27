@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<xs:complexType name="wu-card-enrollment-request">
+		<xs:complexContent>
+			<xs:extension base="xrsi:request_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
+					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
+					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
+					<xs:element name="receiver" type="xrsi:receiver" minOccurs="0"/>
+					<xs:element name="emea_ii" type="xrsi:emea_ii" minOccurs="0"/>
+					<xs:element name="mocn" type="xrsi:mocn" minOccurs="0"/>
+						<!--<xs:element name="promotions" type="xrsi:promotions" minOccurs="0"/>
+					<xs:element name="financials" type="xrsi:financials" minOccurs="0"/>
+					<xs:element name="payment_details" type="xrsi:payment_details" minOccurs="0"/>
+					<xs:element name="delivery_services" type="xrsi:delivery_services" minOccurs="0"/>-->
+					<!--<xs:element name="bank_details" type="xrsi:bank_details" minOccurs="0"/>
+					<xs:element name="billing_details" type="xrsi:billing_details" minOccurs="0"/>-->
+					<!-- The following elements belong to "transaction_details" -->
+					<!--<xs:element name="link_share" type="xrsi:link_share"/>
+					<xs:element name="ccscan_transaction_id" type="xrsi:ccscan_transaction_id" minOccurs="0"/>
+					<xs:element name="encompass_status" type="xrsi:encompass_status" minOccurs="0"/>
+					<xs:element name="encompass_reason_code" type="xrsi:encompass_reason_code" minOccurs="0"/>
+					<xs:element name="acs_verification_id" type="xrsi:acs_verification_id" minOccurs="0"/>
+					<xs:element name="sms_notification" type="xrsi:sms_notification" minOccurs="0"/>-->
+					<xs:element name="payment_details" type="xrsi:payment_details" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="wu-card-enrollment-request" type="xrsi:wu-card-enrollment-request"/>
+</xs:schema>

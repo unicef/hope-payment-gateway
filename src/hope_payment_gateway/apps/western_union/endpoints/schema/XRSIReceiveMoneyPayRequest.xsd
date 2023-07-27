@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="receive-money-pay-request">
+		<xs:complexContent>
+			<xs:extension base="xrsi:store_request_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
+					<xs:element name="receiver" type="xrsi:receiver" minOccurs="0"/>
+					<xs:element name="payment_details" type="xrsi:payment_details" minOccurs="0"/>
+					<xs:element name="financials" type="xrsi:financials" minOccurs="0"/>
+					<xs:element name="delivery_services" type="xrsi:delivery_services" minOccurs="0"/>
+					<!--<xs:element name="compliance_details" type="xrsi:compliance_details"/>-->
+					<xs:element name="money_transfer_key" type="xrsi:money_transfer_key" minOccurs="0"/>
+					<!--<xs:element name="template_id" type="xrsi:id" minOccurs="0"/>-->
+					<xs:element name="address_validation" type="xrsi:address_validation" minOccurs="0"/>
+					<xs:element name="new_mtcn" type="xrsi:mtcn" minOccurs="0"/>
+					<xs:element name="mtcn" type="xrsi:money_transfer_key" minOccurs="0"/>
+					<xs:element minOccurs="0" name="pay_status_description" type="xrsi:pay_status_description"/>
+					<xs:element name="pay_or_do_not_pay_indicator" type="xrsi:pay_or_do_not_pay_indicator"/>
+					<xs:element name="universal_buffer" type="xrsi:compliance_data_buffer" minOccurs="0"/>
+					<xs:element name="comments" type="xrsi:pay_comments" minOccurs="0"/>
+					<xs:element name="comment_flag" type="xrsi:comment_record_flag" minOccurs="0"/>
+					<xs:element name="queue_name" type="xrsi:queue_name" minOccurs="0"/>
+					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
+					<xs:element name="Partner_data" type="xrsi:partner_data" minOccurs="0"/>
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>													
+					<xs:element name="message" type="xrsi:message" minOccurs="0"/>
+					<xs:element name="paper_check_payment" type="xrsi:paper_check_payment" minOccurs="0"/>
+					<xs:element name="address_verification_document" type="xrsi:address_verification_document" minOccurs="0"/>
+					<xs:element name="second_id" type="xrsi:id_details" minOccurs="0"/>
+					<!-- <xs:element name="agent_defined_data" type="xrsi:agent_defined_data" minOccurs="0"/>-->
+					<xs:element name="arizona_operator" type="xrsi:general_name" minOccurs="0"/>					
+					<!-- <xs:element name="test_question_response" type="xrsi:test_question_response" minOccurs="0"/>-->
+				
+					<xs:element name="additional_pay_info_buffer" type="xrsi:additional_pay_info_buffer" minOccurs="0"/>
+					<xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>
+					<xs:element minOccurs="0" name="partner_security_token" type="xrsi:partner_security_token"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="currency_change_flag" type="xrsi:currency_change_flag"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="multicurrency_reason_code" type="xrsi:multicurrency_reason_code"/>
+				    <xs:element minOccurs="0" name="GDPR_enabled" type="xrsi:GDPR_enabled"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="receive-money-pay-request" type="xrsi:receive-money-pay-request"/>
+</xs:schema>

@@ -1,0 +1,2 @@
+class InvalidHousehold(BaseException):
+    pass

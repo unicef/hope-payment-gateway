@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+    <xs:include schemaLocation="XRSIClasses.xsd"/>
+    <xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+    <xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision: 1.1 $
+			$Date: 2011/05/05 12:38:54 $
+		</xs:documentation>
+	</xs:annotation>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="signon-reply">
+		
+				<xs:sequence>
+ 				    <xs:element minOccurs="0" name="AgentInfo" type="xrsi:AgentInfo"/>
+					<xs:element maxOccurs="10" name="CarrierInfo" type="xrsi:CarrierInfo"/>
+					<xs:element minOccurs="0" name="ReceiverTypes" type="xrsi:ReceiverTypes"/>
+					<xs:element minOccurs="0" name="sgor_tcode" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="sgor_acode" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="sgor_acct" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="pc_flag" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="trace_flag" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="latest_dll_version_flag" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="bingo_overide" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="clr_code" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="SecurityInfo" type="xrsi:SecurityInfo"/>
+					<xs:element maxOccurs="1" minOccurs="0" name="DLLVersions" type="xrsi:DLLVersions"/>
+					<xs:element minOccurs="0" name="AgentMiscInfo" type="xrsi:AgentMiscInfo"/>
+					<xs:element minOccurs="0" name="termid" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="NetidRecord" type="xrsi:NetidRecord"/>
+					<xs:element minOccurs="0" name="counterid" type="xrsi:string"/>
+	                <xs:element minOccurs="0" name="isAbmtEnabled" type="xrsi:string"/>
+					<xs:element minOccurs="0" name="Status" type="xrsi:Status"/>
+				</xs:sequence>
+			
+	</xs:complexType>
+	<xs:element name="signon-reply" type="xrsi:signon-reply">
+  </xs:element>
+</xs:schema>

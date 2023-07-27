@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/ReceiveMoneySelect_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ReceiveMoneySelect_Service_H2H" targetNamespace="http://www.westernunion.com/ReceiveMoneySelect_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/ReceiveMoneySelect_H2H" targetNamespace="http://www.westernunion.com/ReceiveMoneySelect_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiveMoneySelectRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiveMoneySelectReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ReceiveMoneySelect_in">
+    <wsdl:part element="xrsi:receive-money-select-request" name="receive-money-select-request"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiveMoneySelect_out">
+    <wsdl:part element="xrsi:receive-money-select-reply" name="receive-money-select-reply"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiveMoneySelect_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="ReceiveMoneySelectPortType">
+    <wsdl:operation name="ReceiveMoneySelect">
+      <wsdl:input message="tns:ReceiveMoneySelect_in" name="ReceiveMoneySelect_Input"/>
+      <wsdl:output message="tns:ReceiveMoneySelect_out" name="ReceiveMoneySelect_Output"/>
+      <wsdl:fault message="tns:ReceiveMoneySelect_fault1" name="ReceiveMoneySelect_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ReceiveMoneySelect_H2H_SOAP_HTTP_Binding" type="tns:ReceiveMoneySelectPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="ReceiveMoneySelect">
+      <soap:operation soapAction="ReceiveMoneySelect_Action"/>
+      <wsdl:input name="ReceiveMoneySelect_Input">
+        <soap:body parts="receive-money-select-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ReceiveMoneySelect_Output">
+        <soap:body parts="receive-money-select-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ReceiveMoneySelect_Fault">
+        <soap:fault name="ReceiveMoneySelect_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ReceiveMoneySelect_Service_H2H">
+    <wsdl:port binding="tns:ReceiveMoneySelect_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/ReceiveMoneySelect_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/StagePay_Service_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="StagePay_Service_H2H" targetNamespace="http://www.westernunion.com/StagePay_Service_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/StagePay_H2H" targetNamespace="http://www.westernunion.com/StagePay_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIStagePayReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIStagePayRequest.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="StagePay_in">
+    <wsdl:part element="xrsi:stage-pay-request" name="stage-pay-request"/>
+  </wsdl:message>
+  <wsdl:message name="StagePay_out">
+    <wsdl:part element="xrsi:stage-pay-reply" name="stage-pay-reply"/>
+  </wsdl:message>
+  <wsdl:message name="StagePay_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="StagePayPortType">
+    <wsdl:operation name="StagePay">
+      <wsdl:input message="tns:StagePay_in" name="StagePay_Input"/>
+      <wsdl:output message="tns:StagePay_out" name="StagePay_Output"/>
+      <wsdl:fault message="tns:StagePay_fault1" name="StagePay_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="StagePay_H2H_SOAP_HTTP_Binding" type="tns:StagePayPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="StagePay">
+      <soap:operation soapAction="StagePay_Action"/>
+      <wsdl:input name="StagePay_Input">
+        <soap:body parts="stage-pay-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="StagePay_Output">
+        <soap:body parts="stage-pay-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="StagePay_Fault">
+        <soap:fault name="StagePay_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="StagePay_Service_H2H">
+    <wsdl:port binding="tns:StagePay_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/StagePay_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/QuickPayStore_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="QuickPayStore_Service_H2H" targetNamespace="http://www.westernunion.com/QuickPayStore_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/QuickPayStore" targetNamespace="http://www.westernunion.com/QuickPayStore" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIQuickPayStoreRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIQuickPayStoreReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="quickPayStore_in">
+    <wsdl:part element="xrsi:quick-pay-store-request" name="quick-pay-store-request"/>
+  </wsdl:message>
+  <wsdl:message name="quickPayStore_out">
+    <wsdl:part element="xrsi:quick-pay-store-reply" name="quick-pay-store-reply"/>
+  </wsdl:message>
+  <wsdl:message name="quickPayStore_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="QuickPayStorePortType">
+    <wsdl:operation name="quickPayStore">
+      <wsdl:input message="tns:quickPayStore_in" name="quickPayStore_Input"/>
+      <wsdl:output message="tns:quickPayStore_out" name="quickPayStore_Output"/>
+      <wsdl:fault message="tns:quickPayStore_fault1" name="quickPayStore_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="QuickPayStore_H2H_SOAP_HTTP_Binding" type="tns:QuickPayStorePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="quickPayStore">
+      <soap:operation soapAction="QuickPayStoreAction"/>
+      <wsdl:input name="quickPayStore_Input">
+        <soap:body parts="quick-pay-store-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="quickPayStore_Output">
+        <soap:body parts="quick-pay-store-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="quickPayStore_Fault">
+        <soap:fault name="quickPayStore_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="QuickPayStore_Service_H2H">
+    <wsdl:port binding="tns:QuickPayStore_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/QuickPayStore_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

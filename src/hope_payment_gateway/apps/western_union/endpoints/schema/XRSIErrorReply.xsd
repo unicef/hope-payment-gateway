@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>	
+	<xs:complexType name="error-reply">
+		<xs:sequence>
+			<xs:element name="terminal" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="id" type="xs:string"/>				
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="error">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="1000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ExternalReferenceNumber" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PartnerID" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+                        <xs:minLength value="0"/>
+                        <xs:maxLength value="32"/>
+                    </xs:restriction>
+				</xs:simpleType>
+			</xs:element>			
+			<xs:element name="galactic_id" minOccurs="0">
+				<xs:simpleType>					
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="19"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>			
+			<xs:element name="account_nbr" minOccurs="0">
+				<xs:simpleType>					
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="11"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="mywu_number" minOccurs="0">
+				<xs:simpleType>					
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="11"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="compliance_details" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="id_doc_control_number" type="xs:string"/>
+						<xs:element minOccurs="0" name="second_id_doc_control_number" type="xs:string"/>
+						<xs:element minOccurs="0" name="prmt_proof_of_addr_doc_control_number" type="xs:string"/>
+						<xs:element minOccurs="0" name="temp_proof_of_addr_doc_control_number" type="xs:string"/>
+						<xs:element minOccurs="0" name="emp_status_doc_control_number" type="xs:string"/>
+						<xs:element minOccurs="0" name="purpose_of_txn_doc_control_number" type="xs:string"/>
+						<xs:element minOccurs="0" name="source_of_fund_doc_control_number" type="xs:string"/>
+						<xs:element minOccurs="0" name="relationship_to_sndr_rcvr_doc_control_number" type="xs:string"/>						
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="mtcn" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+                        <xs:minLength value="0"/>
+                        <xs:maxLength value="10"/>
+                    </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element minOccurs="0" name="mtcn_digest" type="xs:string"/>
+			<xs:element name="document_digest" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element minOccurs="0" name="profile_digest" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="error-reply" type="xrsi:error-reply"/>
+</xs:schema>
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/AddressLookup" xmlns:xrsi="http://www.westernunion.com/kyc/schema/xrsi" xmlns:xsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="AddressLookup_Service" targetNamespace="http://www.westernunion.com/AddressLookup">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/AddressLookup" targetNamespace="http://www.westernunion.com/AddressLookup" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi" schemaLocation="../schema/XRSIAddressLookupRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi" schemaLocation="../schema/XRSIAddressLookupReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="AddressLookup_in">
+    <wsdl:part element="xrsi:address-lookup-request" name="address-lookup-request"/>
+  </wsdl:message>
+  <wsdl:message name="AddressLookup_out">
+    <wsdl:part element="xrsi:address-lookup-reply" name="address-lookup-reply"/>
+  </wsdl:message>
+  <wsdl:message name="AddressLookup_fault1">
+    <wsdl:part element="xsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="AddressLookupPortType">
+    <wsdl:operation name="AddressLookup">
+      <wsdl:input message="tns:AddressLookup_in" name="AddressLookup_Input"/>
+      <wsdl:output message="tns:AddressLookup_out" name="AddressLookup_Output"/>
+      <wsdl:fault message="tns:AddressLookup_fault1" name="AddressLookup_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AddressLookup_SOAP_HTTP_Binding" type="tns:AddressLookupPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="AddressLookup">
+      <soap:operation/>
+      <wsdl:input name="AddressLookup_Input">
+        <soap:body parts="address-lookup-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="AddressLookup_Output">
+        <soap:body parts="address-lookup-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AddressLookup_Fault">
+        <soap:fault name="AddressLookup_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AddressLookup_Service">
+    <wsdl:port binding="tns:AddressLookup_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/AddressLookup_Service"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

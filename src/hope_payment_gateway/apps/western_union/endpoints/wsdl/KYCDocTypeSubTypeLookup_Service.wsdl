@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/DocumentTypeSubTypeLookup" xmlns:xrsi="http://www.westernunion.com/kyc/schema/xrsi" xmlns:xsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="DocumentTypeSubTypeLookup_Service" targetNamespace="http://www.westernunion.com/DocumentTypeSubTypeLookup">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/DocumentTypeSubTypeLookup" targetNamespace="http://www.westernunion.com/DocumentTypeSubTypeLookup" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi" schemaLocation="../schema/XRSIDocTypeSubTypeLookupRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi" schemaLocation="../schema/XRSIDocTypeSubTypeLookupReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="DocumentTypeSubTypeLookup_in">
+    <wsdl:part element="xrsi:document-type-subtype-lookup-request" name="document-type-subtype-lookup-request"/>
+  </wsdl:message>
+  <wsdl:message name="DocumentTypeSubTypeLookup_out">
+    <wsdl:part element="xrsi:document-type-subtype-lookup-reply" name="document-type-subtype-lookup-reply"/>
+  </wsdl:message>
+  <wsdl:message name="DocumentTypeSubTypeLookup_fault1">
+    <wsdl:part element="xsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="DocumentTypeSubTypeLookupPortType">
+    <wsdl:operation name="DocumentTypeSubTypeLookup">
+      <wsdl:input message="tns:DocumentTypeSubTypeLookup_in" name="DocumentTypeSubTypeLookup_Input"/>
+      <wsdl:output message="tns:DocumentTypeSubTypeLookup_out" name="DocumentTypeSubTypeLookup_Output"/>
+      <wsdl:fault message="tns:DocumentTypeSubTypeLookup_fault1" name="DocumentTypeSubTypeLookup_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DocumentTypeSubTypeLookup_SOAP_HTTP_Binding" type="tns:DocumentTypeSubTypeLookupPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="DocumentTypeSubTypeLookup">
+      <soap:operation/>
+      <wsdl:input name="DocumentTypeSubTypeLookup_Input">
+        <soap:body parts="document-type-subtype-lookup-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DocumentTypeSubTypeLookup_Output">
+        <soap:body parts="document-type-subtype-lookup-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="DocumentTypeSubTypeLookup_Fault">
+        <soap:fault name="DocumentTypeSubTypeLookup_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DocumentTypeSubTypeLookup_Service">
+    <wsdl:port binding="tns:DocumentTypeSubTypeLookup_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/DocumentTypeSubTypeLookup_Service"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

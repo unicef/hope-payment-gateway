@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/operator/schema/xrsi" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" targetNamespace="http://www.westernunion.com/operator/schema/xrsi" jxb:version="1.0">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIOperatorBasicTypes.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+	
+	
+	<xs:complexType name="foreign_remote_system">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="identifier" type="xrsi:string"/>
+			<xs:element minOccurs="0" name="reference_no" type="xrsi:reference_no"/>
+			<xs:element minOccurs="0" name="counter_id" type="xrsi:string"/>
+			<xs:element minOccurs="0" name="operator_id" type="xrsi:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="channel">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="type" type="xrsi:channel_type"/>
+			<xs:element minOccurs="0" name="name">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element minOccurs="0" name="version">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="operator_type">
+		<xs:sequence>
+			<xs:element name="partner_oper_id" type="xrsi:partner_oper_id" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="wu_oper_id" type="xrsi:wu_oper_id_type" maxOccurs="1"
+				minOccurs="0">
+				
+			</xs:element>
+			
+			<xs:element name="Primary_agent_account_id" type="xrsi:primary_agent_account_id_type" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			
+			
+			
+			
+			<xs:element name="name" type="xrsi:general_name" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="date_of_birth" type="xrsi:date_of_birth"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="ctry_birth" type="xrsi:ctry_birth"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="roaming_profile"
+				type="xrsi:roaming_profile_type" maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="WUAA_URL" type="xrsi:WUAA_URL" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="LMS_ID" type="xrsi:LMS_ID" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="LMS_password" type="xrsi:LMS_Password"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="training_detail" type="xrsi:training_detail_type"
+				maxOccurs="unbounded" minOccurs="0">
+			</xs:element>
+			<xs:element name="consolidated_training_flag" type="xrsi:consolidated_training_flag"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="general_name">
+		<xs:complexContent>
+			<xs:extension base="xrsi:name_type_base">
+				<xs:sequence>
+					<xs:group minOccurs="0" ref="xrsi:name_group"/>					
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="name_type_base">
+		<xs:attribute name="name_type" type="xrsi:name_type"/>
+	</xs:complexType>
+	
+	<xs:group name="name_group">
+		<xs:choice>
+			<xs:group minOccurs="0" ref="xrsi:individual_name"/>
+			<xs:group minOccurs="0" ref="xrsi:mexican_name"/>
+		</xs:choice>
+	</xs:group>
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+	<xs:group name="individual_name">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="first_name" type="xrsi:first_name"/>
+			<xs:element minOccurs="0" name="middle_name" type="xrsi:middle_name"/>
+			<xs:element minOccurs="0" name="last_name" type="xrsi:last_name"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+	<xs:group name="mexican_name">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="given_name" type="xrsi:first_name"/>
+			<xs:element minOccurs="0" name="paternal_name" type="xrsi:paternal_name"/>
+			<xs:element minOccurs="0" name="maternal_name" type="xrsi:maternal_name"/>
+		</xs:sequence>
+	</xs:group>
+	
+	<xs:complexType name="training_detail_type">
+		<xs:sequence>
+			<xs:element name="training_name" type="xrsi:training_name" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="training_id" type="xrsi:training_id" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="training_flag" type="xrsi:training_flag" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+			<xs:element name="notification_start_date" type="xrsi:notification_start_date"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="expirydate" type="xrsi:expirydate"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="completion_date" type="xrsi:completion_date"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+		
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="roaming_profile_type">
+		<xs:sequence>
+			<xs:element name="account_list" type="xrsi:account_list"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="nw_flag" type="xrsi:nw_flag" maxOccurs="1"
+				minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="account_list">
+    	<xs:sequence>
+			<xs:element name="agent_account" type="xrsi:agent_account"
+				maxOccurs="unbounded" minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="agent_account">
+    	<xs:sequence>
+			<xs:element name="agent_account_id" type="xrsi:agent_account_id"
+				maxOccurs="1" minOccurs="0">
+			</xs:element>
+			<xs:element name="terminal_id" type="xrsi:terminal_id"
+				maxOccurs="unbounded" minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+    </xs:complexType>
+
+	<xs:complexType name="Response">
+		<xs:sequence>
+			<xs:element name="Response_code" type="xrsi:Response_code" maxOccurs="1" minOccurs="0"></xs:element>
+			<xs:element name="Response_message"
+				type="xrsi:Response_Message" maxOccurs="1" minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
+

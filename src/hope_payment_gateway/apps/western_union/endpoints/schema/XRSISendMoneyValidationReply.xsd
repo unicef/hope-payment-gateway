@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="send-money-validation-reply">
+		<xs:complexContent>
+			<xs:extension base="xrsi:reply_transaction_base">
+				<xs:sequence>
+				     <xs:element minOccurs="0" name="sender" type="xrsi:sender"/>
+					<xs:element minOccurs="0" name="receiver" type="xrsi:receiver"/>
+					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
+					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
+					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>	
+					<xs:element minOccurs="0" name="wallet_details" type="xrsi:wallet_details"/>
+					<xs:element minOccurs="0" name="card_details" type="xrsi:card_details"/>				
+					<xs:element minOccurs="0" name="promotions" type="xrsi:promotions"/>
+					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
+					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>
+					<xs:element minOccurs="0" name="stage_mtcn" type="xrsi:mtcn"/>
+					<xs:element minOccurs="0" name="wu_card" type="xrsi:wu_card"/>
+					<xs:element minOccurs="0" name="payer_fx_buffer" type="xrsi:payer_fx_buffer"/>					
+                    <xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />
+                    <xs:element minOccurs="0" name="bank_details" type="xrsi:bank_details"/>
+                    <xs:element minOccurs="0" name="cuba" type="xrsi:cuba"/>
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element minOccurs="0" name="visa_flag" type="xrsi:visa_flag"/>
+					<xs:element minOccurs="0" name="visa_number" type="xrsi:visa_number"/>
+					<xs:element minOccurs="0" name="visa_date" type="xrsi:visa_date"/>
+					<xs:element minOccurs="0" name="current_fx" type="xrsi:current_fx"/>
+					<xs:element minOccurs="0" name="payment_transactions" type="xrsi:payment_transactions"/>
+					<xs:element name="filing_date" type="xrsi:date" minOccurs="0"/>
+					<xs:element name="filing_time" type="xrsi:time" minOccurs="0"/>
+					<xs:element name="Is_convenience_search_flag" type="xrsi:dcc" minOccurs="0"/>
+					<xs:element name="Is_convenience_suppress_Flag" type="xrsi:dcc" minOccurs="0"/>
+					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>
+					<xs:element minOccurs="0" name="mtcn_digest" type="xrsi:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="send-money-validation-reply" type="xrsi:send-money-validation-reply">
+  </xs:element>
+</xs:schema>

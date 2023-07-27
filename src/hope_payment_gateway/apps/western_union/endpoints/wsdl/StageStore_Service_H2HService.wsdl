@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/StageStore_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="StageStore_Service_H2H" targetNamespace="http://www.westernunion.com/StageStore_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/StageStore_H2H" targetNamespace="http://www.westernunion.com/StageStore_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIStageStoreReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIStageStoreRequest.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="StageStore_H2H_in">
+    <wsdl:part element="xrsi:stage-store-request" name="stage-store-request"/>
+  </wsdl:message>
+  <wsdl:message name="StageStore_H2H_out">
+    <wsdl:part element="xrsi:stage-store-reply" name="stage-store-reply"/>
+  </wsdl:message>
+  <wsdl:message name="StageStore_H2H_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="StageStorePortType">
+    <wsdl:operation name="StageStore_H2H">
+      <wsdl:input message="tns:StageStore_H2H_in" name="StageStore_H2H_Input"/>
+      <wsdl:output message="tns:StageStore_H2H_out" name="StageStore_H2H_Output"/>
+      <wsdl:fault message="tns:StageStore_H2H_fault1" name="StageStore_H2H_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="StageStore_H2H_MSetSOAP_HTTP_Binding" type="tns:StageStorePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="StageStore_H2H">
+      <soap:operation/>
+      <wsdl:input name="StageStore_H2H_Input">
+        <soap:body parts="stage-store-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="StageStore_H2H_Output">
+        <soap:body parts="stage-store-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="StageStore_H2H_Fault">
+        <soap:fault name="StageStore_H2H_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="StageStore_Service_H2H">
+    <wsdl:port binding="tns:StageStore_H2H_MSetSOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/StageStore_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

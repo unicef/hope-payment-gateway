@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+  <xsd:annotation>
+    <xsd:documentation>
+			$Revision: 1.1 $
+			$Date: 2014/07/02 19:22:48 $
+	</xsd:documentation>
+  </xsd:annotation>
+  <xsd:include schemaLocation="NISBasicTypes.xsd"/>
+  <xsd:complexType name="collection_base">
+    <xsd:attribute name="more" type="xrsi:yes_no"/>
+    <xsd:attribute name="context" type="xrsi:context"/>
+  </xsd:complexType>
+  <xsd:group name="individual_name">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="first_name" type="xrsi:first_name"/>
+      <xsd:element minOccurs="0" name="middle_name" type="xrsi:middle_name"/>
+      <xsd:element minOccurs="0" name="last_name" type="xrsi:last_name"/>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:complexType name="address">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="addr_line1" type="xrsi:address_line_long"/>
+      <xsd:element minOccurs="0" name="addr_line2" type="xrsi:address_line_long"/>
+      <xsd:element minOccurs="0" name="city" type="xrsi:city"/>
+      <xsd:element minOccurs="0" name="state" type="xrsi:state_province"/>
+      <xsd:element minOccurs="0" name="postal_code" type="xrsi:postal_code"/>
+      <xsd:choice>
+        <xsd:element minOccurs="0" name="country_code" type="xrsi:country_currency_info"/>
+      </xsd:choice>
+      <xsd:element minOccurs="0" name="local_area" type="xrsi:local_area"/>
+      <xsd:element minOccurs="0" name="locale" type="xrsi:local_area"/>
+      <xsd:element minOccurs="0" name="city_code" type="xrsi:city_code"/>
+      <xsd:element minOccurs="0" name="state_zip" type="xrsi:state_zip"/>
+      <xsd:element minOccurs="0" name="address_type" type="xrsi:delivery_type"/>
+      <xsd:element minOccurs="0" name="business_name" type="xrsi:delivery_name"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="preferred_customer">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="permanent_change" type="xrsi:card_update_indicator"/>
+      <xsd:element minOccurs="0" name="account_nbr" type="xrsi:pref_cust_account_number"/>
+      <xsd:element minOccurs="0" name="level_code" type="xrsi:level_code"/>
+      <xsd:element minOccurs="0" name="points_assigned_redeemed" type="xrsi:points_assigned_redeemed"/>
+      <xsd:element minOccurs="0" name="total_points_earned" type="xrsi:wu_card_total_points_earned"/>
+      <xsd:element minOccurs="0" name="current_number_of_receivers" type="xrsi:count"/>
+      <xsd:element minOccurs="0" name="original_card_type" type="xrsi:sender_orig_card_type"/>
+      <xsd:element minOccurs="0" name="status" type="xrsi:pref_cust_status"/>
+      <xsd:element minOccurs="0" name="card_class" type="xrsi:card_class"/>
+      <xsd:element minOccurs="0" name="apply_discount" type="xrsi:yes_no"/>
+      <xsd:element minOccurs="0" name="first_use" type="xrsi:yes_no"/>
+      <xsd:element minOccurs="0" name="rate_modifier" type="xrsi:rate_modifier"/>
+      <xsd:element minOccurs="0" name="discount" type="xrsi:preferred_customer_discount"/>
+      <xsd:element minOccurs="0" name="name_altkey" type="xrsi:preferred_customer_name_altkey"/>
+      <xsd:element minOccurs="0" name="operation" type="xrsi:operation"/>
+      <xsd:element minOccurs="0" name="last_use_date" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="issue_date" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="first_use_date" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="nonpermanent_change_count" type="xrsi:count"/>
+      <xsd:element minOccurs="0" name="max_number_receivers_allowed" type="xrsi:max_number_receivers_allowed"/>
+      <xsd:element minOccurs="0" name="last_modification_time" type="xrsi:time"/>
+      <xsd:element minOccurs="0" name="last_change_source" type="xrsi:last_change_source"/>
+      <xsd:element minOccurs="0" name="interests" type="xrsi:interests"/>
+      <xsd:element minOccurs="0" name="expiration_date" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="card_replaced_count" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="card_changes_count" type="xrsi:count"/>
+      <xsd:element minOccurs="0" name="auto_enroll" type="xrsi:auto_enroll"/>
+      <xsd:element minOccurs="0" name="card_has_expired" type="xrsi:yes_no_flag"/>
+      <xsd:element minOccurs="0" name="update" type="xrsi:update"/>
+      <xsd:element minOccurs="0" name="share_personal_data" type="xrsi:yes_no"/>
+      <xsd:element minOccurs="0" name="receive_mail" type="xrsi:yes_no">
+        <xsd:annotation>
+          <xsd:documentation>mail flag</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="opt_flag" type="xrsi:yes_no"/>
+      <xsd:element minOccurs="0" name="opt_in_out" type="xrsi:opt_in_out"/>
+      <xsd:element minOccurs="0" name="opt_in_out_change_date" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="control_number" type="xrsi:control_number"/>
+      <xsd:element minOccurs="0" name="phone_pin" type="xrsi:phone_pin"/>
+      <xsd:element minOccurs="0" name="pref_cust_search_key" type="xrsi:pref_cust_search_key"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="bank_details">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="name" type="xrsi:bank_name"/>
+      <xsd:element minOccurs="0" name="branch_code" type="xrsi:branch_code"/>
+      <xsd:element minOccurs="0" name="swift_bic" type="xrsi:swift_bic"/>
+      <xsd:element minOccurs="0" name="bank_code" type="xrsi:bank_code"/>
+      <xsd:element minOccurs="0" name="sort_code" type="xrsi:sort_code"/>
+      <xsd:element minOccurs="1" name="account_number" type="xrsi:bank_account_number"/>
+      <xsd:element minOccurs="0" name="routing_number" type="xrsi:bank_routing_number"/>
+      <xsd:element minOccurs="0" name="account_type" type="xrsi:bank_account_type"/>
+      <xsd:element minOccurs="0" name="account_prefix" type="xrsi:account_prefix"/>
+      <xsd:element minOccurs="0" name="account_suffix" type="xrsi:account_suffix"/>
+      <xsd:element minOccurs="0" name="state_country">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:state_province">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="2"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="comments" type="xrsi:comments"/>
+      <xsd:element minOccurs="0" name="phone_number" type="xrsi:phone"/>
+      <xsd:element minOccurs="0" name="rcv_financial_id" type="xrsi:rcv_financial_id"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="international_phone_number">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="country_code" type="xrsi:phone_country_code"/>
+      <xsd:element minOccurs="0" name="national_number" type="xrsi:phone_number"/>
+      <xsd:element minOccurs="0" name="telephone_city_code" type="xrsi:city_code"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="identification_question">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="question" type="xrsi:question_answer"/>
+      <xsd:element minOccurs="0" name="answer" type="xrsi:question_answer"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="country_currency_info">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="cpc_code" type="xrsi:country_unisys_code"/>
+      <xsd:element minOccurs="0" name="iso_code" type="xrsi:iso_code"/>
+      <xsd:element minOccurs="0" name="country_name" type="xrsi:country_name"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="iso_code">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="country_code" type="xrsi:country_iso_code"/>
+      <xsd:element minOccurs="0" name="currency_code" type="xrsi:currency"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="informational_messages">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" name="informational_message" type="xrsi:message"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="connector">
+    <xsd:sequence>
+      <xsd:element name="id" type="xrsi:id"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="system">
+    <xsd:sequence>
+      <xsd:element name="id">
+        <xsd:simpleType>
+          <xsd:annotation>
+            <xsd:documentation/>
+          </xsd:annotation>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="20"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="name">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="20"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="version">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="20"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="ip_address" type="xrsi:ip_address"/>
+      <xsd:element name="connector" type="xrsi:connector"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="preferences">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="language"/>
+      <xsd:element minOccurs="0" name="error_translation"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="channel_partner">
+    <xsd:sequence>
+      <xsd:element name="id">
+        <xsd:simpleType>
+          <xsd:annotation>
+            <xsd:documentation/>
+          </xsd:annotation>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="32"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="system" type="xrsi:system"/>
+      <xsd:element minOccurs="0" name="preferences" type="xrsi:preferences"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="channel_customer">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="name" type="xrsi:channel_general_name"/>
+      <xsd:element minOccurs="1" name="address" type="xrsi:iso_address"/>
+      <xsd:element minOccurs="0" name="preferred_customer" type="xrsi:preferred_customer"/>
+      <xsd:element minOccurs="0" name="type" type="xrsi:sender_type"/>
+      <xsd:element minOccurs="0" name="receiver_index_no" type="xrsi:count"/>
+      <xsd:element minOccurs="0" name="receiver_first_name" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="email" type="xrsi:email"/>
+      <xsd:element minOccurs="0" name="contact_phone" type="xrsi:phone"/>
+      <xsd:element minOccurs="0" name="mobile_phone" type="xrsi:mobile_phone"/>
+      <xsd:element minOccurs="0" name="mobile_details" type="xrsi:mobile_details"/>
+      <xsd:element minOccurs="0" name="cookie" type="xrsi:cookie"/>
+      <xsd:element minOccurs="0" name="pc_source" type="xrsi:source_fdi_csc_pos_etc"/>
+      <xsd:element minOccurs="0" name="gender" type="xrsi:gender"/>
+      <xsd:element minOccurs="0" name="date_of_birth" type="xrsi:date"/>
+      <xsd:element minOccurs="0" name="language_iso_code" type="xrsi:language_iso_code"/>
+      <xsd:element minOccurs="0" name="place_of_birth" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="unv_buffer" type="xrsi:universal_buffer"/>
+      <xsd:element minOccurs="0" name="occupation" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="employer_name" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="queue_allowed" type="xrsi:queue_allowed"/>
+      <xsd:element minOccurs="0" name="notification_preference" type="xrsi:consumer_notification_preference"/>
+      <xsd:element minOccurs="0" name="reason_for_sending" type="xrsi:reason_for_sending"/>
+      <xsd:element minOccurs="0" name="notification_language" type="xrsi:language_iso_code"/>
+      <xsd:element minOccurs="0" name="notification_phone" type="xrsi:international_phone_number"/>
+      <xsd:element minOccurs="0" name="identities" type="xrsi:channel_customer_identities"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="cash_to_mobile" type="xrsi:cash_to_mobile"/>
+      <xsd:element minOccurs="0" name="mothers_maiden_name" type="xrsi:mothers_name"/>
+      <xsd:element minOccurs="0" name="sms_notification_flag" type="xrsi:sms_notification"/>
+      <xsd:element minOccurs="0" name="Override_Mobile_Validation" type="xrsi:sms_notification"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="iso_address">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="addr_line1" type="xrsi:address_line_long"/>
+      <xsd:element minOccurs="0" name="addr_line2" type="xrsi:address_line_long"/>
+      <xsd:element minOccurs="0" name="city" type="xrsi:city"/>
+      <xsd:element minOccurs="0" name="state" type="xrsi:state_province"/>
+      <xsd:element minOccurs="0" name="postal_code" type="xrsi:postal_code"/>
+      <xsd:element minOccurs="1" name="country_iso_code" type="xrsi:country_iso_code"/>
+      <xsd:element minOccurs="0" name="locale" type="xrsi:local_area"/>
+      <xsd:element minOccurs="0" name="address_type" type="xrsi:string"/>
+      <xsd:element minOccurs="0" name="business_name" type="xrsi:delivery_name"/>
+      <xsd:element minOccurs="0" name="street" type="xrsi:TStreet"/>
+      <xsd:element minOccurs="0" name="country_code" type="xrsi:country_currency_info"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="mobile_phone">
+    <xsd:sequence>
+      <xsd:element name="phone_number" type="xrsi:international_phone_number"/>
+      <xsd:element minOccurs="0" name="identity" type="xrsi:mobile_phone_identity"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="name_type">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="C">
+        <xsd:annotation>
+          <xsd:documentation>Comany Name Type</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D">
+        <xsd:annotation>
+          <xsd:documentation>Domestic Name Type</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="M">
+        <xsd:annotation>
+          <xsd:documentation>Mexican Name Type</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="name_type_base">
+    <xsd:attribute name="name_type" type="xrsi:name_type"/>
+  </xsd:complexType>
+  <xsd:complexType name="channel_general_name">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:name_type_base">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="name_prefix" type="xrsi:name_prefix"/>
+          <xsd:group minOccurs="0" ref="xrsi:individual_name"/>
+          <xsd:group minOccurs="0" ref="xrsi:organization_name"/>
+          <xsd:group minOccurs="0" ref="xrsi:mexican_name"/>
+          <xsd:element minOccurs="0" name="name_suffix" type="xrsi:name_suffix"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:group name="organization_name">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="business_name" type="xrsi:business_name"/>
+      <xsd:element minOccurs="0" name="attention" type="xrsi:attention"/>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:group name="mexican_name">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="given_name" type="xrsi:first_name"/>
+      <xsd:element minOccurs="0" name="paternal_name" type="xrsi:paternal_name"/>
+      <xsd:element minOccurs="0" name="maternal_name" type="xrsi:maternal_name"/>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:complexType name="origination">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="principal_amount" type="xrsi:amount">
+        <xsd:annotation>
+          <xsd:documentation>The amount of money being sent by the sender.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="gross_amount" type="xrsi:amount">
+        <xsd:annotation>
+          <xsd:documentation>The amount of money to be collected from the sender.  gross_amount = principal_amount + fees</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="currency_iso_code" type="xrsi:currency_iso_code"/>
+      <xsd:element minOccurs="0" name="country_iso_code" type="xrsi:country_iso_code"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="destination">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="expected_payout_amount" type="xrsi:amount">
+        <xsd:annotation>
+          <xsd:documentation>Expected payout amount that receiver will be paid.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="actual_payout_amount" type="xrsi:amount">
+        <xsd:annotation>
+          <xsd:documentation>Actual payout amount that receiver was paid.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="currency_iso_code" type="xrsi:currency_iso_code"/>
+      <xsd:element minOccurs="0" name="country_iso_code" type="xrsi:country_iso_code"/>
+      <xsd:element minOccurs="0" name="state_code" type="xrsi:state_iso_code"/>
+      <xsd:element minOccurs="0" name="city" type="xrsi:city"/>
+      <xsd:element minOccurs="0" name="expected_payout_method" type="xrsi:payout_method"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="channel_payment_details">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="origination" type="xrsi:origination"/>
+      <xsd:element minOccurs="1" name="destination" type="xrsi:destination"/>
+      <xsd:element minOccurs="0" name="promotion" type="xrsi:channel_promotion"/>
+      <xsd:element minOccurs="0" name="taxes" type="xrsi:channel_taxes"/>
+      <xsd:element minOccurs="0" name="fees" type="xrsi:channel_fees"/>
+      <xsd:element minOccurs="0" name="message_charges" type="xrsi:channel_message_charges"/>
+      <xsd:element minOccurs="0" name="exchange_rate" type="xrsi:float_amount"/>
+      <xsd:element minOccurs="0" name="identification_question" type="xrsi:identification_question"/>
+      <xsd:element minOccurs="0" name="payment_digest" type="xrsi:fee_survey_pricing_digest"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="mobile_details">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="city_code" type="xrsi:city_code"/>
+      <xsd:element minOccurs="0" name="number" type="xrsi:mobile_number"/>
+      <xsd:element minOccurs="0" name="sms_flag" type="xrsi:sms_flag"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="convenience_search">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="type" type="xrsi:convenience_search_type"/>
+      <xsd:element minOccurs="0" name="key" type="xrsi:convenience_search_key"/>
+      <xsd:element minOccurs="0" name="flag" type="xrsi:flag_type"/>
+      <xsd:element minOccurs="0" name="suppress_flag" type="xrsi:flag_type"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="third_party_details">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="name" type="xrsi:general_name"/>
+      <xsd:element minOccurs="0" name="address" type="xrsi:compliance_address"/>
+      <xsd:element minOccurs="0" name="pay_wo_id_indicator" type="xrsi:yes_no"/>
+      <xsd:element minOccurs="0" name="organization" type="xrsi:organization"/>
+      <xsd:element minOccurs="0" name="identification_number" type="xrsi:id"/>
+      <xsd:element minOccurs="0" name="occupation" type="xrsi:occupation"/>
+      <xsd:element minOccurs="0" name="amount" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="fx" type="xrsi:fx"/>
+      <xsd:element minOccurs="0" name="flag_pay" type="xrsi:flag_pay"/>
+      <xsd:element minOccurs="0" name="id_details" type="xrsi:id_details"/>
+      <xsd:element minOccurs="0" name="relationship" type="xrsi:relationship"/>
+      <xsd:element minOccurs="0" name="Place_of_Organization" type="xrsi:Place_of_Organization"/>
+      <xsd:element minOccurs="0" name="Date_of_Birth" type="xrsi:Date_of_Birth"/>
+      <xsd:element minOccurs="0" name="Place_of_Birth" type="xrsi:Place_of_Birth"/>
+      <xsd:element minOccurs="0" name="Country_of_Birth" type="xrsi:Country_of_Birth"/>
+      <xsd:element minOccurs="0" name="Nationality" type="xrsi:nationality"/>
+      <xsd:element minOccurs="0" name="Remarks" type="xrsi:Remarks"/>
+      <xsd:element minOccurs="0" name="ID_Expiration_Date" type="xrsi:ID_Expiration_Date"/>
+      <xsd:element minOccurs="0" name="EAS_Consumer_ID_Key" type="xrsi:EAS_Consumer_ID_Key"/>
+      <xsd:element minOccurs="0" name="Consumer_ID_Key" type="xrsi:Consumer_ID_Key"/>
+      <xsd:element minOccurs="0" name="White_List_Key" type="xrsi:White_List_Key"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType mixed="false" name="id_documents">
+    <xsd:sequence>
+      <xsd:element maxOccurs="2" name="id_document" type="xrsi:id_document"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="id_document">
+    <xsd:sequence>
+      <xsd:element name="type" type="xrsi:id_document_type"/>
+      <xsd:element name="data" type="xrsi:id_document_type_data"/>
+      <xsd:element minOccurs="0" name="issue_date" type="xrsi:id_issue_date"/>
+      <xsd:element minOccurs="0" name="issue_place" type="xrsi:city"/>
+      <xsd:element minOccurs="0" name="issue_country" type="xrsi:country_currency_info"/>
+      <xsd:element minOccurs="0" name="expiration_date" type="xrsi:id_expiration_date"/>
+      <xsd:element minOccurs="0" name="id_expires" type="xrsi:yes_no"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="id_details">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="id_type" type="xrsi:id_type"/>
+      <xsd:element minOccurs="0" name="id_country_of_issue" type="xrsi:id_country_of_issue"/>
+      <xsd:element minOccurs="0" name="id_place_of_issue" type="xrsi:id_country_of_issue"/>
+      <xsd:element minOccurs="0" name="id_number" type="xrsi:id_number"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="compliance_address">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="addr_line1" type="xrsi:address_line_short"/>
+      <xsd:element minOccurs="0" name="addr_line2" type="xrsi:address_line_short"/>
+      <xsd:element minOccurs="0" name="city" type="xrsi:Ccity"/>
+      <xsd:element minOccurs="0" name="state_name" type="xrsi:state_name"/>
+      <xsd:element minOccurs="0" name="state_code" type="xrsi:state_code"/>
+      <xsd:element minOccurs="0" name="postal_code" type="xrsi:Cpostal_code"/>
+      <xsd:element minOccurs="0" name="country" type="xrsi:country_name"/>
+      <xsd:element minOccurs="0" name="locale" type="xrsi:local_area"/>
+      <xsd:element minOccurs="0" name="address_type" type="xrsi:string"/>
+      <xsd:element minOccurs="0" name="business_name" type="xrsi:delivery_name"/>
+      <xsd:element minOccurs="0" name="zip" type="xrsi:state_zip"/>
+      <xsd:element minOccurs="0" name="street" type="xrsi:CStreet"/>
+      <xsd:element minOccurs="0" name="district" type="xrsi:district"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="general_name">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:name_type_base">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="name_raw" type="xrsi:name_raw"/>
+          <xsd:element minOccurs="0" name="name_prefix" type="xrsi:name_prefix"/>
+          <xsd:group minOccurs="0" ref="xrsi:name_group"/>
+          <xsd:element minOccurs="0" name="name_suffix" type="xrsi:name_suffix"/>
+          <xsd:element minOccurs="0" name="secondary_given_name" type="xrsi:first_name"/>
+          <xsd:element minOccurs="0" name="secondary_paternal_name" type="xrsi:paternal_name"/>
+          <xsd:element minOccurs="0" name="secondary_maternal_name" type="xrsi:maternal_name"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="mobile_phone_identity">
+    <xsd:sequence>
+      <xsd:element name="type" type="xrsi:mobile_phone_identity_type"/>
+      <xsd:element name="data" type="xrsi:mobile_phone_identity_data"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="money_transfer_control">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="date" type="xrsi:transaction_date"/>
+      <xsd:element name="mtcn" type="xrsi:mtcn"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <!-- START: Acxsys Fields -->
+  <xsd:complexType name="payout_info">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="payout_agent_id" type="xrsi:payout_agent_id"/>
+	  <xsd:element minOccurs="0" name="payout_city" type="xrsi:payout_city"/>
+	  <xsd:element minOccurs="0" name="payout_state" type="xrsi:payout_state"/>
+	  <xsd:element minOccurs="0" name="payout_country" type="xrsi:payout_country"/>
+	  <xsd:element minOccurs="0" name="payout_postal_code" type="xrsi:payout_postal_code"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <!-- END -->
+  
+  
+  <xsd:complexType name="pickup_status">
+    <xsd:sequence>
+      <xsd:element name="code" type="xrsi:pickup_status_code"/>
+      <xsd:element minOccurs="0" name="message" type="xrsi:message"/>
+      <xsd:element minOccurs="0" name="reference_no" type="xrsi:external_reference_no"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_gwp_payment_details">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:channel_payment_details"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_payment_details">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:gbs_gwp_payment_details"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gwp_gbs_notification_base">
+    <xsd:sequence>
+      <xsd:element name="partner" type="xrsi:channel_partner"/>
+      <xsd:element minOccurs="0" name="external_reference_no" type="xrsi:external_reference_no"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="emea_ii">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="frequency_of_transfers_per_year" type="xrsi:frequency_of_transfers"/>
+      <xsd:element minOccurs="0" name="frequency_of_transfers_using_wu" type="xrsi:frequency_of_transfers"/>
+      <xsd:element minOccurs="0" name="sender_gender" type="xrsi:gender"/>
+      <xsd:element minOccurs="0" name="interests" type="xrsi:interests"/>
+      <xsd:element minOccurs="0" name="preferred_mode_to_receive_info" type="xrsi:preferred_mode_to_receive_info"/>
+      <xsd:element minOccurs="0" name="reason_1_for_transfer" type="xrsi:reason_for_transfer"/>
+      <xsd:element minOccurs="0" name="reason_2_for_transfer" type="xrsi:reason_for_transfer"/>
+      <xsd:element minOccurs="0" name="id_on_file" type="xrsi:id_on_file"/>
+      <xsd:element minOccurs="0" name="mobile_phone_number">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:phone">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="17"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="date_of_birth_mmddyyyy" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="key_serial_number" type="xrsi:string"/>
+      <xsd:element minOccurs="0" name="preferred_language" type="xrsi:preferred_language"/>
+      <xsd:element minOccurs="0" name="card_status" type="xrsi:card_status"/>
+      <xsd:element minOccurs="0" name="enrollment_source" type="xrsi:enrollment_source"/>
+      <xsd:element minOccurs="0" name="marketing_code" type="xrsi:marketing_code"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:group name="name_group">
+    <xsd:choice>
+      <xsd:group minOccurs="0" ref="xrsi:individual_name"/>
+      <xsd:group minOccurs="0" ref="xrsi:organization_name"/>
+      <xsd:group minOccurs="0" ref="xrsi:mexican_name"/>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:complexType name="wu_card">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="wu_card_number" type="xrsi:wu_card_number"/>
+      <xsd:element minOccurs="0" name="promo_code" type="xrsi:promo_code"/>
+      <xsd:element minOccurs="0" name="add_date">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:date">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="10"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="add_time">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:time">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="change_date">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:date">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="10"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="change_time">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:time">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="points" type="xrsi:count"/>
+      <xsd:element minOccurs="0" name="reward_type" type="xrsi:string"/>
+      <xsd:element minOccurs="0" name="minimum_redemption" type="xrsi:count"/>
+      <xsd:element minOccurs="0" name="maximum_redemption" type="xrsi:count"/>
+      <xsd:element minOccurs="0" name="increment_amount_from_min" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="reward_value_pin_disc" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="transaction_date">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:date">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="10"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
+      <xsd:element minOccurs="0" name="transaction_type" type="xrsi:transaction_type"/>
+      <xsd:element minOccurs="0" name="originating_country" type="xrsi:country_currency_info"/>
+      <xsd:element minOccurs="0" name="destination_country" type="xrsi:country_currency_info"/>
+      <xsd:element minOccurs="0" name="client_name" type="xrsi:channel_general_name"/>
+      <xsd:element minOccurs="0" name="amount_in_local_send_currency" type="xrsi:local_amount"/>
+      <xsd:element minOccurs="0" name="qualifying_for_reward" type="xrsi:qualifying_for_reward"/>
+      <xsd:element minOccurs="0" name="amount_granted" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="unique_record_id">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="6"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="points_available_current_year" type="xsd:integer"/>
+      <xsd:element minOccurs="0" name="total_points_earned" type="xsd:integer"/>
+      <xsd:element minOccurs="0" name="total_points_redeemed" type="xsd:integer"/>
+      <xsd:element minOccurs="0" name="redemption_date" type="xrsi:date"/>
+      <xsd:element minOccurs="0" name="redemption_time" type="xrsi:time"/>
+      <xsd:element minOccurs="0" name="redemption_status" type="xrsi:redemption_status"/>
+      <xsd:element minOccurs="0" name="phone_pin_or_promo_code" type="xrsi:pin"/>
+      <xsd:element minOccurs="0" name="csr_id" type="xrsi:csr_id"/>
+      <xsd:element minOccurs="0" name="discount_date" type="xrsi:date"/>
+      <xsd:element minOccurs="0" name="comments" type="xrsi:comments"/>
+      <xsd:element minOccurs="0" name="level_code" type="xrsi:level_code"/>
+      <xsd:element minOccurs="0" name="text_description">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:comments">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="30"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="redemption_amount">
+        <xsd:simpleType>
+          <xsd:restriction base="xrsi:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="16"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="reward_value" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="reward_currency">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="10"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="delivery_service_code">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="3"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="special_pricing" type="xrsi:special_pricing"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="special_pricing">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="code" type="xrsi:special_pricing_code"/>
+      <xsd:element minOccurs="0" name="description" type="xrsi:special_pricing_description"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_payment_transactions">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:collection_base">
+        <xsd:sequence>
+          <xsd:element maxOccurs="45" minOccurs="0" name="transaction" type="xrsi:gbs_payment_transaction"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_payment_transaction">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="sender" type="xrsi:channel_customer"/>
+      <xsd:element minOccurs="1" name="receiver" type="xrsi:channel_customer"/>
+      <xsd:element minOccurs="1" name="payment_details" type="xrsi:gbs_payment_details"/>
+      <xsd:element minOccurs="1" name="transaction_id" type="xrsi:gbs_transaction_id"/>
+      <xsd:element minOccurs="1" name="money_transfer_control" type="xrsi:money_transfer_control"/>
+      <xsd:element minOccurs="1" name="status" type="xrsi:paid_status"/>
+      <xsd:element minOccurs="1" name="reference_key" type="xrsi:reference_key"/>
+      <xsd:element minOccurs="0" name="message" type="xrsi:message_details"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_bank_details">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:bank_details">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="pin_verification_time" type="xrsi:pin_verification_time"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_customer">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:channel_customer">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="bank_account" type="xrsi:gbs_bank_details"/>
+          <xsd:group minOccurs="0" ref="xrsi:sender_details"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_request_notification_base">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:gwp_gbs_notification_base"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_reply_notification_base">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:gwp_gbs_reply_notification_base"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gwp_gbs_transaction_base">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="partner" type="xrsi:channel_partner"/>
+      <xsd:element minOccurs="0" name="device" type="xrsi:gwp_gbs_device"/>
+      <xsd:element minOccurs="0" name="external_reference_no" type="xrsi:external_reference_no"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gwp_gbs_reply_notification_base">
+    <xsd:sequence>
+      <xsd:element name="partner" type="xrsi:channel_partner"/>
+      <xsd:element minOccurs="0" name="external_reference_no" type="xrsi:external_reference_no"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_transaction_base">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:gwp_gbs_transaction_base"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_request_transaction_base">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:gbs_transaction_base">
+        <xsd:sequence/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_reply_transaction_base">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:gbs_transaction_base">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="informational_messages" type="xrsi:informational_messages"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="gwp_gbs_device">
+    <xsd:sequence>
+      <xsd:element name="id">
+        <xsd:simpleType>
+          <xsd:annotation>
+            <xsd:documentation/>
+          </xsd:annotation>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="32"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="type" type="xrsi:gwp_gbs_device_type"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="wu_product">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="name" type="xrsi:wu_product_name"/>
+      <xsd:element minOccurs="1" name="code" type="xrsi:wu_product_code"/>
+      <xsd:element minOccurs="0" name="type" type="xrsi:transaction_type"/>
+      <xsd:element minOccurs="0" name="routing_code" type="xrsi:route_designator"/>
+      <xsd:element minOccurs="0" name="message" type="xrsi:message_details"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="message_details">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="message_details" type="xrsi:messages"/>
+      <xsd:element minOccurs="0" name="base_word_limit" type="xrsi:message_word_limit"/>
+      <xsd:element minOccurs="0" name="incr_word_limit" type="xrsi:message_word_limit"/>
+      <xsd:element minOccurs="0" name="lines" type="xrsi:count"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="messages">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:collection_base">
+        <xsd:sequence>
+          <xsd:element maxOccurs="14" minOccurs="0" name="text" type="xrsi:attn_message"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="channel_promotion">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="code" type="xrsi:promo_code"/>
+      <xsd:element minOccurs="0" name="description" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="discount" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="status" type="xsd:integer"/>
+      <xsd:element minOccurs="0" name="message" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_service_option">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="wu_product" type="xrsi:wu_product"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="transaction_type" type="xrsi:transaction_type"/>
+      <xsd:element minOccurs="1" name="payment_details" type="xrsi:gbs_payment_details"/>
+      <xsd:element minOccurs="0" name="additional_service_options" type="xrsi:gbs_additional_service_options"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_service_options">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" name="service_option" type="xrsi:gbs_service_option"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_optional_service">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="name" type="xrsi:wu_product_name"/>
+      <xsd:element minOccurs="0" name="code" type="xrsi:wu_product_code"/>
+      <xsd:element minOccurs="0" name="surcharge" type="xrsi:charges"/>
+      <xsd:element minOccurs="0" name="discount" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="discounted_surcharge" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="promotion" type="xrsi:channel_promotion"/>
+      <xsd:element minOccurs="0" name="taxes" type="xrsi:channel_taxes"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="gbs_additional_service_options">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" name="additional_service_option" type="xrsi:gbs_optional_service"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="channel_fees">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="base_charges" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="delivery_charges" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="other_charges" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="charges" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="exchange_fee" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="conversion_fee" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="second_exchange_fee" type="xrsi:amount"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="heartbeat_reply_status">
+    <xsd:sequence>
+      <xsd:element name="code" type="xrsi:heartbeat_status_code"/>
+      <xsd:element minOccurs="0" name="message" type="xrsi:message"/>
+      <xsd:element minOccurs="0" name="reference_no" type="xrsi:external_reference_no"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="channel_customer_identities">
+    <xsd:sequence>
+      <xsd:element maxOccurs="4" name="identity" type="xrsi:channel_customer_identity"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="channel_customer_identity_base">
+    <xsd:attribute name="primary" type="xrsi:yes_no"/>
+  </xsd:complexType>
+  <xsd:complexType name="channel_customer_identity">
+    <xsd:complexContent>
+      <xsd:extension base="xrsi:channel_customer_identity_base">
+        <xsd:sequence>
+          <xsd:element name="type" type="xrsi:channel_customer_identity_type"/>
+          <xsd:element name="data" type="xrsi:channel_customer_identity_data"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="channel_taxes">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="tax_amount" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="tax_rate" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="municipal_tax" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="state_tax" type="xrsi:amount"/>
+      <xsd:element minOccurs="0" name="county_tax" type="xrsi:amount"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="channel_message_charges">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="msg_base_rate"/>
+      <xsd:element minOccurs="0" name="msg_base_cnt"/>
+      <xsd:element minOccurs="0" name="msg_marg_rate"/>
+      <xsd:element minOccurs="0" name="rate_special"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="cash_to_mobile">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="0" name="sp_id_sp_name" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="Receiving_Agent_Account" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="sender_sms_flag" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="sender_selected_language" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="reciever_selected_language" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="receiver_sms_flag" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:group name="sender_details">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="returned_mail_status" type="xrsi:returned_mail_status"/>
+      <xsd:element minOccurs="0" name="last_change_date" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="export_status" type="xrsi:export_status"/>
+      <xsd:element minOccurs="0" name="export_date" type="xrsi:short_date"/>
+      <xsd:element minOccurs="0" name="dup" type="xrsi:string"/>
+      <xsd:element minOccurs="0" name="delete_code" type="xrsi:delete_code"/>
+      <xsd:element minOccurs="0" name="address_flag_h_home_p_pos" type="xrsi:address_type"/>
+      <xsd:element minOccurs="0" name="phone_type" type="xrsi:phone_type"/>
+      <xsd:element minOccurs="0" name="listing_type" type="xrsi:listing_type"/>
+      <xsd:element minOccurs="0" name="employment_type" type="xrsi:employment_type"/>
+    </xsd:sequence>
+  </xsd:group>
+  <xsd:complexType name="additional_pay_info_buffer">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="buffer_data" type="xrsi:popup_buffer"/>
+      <xsd:element maxOccurs="9" minOccurs="0" name="payment_info" type="xrsi:payment_info"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="payment_info">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="mode_of_payment">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="cheque_account_number">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="20"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="amount">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="10"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="username_token">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="access_token" type="xrsi:access_token"/>
+      <xsd:element minOccurs="0" name="created" type="xrsi:created"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="payment_info" type="xrsi:payment_info"/>
+</xsd:schema>

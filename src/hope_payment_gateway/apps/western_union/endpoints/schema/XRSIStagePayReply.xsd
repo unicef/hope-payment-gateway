@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2014. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="stage-pay-reply">
+		<xs:complexContent>
+			<xs:extension base="xrsi:reply_transaction_base">
+				<xs:sequence>
+					<!-- The following elements belong to "transaction_details" -->
+					<xs:element minOccurs="1" name="receiver" type="xrsi:receiver"/>					
+					<xs:element minOccurs="0" name="mtcn" type="xrsi:mocn"/>
+					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>					
+					<xs:element minOccurs="0" name="new_points_earned" type="xrsi:count"/>					
+					<xs:element minOccurs="0" name="stage_pay_pin" type="xrsi:dc_pin"/>
+					<xs:element minOccurs="0" name="paid_date_time" type="xrsi:date"/>
+					<xs:element minOccurs="1" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>														
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>   
+	<xs:element name="stage-pay-reply" type="xrsi:stage-pay-reply">
+  </xs:element>
+</xs:schema>

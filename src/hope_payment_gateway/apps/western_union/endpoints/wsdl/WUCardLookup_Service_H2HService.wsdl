@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/WUCardLookup_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="WUCardLookup_Service_H2H" targetNamespace="http://www.westernunion.com/WUCardLookup_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/WUCardLookup_H2H" targetNamespace="http://www.westernunion.com/WUCardLookup_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIWuCardLookupReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIWuCardLookupRequest.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="WuCardLookup_in">
+    <wsdl:part element="xrsi:wu-card-lookup-request" name="wu-card-lookup-request"/>
+  </wsdl:message>
+  <wsdl:message name="WuCardLookup_out">
+    <wsdl:part element="xrsi:wu-card-lookup-reply" name="wu-card-lookup-reply"/>
+  </wsdl:message>
+  <wsdl:message name="WuCardLookup_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="WUCardLookupPortType">
+    <wsdl:operation name="WuCardLookup">
+      <wsdl:input message="tns:WuCardLookup_in" name="WuCardLookup_Input"/>
+      <wsdl:output message="tns:WuCardLookup_out" name="WuCardLookup_Output"/>
+      <wsdl:fault message="tns:WuCardLookup_fault1" name="WuCardLookup_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WUCardLookup_H2H_SOAP_HTTP_Binding" type="tns:WUCardLookupPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="WuCardLookup">
+      <soap:operation/>
+      <wsdl:input name="WuCardLookup_Input">
+        <soap:body parts="wu-card-lookup-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="WuCardLookup_Output">
+        <soap:body parts="wu-card-lookup-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="WuCardLookup_Fault">
+        <soap:fault name="WuCardLookup_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WUCardLookup_Service_H2H">
+    <wsdl:port binding="tns:WUCardLookup_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/WUCardLookup_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

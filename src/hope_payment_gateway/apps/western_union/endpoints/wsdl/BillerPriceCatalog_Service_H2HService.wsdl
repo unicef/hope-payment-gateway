@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="BillerPriceCatalog_Service_H2H" targetNamespace="http://www.westernunion.com/BillerPriceCatalog_Service_H2H" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/BillerPriceCatalog_Service_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+    <wsdl:appinfo source="WMQI_APPINFO">
+      <MRWSDLAppInfo imported="true">
+        <binding hasEncoding="false" imported="true" name="BillerPriceCatalog_H2H_SOAP_HTTP_Binding" originalBindingStyle="document"/>
+      </MRWSDLAppInfo>
+    </wsdl:appinfo>
+  </wsdl:documentation>
+  <wsdl:types>         
+    <xsd:schema targetNamespace="http://www.westernunion.com/BillerPriceCatalog_Service_H2H" xmlns:mrm="http://www.westernunion.com/BillerPriceCatalog_Service_H2H">
+
+ <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIBillerPriceCatalogRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIBillerPriceCatalogReply.xsd"/>
+    </xsd:schema>
+   </wsdl:types>
+  <wsdl:message name="BillerPriceCatalog_in">
+    <wsdl:part element="xrsi:biller-price-catalog-request" name="biller-price-catalog-request"/>
+  </wsdl:message>
+  <wsdl:message name="BillerPriceCatalog_out">
+    <wsdl:part element="xrsi:biller-price-catalog-reply" name="biller-price-catalog-reply"/>
+  </wsdl:message>
+  <wsdl:message name="BillerPriceCatalog_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="BillerPriceCatalog_Service_PortType">
+    <wsdl:operation name="BillerPriceCatalog">
+      <wsdl:input message="tns:BillerPriceCatalog_in" name="BillerPriceCatalog_Input"/>
+      <wsdl:output message="tns:BillerPriceCatalog_out" name="BillerPriceCatalog_Output"/>
+      <wsdl:fault message="tns:BillerPriceCatalog_fault1" name="BillerPriceCatalog_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BillerPriceCatalog_H2H_SOAP_HTTP_Binding" type="tns:BillerPriceCatalog_Service_PortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="BillerPriceCatalog">
+      <soap:operation soapAction="BillerPriceCatalog"/>
+      <wsdl:input name="BillerPriceCatalog_Input">
+        <soap:body parts="biller-price-catalog-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="BillerPriceCatalog_Output">
+        <soap:body parts="biller-price-catalog-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BillerPriceCatalog_Fault">
+        <soap:fault name="BillerPriceCatalog_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BillerPriceCatalog_Service_H2H">
+    <wsdl:port binding="tns:BillerPriceCatalog_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://localhost:7080/BillerPriceCatalog_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

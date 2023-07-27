@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/FulfillSendSave_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="FulfillSendSave_Service_H2H" targetNamespace="http://www.westernunion.com/FulfillSendSave_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/FulfillSendSave" targetNamespace="http://www.westernunion.com/FulfillSendSave" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIFulfillSendSaveReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIFulfillSendSaveRequest.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="fulfillSendSave_in">
+    <wsdl:part element="xrsi:fulfill-send-save-request" name="fulfill-send-save-request"/>
+  </wsdl:message>
+  <wsdl:message name="fulfillSendSave_out">
+    <wsdl:part element="xrsi:fulfill-send-save-reply" name="fulfill-send-save-reply"/>
+  </wsdl:message>
+  <wsdl:message name="fulfillSendSave_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="FulfillSendSavePortType">
+    <wsdl:operation name="fulfillSendSave">
+      <wsdl:input message="tns:fulfillSendSave_in" name="fulfillSendSave_Input"/>
+      <wsdl:output message="tns:fulfillSendSave_out" name="fulfillSendSave_Output"/>
+      <wsdl:fault message="tns:fulfillSendSave_fault1" name="fulfillSendSave_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="FulfillSendSave_MSetSOAP_HTTP_Binding" type="tns:FulfillSendSavePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="fulfillSendSave">
+      <soap:operation/>
+      <wsdl:input name="fulfillSendSave_Input">
+        <soap:body parts="fulfill-send-save-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="fulfillSendSave_Output">
+        <soap:body parts="fulfill-send-save-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="fulfillSendSave_Fault">
+        <soap:fault name="fulfillSendSave_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FulfillSendSave_Service_H2H">
+    <wsdl:port binding="tns:FulfillSendSave_MSetSOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/FulfillSendSave_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

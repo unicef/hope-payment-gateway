@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     "hope_payment_gateway.web",
     "hope_payment_gateway.apps.core.apps.AppConfig",
     "hope_payment_gateway.apps.hope.apps.AppConfig",
+    "hope_payment_gateway.apps.western_union.apps.AppConfig",
     "django.contrib.contenttypes",
     "advanced_filters",
     "unicef_security",
@@ -41,7 +42,6 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
-    "django.contrib.gis",
     "django.contrib.postgres",
     "django.contrib.admin",
     "django_extensions",
@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     "adminfilters.depot",
     "smart_admin.apps.SmartTemplateConfig",
     "import_export",
+    "constance",
 )
 
 MIDDLEWARE = (
@@ -269,3 +270,16 @@ SOCIAL_AUTH_PIPELINE = (
 
 USER_FIELDS = ["username", "email", "first_name", "last_name"]
 USERNAME_IS_FULL_EMAIL = True
+
+CONSTANCE_CONFIG = {
+    "WESTERN_UNION_THREASHOLD": (
+        10000,
+        "Hourly threashold of calls to be made to Western Union API",
+        int,
+    ),
+}
+
+WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL")
+WESTERN_UNION_PATH = env("WESTERN_UNION_PATH")
+WESTERN_UNION_CERT = env("WESTERN_UNION_CERT")
+WESTERN_UNION_KEY = env("WESTERN_UNION_KEY")

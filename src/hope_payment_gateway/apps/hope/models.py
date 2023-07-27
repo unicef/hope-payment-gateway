@@ -179,6 +179,12 @@ class PaymentRecord(LimitedUpdateModel):
     STATUS_DISTRIBUTION_PARTIAL = "Partially Distributed"
     STATUS_PENDING = "Pending"
 
+    # WESTERN UNION STATUSES
+    STATUS_VALIDATION_OK = "Validation OK"
+    STATUS_VALIDATION_KO = "Validation KO"
+    STATUS_STORE_OK = "Store OK"
+    STATUS_STORE_KO = "Store KO"
+
     STATUS_CHOICE = (
         (STATUS_DISTRIBUTION_SUCCESS, _("Distribution Successful")),
         (STATUS_NOT_DISTRIBUTED, _("Not Distributed")),
@@ -187,8 +193,12 @@ class PaymentRecord(LimitedUpdateModel):
         (STATUS_FORCE_FAILED, _("Force failed")),
         (STATUS_DISTRIBUTION_PARTIAL, _("Partially Distributed")),
         (STATUS_PENDING, _("Pending")),
+        (STATUS_VALIDATION_OK, _("Validation OK")),
+        (STATUS_VALIDATION_KO, _("Validation KO")),
+        (STATUS_STORE_OK, _("Store OK")),
+        (STATUS_STORE_KO, _("Store KO")),
     )
-
+    unicef_id = models.CharField(max_length=255, null=True, blank=True, db_index=True)
     id = models.UUIDField(
         primary_key=True,
         editable=False,
@@ -223,11 +233,27 @@ class PaymentRecord(LimitedUpdateModel):
     delivered_quantity = models.DecimalField(decimal_places=2, max_digits=12, null=True, blank=True)
     delivered_quantity_usd = models.DecimalField(decimal_places=2, max_digits=12, null=True, blank=True)
     delivery_date = models.DateTimeField(null=True, blank=True)
-    transaction_reference_id = models.CharField(max_length=255, null=True)
+    transaction_reference_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         managed = False
         db_table = "payment_payment"
 
     class CustomMeta:
-        updatable_fields = ["delivered_quantity", "delivered_quantity_usd", "delivery_date", "transaction_reference_id"]
+        updatable_fields = [
+            "status",
+            "delivered_quantity",
+            "delivered_quantity_usd",
+            "delivery_date",
+            "transaction_reference_id",
+        ]
+
+
+class PaymentHouseholdSnapshot(ReadOnlyModel):
+    snapshot_data = models.JSONField(default=dict)
+    household_id = models.UUIDField()
+    payment = models.OneToOneField(PaymentRecord, on_delete=models.CASCADE, related_name="household_snapshot")
+
+    class Meta:
+        managed = False
+        db_table = "payment_paymenthouseholdsnapshot"

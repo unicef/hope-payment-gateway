@@ -1,0 +1,69 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+   <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <nis-notification-reply xmlns="http://www.westernunion.com/schema/xrsi">
+         <partner xmlns="">
+            <id>WGQCUS1250T</id>
+            <system>
+               <id>WGQCUS1250T</id>
+               <name>UNICEF</name>
+               <version>9101</version>
+               <ip_address>10.3.64.145</ip_address>
+               <connector>
+                  <id>US125QCUSD1A</id>
+               </connector>
+            </system>
+         </partner>
+         <sender xmlns="">
+            <name>
+               <first_name>LIDIA TRINIDAD</first_name>
+               <last_name>GONZALEZ</last_name>
+            </name>
+            <address>
+               <addr_line1>#################</addr_line1>
+               <city>CONROE</city>
+               <state>TX</state>
+               <postal_code>77306</postal_code>
+               <country_iso_code>USA</country_iso_code>
+            </address>
+            <contact_phone>##########</contact_phone>
+            <bank_account>
+               <name>##########################</name>
+               <account_number>##########</account_number>
+               <routing_number>#########</routing_number>
+            </bank_account>
+         </sender>
+         <receiver xmlns="">
+            <name>
+               <first_name>JUANA DE LA CRUZ</first_name>
+               <last_name>REGALADO</last_name>
+            </name>
+            <address>
+               <city>NUEVO IDEAL</city>
+               <state>DU</state>
+               <country_iso_code>USA</country_iso_code>
+            </address>
+            <mobile_phone>
+               <phone_number/>
+            </mobile_phone>
+         </receiver>
+         <payment_details xmlns="">
+            <origination>
+               <principal_amount>15000</principal_amount>
+               <currency_iso_code>USD</currency_iso_code>
+               <country_iso_code>USA</country_iso_code>
+            </origination>
+            <destination>
+               <expected_payout_amount>253400</expected_payout_amount>
+               <currency_iso_code>USD</currency_iso_code>
+               <country_iso_code>USA</country_iso_code>
+            </destination>
+         </payment_details>
+         <transaction_id xmlns="">2896329649742756</transaction_id>
+         <money_transfer_control xmlns="">
+            <date>2023-08-22</date>
+            <mtcn>9649742756</mtcn>
+         </money_transfer_control>
+         <ack_message xmlns="">SUCCESS</ack_message>
+      </nis-notification-reply>
+   </s:Body>
+</s:Envelope>

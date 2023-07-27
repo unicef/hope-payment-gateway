@@ -1,13 +1,24 @@
 from django.contrib import admin
+from django.template.response import TemplateResponse
+
+from admin_extra_buttons.decorators import button
+from admin_extra_buttons.mixins import ExtraButtonsMixin
 
 from hope_payment_gateway.apps.hope.models import (
     BusinessArea,
     FinancialServiceProvider,
+    PaymentHouseholdSnapshot,
     PaymentPlan,
     PaymentRecord,
     Programme,
     ProgrammeCycle,
 )
+from hope_payment_gateway.apps.western_union.endpoints.cancel_complete import cancel_complete
+from hope_payment_gateway.apps.western_union.endpoints.cancel_request import cancel_request
+from hope_payment_gateway.apps.western_union.endpoints.search_request import search_request
+from hope_payment_gateway.apps.western_union.endpoints.send_money_complete import send_money_complete
+from hope_payment_gateway.apps.western_union.endpoints.send_money_store import send_money_store
+from hope_payment_gateway.apps.western_union.endpoints.send_money_validation import send_money_validation
 
 
 class ReadOnlyMixin:
@@ -97,8 +108,13 @@ class PaymentPlanAdmin(ReadOnlyMixin, admin.ModelAdmin):
         return getattr(obj.program_cycle, "iteration", "-")
 
 
+class PaymentHouseholdSnapshotInline(admin.TabularInline):
+    model = PaymentHouseholdSnapshot
+    # readonly_fields = ("snapshot_data", "household_id")
+
+
 @admin.register(PaymentRecord)
-class PaymentRecordAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin):
     list_display = (
         "get_business_area",
         "get_parent",
@@ -120,6 +136,8 @@ class PaymentRecordAdmin(ReadOnlyMixin, admin.ModelAdmin):
     search_fields = ("parent__unicef_id",)
     # list_editable = ("status",)
 
+    inlines = (PaymentHouseholdSnapshotInline,)
+
     @admin.display(ordering="programme__name", description="Programme")
     def get_programme(self, obj):
         return obj.program.name
@@ -131,3 +149,44 @@ class PaymentRecordAdmin(ReadOnlyMixin, admin.ModelAdmin):
     @admin.display(ordering="business_area__name", description="Business Area")
     def get_business_area(self, obj):
         return obj.business_area.name
+
+    @button(html_attrs={"style": "background-color:#88FF88;color:black"})
+    def send_money_validation(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        context["msg"] = "First call: check if data is valid \n it returns MTCN"
+        context.update(send_money_validation(pk))
+        return TemplateResponse(request, "western_union.html", context)
+
+    @button(html_attrs={"style": "background-color:#88FF88;color:red"})
+    def send_money_store(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        context.update(send_money_store(pk))
+        return TemplateResponse(request, "western_union.html", context)
+
+    @button()
+    def send_money_complete(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        context.update(send_money_complete(pk))
+        return TemplateResponse(request, "western_union.html", context)
+
+    @button(html_attrs={"style": "background-color:yellow;color:blue"})
+    def search_request(self, request, pk) -> TemplateResponse:
+        mtcn = request.GET.get("mtcn", None)
+        context = self.get_common_context(request, pk)
+        context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+        context.update(search_request(pk, mtcn))
+        return TemplateResponse(request, "western_union.html", context)
+
+    @button(html_attrs={"style": "background-color:yellow;color:red"})
+    def cancel_request(self, request, pk) -> TemplateResponse:
+        mtcn = request.GET.get("mtcn", None)
+        context = self.get_common_context(request, pk)
+        context.update(cancel_request(pk, mtcn))
+        context["msg"] = f"Delete request based on MTCN \n" f"PARAM: mtcn {mtcn}"
+        return TemplateResponse(request, "western_union.html", context)
+
+    @button()
+    def cancel_complete(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        context.update(cancel_complete(pk))
+        return TemplateResponse(request, "western_union.html", context)

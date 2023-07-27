@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/kyc/schema/xrsi" targetNamespace="http://www.westernunion.com/kyc/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIKYCBasicTypes.xsd" />
+	<xs:include schemaLocation="XRSIKYCClasses.xsd" />
+	 <xs:complexType name="address-lookup-reply">
+            <xs:sequence>
+            	 <xs:element name="channel" type="xrsi:channel" minOccurs="1"/>
+				<xs:choice minOccurs="1" maxOccurs="1">
+			  	 <xs:sequence>
+			  		<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+			  	 </xs:sequence>			   
+			  	 <xs:sequence>
+					<xs:element name="partner" type="xrsi:channel_partner"/>
+					<xs:element minOccurs="0" name="device" type="xrsi:device"/>
+					<xs:element minOccurs="0" name="external_reference_no" type="xrsi:external_reference_no"/>
+				</xs:sequence>
+		     	</xs:choice>	
+                <xs:choice minOccurs="1" maxOccurs="1">
+                    <xs:element name="country_details" type="xrsi:country_reply_details"/>
+                    <xs:element name="state_details" type="xrsi:state_reply_details"/>
+					<xs:element name="city_details" type="xrsi:city_reply_details"/>
+					<xs:element name="postal_code_details" type="xrsi:postal_code_reply_details"/>		
+					<xs:element name="city_list_details" type="xrsi:city_reply_details"/>
+					<xs:element name="postal_code_list_details" type="xrsi:postal_code_list_reply_details"/>			
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:element name="address-lookup-reply" type="xrsi:address-lookup-reply" />
+</xs:schema>

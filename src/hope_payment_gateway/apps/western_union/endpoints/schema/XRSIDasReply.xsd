@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="1.0" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2010. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Id$
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<xs:include schemaLocation="DASReqResp.xsd"/>
+	<xs:complexType name="h2h-das-reply">
+		<xs:annotation>
+			<xs:appinfo>
+				<!-- The <filters_type> section will be enclosed in a DASDataContext object-->
+				<jxb:class name="XRSIDasReply">
+					<jxb:javadoc><![CDATA[
+            				The <b>XRSIDasReply</b> object contains the Data Reply details <br>
+            				i.e. everything between <das-reply>...</das-reply> tags.
+            			]]></jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xrsi:reply_transaction_base">
+				<xs:sequence>
+					<xs:element name="MTML" type="xrsi:MTMLType" minOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="h2h-das-reply" type="xrsi:h2h-das-reply">
+		<xs:annotation>
+			<xs:documentation>
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>
