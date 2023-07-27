@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIBasicTypes.xsd"/>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
+	<xs:complexType name="wu-card-enrollment-reply">
+		<xs:complexContent>
+			<xs:extension base="xrsi:request_transaction_base">
+				<xs:sequence>
+					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
+					<!--<xs:element name="financials" type="xrsi:financials" minOccurs="0"/>
+					<xs:element name="payment_details" type="xrsi:payment_details" minOccurs="0"/>-->
+					<!--<xs:element name="preferred_customer" type="xrsi:preferred_customer" minOccurs="0"/>-->
+					<!-- The following elements belong to "transaction_details" -->
+					<!--<xs:element name="transfer_type" type="xrsi:transaction_type" minOccurs="0"/>-->
+					<xs:element name="phone_pin" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xrsi:pin">
+													<xs:minLength value="0"/>
+													<xs:maxLength value="12"/>
+												</xs:restriction>
+											</xs:simpleType>
+					</xs:element>
+					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
+					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="wu-card-enrollment-reply" type="xrsi:wu-card-enrollment-reply"/>
+</xs:schema>

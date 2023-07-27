@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/operator/schema/xrsi" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.0" targetNamespace="http://www.westernunion.com/operator/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<!-- Define the basic data types, such as Amount, time, date, datetime, count etc. -->
+	
+	<xs:simpleType name="channel_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CSC"/>
+			<xs:enumeration value="AGT"/>
+			<xs:enumeration value="H2H"/>
+			<xs:enumeration value="MTBP"/>
+            <xs:enumeration value="LIS"/>
+		    <xs:enumeration value="WEB"/>
+            <xs:enumeration value="WGD"/>
+            <xs:enumeration value="AGT"/>
+            <xs:enumeration value="IVR"/>
+            <xs:enumeration value="WUMT"/>
+            <xs:enumeration value="TMT"/>
+            <xs:enumeration value="MMT"/>
+            <xs:enumeration value="CSC"/>
+            <xs:enumeration value="SMT"/>
+            <xs:enumeration value="SMARTPHONE"/>
+           	<xs:enumeration value="MYWU"/>
+            <xs:enumeration value="SFSS"/>
+            <xs:enumeration value="WGDT"/>
+	     <xs:enumeration value="SFPS"/>
+	     <xs:enumeration value="RUGW"/>
+
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="string">
+		<xs:annotation>
+			<xs:documentation>Generic string type</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="300"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	
+	<xs:simpleType name="reference_no">
+		<xs:annotation>
+			<xs:documentation>Reference Number</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+   
+    <xs:simpleType name="operator_id">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="wu_oper_id_type">
+    	<xs:restriction base="xs:string">
+    		<xs:minLength value="3"/>
+			<xs:maxLength value="3"/>
+    	</xs:restriction>
+    </xs:simpleType>
+	
+	<xs:simpleType name="primary_agent_account_id_type">
+    		<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="ctry_birth">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="agent_account_id">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="terminal_id">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    
+
+   <xs:simpleType name="nw_flag">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="true"></xs:enumeration>
+    		<xs:enumeration value="false"></xs:enumeration>
+			</xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="WUAA_URL">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="LMS_ID">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="LMS_Password">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="date_of_birth">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Response_Message">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="modify_operation">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="Add_AccountAssociation_NWRoaming"></xs:enumeration>
+    		<xs:enumeration value="Delete_AccountAssociation_NWRoaming"></xs:enumeration>
+    		<xs:enumeration value="Name_Update"></xs:enumeration>
+    		<xs:enumeration value="Profile_update"></xs:enumeration>
+    	</xs:restriction>
+    </xs:simpleType>
+
+    
+
+    <xs:simpleType name="Response_code">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="partner_oper_id">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+    
+     <xs:simpleType name="consolidated_training_flag">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+    
+     <xs:simpleType name="training_name">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+     <xs:simpleType name="training_id">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+     <xs:simpleType name="training_flag">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+	<xs:simpleType name="notification_start_date">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+     <xs:simpleType name="expirydate">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+     <xs:simpleType name="completion_date">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+
+	<xs:simpleType name="name_type">
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="D">
+					<xs:annotation>
+						<xs:documentation>Domestic Name Type</xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+				<xs:enumeration value="M">
+					<xs:annotation>
+						<xs:documentation>Mexican Name Type</xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+			</xs:restriction>
+		</xs:simpleType>
+		
+	<xs:simpleType name="first_name">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="83"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="last_name">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="83"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="maternal_name">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="83"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="middle_name">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="83"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="paternal_name">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="83"/>
+		</xs:restriction>
+	</xs:simpleType>
+		
+</xs:schema>

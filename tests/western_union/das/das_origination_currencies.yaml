@@ -1,0 +1,15 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '<?xml version="1.0" encoding="UTF-8"?>
+
+      <soapenv:Envelope xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+      xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><xrsi:h2h-das-reply
+      xmlns:xrsi="http://www.westernunion.com/schema/xrsi"><MTML><REPLY HOST="AUHOST"
+      CLIENT="WUCLIENT" TYPE=""><DATA_CONTEXT><HEADER><ACCOUNT_NUM/><DATA_MORE>N</DATA_MORE><DATA_NUM_RECS>0</DATA_NUM_RECS><ERROR_MSG>D0004
+      NO MATCHING RECORDS FOUND</ERROR_MSG><NAME>GetOriginationCurrencies</NAME></HEADER></DATA_CONTEXT></REPLY></MTML></xrsi:h2h-das-reply></soapenv:Body></soapenv:Envelope>'
+    content_type: text/plain
+    method: POST
+    status: 200
+    url: https://wugateway2pi.westernunion.com/DAS_Service_H2H

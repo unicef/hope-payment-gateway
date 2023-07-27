@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/PayStatus_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PayStatus_Service_H2H" targetNamespace="http://www.westernunion.com/PayStatus_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/PayStatus" targetNamespace="http://www.westernunion.com/PayStatus" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIPayStatusInquiryRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIPayStatusInquiryReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="PayStatus_in">
+    <wsdl:part element="xrsi:pay-status-inquiry-request-data" name="pay-status-inquiry-request-data"/>
+  </wsdl:message>
+  <wsdl:message name="PayStatus_out">
+    <wsdl:part element="xrsi:pay-status-inquiry-reply" name="pay-status-inquiry-reply"/>
+  </wsdl:message>
+  <wsdl:message name="PayStatus_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="PayStatusPortType">
+    <wsdl:operation name="PayStatus">
+      <wsdl:input message="tns:PayStatus_in" name="PayStatus_Input"/>
+      <wsdl:output message="tns:PayStatus_out" name="PayStatus_Output"/>
+      <wsdl:fault message="tns:PayStatus_fault1" name="PayStatus_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PayStatus_H2H_SOAP_HTTP_Binding" type="tns:PayStatusPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PayStatus">
+      <soap:operation/>
+      <wsdl:input name="PayStatus_Input">
+        <soap:body parts="pay-status-inquiry-request-data" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PayStatus_Output">
+        <soap:body parts="pay-status-inquiry-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PayStatus_Fault">
+        <soap:fault name="PayStatus_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PayStatus_Service_H2H">
+    <wsdl:port binding="tns:PayStatus_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/PayStatus_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

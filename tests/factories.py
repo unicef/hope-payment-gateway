@@ -10,6 +10,7 @@ from hope_payment_gateway.apps.hope.models import (
     PaymentRecord,
     Programme,
 )
+from hope_payment_gateway.apps.western_union.models import Corridor
 
 
 @factory.django.mute_signals(signals.post_save)
@@ -78,3 +79,8 @@ class PaymentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = PaymentRecord
         django_get_or_create = ("code",)
+
+
+class CorridorFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Corridor

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/GetPSTCLanguage"
+	xmlns:xrsi="http://www.westernunion.com/kyc/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="GetPSTCLanguage_Service_H2H"
+	xmlns:xsi="http://www.westernunion.com/schema/xrsi" 
+	targetNamespace="http://www.westernunion.com/GetPSTCLanguage">
+	<wsdl:types>
+		<xsd:schema xmlns:mrm="http://www.westernunion.com/GetPSTCLanguage" targetNamespace="http://www.westernunion.com/GetPSTCLanguage" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+			<xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi"  schemaLocation="../schema/XRSIGetPSTCLanguageRequest.xsd" />
+			<xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi" schemaLocation="../schema/XRSIGetPSTCLanguageReply.xsd" />
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetPSTCLanguage_in">
+		<wsdl:part element="xrsi:get_PSTCLanguage_request" name="get_PSTCLanguage_request"/>
+	</wsdl:message>
+	<wsdl:message name="GetPSTCLanguage_out">
+		<wsdl:part element="xrsi:get_PSTCLanguage_reply" name="get_PSTCLanguage_reply"/>
+	</wsdl:message>
+	<wsdl:message name="GetPSTCLanguage_fault1">
+		<wsdl:part element="xsi:error-reply" name="error-reply" />
+	</wsdl:message>
+	<wsdl:portType name="GetPSTCLanguagePortType">
+		<wsdl:operation name="GetPSTCLanguage">
+			<wsdl:input message="tns:GetPSTCLanguage_in" name="GetPSTCLanguage_Input" />
+			<wsdl:output message="tns:GetPSTCLanguage_out" name="GetPSTCLanguage_Output" />
+			<wsdl:fault message="tns:GetPSTCLanguage_fault1" name="GetPSTCLanguage_Fault" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetPSTCLanguage_SOAP_HTTP_Binding"
+		type="tns:GetPSTCLanguagePortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="GetPSTCLanguage">
+			<soap:operation />
+			<wsdl:input name="GetPSTCLanguage_Input">
+				<soap:body parts="get_PSTCLanguage_request" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="GetPSTCLanguage_Output">
+				<soap:body parts="get_PSTCLanguage_reply" use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="GetPSTCLanguage_Fault">
+				<soap:fault name="GetPSTCLanguage_Fault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetPSTCLanguage_Service_H2H">
+		<wsdl:port binding="tns:GetPSTCLanguage_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+			<soap:address location="http://www.westernunion.com/GetDocument_Service_H2H" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

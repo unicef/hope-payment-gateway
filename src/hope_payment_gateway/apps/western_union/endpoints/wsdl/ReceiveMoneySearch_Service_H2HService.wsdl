@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/ReceiveMoneySearch_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ReceiveMoneySearch_Service_H2H" targetNamespace="http://www.westernunion.com/ReceiveMoneySearch_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/ReceiveMoneySearch_H2H_H2H" targetNamespace="http://www.westernunion.com/ReceiveMoneySearch_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiveMoneySearchReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIReceiveMoneySearchRequest.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ReceiveMoneySearch_in">
+    <wsdl:part element="xrsi:receive-money-search-request" name="receive-money-search-request"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiveMoneySearch_out">
+    <wsdl:part element="xrsi:receive-money-search-reply" name="receive-money-search-reply"/>
+  </wsdl:message>
+  <wsdl:message name="ReceiveMoneySearch_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="ReceiveMoneySearchPortType">
+    <wsdl:operation name="ReceiveMoneySearch">
+      <wsdl:input message="tns:ReceiveMoneySearch_in" name="ReceiveMoneySearch_Input"/>
+      <wsdl:output message="tns:ReceiveMoneySearch_out" name="ReceiveMoneySearch_Output"/>
+      <wsdl:fault message="tns:ReceiveMoneySearch_fault1" name="ReceiveMoneySearch_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ReceiveMoneySearch_H2H_SOAP_HTTP_Binding" type="tns:ReceiveMoneySearchPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="ReceiveMoneySearch">
+      <soap:operation soapAction="ReceiveMoneySearch_Action"/>
+      <wsdl:input name="ReceiveMoneySearch_Input">
+        <soap:body parts="receive-money-search-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ReceiveMoneySearch_Output">
+        <soap:body parts="receive-money-search-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ReceiveMoneySearch_Fault">
+        <soap:fault name="ReceiveMoneySearch_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ReceiveMoneySearch_Service_H2H">
+    <wsdl:port binding="tns:ReceiveMoneySearch_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/ReceiveMoneySearch_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

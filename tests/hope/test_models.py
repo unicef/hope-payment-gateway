@@ -1,10 +1,6 @@
 import pytest
 
-from hope_payment_gateway.apps.hope.models import (
-    BusinessArea,
-    PaymentRecord,
-    ReadOnlyModelException,
-)
+from hope_payment_gateway.apps.hope.models import BusinessArea, PaymentRecord, ReadOnlyModelException
 from tests.factories import BusinessAreaFactory
 
 

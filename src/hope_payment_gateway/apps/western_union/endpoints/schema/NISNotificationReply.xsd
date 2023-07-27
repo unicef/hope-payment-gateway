@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" targetNamespace="http://www.westernunion.com/schema/xrsi" version="1.6">
+	<xs:annotation>
+		<xs:documentation>
+			$Revision: 1.1 $
+			$Date: 2014/07/02 19:22:48 $
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="NISClasses.xsd"/>
+	<xs:complexType name="nis-notification-reply" mixed="false">
+		<xs:complexContent>
+			<xs:extension base="xrsi:gbs_request_transaction_base">
+				<xs:sequence>
+					<xs:element name="sender" type="xrsi:gbs_customer" minOccurs="0"/>
+					<xs:element name="receiver" type="xrsi:channel_customer" minOccurs="0"/>
+					<xs:element name="payment_details" type="xrsi:gbs_payment_details" minOccurs="0"/>
+					<xs:element name="transaction_id" type="xrsi:mobile_transaction_id" minOccurs="0"/>
+					<xs:element name="money_transfer_control" type="xrsi:money_transfer_control" minOccurs="0"/>
+					<xs:element name="notification_type" type="xrsi:notification_type" minOccurs="0"/>
+					<xs:element name="ack_message" type="xrsi:ack_message" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="nis-notification-reply" type="xrsi:nis-notification-reply">
+		<xs:annotation>
+			<xs:documentation>
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

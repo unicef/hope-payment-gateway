@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="1.0" targetNamespace="http://www.westernunion.com/schema/xrsi">
+	<xs:annotation>
+		<xs:documentation>
+			***********************************************************************************************************
+			Copyright 2010. Western Union Financial Services, Inc. All Worldwide Rights 
+			Reserved. This media contains unpublished, confidential and proprietary     
+			information of Western Union Financial Services, Inc. You may not disclose, 
+			copy, display, prepare derivative works or use any portion of these         
+			materials for any purpose without the express written consent of Western    
+			Union Financial Services, Inc. You must reproduce this copyright notice and 
+			any other copyright notices included in the machine-readable copies on all  
+			authorized copies.                                                          
+			***********************************************************************************************************
+			$Id$
+			$Revision$
+			$Date$
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="XRSIClasses.xsd"/>
+	<xs:include schemaLocation="DASReqResp.xsd"/>
+	<xs:complexType name="h2h-das-request" mixed="false">
+		<xs:annotation>
+			<xs:appinfo>
+				<!-- The <filters_type> section will be enclosed in a DASDataContext object-->
+				<jxb:class name="XRSIDasRequest">
+					<jxb:javadoc><![CDATA[
+            				The <b>DASRequest</b> object contains the Data Request details <br>
+            				i.e. everything between <das-request>...</das-request> tags.
+            			]]></jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent mixed="false">
+			<xs:extension base="xrsi:request_transaction_base">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
+					<xs:element name="client_id" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASQueryClientID"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASRecordSet in DASDataContext object -->
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:minLength value="1"/>
+								<xs:maxLength value="3"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="name" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASQueryName"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASRecordSet in DASDataContext object -->
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:minLength value="1"/>
+								<xs:maxLength value="31"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="account_num" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASQueryAgentAccountNumber"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASRecordSet in DASDataContext object -->
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:minLength value="1"/>
+								<xs:maxLength value="34"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="fsid" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASQueryFSID"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASRecordSet in DASDataContext object -->
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:minLength value="1"/>
+								<xs:maxLength value="20"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="counter_id" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASQueryCounterID"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASRecordSet in DASDataContext object -->
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:minLength value="1"/>
+								<xs:maxLength value="12"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="db_name" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASQueryDatabaseName"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASRecordSet in DASDataContext object -->
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:minLength value="1"/>
+								<xs:maxLength value="20"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="term_id" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASQueryTermID"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASRecordSet in DASDataContext object -->
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:minLength value="1"/>
+								<xs:maxLength value="4"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="filters" type="xrsi:filters_type" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property name="DASReqFilters"/>
+							</xs:appinfo>
+						</xs:annotation>
+						<!-- This field will be DASReqResp object -->
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--
+		*** The <filters_type> element contains the <filters> and
+		*** the other elements
+	-->
+	<xs:complexType name="filters_type">
+		<xs:annotation>
+			<xs:appinfo>
+				<!-- The <filters_type> section will be enclosed in a DASDataContext object-->
+				<jxb:class name="DASReqFilters">
+					<jxb:javadoc><![CDATA[
+            				The <b>DASReqFilters</b> object contains the Data Context details <br>
+            				i.e. everything between <filters>...</filters> tags.
+            			]]></jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="queryfilter1" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter1"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter2" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter2"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter3" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter3"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter4" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter4"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter5" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter5"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter6" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter6"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter7" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter7"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter8" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter8"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter9" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter9"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+			<xs:element name="queryfilter10" type="xrsi:QUERY_FILTER_Type" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property name="DASQueryFilter10"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<!-- This field will be DASRecordSet in DASDataContext object -->
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="h2h-das-request" type="xrsi:h2h-das-request">
+		<xs:annotation>
+			<xs:documentation>
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/CustomerComplaint"
+	xmlns:xrsi="http://www.westernunion.com/kyc/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xsi="http://www.westernunion.com/schema/xrsi"
+	name="CustomerComplaint_Service" targetNamespace="http://www.westernunion.com/CustomerComplaint">
+	<wsdl:types>
+		<xsd:schema xmlns:mrm="http://www.westernunion.com/CustomerComplaint" targetNamespace="http://www.westernunion.com/CustomerComplaint" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+			<xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi"  schemaLocation="../schema/XRSICustomerComplaintRequest.xsd" />
+			<xsd:import namespace="http://www.westernunion.com/kyc/schema/xrsi" schemaLocation="../schema/XRSICustomerComplaintReply.xsd" />
+		</xsd:schema>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import
+				namespace="http://www.westernunion.com/kyc/schema/xrsi"
+				schemaLocation="../schema/XRSICustomerComplaintRequest.xsd">
+			</xsd:import>
+			<xsd:import
+				namespace="http://www.westernunion.com/kyc/schema/xrsi"
+				schemaLocation="../schema/XRSICustomerComplaintReply.xsd">
+			</xsd:import></xsd:schema></wsdl:types>
+	<wsdl:message name="CustomerComplaint_in">
+		<wsdl:part element="xrsi:customer-complaint-request"
+			name="customer-complaint-request" />
+	</wsdl:message>
+	<wsdl:message name="CustomerComplaint_out">
+		<wsdl:part element="xrsi:customer-complaint-reply"
+			name="customer-complaint-reply" />
+	</wsdl:message>
+	<wsdl:message name="CustomerComplaint_fault1">
+		<wsdl:part element="xsi:error-reply" name="error-reply" />
+	</wsdl:message>
+	<wsdl:portType name="CustomerComplaintPortType">
+		<wsdl:operation name="CustomerComplaint">
+			<wsdl:input message="tns:CustomerComplaint_in" name="CustomerComplaint_Input" />
+			<wsdl:output message="tns:CustomerComplaint_out" name="CustomerComplaint_Output" />
+			<wsdl:fault message="tns:CustomerComplaint_fault1" name="CustomerComplaint_Fault" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="CustomerComplaint_SOAP_HTTP_Binding"
+		type="tns:CustomerComplaintPortType">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="CustomerComplaint">
+			<soap:operation />
+			<wsdl:input name="CustomerComplaint_Input">
+				<soap:body parts="customer-complaint-request" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="CustomerComplaint_Output">
+				<soap:body parts="customer-complaint-reply" use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="CustomerComplaint_Fault">
+				<soap:fault name="CustomerComplaint_Fault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="CustomerComplaint_Service">
+		<wsdl:port binding="tns:CustomerComplaint_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+			<soap:address location="http://www.westernunion.com/CustomerComplaint_Service" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

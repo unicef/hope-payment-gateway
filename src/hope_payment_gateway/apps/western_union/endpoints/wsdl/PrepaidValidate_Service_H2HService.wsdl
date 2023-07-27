@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/PrepaidValidate_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PrepaidValidateService_H2H" targetNamespace="http://www.westernunion.com/PrepaidValidate_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/PrepaidValidate" targetNamespace="http://www.westernunion.com/PrepaidValidate" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIPrepaidValidationRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIPrepaidValidationReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="PrepaidValidate_in">
+    <wsdl:part element="xrsi:prepaid-validation-request" name="prepaid-validation-request"/>
+  </wsdl:message>
+  <wsdl:message name="PrepaidValidate_out">
+    <wsdl:part element="xrsi:prepaid-validation-reply" name="prepaid-validation-reply"/>
+  </wsdl:message>
+  <wsdl:message name="PrepaidValidate_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="PrepaidValidatePortType">
+    <wsdl:operation name="PrepaidValidate">
+      <wsdl:input message="tns:PrepaidValidate_in" name="PrepaidValidate_Input"/>
+      <wsdl:output message="tns:PrepaidValidate_out" name="PrepaidValidate_Output"/>
+      <wsdl:fault message="tns:PrepaidValidate_fault1" name="PrepaidValidate_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PrepaidValidate_H2H_SOAP_HTTP_Binding" type="tns:PrepaidValidatePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PrepaidValidate">
+      <soap:operation soapAction="PrepaidValidateAction"/>
+      <wsdl:input name="PrepaidValidate_Input">
+        <soap:body parts="prepaid-validation-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PrepaidValidate_Output">
+        <soap:body parts="prepaid-validation-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PrepaidValidate_Fault">
+        <soap:fault name="PrepaidValidate_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PrepaidValidateService_H2H">
+    <wsdl:port binding="tns:PrepaidValidate_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/PrepaidValidateService_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

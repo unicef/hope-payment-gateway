@@ -1,0 +1,2 @@
+class MissingDataHousehold(BaseException):
+    pass

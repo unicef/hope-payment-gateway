@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/FeeInquiry_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="FeeInquiry_Service_H2H" targetNamespace="http://www.westernunion.com/FeeInquiry_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/FeeInquiry" targetNamespace="http://www.westernunion.com/FeeInquiry" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIFeeInquiryRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIFeeInquiryReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="FeeInquiry_in">
+    <wsdl:part element="xrsi:fee-inquiry-request" name="fee-inquiry-request"/>
+  </wsdl:message>
+  <wsdl:message name="FeeInquiry_out">
+    <wsdl:part element="xrsi:fee-inquiry-reply" name="fee-inquiry-reply"/>
+  </wsdl:message>
+  <wsdl:message name="FeeInquiry_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="FeeInquiryPortType">
+    <wsdl:operation name="FeeInquiry">
+      <wsdl:input message="tns:FeeInquiry_in" name="FeeInquiry_Input"/>
+      <wsdl:output message="tns:FeeInquiry_out" name="FeeInquiry_Output"/>
+      <wsdl:fault message="tns:FeeInquiry_fault1" name="FeeInquiry_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="FeeInquiry_H2H_SOAP_HTTP_Binding" type="tns:FeeInquiryPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="FeeInquiry">
+      <soap:operation/>
+      <wsdl:input name="FeeInquiry_Input">
+        <soap:body parts="fee-inquiry-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="FeeInquiry_Output">
+        <soap:body parts="fee-inquiry-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="FeeInquiry_Fault">
+        <soap:fault name="FeeInquiry_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FeeInquiry_Service_H2H">
+    <wsdl:port binding="tns:FeeInquiry_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/FeeInquiry_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

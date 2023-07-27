@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/RefundService_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Refund_Service_H2HService" targetNamespace="http://www.westernunion.com/RefundService_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/RefundService_H2H" targetNamespace="http://www.westernunion.com/RefundService_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIRefundReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIRefundRequest.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="Refund_in">
+    <wsdl:part element="xrsi:refund-request" name="refund-request"/>
+  </wsdl:message>
+  <wsdl:message name="Refund_out">
+    <wsdl:part element="xrsi:refund-reply" name="refund-reply"/>
+  </wsdl:message>
+  <wsdl:message name="Refund_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="RefundPortType">
+    <wsdl:operation name="Refund">
+      <wsdl:input message="tns:Refund_in" name="Refund_Input"/>
+      <wsdl:output message="tns:Refund_out" name="Refund_Output"/>
+      <wsdl:fault message="tns:Refund_fault1" name="Refund_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Refund_H2H_SOAP_HTTP_Binding" type="tns:RefundPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="Refund">
+      <soap:operation/>
+      <wsdl:input name="Refund_Input">
+        <soap:body parts="refund-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="Refund_Output">
+        <soap:body parts="refund-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="Refund_Fault">
+        <soap:fault name="Refund_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Refund_Service_H2H">
+    <wsdl:port binding="tns:Refund_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="http://www.westernunion.com/Refund_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

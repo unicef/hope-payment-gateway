@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.westernunion.com/CancelSend_H2H" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="CancelSend_Service_H2H" targetNamespace="http://www.westernunion.com/CancelSend_H2H">
+  <wsdl:types>
+    <xsd:schema xmlns:mrm="http://www.westernunion.com/CancelSend_H2H" targetNamespace="http://www.westernunion.com/CancelSend_H2H" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSICancelSendRequest.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSICancelSendReply.xsd"/>
+      <xsd:import namespace="http://www.westernunion.com/schema/xrsi" schemaLocation="../schema/XRSIErrorReply.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CancelSend_in">
+    <wsdl:part element="xrsi:cancel-send-request" name="cancel-send-request"/>
+  </wsdl:message>
+  <wsdl:message name="CancelSend_out">
+    <wsdl:part element="xrsi:cancel-send-reply" name="cancel-send-reply"/>
+  </wsdl:message>
+  <wsdl:message name="CancelSend_fault1">
+    <wsdl:part element="xrsi:error-reply" name="error-reply"/>
+  </wsdl:message>
+  <wsdl:portType name="CancelSendPortType">
+    <wsdl:operation name="CancelSend">
+      <wsdl:input message="tns:CancelSend_in" name="CancelSend_Input"/>
+      <wsdl:output message="tns:CancelSend_out" name="CancelSend_Output"/>
+      <wsdl:fault message="tns:CancelSend_fault1" name="CancelSend_Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CancelSend_H2H_SOAP_HTTP_Binding" type="tns:CancelSendPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="CancelSend">
+      <soap:operation/>
+      <wsdl:input name="CancelSend_Input">
+        <soap:body parts="cancel-send-request" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CancelSend_Output">
+        <soap:body parts="cancel-send-reply" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CancelSend_Fault">
+        <soap:fault name="CancelSend_Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CancelSend_Service_H2H">
+    <wsdl:port binding="tns:CancelSend_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+      <soap:address location="https://wugateway2pi.westernunion.com/CancelSend_Service_H2H"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
