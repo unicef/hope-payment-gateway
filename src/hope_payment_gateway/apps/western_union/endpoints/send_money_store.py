@@ -1,7 +1,14 @@
 from hope_payment_gateway.apps.hope.models import PaymentRecord
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.utils import sender, unicef, usd, web, WMF, MONEY_IN_TIME, \
-    snapshot_example
+from hope_payment_gateway.apps.western_union.endpoints.utils import (
+    MONEY_IN_TIME,
+    WMF,
+    sender,
+    snapshot_example,
+    unicef,
+    usd,
+    web,
+)
 
 
 def send_money_store(pk, payload=None):
@@ -10,7 +17,7 @@ def send_money_store(pk, payload=None):
         obj = PaymentRecord.objects.get(pk=pk)
         if obj.status != PaymentRecord.STATUS_PENDING:
             return {"title": "The Payment Record is not in status Pending", "code": 400}
-        if hasattr(obj, 'household_snapshot'):
+        if hasattr(obj, "household_snapshot"):
             snapshot_data = obj.household_snapshot
         else:
             # raise MissingHousehold
@@ -40,42 +47,42 @@ def send_money_store(pk, payload=None):
         }
 
         financials = {
-            'originators_principal_amount': 254455,
-            'destination_principal_amount': 199900,
-            'third_party_amount': None,
-            'principal_USD': None,
-            'gross_total_amount': 257455,
-            'plus_charges_amount': 0,
-            'pay_amount': None,
-            'principal_dollar_amount': None,
-            'principal_amount': None,
-            'surcharge': None,
-            'charges': 3000,
-            'tolls': None,
-            'promo_discount_amount': None,
-            'originating_currency_principal': None,
-            'principal_in_words': None,
-            'canadian_dollar_exchange_fee': None,
-            'message_charge': 0,
-            'incr_message_charge': None,
-            'aggregated_amount': None,
-            'available_amount': None,
-            'sum_charges': None,
-            'exchange_fee': None,
-            'conversion_fee': None,
-            'second_exchange_fee': None,
-            'money_transfer_limit': None,
-            'transaction_limit': None,
-            'daily_limit': None,
-            'cumulative_total_for_day': None,
-            'addl_services_fees': None,
-            'add_principal': None,
-            'speed_of_delivery': [],
-            'total_undiscounted_charges': None,
-            'total_discount': None,
-            'total_discounted_charges': None,
-            'min_transaction_limit': None,
-            'max_transaction_limit': None
+            "originators_principal_amount": 254455,
+            "destination_principal_amount": 199900,
+            "third_party_amount": None,
+            "principal_USD": None,
+            "gross_total_amount": 257455,
+            "plus_charges_amount": 0,
+            "pay_amount": None,
+            "principal_dollar_amount": None,
+            "principal_amount": None,
+            "surcharge": None,
+            "charges": 3000,
+            "tolls": None,
+            "promo_discount_amount": None,
+            "originating_currency_principal": None,
+            "principal_in_words": None,
+            "canadian_dollar_exchange_fee": None,
+            "message_charge": 0,
+            "incr_message_charge": None,
+            "aggregated_amount": None,
+            "available_amount": None,
+            "sum_charges": None,
+            "exchange_fee": None,
+            "conversion_fee": None,
+            "second_exchange_fee": None,
+            "money_transfer_limit": None,
+            "transaction_limit": None,
+            "daily_limit": None,
+            "cumulative_total_for_day": None,
+            "addl_services_fees": None,
+            "add_principal": None,
+            "speed_of_delivery": [],
+            "total_undiscounted_charges": None,
+            "total_discount": None,
+            "total_discounted_charges": None,
+            "min_transaction_limit": None,
+            "max_transaction_limit": None,
         }
 
         payment_details = {

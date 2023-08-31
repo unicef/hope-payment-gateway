@@ -3,15 +3,22 @@ from zeep.helpers import serialize_object
 from hope_payment_gateway.apps.hope.models import PaymentRecord
 from hope_payment_gateway.apps.western_union.endpoints.send_money_store import send_money_store
 from hope_payment_gateway.apps.western_union.endpoints.send_money_validation import send_money_validation
-from hope_payment_gateway.apps.western_union.endpoints.utils import sender, unicef, usd, web, snapshot_example, WMF, \
-    MONEY_IN_TIME
+from hope_payment_gateway.apps.western_union.endpoints.utils import (
+    MONEY_IN_TIME,
+    WMF,
+    sender,
+    snapshot_example,
+    unicef,
+    usd,
+    web,
+)
 
 
 def send_money_complete(pk):
     obj = PaymentRecord.objects.get(pk=pk)
     if obj.status != PaymentRecord.STATUS_PENDING:
         return {"title": "The Payment Record is not in status Pending", "code": 400}
-    if hasattr(obj, 'household_snapshot'):
+    if hasattr(obj, "household_snapshot"):
         snapshot_data = obj.household_snapshot
     else:
         # raise MissingHousehold

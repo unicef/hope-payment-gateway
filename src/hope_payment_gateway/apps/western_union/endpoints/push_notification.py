@@ -13,6 +13,6 @@ class PayNotificationView(APIView):
     def post(self, request):
         """Return All Static values used for drop-down in the frontend"""
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
-            "{http://www.westernunion.com/schema/xrsi}search-request"
+            "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
         ]
         return Response(payload)

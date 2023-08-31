@@ -6,11 +6,7 @@ usd = {
     "reference_no": "Y3snz233UkGt1Gw4",
     "counter_id": "US125QCUSD1T",
 }
-eur = {
-    "identifier": "WGQCUS125ET",
-    "reference_no": "115210-000000003",
-    "counter_id": "US125QCEUR1T"
-}
+eur = {"identifier": "WGQCUS125ET", "reference_no": "115210-000000003", "counter_id": "US125QCEUR1T"}
 
 # usd = {"identifier": "GOOGDUST", "reference_no": "115210-000000003", "counter_id": "US125QCUSD1A"}
 # eur = {"identifier": "MASTEUST", "reference_no": "115210-000000003", "counter_id": "XAWA"}

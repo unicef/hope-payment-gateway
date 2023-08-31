@@ -3,7 +3,6 @@ from django.urls import reverse
 import responses
 
 from hope_payment_gateway.apps.hope.models import PaymentRecord
-from responses import _recorder
 
 
 # @_recorder.record(file_path="tests/western_union/primitives/send_money_validation.yaml")
@@ -44,7 +43,7 @@ def test_send_complete(django_app, admin_user):
 @responses.activate
 def test_search_request(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
-    responses._add_from_file(file_path=f"tests/western_union/primitives/search_request.yaml")
+    responses._add_from_file(file_path="tests/western_union/primitives/search_request.yaml")
     payment = PaymentRecord.objects.first()
     payment.transaction_reference_id = "8552593921"
     payment.save()
@@ -57,7 +56,7 @@ def test_search_request(django_app, admin_user):
 @responses.activate
 def test_cancel_request(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/CancelSend_Service_H2HService")
-    responses._add_from_file(file_path=f"tests/western_union/primitives/cancel_request.yaml")
+    responses._add_from_file(file_path="tests/western_union/primitives/cancel_request.yaml")
     payment = PaymentRecord.objects.first()
     payment.transaction_reference_id = "8552593921"
     payment.save()
@@ -68,10 +67,10 @@ def test_cancel_request(django_app, admin_user):
 
 # @_recorder.record(file_path="tests/western_union/primitives/cancel_complete.yaml")
 @responses.activate
-def test_cancel_request(django_app, admin_user):
+def test_cancel_complete(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2HServiceService")
     responses.patch("https://wugateway2pi.westernunion.com/CancelSend_Service_H2HService")
-    responses._add_from_file(file_path=f"tests/western_union/primitives/cancel_complete.yaml")
+    responses._add_from_file(file_path="tests/western_union/primitives/cancel_complete.yaml")
     payment = PaymentRecord.objects.first()
     payment.transaction_reference_id = "0352466394"
     payment.save()

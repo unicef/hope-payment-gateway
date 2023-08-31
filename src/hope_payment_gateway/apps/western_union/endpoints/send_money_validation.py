@@ -1,7 +1,14 @@
 from hope_payment_gateway.apps.hope.models import PaymentRecord
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.utils import sender, unicef, usd, web, snapshot_example, WMF, \
-    MONEY_IN_TIME
+from hope_payment_gateway.apps.western_union.endpoints.utils import (
+    MONEY_IN_TIME,
+    WMF,
+    sender,
+    snapshot_example,
+    unicef,
+    usd,
+    web,
+)
 
 
 def send_money_validation(pk, payload=None):
@@ -13,7 +20,7 @@ def send_money_validation(pk, payload=None):
         obj = PaymentRecord.objects.get(pk=pk)
         if obj.status != PaymentRecord.STATUS_PENDING:
             return {"title": "The Payment Record is not in status Pending", "code": 400}
-        if hasattr(obj, 'household_snapshot'):
+        if hasattr(obj, "household_snapshot"):
             snapshot_data = obj.household_snapshot
         else:
             # raise MissingHousehold
@@ -22,7 +29,7 @@ def send_money_validation(pk, payload=None):
         collector = snapshot_data["primary_collector"]
         first_name = collector["given_name"]
         last_name = collector["family_name"]
-        email = "john@smith.com" #????
+        email = "john@smith.com"  # ????
         phone_no = collector["phone_no"]
         source_country = "US"
         source_currency = "USD"
