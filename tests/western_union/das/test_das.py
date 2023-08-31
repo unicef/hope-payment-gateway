@@ -21,7 +21,7 @@ import responses
 @responses.activate
 def test_das(django_app, admin_user, endpoint):
     responses.patch("https://wugateway2pi.westernunion.com/DAS_Service_H2H")
-    responses._add_from_file(file_path=f"tests/western_union/cassettes/{endpoint}.yaml")
+    responses._add_from_file(file_path=f"tests/western_union/das/{endpoint}.yaml")
     url = reverse(f"admin:western_union_corridor_{endpoint}")
     response = django_app.get(url, user=admin_user)
     assert response.status_code == 200

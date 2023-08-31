@@ -1,5 +1,6 @@
-from django.urls import reverse
 from pathlib import Path
+
+from django.urls import reverse
 
 
 def test_push_notification(django_app, admin_user):

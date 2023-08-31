@@ -1,2 +1,2 @@
-class InvalidHousehold(BaseException):
+class MissingDataHousehold(BaseException):
     pass

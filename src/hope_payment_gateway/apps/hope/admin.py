@@ -165,9 +165,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
 
     @button()
     def send_money_complete(self, request, pk) -> TemplateResponse:
-        context = self.get_common_context(request, pk)
-        context.update(send_money_complete(pk))
-        return TemplateResponse(request, "western_union.html", context)
+        return send_money_complete(pk)
 
     @button(html_attrs={"style": "background-color:yellow;color:blue"})
     def search_request(self, request, pk) -> TemplateResponse:
@@ -187,6 +185,4 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
 
     @button()
     def cancel_complete(self, request, pk) -> TemplateResponse:
-        context = self.get_common_context(request, pk)
-        context.update(cancel_complete(pk))
-        return TemplateResponse(request, "western_union.html", context)
+        return cancel_complete(pk)

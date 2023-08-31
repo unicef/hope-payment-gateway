@@ -2,22 +2,24 @@ from hope_payment_gateway.apps.hope.models import PaymentRecord
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.western_union.endpoints.utils import (
     MONEY_IN_TIME,
+    WALLET,
     WMF,
+    get_usd,
     sender,
     snapshot_example,
     unicef,
-    usd,
     web,
 )
 
 
-def send_money_validation(pk, payload=None):
+def send_money_validation(pk, payload=None, wallet_no=None):
     # for cash just name
     # for wallet delivery option template
 
     if payload is None:
         print("Send Money Validation: Creating Payload")
         obj = PaymentRecord.objects.get(pk=pk)
+        frm = get_usd(obj.unicef_id)
         if obj.status != PaymentRecord.STATUS_PENDING:
             return {"title": "The Payment Record is not in status Pending", "code": 400}
         if hasattr(obj, "household_snapshot"):
@@ -29,20 +31,26 @@ def send_money_validation(pk, payload=None):
         collector = snapshot_data["primary_collector"]
         first_name = collector["given_name"]
         last_name = collector["family_name"]
-        email = "john@smith.com"  # ????
         phone_no = collector["phone_no"]
         source_country = "US"
         source_currency = "USD"
         transaction_type = WMF
-        destination_country = "ES"  # core countrycodemap
-        destination_currency = "EUR"  # obj.currency
+        destination_country = "EC"  # core countrycodemap
+        destination_currency = obj.currency
         duplication_enabled = "D"
         amount = int(obj.entitlement_quantity * 100)
-        delivery_services_code = MONEY_IN_TIME
+        delivery_services_code = WALLET if wallet_no else MONEY_IN_TIME
 
         receiver = {
             "name": {"first_name": first_name, "last_name": last_name, "name_type": "D"},
-            "email": email,
+            # "email": email,
+            "contact_phone": phone_no,
+            # "mobile_phone": {
+            #     "phone_number": {
+            #         "country_code": "1",
+            #         "national_number": phone_no,
+            #     },
+            # },
         }
         financials = {
             # "originators_principal_amount": amount,
@@ -87,7 +95,7 @@ def send_money_validation(pk, payload=None):
             "payment_details": payment_details,
             "financials": financials,
             "delivery_services": delivery_services,
-            "foreign_remote_system": usd,
+            "foreign_remote_system": frm,
         }
     else:
         print("Send Money Validation: Passed Payload")

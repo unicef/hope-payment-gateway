@@ -5,16 +5,17 @@ from hope_payment_gateway.apps.western_union.endpoints.send_money_store import s
 from hope_payment_gateway.apps.western_union.endpoints.send_money_validation import send_money_validation
 from hope_payment_gateway.apps.western_union.endpoints.utils import (
     MONEY_IN_TIME,
+    WALLET,
     WMF,
+    get_usd,
     sender,
     snapshot_example,
     unicef,
-    usd,
     web,
 )
 
 
-def send_money_complete(pk):
+def send_money_complete(pk, wallet_no=None):
     obj = PaymentRecord.objects.get(pk=pk)
     if obj.status != PaymentRecord.STATUS_PENDING:
         return {"title": "The Payment Record is not in status Pending", "code": 400}
@@ -23,24 +24,24 @@ def send_money_complete(pk):
     else:
         # raise MissingHousehold
         snapshot_data = snapshot_example
+    frm = get_usd(obj.unicef_id)
 
     collector = snapshot_data["primary_collector"]
     first_name = collector["given_name"]
     last_name = collector["family_name"]
-    email = "john@smith.com"  # ????
     phone_no = collector["phone_no"]
     source_country = "US"
     source_currency = "USD"
     transaction_type = WMF
-    destination_country = "ES"  # core countrycodemap
-    destination_currency = "EUR"  # obj.currency
+    destination_country = "EC"  # core countrycodemap
+    destination_currency = obj.currency
     duplication_enabled = "D"
     amount = int(obj.entitlement_quantity * 100)
-    delivery_services_code = MONEY_IN_TIME
+    delivery_services_code = WALLET if wallet_no else MONEY_IN_TIME
 
     receiver = {
         "name": {"first_name": first_name, "last_name": last_name, "name_type": "D"},
-        "email": email,
+        "contact_phone": phone_no,
     }
     financials = {
         # "originators_principal_amount": amount_with_fee,
@@ -80,7 +81,7 @@ def send_money_complete(pk):
         "payment_details": payment_details,
         "financials": financials,
         "delivery_services": delivery_services,
-        "foreign_remote_system": usd,
+        "foreign_remote_system": frm,
     }
 
     response = send_money_validation(pk, payload)

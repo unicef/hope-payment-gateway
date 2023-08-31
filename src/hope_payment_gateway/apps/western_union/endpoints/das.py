@@ -6,7 +6,7 @@ def das_countries_currencies():
     payload = {
         "name": "GetCountriesCurrencies",
         "channel": unicef,
-        "foreign_remote_system": eur,
+        "foreign_remote_system": usd,
         "filters": {
             "queryfilter1": "en",
             "queryfilter2": "US USD",  # destination
@@ -20,7 +20,7 @@ def das_origination_currencies():
     payload = {
         "name": "GetOriginationCurrencies",
         "channel": unicef,
-        "foreign_remote_system": eur,
+        "foreign_remote_system": usd,
         "filters": {
             "queryfilter1": "en",
         },

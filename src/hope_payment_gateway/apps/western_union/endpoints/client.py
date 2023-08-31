@@ -20,7 +20,7 @@ class WesternUnionClient:
         self.client = Client(wsdl, transport=transport, settings=settings)
         self.client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
-    def response_context(self, service_name, payload):
+    def response_context(self, service_name, payload, log=dict):
         response = ""
         format = "string"
         try:
@@ -39,4 +39,5 @@ class WesternUnionClient:
             title = f"{exc.message} [{exc.code}]"
             response = etree_to_string(exc.detail)
             code = 400
+
         return {"title": title, "content": response, "format": format, "code": code}

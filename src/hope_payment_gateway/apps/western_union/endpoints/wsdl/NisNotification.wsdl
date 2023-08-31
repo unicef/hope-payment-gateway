@@ -40,7 +40,7 @@
 	</binding>
 	<wsdl:service name="NisNotification">
 		<wsdl:port name="NisNotificationSOAP" binding="tns:NisNotificationSOAP_HTTP_Binding">
-			<soap:address location="http://172.31.19.197:8080/partner/services/NisNotification/"/>
+			<soap:address location="https://wugateway2pi.westernunion.com/NisNotification/"/>
 		</wsdl:port>
 	</wsdl:service>
 </definitions>

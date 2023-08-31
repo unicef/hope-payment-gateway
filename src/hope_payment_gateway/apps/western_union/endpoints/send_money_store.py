@@ -12,15 +12,13 @@ from hope_payment_gateway.apps.western_union.endpoints.utils import (
 
 
 def send_money_store(pk, payload=None):
+    obj = PaymentRecord.objects.get(pk=pk)
     if payload is None:
         print("Send Money Validation: Creating Payload")
-        obj = PaymentRecord.objects.get(pk=pk)
-        if obj.status != PaymentRecord.STATUS_PENDING:
-            return {"title": "The Payment Record is not in status Pending", "code": 400}
         if hasattr(obj, "household_snapshot"):
             snapshot_data = obj.household_snapshot
         else:
-            # raise MissingHousehold
+            # raise MissingDataHousehold
             snapshot_data = snapshot_example
 
         collector = snapshot_data["primary_collector"]
@@ -39,19 +37,23 @@ def send_money_store(pk, payload=None):
 
         mtcn = "7070587695"
         new_mtcn = "2324387070587695"
-        instant_code = "010300002010030100103MSG02010030101103FEE1204300013043000961501010020100301099200101C0211UDI0000009299210417wufxspd0002046230"
+        instant_code = (
+            "010300002010030100103MSG02010030101103FEE1204300013043000961501"
+            "010020100301099200101C0211UDI0000009299210417wufxspd0002046230"
+        )
 
         receiver = {
             "name": {"first_name": first_name, "last_name": last_name, "name_type": "D"},
             "email": email,
+            "contact_phone": phone_no,
         }
 
         financials = {
-            "originators_principal_amount": 254455,
+            "originators_principal_amount": amount,
             "destination_principal_amount": 199900,
             "third_party_amount": None,
             "principal_USD": None,
-            "gross_total_amount": 257455,
+            "gross_total_amount": amount + 3000,
             "plus_charges_amount": 0,
             "pay_amount": None,
             "principal_dollar_amount": None,

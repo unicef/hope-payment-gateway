@@ -36,7 +36,7 @@ def test_send_complete(django_app, admin_user):
     payment = PaymentRecord.objects.first()
     url = reverse("admin:hope_paymentrecord_send_money_complete", args=[payment.pk])
     response = django_app.get(url, user=admin_user)
-    assert response.status_code == 200
+    assert response.status_code == 302
 
 
 # @_recorder.record(file_path="tests/western_union/primitives/search_request.yaml")
@@ -76,4 +76,4 @@ def test_cancel_complete(django_app, admin_user):
     payment.save()
     url = reverse("admin:hope_paymentrecord_cancel_complete", args=[payment.pk])
     response = django_app.get(url, user=admin_user)
-    assert response.status_code == 200
+    assert response.status_code == 302

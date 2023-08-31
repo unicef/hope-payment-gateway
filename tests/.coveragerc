@@ -5,6 +5,7 @@ source = hope_payment_gateway
 omit =
         */tests/**
         */migrations/*,
+        */commands/*,
         */apps.py,
         */wsgi.py,
         */dbrouters.py,

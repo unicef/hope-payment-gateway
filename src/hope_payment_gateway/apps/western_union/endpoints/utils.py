@@ -1,3 +1,5 @@
+from datetime import datetime
+
 web = {"type": "WEB"}
 agent = {"type": "AGENT"}
 unicef = {"type": "H2H", "name": "UNICEF", "version": "9500"}
@@ -6,7 +8,26 @@ usd = {
     "reference_no": "Y3snz233UkGt1Gw4",
     "counter_id": "US125QCUSD1T",
 }
-eur = {"identifier": "WGQCUS125ET", "reference_no": "115210-000000003", "counter_id": "US125QCEUR1T"}
+eur = {"identifier": "WGQCUS125ET", "reference_no": "Y3snz233UkGt1Gw4", "counter_id": "US125QCEUR1T"}
+
+
+def get_usd(ref_num):
+    rnd = int(round(datetime.now().timestamp()))
+    return {
+        "identifier": "WGQCUS1250T",
+        "reference_no": f"{ref_num}-{rnd}",
+        "counter_id": "US125QCUSD1T",
+    }
+
+
+def get_eur(ref_num):
+    rnd = int(round(datetime.now().timestamp()))
+    return {
+        "identifier": "WGQCUS125ET",
+        "reference_no": f"{ref_num}-{rnd}",
+        "counter_id": "US125QCEUR1T",
+    }
+
 
 # usd = {"identifier": "GOOGDUST", "reference_no": "115210-000000003", "counter_id": "US125QCUSD1A"}
 # eur = {"identifier": "MASTEUST", "reference_no": "115210-000000003", "counter_id": "XAWA"}
@@ -18,6 +39,48 @@ WMN = "WMN"
 # delivery_services_code
 MONEY_IN_TIME = "000"
 WALLET = "800"
+
+
+def iso_code(country_code, currency_code):
+    return {
+        "country_code": country_code,
+        "currency_code": currency_code,
+    }
+
+
+sender = {
+    "name": {
+        "name_type": "C",
+        "business_name": "UNICEF",
+    },
+    "address": {
+        "addr_line1": "3 United Nations Plaza",
+        "addr_line2": "",
+        "city": "NEW YORK",
+        "state": "NY",
+        "postal_code": "10017",
+        "country_code": {
+            "iso_code": iso_code("US", "USD"),
+            "country_name": "US",
+        },
+        "local_area": "NEW YORK",
+        "street": "3 United Nations Plaza",
+    },
+    "email": "unicef@unicef.org",
+    "contact_phone": "2123267000",
+    "mobile_phone": {
+        "phone_number": {
+            "country_code": "1",
+            "national_number": "2123267000",
+        },
+    },
+    "fraud_warning_consent": "Y",
+}
+
+
+def get_timestamp():
+    return int(round(datetime.now().timestamp()))
+
 
 snapshot_example = {
     "id": "059a2209-666a-4cc7-8e92-9d3babac1f4a",
@@ -423,41 +486,4 @@ snapshot_example = {
     "female_age_group_6_11_disabled_count": 0,
     "female_age_group_12_17_disabled_count": 0,
     "female_age_group_18_59_disabled_count": 0,
-}
-
-
-def iso_code(country_code, currency_code):
-    return {
-        "country_code": country_code,
-        "currency_code": currency_code,
-    }
-
-
-sender = {
-    "name": {
-        "name_type": "C",
-        "business_name": "UNICEF",
-    },
-    "address": {
-        "addr_line1": "3 United Nations Plaza",
-        "addr_line2": "",
-        "city": "NEW YORK",
-        "state": "NY",
-        "postal_code": "10017",
-        "country_code": {
-            "iso_code": iso_code("US", "USD"),
-            "country_name": "US",
-        },
-        "local_area": "NEW YORK",
-        "street": "3 United Nations Plaza",
-    },
-    "email": "unicef@unicef.org",
-    "contact_phone": "2123267000",
-    "mobile_phone": {
-        "phone_number": {
-            "country_code": "1",
-            "national_number": "2123267000",
-        },
-    },
-    "fraud_warning_consent": "Y",
 }

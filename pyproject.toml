@@ -77,6 +77,7 @@ zeep = "*"
 djangorestframework-xml = "^2.0.0"
 psycopg = {extras = ["binary"], version = "^3.1.10"}
 wheel = "^0.41.2"
+django-model-utils = "^4.3.1"
 
 
 [tool.poetry.group.dev.dependencies]
