@@ -27,8 +27,8 @@ RUN poetry install
 WORKDIR /code
 ADD . /code
 
-ADD docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["docker-entrypoint.sh"]
+ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
 
 EXPOSE 8000
 

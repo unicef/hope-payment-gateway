@@ -12,14 +12,13 @@ SETTINGS_DIR = Path(__file__).parent
 PACKAGE_DIR = SETTINGS_DIR.parent
 DEVELOPMENT_DIR = PACKAGE_DIR.parent.parent
 
-env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env()
+env = environ.Env()
 
-DEBUG = env.bool("DEBUG")
+DEBUG = env.bool("DEBUG", False)
 
 DATABASES = {
-    "default": env.db(default="psql://postgres:pass@db:5432/postgres"),
-    "hope": env.db(var="DATABASE_HOPE_URL", default="psql://postgres:pass@db:5432/postgres"),
+    "default": env.db(var="DATABASE_URL"),
+    "hope": env.db(var="DATABASE_HOPE_URL"),
 }
 
 DATABASE_ROUTERS = ("hope_payment_gateway.apps.core.dbrouters.DbRouter",)
@@ -234,52 +233,53 @@ if DEBUG:  # pragma: no cover
     }
 
 
-DEFAULT_FROM_EMAIL = "hope@unicef.org"
-EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
-EMAIL_HOST = env("EMAIL_HOST", default="")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-EMAIL_PORT = env("EMAIL_PORT", default=25)
-EMAIL_USE_TLS = env("EMAIL_USE_TLS", default=False)
-EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
+# TODO
+# DEFAULT_FROM_EMAIL = "hope@unicef.org"
+# EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
+# EMAIL_HOST = env("EMAIL_HOST", default="")
+# EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+# EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+# EMAIL_PORT = env("EMAIL_PORT", default=25)
+# EMAIL_USE_TLS = env("EMAIL_USE_TLS", default=False)
+# EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
 
-KEY = SOCIAL_AUTH_KEY = env("AZURE_B2C_CLIENT_ID", default=None)
-SOCIAL_AUTH_SECRET = env("AZURE_B2C_CLIENT_SECRET", default=None)
-SOCIAL_AUTH_TENANT_NAME = env("TENANT_NAME", default="unicefpartners")
-SOCIAL_AUTH_TENANT_ID = f"{SOCIAL_AUTH_TENANT_NAME}.onmicrosoft.com"
-SOCIAL_AUTH_TENANT_B2C_URL = f"{SOCIAL_AUTH_TENANT_NAME}.b2clogin.com"
+# KEY = SOCIAL_AUTH_KEY = env("AZURE_B2C_CLIENT_ID", default=None)
+# SOCIAL_AUTH_SECRET = env("AZURE_B2C_CLIENT_SECRET", default=None)
+# SOCIAL_AUTH_TENANT_NAME = env("TENANT_NAME", default="unicefpartners")
+# SOCIAL_AUTH_TENANT_ID = f"{SOCIAL_AUTH_TENANT_NAME}.onmicrosoft.com"
+# SOCIAL_AUTH_TENANT_B2C_URL = f"{SOCIAL_AUTH_TENANT_NAME}.b2clogin.com"
 
-SOCIAL_AUTH_URL_NAMESPACE = "social"
-SOCIAL_AUTH_SANITIZE_REDIRECTS = False
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_POLICY = env("AZURE_B2C_POLICY_NAME", default="B2C_1_UNICEF_SOCIAL_signup_signin")
-SOCIAL_AUTH_USER_MODEL = "core.User"
+# SOCIAL_AUTH_URL_NAMESPACE = "social"
+# SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+# SOCIAL_AUTH_JSONFIELD_ENABLED = True
+# SOCIAL_AUTH_POLICY = env("AZURE_B2C_POLICY_NAME", default="B2C_1_UNICEF_SOCIAL_signup_signin")
+# SOCIAL_AUTH_USER_MODEL = "core.User"
 
-SOCIAL_AUTH_PIPELINE = (
-    "unicef_security.pipeline.social_details",
-    "social_core.pipeline.social_auth.social_uid",
-    "social_core.pipeline.social_auth.auth_allowed",
-    "social_core.pipeline.social_auth.social_user",
-    "social_core.pipeline.user.get_username",
-    "social_core.pipeline.social_auth.associate_by_email",
-    "unicef_security.pipeline.create_unicef_user",
-    "social_core.pipeline.social_auth.associate_user",
-    "social_core.pipeline.social_auth.load_extra_data",
-    "social_core.pipeline.user.user_details",
-)
+# SOCIAL_AUTH_PIPELINE = (
+#     "unicef_security.pipeline.social_details",
+#     "social_core.pipeline.social_auth.social_uid",
+#     "social_core.pipeline.social_auth.auth_allowed",
+#     "social_core.pipeline.social_auth.social_user",
+#     "social_core.pipeline.user.get_username",
+#     "social_core.pipeline.social_auth.associate_by_email",
+#     "unicef_security.pipeline.create_unicef_user",
+#     "social_core.pipeline.social_auth.associate_user",
+#     "social_core.pipeline.social_auth.load_extra_data",
+#     "social_core.pipeline.user.user_details",
+# )
 
 USER_FIELDS = ["username", "email", "first_name", "last_name"]
 USERNAME_IS_FULL_EMAIL = True
 
 CONSTANCE_CONFIG = {
-    "WESTERN_UNION_THREASHOLD": (
+    "WESTERN_UNION_THRESHOLD": (
         10000,
-        "Hourly threashold of calls to be made to Western Union API",
+        "Hourly threshold of calls to be made to Western Union API",
         int,
     ),
 }
 
-WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL")
-WESTERN_UNION_PATH = env("WESTERN_UNION_PATH")
-WESTERN_UNION_CERT = env("WESTERN_UNION_CERT")
-WESTERN_UNION_KEY = env("WESTERN_UNION_KEY")
+WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL", default=None)
+WESTERN_UNION_PATH = env("WESTERN_UNION_PATH", default=None)
+WESTERN_UNION_CERT = env("WESTERN_UNION_CERT", default=None)
+WESTERN_UNION_KEY = env("WESTERN_UNION_KEY", default=None)
