@@ -10,7 +10,7 @@ from hope_payment_gateway.apps.western_union.endpoints.utils import (
 def search_request(pk, mtcn=None):
     obj = PaymentRecord.objects.get(pk=pk)
     if not mtcn:
-        mtcn = obj.transaction_reference_id
+        mtcn = obj.token_number
     frm = get_usd(obj.unicef_id)
     payload = {
         "device": agent,
@@ -24,9 +24,5 @@ def search_request(pk, mtcn=None):
         "search_flag": "CANCEL_SEND",
         "foreign_remote_system": frm,
     }
-
-    print(mtcn, payload)
-
-    log = {"mtcn": mtcn}
     client = WesternUnionClient("Search_Service_H2HServiceService.wsdl")
-    return client.response_context("Search", payload, log)
+    return client.response_context("Search", payload)

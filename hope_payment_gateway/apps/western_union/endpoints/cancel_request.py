@@ -10,7 +10,7 @@ from hope_payment_gateway.apps.western_union.endpoints.utils import (
 def cancel_request(pk, mtcn=None, database_key=None, reason="WIC"):
     if not mtcn:
         obj = PaymentRecord.objects.get(pk=pk)
-        mtcn = obj.transaction_reference_id
+        mtcn = obj.token_number
     frm = get_usd(obj.transaction_reference_id)
     payload = {
         "device": agent,

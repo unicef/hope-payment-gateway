@@ -20,8 +20,9 @@ class WesternUnionClient:
         self.client = Client(wsdl, transport=transport, settings=settings)
         self.client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
-    def response_context(self, service_name, payload, log=dict):
+    def response_context(self, service_name, payload):
         response = ""
+        error = ""
         format = "string"
         try:
             service = getattr(self.client.service, service_name)
@@ -34,10 +35,15 @@ class WesternUnionClient:
             code = 200
         except TransportError as exc:
             title = f"{exc.message} [{exc.status_code}]"
+            breakpoint()
             code = 500
         except Fault as exc:
             title = f"{exc.message} [{exc.code}]"
             response = etree_to_string(exc.detail)
+            try:
+                error = exc.detail.xpath("//error/text()")[0]
+            except Exception:
+                error = "generic error"
             code = 400
 
-        return {"title": title, "content": response, "format": format, "code": code}
+        return {"title": title, "content": response, "format": format, "code": code, "error": error}

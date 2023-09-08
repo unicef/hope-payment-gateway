@@ -20,10 +20,10 @@ from hope_payment_gateway.apps.western_union.endpoints.utils import (
     unicef,
     web,
 )
-from hope_payment_gateway.apps.western_union.models import Corridor
+from hope_payment_gateway.apps.western_union.models import Corridor, Log
 
 
-def send_money_complete(pk, wallet=1):
+def send_money_complete(pk, wallet=None):
     obj = PaymentRecord.objects.get(pk=pk)
     if obj.status != PaymentRecord.STATUS_PENDING:
         return {"title": "The Payment Record is not in status Pending", "code": 400}
@@ -33,6 +33,7 @@ def send_money_complete(pk, wallet=1):
         # raise MissingHousehold
         snapshot_data = snapshot_example
     frm = get_usd(obj.unicef_id)
+    transaction_id = frm["reference_no"]
 
     collector = snapshot_data["primary_collector"]
     first_name = collector["given_name"]
@@ -60,8 +61,8 @@ def send_money_complete(pk, wallet=1):
     payment_details = {
         "recording_country_currency": {  # sending country
             "iso_code": {
-                "country_code": "US",
-                "currency_code": "USD",
+                "country_code": source_country,
+                "currency_code": source_currency,
             },
         },
         "destination_country_currency": {  # destination
@@ -91,8 +92,8 @@ def send_money_complete(pk, wallet=1):
         "payment_details": payment_details,
         "financials": financials,
         "delivery_services": delivery_services,
+        # 'wallet_details': {"service_provider_code": "06301"},
         "foreign_remote_system": frm,
-        # 'wallet_details': {"service_provider_code": "06301"}
     }
 
     if wallet:
@@ -103,29 +104,39 @@ def send_money_complete(pk, wallet=1):
 
     response = send_money_validation(pk, payload)
     if response["code"] != 200:
-        print(response)
         obj.status = PaymentRecord.STATUS_VALIDATION_KO
+        obj.reason_for_unsuccessful_payment = response["error"]
         obj.save()
-        return response
+        Log.objects.create(
+            transaction_id=transaction_id, message=f'Validation Error: {response["error"]}', success=False
+        )
+        return reverse("admin:hope_paymentrecord_change", args=[obj.pk])
 
     obj.status = PaymentRecord.STATUS_VALIDATION_OK
-    obj.transaction_reference_id = response["content"]["mtcn"]
+    obj.transaction_reference_id = transaction_id
+    obj.token_number = response["content"]["mtcn"]  # fixme
     obj.save()
     content = serialize_object(response["content"])
+    extra_data = {key: content[key] for key in ["instant_notification", "mtcn", "new_mtcn", "financials"]}
 
-    for key, value in content.items():
-        if key in [
-            "instant_notification",
-            "mtcn",
-            "new_mtcn",
-            "financials",
-        ]:
-            payload[key] = value
+    Log.objects.create(
+        transaction_id=obj.transaction_reference_id, message="Validation Success", extra_data=extra_data, success=True
+    )
+    for key, value in extra_data.items():
+        payload[key] = value
 
     response = send_money_store(pk, payload)
     if response["code"] == 200:
-        obj.status = PaymentRecord.STATUS_STORE_OK
+        obj.status = PaymentRecord.STATUS_SUCCESS
+        msg = "Store Success"
+        success = True
+        extra_data = {}
     else:
-        obj.status = PaymentRecord.STATUS_STORE_KO
+        obj.status = PaymentRecord.STATUS_ERROR
+        obj.reason_for_unsuccessful_payment = response["error"]
+        msg = response["error"]
+        success = False
+        extra_data = {"mtcn": obj.transaction_reference_id, "message_code": f'Store Error: {response["error"]}'}
     obj.save()
+    Log.objects.create(transaction_id=obj.transaction_reference_id, message=msg, extra_data=extra_data, success=success)
     return reverse("admin:hope_paymentrecord_change", args=[obj.pk])

@@ -38,5 +38,7 @@ def integrate_payload(payload, template):
             if cursor not in value:
                 raise (Exception(f"invalid choice {cursor} for {path}"))
         else:
+            print(11, key, value)
+            breakpoint()
             cursor[key] = value
     return payload

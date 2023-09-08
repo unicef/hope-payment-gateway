@@ -138,6 +138,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
         "delivered_quantity",
         "entitlement_date",
         "transaction_reference_id",
+        "token_number",
     )
     list_filter = (
         "status",
@@ -145,7 +146,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
         "conflicted",
         "excluded",
     )
-    search_fields = ("parent__unicef_id",)
+    search_fields = ("parent__unicef_id", "unicef_id", "transaction_reference_id")
     # list_editable = ("status",)
 
     inlines = (PaymentHouseholdSnapshotInline,)
