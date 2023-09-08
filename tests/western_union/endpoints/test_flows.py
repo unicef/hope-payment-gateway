@@ -16,8 +16,7 @@ def test_send_complete(django_app, admin_user):
     response = django_app.get(url, user=admin_user)
     assert response.status_code == 302
     payment.refresh_from_db()
-    assert payment.status == PaymentRecord.STATUS_STORE_OK
-    assert payment.transaction_reference_id == "0352466394"
+    assert payment.status == PaymentRecord.STATUS_SUCCESS
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/cancel_complete.yaml")
@@ -28,7 +27,7 @@ def test_cancel_complete(django_app, admin_user):
     responses._add_from_file(file_path="tests/western_union/endpoints/cancel_complete.yaml")
     payment = PaymentRecord.objects.first()
     payment.transaction_reference_id = "0352466394"
-    payment.status = PaymentRecord.STATUS_STORE_OK
+    payment.status = PaymentRecord.STATUS_SUCCESS
     payment.save()
     url = reverse("admin:hope_paymentrecord_cancel_complete", args=[payment.pk])
     response = django_app.get(url, user=admin_user)

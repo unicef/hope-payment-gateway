@@ -30,8 +30,10 @@ class Corridor(models.Model):  # delivery mechanism
 
 
 class Log(TimeStampedModel):
-    transaction_number = models.CharField(max_length=32)
-    # destination_country = models.CharField(max_length=2)
-    # destination_currency = models.CharField(max_length=3)
-    # template_code = models.CharField(max_length=4)
-    # template = models.JSONField(default=dict)
+    transaction_id = models.CharField(max_length=64)
+    message = models.CharField(max_length=1024, null=True, blank=True)
+    extra_data = models.JSONField(default=dict)
+    success = models.BooleanField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.transaction_id} / {self.message}"

@@ -171,19 +171,19 @@ class FinancialServiceProvider(ReadOnlyModel):
 
 
 class PaymentRecord(LimitedUpdateModel):
+    STATUS_PENDING = "Pending"
+
     STATUS_SUCCESS = "Transaction Successful"
     STATUS_ERROR = "Transaction Erroneous"
-    STATUS_DISTRIBUTION_SUCCESS = "Distribution Successful"
+
     STATUS_NOT_DISTRIBUTED = "Not Distributed"
-    STATUS_FORCE_FAILED = "Force failed"
     STATUS_DISTRIBUTION_PARTIAL = "Partially Distributed"
-    STATUS_PENDING = "Pending"
+    STATUS_DISTRIBUTION_SUCCESS = "Distribution Successful"
+    STATUS_FORCE_FAILED = "Force failed"
 
     # WESTERN UNION STATUSES
     STATUS_VALIDATION_OK = "Validation OK"
     STATUS_VALIDATION_KO = "Validation KO"
-    STATUS_STORE_OK = "Store OK"
-    STATUS_STORE_KO = "Store KO"
 
     STATUS_CHOICE = (
         (STATUS_DISTRIBUTION_SUCCESS, _("Distribution Successful")),
@@ -195,8 +195,6 @@ class PaymentRecord(LimitedUpdateModel):
         (STATUS_PENDING, _("Pending")),
         (STATUS_VALIDATION_OK, _("Validation OK")),
         (STATUS_VALIDATION_KO, _("Validation KO")),
-        (STATUS_STORE_OK, _("Store OK")),
-        (STATUS_STORE_KO, _("Store KO")),
     )
     unicef_id = models.CharField(max_length=255, null=True, blank=True, db_index=True)
     id = models.UUIDField(
@@ -234,6 +232,8 @@ class PaymentRecord(LimitedUpdateModel):
     delivered_quantity_usd = models.DecimalField(decimal_places=2, max_digits=12, null=True, blank=True)
     delivery_date = models.DateTimeField(null=True, blank=True)
     transaction_reference_id = models.CharField(max_length=255, null=True, blank=True)
+    reason_for_unsuccessful_payment = models.CharField(max_length=255, null=True, blank=True)
+    token_number = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -246,6 +246,8 @@ class PaymentRecord(LimitedUpdateModel):
             "delivered_quantity_usd",
             "delivery_date",
             "transaction_reference_id",
+            "reason_for_unsuccessful_payment",
+            # "token_number",
         ]
 
 
