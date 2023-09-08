@@ -27,13 +27,13 @@ DATABASE_APPS_MAPPING: Dict[str, str] = {
 }
 
 INSTALLED_APPS = (
-    "hope_payment_gateway.web",
-    "hope_payment_gateway.apps.core.apps.AppConfig",
-    "hope_payment_gateway.apps.hope.apps.AppConfig",
-    "hope_payment_gateway.apps.western_union.apps.AppConfig",
+    "hope_payment_gateway.apps.core",
+    "hope_payment_gateway.apps.hope",
+    "hope_payment_gateway.apps.western_union",
     "django.contrib.contenttypes",
     "advanced_filters",
     "unicef_security",
+    "django_celery_results",
     "django.contrib.auth",
     "django.contrib.humanize",
     "django.contrib.messages",
@@ -118,12 +118,12 @@ USE_I18N = True
 USE_TZ = True
 
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-#         "LOCATION": env("REDIS_URL", default="redis://localhost:6379/0"),
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": env("REDIS_URL"),
+    }
+}
 
 ROOT_URLCONF = "hope_payment_gateway.config.urls"
 WSGI_APPLICATION = "hope_payment_gateway.config.wsgi.application"
@@ -169,14 +169,11 @@ LOGGING = {
 
 AUTH_USER_MODEL = "core.User"
 
-HOST = env("HOST", default="http://localhost:8000")
-
 CELERY_ACCEPT_CONTENT = ["pickle", "json", "application/text"]
-CELERY_BROKER_URL = env("REDIS_URL", default="redis://localhost:6379/0")
-CELERY_BROKER_VISIBILITY_VAR = env("CELERY_VISIBILITY_TIMEOUT", default=1800)  # in seconds
-CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": int(CELERY_BROKER_VISIBILITY_VAR)}
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": int(env("CELERY_VISIBILITY_TIMEOUT", default=1800))}  # seconds
 CELERY_RESULT_BACKEND = "django-db"
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
+# CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler" # TODO: do we need beat at this moment?
 # Sensible settings for celery
 CELERY_TASK_ALWAYS_EAGER = env("CELERY_TASK_ALWAYS_EAGER", default=False)
 CELERY_TASK_ACKS_LATE = True

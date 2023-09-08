@@ -19,7 +19,7 @@ class DbRouter:
         return DbRouter.select_db(model)
 
     def allow_migrate(self, db: str, app_label: str, model_name: Optional[str] = None, **hints: Any) -> bool:
-        if bool(os.getenv("TESTING")):
+        if bool(os.getenv("TESTING")):  # FIXME (?)
             return True
         if db == "hope":
             return False
