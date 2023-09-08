@@ -90,5 +90,8 @@ payload = {
     },
 }
 
-analyze_node([template])
-integrate_payload(payload, template)
+
+# TODO
+def some_test_to_be_named():
+    analyze_node([template])
+    integrate_payload(payload, template)

@@ -12,6 +12,10 @@ case "$1" in
         C_FORCE_ROOT=true \
             celery -A hope_payment_gateway.config worker --events --max-tasks-per-child=1 --loglevel=INFO --autoscale=10,1
     ;;
+    tests)
+        python3 manage.py migrate
+        pytest
+    ;;
     *)
         exec "$@"
     ;;

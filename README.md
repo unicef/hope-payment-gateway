@@ -18,5 +18,5 @@ After that, you can access the API at `http://localhost:8000`.
 
 The command that runs all static checks and tests would be:
 ```
-docker compose run --rm backend sh -c "isort . && black . && flake8 . && pytest"
+docker compose run --rm backend sh -c "isort . && black . && flake8 ." && docker-compose run --rm backend tests
 ```
