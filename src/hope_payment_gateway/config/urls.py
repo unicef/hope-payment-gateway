@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.conf.urls import include
 from django.contrib import admin
-from django.urls import path
 from django.http import HttpResponse
+from django.urls import path
 
 api_patterns = [
     path(r"admin/", admin.site.urls),
@@ -13,10 +13,7 @@ api_patterns = [
     path(r"wu/", include("hope_payment_gateway.apps.western_union.urls")),
 ]
 
-urlpatterns = [
-    path("api/", include(api_patterns)),
-    path("health", lambda _: HttpResponse("OK"))
-]
+urlpatterns = [path("api/", include(api_patterns)), path("health", lambda _: HttpResponse("OK"))]
 
 
 if settings.DEBUG:  # pragma: no cover

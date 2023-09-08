@@ -1,4 +1,4 @@
-def analyze_node(nodes, partial=[]):
+def analyze_node(nodes, partial=[]):  # noqa
     for item in nodes:
         if isinstance(item, dict):
             news = []

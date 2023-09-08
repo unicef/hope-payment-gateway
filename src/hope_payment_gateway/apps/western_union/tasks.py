@@ -3,7 +3,9 @@ from django.db.models import Q
 from constance import config
 
 from hope_payment_gateway.apps.hope.models import PaymentRecord
-from hope_payment_gateway.apps.western_union.endpoints.send_money_complete import send_money_complete
+from hope_payment_gateway.apps.western_union.endpoints.send_money_complete import (
+    send_money_complete,
+)
 from hope_payment_gateway.celery import app
 
 

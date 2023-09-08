@@ -1,6 +1,10 @@
 from hope_payment_gateway.apps.hope.models import PaymentRecord
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.utils import agent, get_usd, unicef
+from hope_payment_gateway.apps.western_union.endpoints.utils import (
+    agent,
+    get_usd,
+    unicef,
+)
 
 
 def cancel_request(pk, mtcn=None, database_key=None, reason="WIC"):

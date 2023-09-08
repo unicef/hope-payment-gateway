@@ -4,8 +4,12 @@ from zeep.helpers import serialize_object
 
 from hope_payment_gateway.apps.hope.models import PaymentRecord
 from hope_payment_gateway.apps.western_union.endpoints.helpers import integrate_payload
-from hope_payment_gateway.apps.western_union.endpoints.send_money_store import send_money_store
-from hope_payment_gateway.apps.western_union.endpoints.send_money_validation import send_money_validation
+from hope_payment_gateway.apps.western_union.endpoints.send_money_store import (
+    send_money_store,
+)
+from hope_payment_gateway.apps.western_union.endpoints.send_money_validation import (
+    send_money_validation,
+)
 from hope_payment_gateway.apps.western_union.endpoints.utils import (
     MONEY_IN_TIME,
     WALLET,

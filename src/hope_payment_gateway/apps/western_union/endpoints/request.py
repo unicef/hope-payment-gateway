@@ -1,6 +1,10 @@
 import requests
 
-from hope_payment_gateway.config.settings import WESTERN_UNION_BASE_URL, WESTERN_UNION_CERT, WESTERN_UNION_KEY
+from hope_payment_gateway.config.settings import (
+    WESTERN_UNION_BASE_URL,
+    WESTERN_UNION_CERT,
+    WESTERN_UNION_KEY,
+)
 
 
 class WUClient:
