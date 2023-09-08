@@ -29,11 +29,11 @@ class Corridor(models.Model):  # delivery mechanism
     # }
 
 
-class Log(TimeStampedModel):
-    transaction_id = models.CharField(max_length=64)
+class PaymentRecordLog(TimeStampedModel):
+    record_code = models.CharField(max_length=64)
+    success = models.BooleanField(null=True, blank=True)
     message = models.CharField(max_length=1024, null=True, blank=True)
     extra_data = models.JSONField(default=dict)
-    success = models.BooleanField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.transaction_id} / {self.message}"
+        return f"{self.record_code} / {self.message}"

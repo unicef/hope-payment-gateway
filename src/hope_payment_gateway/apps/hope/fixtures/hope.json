@@ -2920,6 +2920,7 @@
     "model": "hope.paymentrecord",
     "pk": "002ee1a9-aaa3-4028-a45c-8accd3273764",
     "fields": {
+        "unicef_id": "PP-0060-23-00000006",
         "parent": "6db9058a-6e6a-4939-9b97-d7c988de1cd5",
         "program": "61c1b36f-7ab3-44ab-8138-f1df81c12d52",
         "business_area": "cf1c0bd4-2deb-4bbc-b4f6-1f4f4dc20247",
@@ -2931,7 +2932,7 @@
         "is_follow_up": false,
         "financial_service_provider": null,
         "delivery_type": null,
-        "entitlement_quantity": null,
+        "entitlement_quantity": 1000.00,
         "entitlement_quantity_usd": null,
         "delivered_quantity": null,
         "delivered_quantity_usd": null,

@@ -35,7 +35,6 @@ class WesternUnionClient:
             code = 200
         except TransportError as exc:
             title = f"{exc.message} [{exc.status_code}]"
-            breakpoint()
             code = 500
         except Fault as exc:
             title = f"{exc.message} [{exc.code}]"

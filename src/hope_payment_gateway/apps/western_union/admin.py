@@ -13,7 +13,7 @@ from hope_payment_gateway.apps.western_union.endpoints.das import (
     das_origination_currencies,
 )
 from hope_payment_gateway.apps.western_union.endpoints.request import requests_request
-from hope_payment_gateway.apps.western_union.models import Corridor, Log
+from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecordLog
 
 
 @admin.register(Corridor)
@@ -140,13 +140,14 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return TemplateResponse(request, "western_union.html", context)
 
 
-@admin.register(Log)
-class LogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+@admin.register(PaymentRecordLog)
+class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
-        "transaction_id",
+        "record_code",
         "message",
+        "success",
     )
-    list_filter = ("transaction_id",)
+    list_filter = ("record_code", "success")
     search_fields = (
         "transaction_id",
         "message",

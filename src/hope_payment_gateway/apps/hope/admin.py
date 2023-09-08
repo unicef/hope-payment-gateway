@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.template.response import TemplateResponse
 
 from admin_extra_buttons.decorators import button, choice, view
@@ -13,12 +13,14 @@ from hope_payment_gateway.apps.hope.models import (
     Programme,
     ProgrammeCycle,
 )
-from hope_payment_gateway.apps.western_union.endpoints.cancel_complete import cancel_complete
-from hope_payment_gateway.apps.western_union.endpoints.cancel_request import cancel_request
-from hope_payment_gateway.apps.western_union.endpoints.search_request import search_request
-from hope_payment_gateway.apps.western_union.endpoints.send_money_complete import send_money_complete
-from hope_payment_gateway.apps.western_union.endpoints.send_money_store import send_money_store
-from hope_payment_gateway.apps.western_union.endpoints.send_money_validation import send_money_validation
+from hope_payment_gateway.apps.hope.payloads.send_money_validation_payload import get_send_money_validation_payload
+from hope_payment_gateway.apps.western_union.endpoints.cancel import cancel, search_request
+from hope_payment_gateway.apps.western_union.endpoints.send_money import (
+    create_validation_payload,
+    send_money,
+    send_money_validation,
+)
+from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
 
 
 class ReadOnlyMixin:
@@ -135,7 +137,6 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
         "excluded",
     )
     search_fields = ("parent__unicef_id", "unicef_id", "transaction_reference_id")
-    # list_editable = ("status",)
 
     inlines = (PaymentHouseholdSnapshotInline,)
 
@@ -153,42 +154,44 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
 
     @choice(change_list=False)
     def primitives(self, button):
-        button.choices = [self.send_money_validation, self.send_money_store, self.search_request, self.cancel_request]
+        button.choices = [self.send_money_validation, self.search_request]
         return button
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def send_money_validation(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
-        context.update(send_money_validation(pk))
-        return TemplateResponse(request, "western_union.html", context)
-
-    @view(html_attrs={"style": "background-color:#88FF88;color:red"})
-    def send_money_store(self, request, pk) -> TemplateResponse:
-        context = self.get_common_context(request, pk)
-        context.update(send_money_store(pk))
+        hope_payload = get_send_money_validation_payload(pk)
+        payload = create_validation_payload(hope_payload)
+        context.update(send_money_validation(payload))
         return TemplateResponse(request, "western_union.html", context)
 
     @button()
-    def send_money_complete(self, request, pk) -> TemplateResponse:
-        return send_money_complete(pk)
+    def send_money(self, request, pk) -> TemplateResponse:
+        hope_payload = get_send_money_validation_payload(pk)
+        log = send_money(hope_payload)
+        loglevel = messages.SUCCESS if log.success else messages.ERROR
+        messages.add_message(request, loglevel, log.message)
 
     @view(html_attrs={"style": "background-color:yellow;color:blue"})
     def search_request(self, request, pk) -> TemplateResponse:
-        mtcn = request.GET.get("mtcn", None)
         context = self.get_common_context(request, pk)
-        context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-        context.update(search_request(pk, mtcn))
-        return TemplateResponse(request, "western_union.html", context)
-
-    @view(html_attrs={"style": "background-color:yellow;color:red"})
-    def cancel_request(self, request, pk) -> TemplateResponse:
-        mtcn = request.GET.get("mtcn", None)
-        context = self.get_common_context(request, pk)
-        context.update(cancel_request(pk, mtcn))
-        context["msg"] = f"Delete request based on MTCN \n" f"PARAM: mtcn {mtcn}"
-        return TemplateResponse(request, "western_union.html", context)
+        obj = PaymentRecord.objects.get(pk=pk)
+        log = PaymentRecordLog.objects.get(record_code=obj.unicef_id)
+        if mtcn := log.extra_data.get("mtcn", None):
+            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+            context.update(search_request(log.record_code, mtcn))
+            return TemplateResponse(request, "western_union.html", context)
+        messages.warning(request, "Missing MTCN")
 
     @button()
-    def cancel_complete(self, request, pk) -> TemplateResponse:
-        return cancel_complete(pk)
+    def cancel(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+
+        obj = PaymentRecord.objects.get(pk=pk)
+        log = PaymentRecordLog.objects.get(record_code=obj.unicef_id)
+        if mtcn := log.extra_data.get("mtcn", None):
+            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+        log = cancel(log.record_code, mtcn)
+        loglevel = messages.SUCCESS if log.success else messages.ERROR
+        messages.add_message(request, loglevel, log.message)

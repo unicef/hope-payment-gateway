@@ -1,7 +1,6 @@
 from django.urls import re_path
 
-from hope_payment_gateway.apps.western_union.endpoints.nis_complete import NisNotificationView
-from hope_payment_gateway.apps.western_union.endpoints.push_notification import PayNotificationView
+from hope_payment_gateway.apps.western_union.endpoints.nis import NisNotificationView, PayNotificationView
 
 app_name = "western_union"
 
