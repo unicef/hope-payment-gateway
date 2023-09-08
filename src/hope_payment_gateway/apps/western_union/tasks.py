@@ -8,9 +8,9 @@ from hope_payment_gateway.celery import app
 
 
 @app.task()
-def send_money(threshold=config.WESTERN_UNION_THREASHOLD, ba=None):
+def send_money(threshold=config.WESTERN_UNION_THREASHOLD, business_area=None):
     qs = PaymentRecord.objects.filter(status=PaymentRecord.STATUS_PENDING)
-    if ba:
-        qs.filter(Q(business_area__slug=ba) | Q(business_area__code=ba))
+    if business_area:
+        qs.filter(Q(business_area__slug=business_area) | Q(business_area__code=business_area))
     for payment_record in qs[:threshold]:
         send_money_complete(payment_record.pk)
