@@ -173,6 +173,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
+        obj = PaymentRecord.objects.get(pk=pk)
+        if log.success:
+            obj.status = PaymentRecord.STATUS_SUCCESS
+            pg = PaymentRecordLog.objects.get(record_code=obj.unicef_id)
+            obj.transaction_reference_id = pg.extra_data.get("mtcn", None)
+        else:
+            obj.status = PaymentRecord.STATUS_ERROR
+            obj.reason_for_unsuccessful_payment = log.message
+        obj.save()
+
     @view(html_attrs={"style": "background-color:yellow;color:blue"})
     def search_request(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
@@ -195,3 +205,11 @@ class PaymentRecordAdmin(ExtraButtonsMixin, LimitedUpdateMixin, admin.ModelAdmin
         log = cancel(log.record_code, mtcn)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
+
+        obj = PaymentRecord.objects.get(pk=pk)
+        if log.success:
+            obj.status = PaymentRecord.STATUS_PENDING
+        else:
+            dbkey = obj.extra_data.get("database_key", "N/A")
+            obj.reason_for_unsuccessful_payment = log.message + dbkey
+        obj.save()

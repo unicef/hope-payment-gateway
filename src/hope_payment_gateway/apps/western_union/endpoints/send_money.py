@@ -104,6 +104,6 @@ def send_money(hope_payload):
         log.message, log.success = "Store Success", True
     else:
         log.message, log.success = response["error"], False
-    log.extra_data = extra_data
+    log.extra_data = log_data
     log.save()
     return log
