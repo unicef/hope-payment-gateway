@@ -19,7 +19,6 @@ DEBUG = env.bool("DEBUG")
 
 DATABASES = {
     "default": env.db(default="psql://postgres:pass@db:5432/postgres"),
-    "hope": env.db(var="DATABASE_HOPE_URL", default="psql://postgres:pass@db:5432/postgres"),
 }
 
 DATABASE_ROUTERS = ("hope_payment_gateway.apps.core.dbrouters.DbRouter",)
@@ -30,7 +29,6 @@ DATABASE_APPS_MAPPING: Dict[str, str] = {
 INSTALLED_APPS = (
     "hope_payment_gateway.web",
     "hope_payment_gateway.apps.core.apps.AppConfig",
-    "hope_payment_gateway.apps.hope.apps.AppConfig",
     "hope_payment_gateway.apps.western_union.apps.AppConfig",
     "django.contrib.contenttypes",
     "advanced_filters",

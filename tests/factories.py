@@ -3,13 +3,6 @@ from django.db.models import signals
 
 import factory
 
-from hope_payment_gateway.apps.hope.models import (
-    BusinessArea,
-    FinancialServiceProvider,
-    PaymentPlan,
-    PaymentRecord,
-    Programme,
-)
 from hope_payment_gateway.apps.western_union.models import Corridor
 
 
@@ -36,49 +29,6 @@ class AdminFactory(UserFactory):
 
 class AnonUserFactory(UserFactory):
     username = "anonymous"
-
-
-class BusinessAreaFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda x: "BusinessArea{}".format(x))
-    code = factory.Sequence(lambda x: "BA{}".format(x))
-
-    class Meta:
-        model = BusinessArea
-        django_get_or_create = ("code",)
-
-
-class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda x: "FSP{}".format(x))
-
-    class Meta:
-        model = FinancialServiceProvider
-        django_get_or_create = ("code",)
-
-
-class ProgrammeFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "%03d" % n)
-
-    class Meta:
-        model = Programme
-        django_get_or_create = ("name",)
-
-
-class PaymentPlanFactory(factory.django.DjangoModelFactory):
-    code = factory.Sequence(lambda n: "code%03d" % n)
-    business_area = factory.SubFactory(BusinessAreaFactory)
-
-    class Meta:
-        model = PaymentPlan
-        django_get_or_create = ("code",)
-
-
-class PaymentFactory(factory.django.DjangoModelFactory):
-    code = factory.Sequence(lambda n: "code%03d" % n)
-    payment_plan = factory.SubFactory(PaymentPlanFactory)
-
-    class Meta:
-        model = PaymentRecord
-        django_get_or_create = ("code",)
 
 
 class CorridorFactory(factory.django.DjangoModelFactory):

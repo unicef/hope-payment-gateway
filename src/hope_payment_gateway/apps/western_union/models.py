@@ -33,6 +33,7 @@ class PaymentRecordLog(TimeStampedModel):
     record_code = models.CharField(max_length=64)
     success = models.BooleanField(null=True, blank=True)
     message = models.CharField(max_length=1024, null=True, blank=True)
+    payload = models.JSONField(default=dict)
     extra_data = models.JSONField(default=dict)
 
     def __str__(self):

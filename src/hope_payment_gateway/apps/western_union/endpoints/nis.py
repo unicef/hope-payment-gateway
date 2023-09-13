@@ -45,7 +45,7 @@ class NisNotificationView(PayNotificationView):
             },
         )
         if created:
-            return redirect("admin:hope_paymentrecord_changelist")
+            return redirect("admin:western_union_paymentrecordlog_changelist")
 
         pr.success = True if msg == "Receiver Paid Notification" else False
         pr.message = msg
