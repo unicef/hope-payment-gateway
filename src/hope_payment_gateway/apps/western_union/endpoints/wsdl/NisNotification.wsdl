@@ -22,6 +22,10 @@
 			<output name="NisNotification_output" message="tns:NisNotification_out"/>
 			<fault name="fault" message="tns:NisNotification_fault"/>
 		</operation>
+		<operation name="NotifServiceReply">
+			<input name="NisNotification_output" message="tns:NisNotification_out"/>
+			<fault name="fault" message="tns:NisNotification_fault"/>
+		</operation>
 	</portType>
 	<binding name="NisNotificationSOAP_HTTP_Binding" type="tns:NisNotifPortType">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
@@ -29,6 +33,18 @@
 			<soap:operation soapAction="NotifAction"/>
 			<input name="NisNotification_input">
 				<soap:body parts="nis-notification-request" use="literal"/>
+			</input>
+			<output name="NisNotification_output">
+				<soap:body parts="nis-notification-reply" use="literal"/>
+			</output>
+			<fault name="fault">
+				<soap:fault name="fault" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="NotifServiceReply">
+			<soap:operation soapAction="NotifServiceReply"/>
+			<input name="NisNotification_output">
+				<soap:body parts="nis-notification-reply" use="literal"/>
 			</input>
 			<output name="NisNotification_output">
 				<soap:body parts="nis-notification-reply" use="literal"/>

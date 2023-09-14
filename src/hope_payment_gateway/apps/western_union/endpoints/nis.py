@@ -62,4 +62,4 @@ def nic_acknowledge(payload):
     payload["ack_message"] = "SUCCESS"
 
     client = WesternUnionClient("NisNotification.wsdl")
-    return client.response_context("NotifService", payload)
+    return client.response_context("NotifServiceReply", payload)
