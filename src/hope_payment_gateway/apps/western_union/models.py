@@ -1,5 +1,6 @@
 from django.db import models
 
+from django_fsm import FSMField
 from model_utils.models import TimeStampedModel
 
 
@@ -29,7 +30,29 @@ class Corridor(models.Model):  # delivery mechanism
     # }
 
 
+class PaymentInstruction(TimeStampedModel):
+    DRAFT = "DRAFT"
+    OPEN = "OPEN"
+    CLOSED = "CLOSED"
+    CANCELLED = "CANCELLED"
+
+    STATUSES = (
+        (DRAFT, "Draft"),
+        (OPEN, "Open"),
+        (CLOSED, "Closed"),
+        (CANCELLED, "Cancelled"),
+    )
+
+    unicef_id = models.CharField(max_length=255, db_index=True)
+    status = FSMField(default=DRAFT, protected=False, db_index=True, choices=STATUSES)
+    payload = models.JSONField(default=dict)
+
+    def __str__(self):
+        return f"{self.unicef_id} - {self.status}"
+
+
 class PaymentRecordLog(TimeStampedModel):
+    parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64)
     success = models.BooleanField(null=True, blank=True)
     message = models.CharField(max_length=1024, null=True, blank=True)
@@ -38,3 +61,9 @@ class PaymentRecordLog(TimeStampedModel):
 
     def __str__(self):
         return f"{self.record_code} / {self.message}"
+
+    def get_payload(self):
+        payload = self.parent.payload.copy()
+        payload.update(self.payload)
+        payload["payment_record_code"] = self.record_code
+        return payload

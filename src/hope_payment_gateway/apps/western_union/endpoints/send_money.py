@@ -1,40 +1,24 @@
 from zeep.helpers import serialize_object
 
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.utils import get_usd, sender, unicef, web
-from hope_payment_gateway.apps.western_union.models import PaymentRecordLog, Corridor
+from hope_payment_gateway.apps.western_union.endpoints.helpers import integrate_payload
+from hope_payment_gateway.apps.western_union.endpoints.utils import MONEY_IN_TIME, WMF, get_usd, sender, unicef, web
+from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecordLog
 
 
 def create_validation_payload(hope_payload):
-    # service_provider_code
-    # reason_for_sending
-    # mandatory fields
-    # national number +1
-
-    corridor_data = {}
-    if "corridor" in hope_payload:
-        # hope_payload["corridor"]
-        corridor = Corridor.objects.get(destination_country=hope_payload["destination_country"]).template
-        corridor_data = {
-            "country_code": corridor["receiver"]["mobile_phone"]["phone_number"]["country_code"],
-            "national_number": hope_payload["phone_no"][1:],
-            "reason_for_sending": "P019",
-            "service_provider_code": 22901
-        }
-
     frm = get_usd(hope_payload["payment_record_code"])
 
     receiver = {
         "name": {"first_name": hope_payload["first_name"], "last_name": hope_payload["last_name"], "name_type": "D"},
-        # "email": email,
         "contact_phone": hope_payload["phone_no"],
         "mobile_phone": {
             "phone_number": {
-                "country_code": corridor_data.get("country_code", None),
-                "national_number": corridor_data.get("national_number", None),
+                "country_code": None,
+                "national_number": hope_payload["phone_no"][2:],  # fixme
             },
         },
-        "reason_for_sending": corridor_data.get("reason_for_sending", None),
+        "reason_for_sending": hope_payload.get("reason_for_sending", None),
     }
     financials = {
         # "originators_principal_amount": amount,
@@ -59,9 +43,9 @@ def create_validation_payload(hope_payload):
                 "currency_code": "USD",
             },
         },
-        "transaction_type": hope_payload["transaction_type"],
+        "transaction_type": hope_payload.get("transaction_type", WMF),
         "payment_type": "Cash",
-        "duplicate_detection_flag": hope_payload["duplication_enabled"],
+        "duplicate_detection_flag": hope_payload.get("duplication_enabled", "D"),
         # needed for US and MEX
         # "expected_payout_location": {
         #     "state_code": "NY",
@@ -69,9 +53,9 @@ def create_validation_payload(hope_payload):
         # }
     }
 
-    delivery_services = {"code": hope_payload["delivery_services_code"]}
+    delivery_services = {"code": hope_payload.get("delivery_services_code", MONEY_IN_TIME)}
 
-    return {
+    payload = {
         "device": web,
         "channel": unicef,
         "sender": sender,
@@ -80,10 +64,15 @@ def create_validation_payload(hope_payload):
         "financials": financials,
         "delivery_services": delivery_services,
         "foreign_remote_system": frm,
-        "wallet_details": {
-            "service_provider_code": corridor_data.get("service_provider_code", None)
-        }
+        "wallet_details": {"service_provider_code": None},
     }
+
+    if "corridor" in hope_payload:
+        # destination_country = hope_payload["destination_country"]
+        template = Corridor.objects.get(description=hope_payload["corridor"]).template
+        payload = integrate_payload(payload, template)
+
+    return payload
 
 
 def send_money_validation(payload):
@@ -96,8 +85,8 @@ def send_money_store(payload):
     return client.response_context("SendMoneyStore_H2H", payload)
 
 
-def send_money(hope_payload, corridor=None):
-    payload = create_validation_payload(hope_payload, corridor)
+def send_money(hope_payload):
+    payload = create_validation_payload(hope_payload)
     response = send_money_validation(payload)
     smv_payload = serialize_object(response["content"])
     record_code = hope_payload["payment_record_code"]

@@ -25,20 +25,16 @@ def integrate_payload(payload, template):
     for path in template_list:
         cursor = payload
         value = path[-1]
-        for key in path[:-1]:
+        leaf = path[-2]
+        for key in path[:-2]:
             if key not in cursor:
-                cursor[key] = dict()
-            if not isinstance(cursor, dict):
                 raise Exception(f"wrong structure: {cursor} should not be a leaf")
             cursor = cursor[key]
         if value is None:
-            if cursor is None or not cursor:
-                raise (Exception(f"missing element {cursor} in {value}"))
+            assert cursor[leaf]
         elif isinstance(value, list):
-            if cursor not in value:
-                raise (Exception(f"invalid choice {cursor} for {path}"))
+            assert cursor[leaf]
+            assert cursor[leaf] in value
         else:
-            print(11, key, value)
-            breakpoint()
-            cursor[key] = value
+            cursor[leaf] = value
     return payload

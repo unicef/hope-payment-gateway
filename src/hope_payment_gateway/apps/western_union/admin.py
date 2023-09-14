@@ -19,7 +19,7 @@ from hope_payment_gateway.apps.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecordLog
 
 
 @admin.register(Corridor)
@@ -166,15 +166,16 @@ class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     def send_money_validation(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecordLog.objects.get(pk=pk)
+        payload = obj.get_payload()
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
-        payload = create_validation_payload(obj.payload)
+        payload = create_validation_payload(payload)
         context.update(send_money_validation(payload))
         return TemplateResponse(request, "western_union.html", context)
 
     @button()
     def send_money(self, request, pk) -> TemplateResponse:
         obj = PaymentRecordLog.objects.get(pk=pk)
-        log = send_money(obj.payload)
+        log = send_money(obj.get_payload())
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
@@ -197,3 +198,14 @@ class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         log = cancel(obj.record_code, mtcn)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
+
+
+@admin.register(PaymentInstruction)
+class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = (
+        "unicef_id",
+        "status",
+    )
+    list_filter = ("status",)
+    search_fields = ("unicef_id",)
+    # readonly_fields = ("payload",)
