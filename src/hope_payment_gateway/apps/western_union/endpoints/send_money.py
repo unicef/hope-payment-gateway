@@ -90,7 +90,7 @@ def send_money(hope_payload):
     response = send_money_validation(payload)
     smv_payload = serialize_object(response["content"])
     record_code = hope_payload["payment_record_code"]
-    log, _ = PaymentRecordLog.objects.get_or_create(record_code=record_code)
+    log = PaymentRecordLog.objects.get(record_code=record_code)
     if response["code"] != 200:
         log.message = f'Validation Error: {response["error"]}'
         log.success = False

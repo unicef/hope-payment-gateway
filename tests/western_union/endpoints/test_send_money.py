@@ -5,7 +5,7 @@ from hope_payment_gateway.apps.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecordLog
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")
@@ -54,6 +54,8 @@ def test_send_complete(django_app, admin_user):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 0
+    payment_instruction = PaymentInstruction.objects.create()
+    PaymentRecordLog.objects.create(parent=payment_instruction, record_code=ref_no)
+    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
     send_money(hope_payload)
-    assert PaymentRecordLog.objects.get(record_code=ref_no)
+    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
