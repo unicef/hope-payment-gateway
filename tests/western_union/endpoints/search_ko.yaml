@@ -1,0 +1,19 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '<?xml version="1.0" encoding="UTF-8"?>
+
+      <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"><soapenv:Body><xrsi:search-reply
+      xmlns:xrsi="http://www.westernunion.com/schema/xrsi"><instant_notification><addl_service_charges/></instant_notification><payment_transactions><payment_transaction><sender><name
+      name_type="C"><business_name>UNICEF</business_name></name><address><addr_line1>3
+      United Nations Plaza</addr_line1><city>NEW YORK</city><state>NY</state><postal_code>10017</postal_code><country_code><iso_code><country_code>US</country_code><currency_code>USD</currency_code></iso_code></country_code><local_area>NEW
+      YORK</local_area><state_zip>10017</state_zip><street>3 United Nations Plaza</street><local_delivery_area>NEW
+      YORK</local_delivery_area></address><email>unicef@unicef.org</email><contact_phone>2123267000</contact_phone><mobile_phone><phone_number><country_code>1</country_code><national_number>2123267000</national_number></phone_number></mobile_phone><mobile_details><city_code>1</city_code><number>2123267000</number></mobile_details></sender><receiver><name
+      name_type="D"><first_name>FIGU</first_name><last_name>ASD</last_name></name><address><country_code><iso_code><country_code>ES</country_code><currency_code>EUR</currency_code></iso_code></country_code></address><mobile_phone><phone_number><national_number>9123456</national_number></phone_number></mobile_phone><mobile_details><number>9123456</number></mobile_details></receiver><financials><taxes><tax_worksheet>                                                                                                                                                                                                                                                                                                            </tax_worksheet></taxes><originators_principal_amount>1273</originators_principal_amount><destination_principal_amount>1273</destination_principal_amount><gross_total_amount>2773</gross_total_amount><pay_amount>1273</pay_amount><principal_amount>1273</principal_amount><charges>1500</charges><tolls>0</tolls></financials><payment_details><expected_payout_location><state_code/><city/></expected_payout_location><destination_country_currency><iso_code><country_code>ES</country_code><currency_code>EUR</currency_code></iso_code></destination_country_currency><originating_country_currency><iso_code><country_code>US</country_code><currency_code>USD</currency_code></iso_code></originating_country_currency><originating_city>NEW
+      YORKNY1</originating_city><transaction_type>CMN</transaction_type><exchange_rate>1.0000000</exchange_rate><original_destination_country_currency><iso_code><country_code>ES</country_code><currency_code>EUR</currency_code></iso_code></original_destination_country_currency></payment_details><filing_date>09-15-23
+      </filing_date><filing_time>0404P EDT</filing_time><pay_status_description>W/C</pay_status_description><mtcn>6022825782</mtcn><new_mtcn>2325886022825782</new_mtcn><fusion><fusion_status>W/C</fusion_status><account_number/></fusion><wu_network_agent_indicator>N</wu_network_agent_indicator></payment_transaction></payment_transactions><delivery_services/><foreign_remote_system><identifier>WGQCUS1250T</identifier><reference_no>alpha-1694809198</reference_no><counter_id>US125QCUSD1T</counter_id></foreign_remote_system><refund_cancel_flag>N</refund_cancel_flag></xrsi:search-reply></soapenv:Body></soapenv:Envelope>'
+    content_type: text/plain
+    method: POST
+    status: 200
+    url: https://wugateway2pi.westernunion.com/Search_Service_H2H

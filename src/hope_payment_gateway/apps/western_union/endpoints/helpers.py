@@ -1,3 +1,10 @@
+from hope_payment_gateway.apps.western_union.exceptions import (
+    InvalidChoiceFromCorridor,
+    MissingValueInCorridor,
+    PayloadIncompatible,
+)
+
+
 def analyze_node(nodes, partial=[]):
     for item in nodes:
         if isinstance(item, dict):
@@ -28,13 +35,14 @@ def integrate_payload(payload, template):
         leaf = path[-2]
         for key in path[:-2]:
             if key not in cursor:
-                raise Exception(f"wrong structure: {cursor} should not be a leaf")
+                raise PayloadIncompatible(f"wrong structure: {cursor} should not be a leaf")
             cursor = cursor[key]
         if value is None:
-            assert cursor[leaf]
+            if cursor[leaf] is None:
+                raise MissingValueInCorridor(value)
         elif isinstance(value, list):
-            assert cursor[leaf]
-            assert cursor[leaf] in value
+            if cursor[leaf] is None or cursor[leaf] not in value:
+                raise InvalidChoiceFromCorridor(value)
         else:
             cursor[leaf] = value
     return payload

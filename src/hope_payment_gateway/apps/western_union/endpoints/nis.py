@@ -32,7 +32,7 @@ class NisNotificationView(PayNotificationView):
 
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"] / 100
 
-        pr, created = PaymentRecordLog.objects.get_or_create(
+        pr, _ = PaymentRecordLog.objects.get(
             record_code=record_code,
             defaults={
                 "message": msg,

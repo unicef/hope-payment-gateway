@@ -1,0 +1,14 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:xsi=\"\
+      http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\
+      \ xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:soapenc=\"\
+      http://schemas.xmlsoap.org/soap/encoding/\">\n   <soapenv:Body>\n      <xrsi:esp-heartbeat-reply\
+      \ xmlns:xrsi=\"http://www.westernunion.com/schema/xrsi\">\n         <status>\n\
+      \            <code>0000</code>\n            <message>Good</message>\n      \
+      \   </status>\n      </xrsi:esp-heartbeat-reply>\n   </soapenv:Body>\n</soapenv:Envelope>"
+    content_type: text/plain
+    method: POST
+    status: 200
+    url: https://wugateway2pi.westernunion.com/

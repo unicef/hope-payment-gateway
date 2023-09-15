@@ -68,8 +68,10 @@ def create_validation_payload(hope_payload):
     }
 
     if "corridor" in hope_payload:
-        # destination_country = hope_payload["destination_country"]
-        template = Corridor.objects.get(description=hope_payload["corridor"]).template
+        template = Corridor.objects.get(
+            destination_country=hope_payload["destination_country"],
+            destination_currency=hope_payload["destination_currency"],
+        ).template
         payload = integrate_payload(payload, template)
 
     return payload

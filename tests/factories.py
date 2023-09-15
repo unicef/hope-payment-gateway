@@ -3,7 +3,7 @@ from django.db.models import signals
 
 import factory
 
-from hope_payment_gateway.apps.western_union.models import Corridor
+from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecordLog
 
 
 @factory.django.mute_signals(signals.post_save)
@@ -34,3 +34,15 @@ class AnonUserFactory(UserFactory):
 class CorridorFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Corridor
+
+
+class PaymentInstructionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = PaymentInstruction
+
+
+class PaymentRecordLogFactory(factory.django.DjangoModelFactory):
+    parent = factory.SubFactory(PaymentInstructionFactory)
+
+    class Meta:
+        model = PaymentRecordLog

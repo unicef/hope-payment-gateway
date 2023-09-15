@@ -1,2 +1,14 @@
-class MissingDataHousehold(BaseException):
+class PayloadException(BaseException):
+    pass
+
+
+class MissingValueInCorridor(PayloadException):
+    pass
+
+
+class InvalidChoiceFromCorridor(PayloadException):
+    pass
+
+
+class PayloadIncompatible(PayloadException):
     pass

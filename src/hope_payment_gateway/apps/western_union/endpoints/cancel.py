@@ -45,10 +45,13 @@ def cancel(record_code, mtcn):
     try:
         database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
     except TypeError:
+        database_key = None
+    if not database_key:
         log.message = "No Money Transfer Key"
         log.success = False
         log.save()
         return log
+
     response = cancel_request(record_code, mtcn, database_key)
     extra_data = {"db_key": database_key, "mtcn": mtcn}
 

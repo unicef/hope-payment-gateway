@@ -35,13 +35,17 @@ class WesternUnionClient:
             code = 200
         except TransportError as exc:
             title = f"{exc.message} [{exc.status_code}]"
-            code = 500
+            code = 400
+        except TypeError as exc:
+            title = "Invalid Payload"
+            code = 400
+            error = str(exc)
         except Fault as exc:
             title = f"{exc.message} [{exc.code}]"
             response = etree_to_string(exc.detail)
             try:
                 error = exc.detail.xpath("//error/text()")[0]
-            except Exception:
+            except BaseException:
                 error = "generic error"
             code = 400
 

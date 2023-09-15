@@ -26,3 +26,13 @@ def logged_user(client, user):
 @pytest.fixture()
 def corridor():
     return factories.CorridorFactory()
+
+
+@pytest.fixture()
+def pi():
+    return factories.PaymentInstructionFactory()
+
+
+@pytest.fixture()
+def prl():
+    return factories.PaymentRecordLogFactory()

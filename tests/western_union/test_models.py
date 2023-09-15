@@ -1,0 +1,28 @@
+import pytest
+
+from ..factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordLogFactory
+
+
+@pytest.mark.django_db
+def test_corridor():
+    corridor = CorridorFactory(description="Corridor", template_code="TMP")
+    assert str(corridor) == "Corridor / TMP"
+
+
+@pytest.mark.django_db
+def test_payment_instruction():
+    instruction = PaymentInstructionFactory(unicef_id="UNC-123")
+    assert str(instruction) == "UNC-123 - DRAFT"
+
+
+@pytest.mark.django_db
+def test_payment_record_log():
+    prl = PaymentRecordLogFactory(record_code="RCD-123", message="OK")
+    assert str(prl) == "RCD-123 / OK"
+
+
+@pytest.mark.django_db
+def test_payment_record_log_payload():
+    instruction = PaymentInstructionFactory(payload={"a": "a"})
+    prl = PaymentRecordLogFactory(parent=instruction, payload={"b": "b"}, record_code="r")
+    assert prl.get_payload() == {"a": "a", "b": "b", "payment_record_code": "r"}
