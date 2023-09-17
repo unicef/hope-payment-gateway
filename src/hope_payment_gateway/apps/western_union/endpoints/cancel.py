@@ -1,5 +1,5 @@
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.config import agent, get_usd, unicef
+from hope_payment_gateway.apps.western_union.endpoints.config import agent, get_usd, unicef, WIC
 from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
 
 
@@ -21,7 +21,7 @@ def search_request(record_code, mtcn):
     return client.response_context("Search", payload)
 
 
-def cancel_request(record_code, mtcn, database_key, reason="WIC"):
+def cancel_request(record_code, mtcn, database_key, reason=WIC):
     frm = get_usd(record_code)
     payload = {
         "device": agent,
@@ -30,7 +30,7 @@ def cancel_request(record_code, mtcn, database_key, reason="WIC"):
         "reason_for_redelivery": reason,
         "mtcn": mtcn,
         "database_key": database_key,
-        "comments_data": "Comments",
+        "comments_data": "Cancelled by UNICEF",
         "disallow_traffic_flag": "Y",
     }
 
@@ -41,13 +41,13 @@ def cancel_request(record_code, mtcn, database_key, reason="WIC"):
 def cancel(record_code, mtcn):
     response = search_request(record_code, mtcn)
     payload = response["content"]
-    log, _ = PaymentRecordLog.objects.get_or_create(record_code=record_code)
+    log = PaymentRecordLog.objects.get(record_code=record_code)
     try:
         database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
     except TypeError:
         database_key = None
     if not database_key:
-        log.message = "No Money Transfer Key"
+        log.message = "Search Error: No Money Transfer Key"
         log.success = False
         log.save()
         return log
@@ -59,8 +59,8 @@ def cancel(record_code, mtcn):
         log.message = "Cancelled"
         log.success = True
     else:
-        log.message = "Cancelled error"
+        log.message = "Cancel error"
         log.success = False
-    log.extra_data = extra_data
+    log.extra_data.update(extra_data)
     log.save()
     return log

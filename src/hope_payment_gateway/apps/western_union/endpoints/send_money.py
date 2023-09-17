@@ -3,6 +3,7 @@ from zeep.helpers import serialize_object
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.western_union.endpoints.config import MONEY_IN_TIME, WMF, get_usd, sender, unicef, web
 from hope_payment_gateway.apps.western_union.endpoints.helpers import integrate_payload
+from hope_payment_gateway.apps.western_union.exceptions import InvalidCorridor
 from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecordLog
 
 
@@ -68,10 +69,14 @@ def create_validation_payload(hope_payload):
     }
 
     if "corridor" in hope_payload:
-        template = Corridor.objects.get(
-            destination_country=hope_payload["destination_country"],
-            destination_currency=hope_payload["destination_currency"],
-        ).template
+        try:
+            template = Corridor.objects.get(
+                destination_country=hope_payload["destination_country"],
+                destination_currency=hope_payload["destination_currency"],
+            ).template
+        except Corridor.DoesNotExist:
+            raise InvalidCorridor
+
         payload = integrate_payload(payload, template)
 
     return payload
@@ -88,13 +93,22 @@ def send_money_store(payload):
 
 
 def send_money(hope_payload):
-    payload = create_validation_payload(hope_payload)
-    response = send_money_validation(payload)
-    smv_payload = serialize_object(response["content"])
     record_code = hope_payload["payment_record_code"]
     log = PaymentRecordLog.objects.get(record_code=record_code)
+
+    try:
+        payload = create_validation_payload(hope_payload)
+    except InvalidCorridor:
+        log.message = f'Corridor for provided country does not exist'
+        log.success = False
+        log.save()
+        return log
+
+    response = send_money_validation(payload)
+    smv_payload = serialize_object(response["content"])
+
     if response["code"] != 200:
-        log.message = f'Validation Error: {response["error"]}'
+        log.message = f'Send Money Validation: {response["error"]}'
         log.success = False
         log.save()
         return log
@@ -103,18 +117,18 @@ def send_money(hope_payload):
     log_data = extra_data.copy()
     log_data["record_code"] = record_code
     log_data.pop("financials")
-    log.message = "Validation Success"
+    log.message = "Send Money Validation: Success"
     log.success = True
-    log.extra_data = log_data
+    log.extra_data.update(log_data)
     log.save()
     for key, value in extra_data.items():
         payload[key] = value
 
     response = send_money_store(payload)
     if response["code"] == 200:
-        log.message, log.success = "Store Success", True
+        log.message, log.success = "Send Money Store: Success", True
     else:
-        log.message, log.success = response["error"], False
-    log.extra_data = log_data
+        log.message, log.success = f'Send Money Store: {response["error"]}', False
+    log.extra_data.update(log_data)
     log.save()
     return log

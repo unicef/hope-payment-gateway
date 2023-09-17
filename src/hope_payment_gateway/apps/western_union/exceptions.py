@@ -1,3 +1,7 @@
+class InvalidCorridor(BaseException):
+    pass
+
+
 class PayloadException(BaseException):
     pass
 
