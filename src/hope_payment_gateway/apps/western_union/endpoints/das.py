@@ -1,5 +1,5 @@
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.utils import get_eur, get_usd, unicef
+from hope_payment_gateway.apps.western_union.endpoints.config import get_eur, get_usd, unicef
 
 
 def das_countries_currencies():

@@ -1,5 +1,5 @@
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.utils import agent, get_usd, unicef
+from hope_payment_gateway.apps.western_union.endpoints.config import agent, get_usd, unicef
 from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
 
 

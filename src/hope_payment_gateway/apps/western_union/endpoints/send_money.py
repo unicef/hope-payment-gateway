@@ -1,8 +1,8 @@
 from zeep.helpers import serialize_object
 
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
+from hope_payment_gateway.apps.western_union.endpoints.config import MONEY_IN_TIME, WMF, get_usd, sender, unicef, web
 from hope_payment_gateway.apps.western_union.endpoints.helpers import integrate_payload
-from hope_payment_gateway.apps.western_union.endpoints.utils import MONEY_IN_TIME, WMF, get_usd, sender, unicef, web
 from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecordLog
 
 

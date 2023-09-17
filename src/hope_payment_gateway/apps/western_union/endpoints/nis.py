@@ -1,5 +1,3 @@
-from django.shortcuts import redirect
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -32,7 +30,7 @@ class NisNotificationView(PayNotificationView):
 
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"] / 100
 
-        pr, _ = PaymentRecordLog.objects.get(
+        pr, updated = PaymentRecordLog.objects.update_or_create(
             record_code=record_code,
             defaults={
                 "message": msg,
@@ -44,8 +42,6 @@ class NisNotificationView(PayNotificationView):
                 },
             },
         )
-        if created:
-            return redirect("admin:western_union_paymentrecordlog_changelist")
 
         pr.success = True if msg == "Receiver Paid Notification" else False
         pr.message = msg

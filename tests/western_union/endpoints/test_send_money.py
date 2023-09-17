@@ -11,8 +11,8 @@ from hope_payment_gateway.apps.western_union.exceptions import (
     MissingValueInCorridor,
     PayloadIncompatible,
 )
-from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecordLog
-from tests.factories import CorridorFactory
+from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
+from tests.factories import CorridorFactory, PaymentRecordLogFactory
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")
@@ -61,8 +61,7 @@ def test_send_complete(django_app, admin_user):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payment_instruction = PaymentInstruction.objects.create()
-    PaymentRecordLog.objects.create(parent=payment_instruction, record_code=ref_no)
+    PaymentRecordLogFactory(record_code=ref_no)
     assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
     send_money(hope_payload)
     assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
@@ -102,11 +101,12 @@ def test_send_complete_corridor(django_app, admin_user):
         destination_currency="EUR",
         template=corridor_template,
     )
-    payment_instruction = PaymentInstruction.objects.create()
-    PaymentRecordLog.objects.create(parent=payment_instruction, record_code=ref_no)
+    PaymentRecordLogFactory(record_code=ref_no)
     assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
     send_money(hope_payload)
-    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
+    pr = PaymentRecordLog.objects.get(record_code=ref_no)
+    assert pr.success
+    assert "mtcn" in pr.extra_data.keys()
 
 
 @pytest.mark.parametrize(
@@ -134,7 +134,7 @@ def test_send_complete_corridor(django_app, admin_user):
         (
             {
                 "receiver": {
-                    "mobile_phone": {"phone_number": {"national_number": None}},
+                    "mobile_phone": {"phone_number": {"country_code": None}},
                 },
             },
             MissingValueInCorridor,
@@ -163,9 +163,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, ex
         destination_currency="EUR",
         template=corridor_template,
     )
-    payment_instruction = PaymentInstruction.objects.create()
-    PaymentRecordLog.objects.create(parent=payment_instruction, record_code=ref_no)
+    PaymentRecordLogFactory(record_code=ref_no)
     assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
     with pytest.raises(exception):
         send_money(hope_payload)
-    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1

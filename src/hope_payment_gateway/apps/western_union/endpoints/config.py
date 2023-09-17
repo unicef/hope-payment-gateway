@@ -1,24 +1,20 @@
-from datetime import datetime
-
 web = {"type": "WEB"}
 agent = {"type": "AGENT"}
 unicef = {"type": "H2H", "name": "UNICEF", "version": "9500"}
 
 
 def get_usd(ref_num="N/A"):
-    rnd = int(round(datetime.now().timestamp()))
     return {
         "identifier": "WGQCUS1250T",
-        "reference_no": f"{ref_num}-{rnd}",
+        "reference_no": ref_num,
         "counter_id": "US125QCUSD1T",
     }
 
 
 def get_eur(ref_num="N/A"):
-    rnd = int(round(datetime.now().timestamp()))
     return {
         "identifier": "WGQCUS125ET",
-        "reference_no": f"{ref_num}-{rnd}",
+        "reference_no": ref_num,
         "counter_id": "US125QCEUR1T",
     }
 
