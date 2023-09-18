@@ -1,0 +1,29 @@
+trigger: none
+pr: none
+resources:
+  - repo: self
+
+variables:
+  Kubernetes.serviceConnection: "ICTD-HOPE-TRN-uni-apps-aks-hope-dev-ictd-hope-trn-1616938354772"
+  Kubernetes.namespace: "ictd-hope-trn"
+  Docker.registry: "uniappsakshopedev.azurecr.io"
+
+
+stages:
+  - stage: deploy
+    displayName: DEPLOY
+    jobs:
+      - job: deploy_hpg
+        pool:
+          vmImage: 'ubuntu-latest'
+        displayName: "[HOPE-PAYMENT-GATEWAY] Deployment"
+        steps:
+          - checkout: self
+          - checkout: hct-mis-helm
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: $(Kubernetes.serviceConnection)
+              command: 'login'
+          - script: |
+              echo TODO
