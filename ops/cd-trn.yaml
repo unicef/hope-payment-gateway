@@ -8,7 +8,6 @@ variables:
   Kubernetes.namespace: "ictd-hope-trn"
   Docker.registry: "uniappsakshopedev.azurecr.io"
 
-
 stages:
   - stage: deploy
     displayName: DEPLOY
@@ -19,11 +18,32 @@ stages:
         displayName: "[HOPE-PAYMENT-GATEWAY] Deployment"
         steps:
           - checkout: self
-          - checkout: hct-mis-helm
           - task: Kubernetes@1
             inputs:
               connectionType: 'Kubernetes Service Connection'
               kubernetesServiceEndpoint: $(Kubernetes.serviceConnection)
               command: 'login'
-          - script: |
-              echo TODO
+          - task: HelmDeploy@0
+            displayName: "Update Chart dependencies"
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceConnection: $(Kubernetes.serviceConnection)
+              command: package
+              updatedependency: true
+              chartPath: '**/ops/hope-payment-gateway'
+          - task: HelmDeploy@0
+            displayName: "DEPLOY"
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceConnection: $(Kubernetes.serviceConnection)
+              namespace: $(Kubernetes.namespace)
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: '**/ops/hope-payment-gateway'
+              releaseName: 'hpg'
+              install: true
+              waitForExecution: false
+              failOnStderr: true
+              valueFile: '**/ops/hope-payment-gateway/values.yaml'
+              arguments: "--timeout 600s"
+              # overrideValues: ""
