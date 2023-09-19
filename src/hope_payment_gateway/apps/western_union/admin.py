@@ -148,8 +148,8 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 @admin.register(PaymentRecordLog)
 class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("record_code", "message", "success", "uuid")
-    list_filter = ("record_code", "success")
+    list_display = ("record_code", "status", "message", "success", "uuid")
+    list_filter = ("record_code", "status", "success")
     search_fields = ("transaction_id", "message")
     readonly_fields = ("extra_data", "uuid")
 
