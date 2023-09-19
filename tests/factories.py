@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 
@@ -37,12 +39,15 @@ class CorridorFactory(factory.django.DjangoModelFactory):
 
 
 class PaymentInstructionFactory(factory.django.DjangoModelFactory):
+    uuid = uuid.uuid4()
+
     class Meta:
         model = PaymentInstruction
 
 
 class PaymentRecordLogFactory(factory.django.DjangoModelFactory):
     parent = factory.SubFactory(PaymentInstructionFactory)
+    uuid = uuid.uuid4()
 
     class Meta:
         model = PaymentRecordLog

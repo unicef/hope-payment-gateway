@@ -93,8 +93,8 @@ def send_money_store(payload):
 
 
 def send_money(hope_payload):
-    record_code = hope_payload["payment_record_code"]
-    log = PaymentRecordLog.objects.get(record_code=record_code)
+    record_uuid = hope_payload["record_uuid"]
+    log = PaymentRecordLog.objects.get(uuid=record_uuid)
 
     try:
         payload = create_validation_payload(hope_payload)
@@ -118,7 +118,7 @@ def send_money(hope_payload):
 
     extra_data = {key: smv_payload[key] for key in ["instant_notification", "mtcn", "new_mtcn", "financials"]}
     log_data = extra_data.copy()
-    log_data["record_code"] = record_code
+    log_data["record_code"] = hope_payload["payment_record_code"]
     log_data.pop("financials")
     log.message = "Send Money Validation: Success"
     log.success = True

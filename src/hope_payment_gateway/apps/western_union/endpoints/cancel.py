@@ -38,10 +38,10 @@ def cancel_request(record_code, mtcn, database_key, reason=WIC):
     return client.response_context("CancelSend", payload)
 
 
-def cancel(record_code, mtcn):
-    response = search_request(record_code, mtcn)
+def cancel(record_uuid, mtcn):
+    log = PaymentRecordLog.objects.get(uuid=record_uuid)
+    response = search_request(log.record_code, mtcn)
     payload = response["content"]
-    log = PaymentRecordLog.objects.get(record_code=record_code)
     try:
         database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
     except TypeError:
@@ -53,7 +53,7 @@ def cancel(record_code, mtcn):
         log.save()
         return log
 
-    response = cancel_request(record_code, mtcn, database_key)
+    response = cancel_request(log.record_code, mtcn, database_key)
     extra_data = {"db_key": database_key, "mtcn": mtcn}
 
     if response["code"] == 200:

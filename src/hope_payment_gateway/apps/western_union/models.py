@@ -98,6 +98,7 @@ class PaymentRecordLog(TimeStampedModel):
         payload = self.parent.payload.copy()
         payload.update(self.payload)
         payload["payment_record_code"] = self.record_code
+        payload["record_uuid"] = self.uuid
         return payload
 
     @transition(field=status, source=PENDING, target=VALIDATION_OK, permission="western_union.change_paymentrecordlog")

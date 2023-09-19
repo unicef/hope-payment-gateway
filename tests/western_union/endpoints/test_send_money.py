@@ -20,9 +20,9 @@ from tests.factories import CorridorFactory, PaymentRecordLogFactory
 def test_send_money_validation(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money_validation.yaml")
-    ref_no = "Y3snz233UkGt1Gw4"
     hope_payload = {
-        "payment_record_code": ref_no,
+        "record_uuid": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": "Y3snz233UkGt1Gw4",
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -46,9 +46,10 @@ def test_send_complete(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
-    ref_no = "Y3snz233UkGt1Gw4"
+    uuid = "681cbf43-a506-4bca-925c-cb10d89f6d92"
     hope_payload = {
-        "payment_record_code": ref_no,
+        "record_uuid": uuid,
+        "payment_record_code": "Y3snz233UkGt1Gw4",
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -61,10 +62,12 @@ def test_send_complete(django_app, admin_user):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    PaymentRecordLogFactory(record_code=ref_no)
-    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
+    pr = PaymentRecordLogFactory(uuid=uuid)
     send_money(hope_payload)
-    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
+    pr.refresh_from_db()
+    assert pr.success
+    assert pr.status == PaymentRecordLog.TRANSFERRED_TO_FSP
+    assert PaymentRecordLog.objects.filter(uuid=uuid).count() == 1
 
 
 @responses.activate
@@ -72,7 +75,7 @@ def test_send_complete_corridor(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
-    ref_no = "Y3snz233UkGt1Gw1"
+    uuid = "681cbf43-a506-4bca-925c-cb10d89f6d92"
     corridor_template = {
         "receiver": {
             "mobile_phone": {"phone_number": {"country_code": 229, "national_number": None}},
@@ -81,7 +84,8 @@ def test_send_complete_corridor(django_app, admin_user):
         "wallet_details": {"service_provider_code": "22901"},
     }
     hope_payload = {
-        "payment_record_code": ref_no,
+        "record_uuid": uuid,
+        "payment_record_code": "Y3snz233UkGt1Gw1",
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -101,11 +105,11 @@ def test_send_complete_corridor(django_app, admin_user):
         destination_currency="EUR",
         template=corridor_template,
     )
-    PaymentRecordLogFactory(record_code=ref_no)
-    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
+    pr = PaymentRecordLogFactory(uuid=uuid)
     send_money(hope_payload)
-    pr = PaymentRecordLog.objects.get(record_code=ref_no)
+    pr.refresh_from_db()
     assert pr.success
+    assert pr.status == PaymentRecordLog.TRANSFERRED_TO_FSP
     assert "mtcn" in pr.extra_data.keys()
 
 
@@ -142,9 +146,10 @@ def test_send_complete_corridor(django_app, admin_user):
     ],
 )
 def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, exception):
-    ref_no = "Y3snz233UkGt1Gw1"
+    uuid = "681cbf43-a506-4bca-925c-cb10d89f6d92"
     hope_payload = {
-        "payment_record_code": ref_no,
+        "record_uuid": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": "Y3snz233UkGt1Gw1",
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -163,7 +168,6 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, ex
         destination_currency="EUR",
         template=corridor_template,
     )
-    PaymentRecordLogFactory(record_code=ref_no)
-    assert PaymentRecordLog.objects.filter(record_code=ref_no).count() == 1
+    PaymentRecordLogFactory(uuid=uuid)
     with pytest.raises(exception):
         send_money(hope_payload)

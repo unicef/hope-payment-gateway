@@ -1,6 +1,7 @@
 import responses
 
 from hope_payment_gateway.apps.western_union.endpoints.cancel import cancel, search_request
+from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
 from tests.factories import PaymentRecordLogFactory
 
 
@@ -21,9 +22,9 @@ def test_cancel(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2HServiceService")
     responses.patch("https://wugateway2pi.westernunion.com/CancelSend_Service_H2HService")
     responses._add_from_file(file_path="tests/western_union/endpoints/cancel.yaml")
-    ref_no, mtcn = "Y3snz233UkGt1Gw4", "0352466394"
-    pl = PaymentRecordLogFactory(record_code=ref_no, extra_data={"mtcn": mtcn})
-    cancel(ref_no, mtcn)
+    uuid, mtcn = "681cbf43-a506-4bca-925c-cb10d89f6d92", "0352466394",
+    pl = PaymentRecordLogFactory(uuid=uuid, extra_data={"mtcn": mtcn})
+    cancel(uuid, mtcn)
     pl.refresh_from_db()
     assert pl.message, pl.success == ("Cancelled", True)
 
@@ -32,8 +33,10 @@ def test_cancel(django_app, admin_user):
 def test_search_ko(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_ko.yaml")
-    ref_no, mtcn = "alpha", "6022825782"
-    pl = PaymentRecordLogFactory(record_code=ref_no)
-    cancel(ref_no, mtcn)
+    uuid, mtcn = "681cbf43-a506-4bca-925c-cb10d89f6d92", "6022825782"
+    pl = PaymentRecordLogFactory(uuid=uuid)
+    cancel(uuid, mtcn)
     pl.refresh_from_db()
-    assert pl.message, pl.success == ("Cancelled", True)
+    assert pl.message == "Search Error: No Money Transfer Key"
+    assert not pl.success
+    assert pl.status == PaymentRecordLog.ERROR
