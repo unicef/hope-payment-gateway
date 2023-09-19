@@ -44,7 +44,7 @@ class PaymentInstruction(TimeStampedModel):
         (CLOSED, "Closed"),
         (CANCELLED, "Cancelled"),
     )
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
     unicef_id = models.CharField(max_length=255, db_index=True)
     status = FSMField(default=DRAFT, protected=False, db_index=True, choices=STATUSES)
     payload = models.JSONField(default=dict)
@@ -82,7 +82,7 @@ class PaymentRecordLog(TimeStampedModel):
         (ERROR, "Error"),
     )
 
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64)
     success = models.BooleanField(null=True, blank=True)
