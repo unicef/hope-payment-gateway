@@ -49,4 +49,6 @@ stages:
               failOnStderr: true
               valueFile: '**/ops/hope-payment-gateway/values.yaml'
               arguments: "--timeout 600s"
-              # overrideValues: ""
+              overrideValues: "
+                image.tag=latest \
+                "
