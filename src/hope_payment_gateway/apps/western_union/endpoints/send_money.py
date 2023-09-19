@@ -99,17 +99,20 @@ def send_money(hope_payload):
     try:
         payload = create_validation_payload(hope_payload)
     except InvalidCorridor:
-        log.message = f'Corridor for provided country does not exist'
+        log.message = "Corridor for provided country does not exist"
         log.success = False
         log.save()
         return log
 
     response = send_money_validation(payload)
     smv_payload = serialize_object(response["content"])
+    log.validate()
+    log.save()
 
     if response["code"] != 200:
         log.message = f'Send Money Validation: {response["error"]}'
         log.success = False
+        log.fail()
         log.save()
         return log
 
@@ -127,8 +130,10 @@ def send_money(hope_payload):
     response = send_money_store(payload)
     if response["code"] == 200:
         log.message, log.success = "Send Money Store: Success", True
+        log.store()
     else:
         log.message, log.success = f'Send Money Store: {response["error"]}', False
+        log.fail()
     log.extra_data.update(log_data)
     log.save()
     return log

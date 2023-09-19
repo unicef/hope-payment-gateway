@@ -1,5 +1,5 @@
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.config import agent, get_usd, unicef, WIC
+from hope_payment_gateway.apps.western_union.endpoints.config import WIC, agent, get_usd, unicef
 from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
 
 
@@ -49,6 +49,7 @@ def cancel(record_code, mtcn):
     if not database_key:
         log.message = "Search Error: No Money Transfer Key"
         log.success = False
+        log.fail()
         log.save()
         return log
 
@@ -58,9 +59,11 @@ def cancel(record_code, mtcn):
     if response["code"] == 200:
         log.message = "Cancelled"
         log.success = True
+        log.fail()
     else:
         log.message = "Cancel error"
         log.success = False
+        log.store()
     log.extra_data.update(extra_data)
     log.save()
     return log
