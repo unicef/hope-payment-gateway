@@ -45,6 +45,7 @@ class NisNotificationView(PayNotificationView):
 
         pr.success = True if msg == "Receiver Paid Notification" else False
         pr.message = msg
+        pr.confirm()
         pr.save()
         resp = nic_acknowledge(payload)
 

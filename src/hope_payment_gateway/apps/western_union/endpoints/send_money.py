@@ -93,29 +93,32 @@ def send_money_store(payload):
 
 
 def send_money(hope_payload):
-    record_code = hope_payload["payment_record_code"]
-    log = PaymentRecordLog.objects.get(record_code=record_code)
+    record_uuid = hope_payload["record_uuid"]
+    log = PaymentRecordLog.objects.get(uuid=record_uuid)
 
     try:
         payload = create_validation_payload(hope_payload)
     except InvalidCorridor:
-        log.message = f'Corridor for provided country does not exist'
+        log.message = "Corridor for provided country does not exist"
         log.success = False
         log.save()
         return log
 
     response = send_money_validation(payload)
     smv_payload = serialize_object(response["content"])
+    log.validate()
+    log.save()
 
     if response["code"] != 200:
         log.message = f'Send Money Validation: {response["error"]}'
         log.success = False
+        log.fail()
         log.save()
         return log
 
     extra_data = {key: smv_payload[key] for key in ["instant_notification", "mtcn", "new_mtcn", "financials"]}
     log_data = extra_data.copy()
-    log_data["record_code"] = record_code
+    log_data["record_code"] = hope_payload["payment_record_code"]
     log_data.pop("financials")
     log.message = "Send Money Validation: Success"
     log.success = True
@@ -127,8 +130,10 @@ def send_money(hope_payload):
     response = send_money_store(payload)
     if response["code"] == 200:
         log.message, log.success = "Send Money Store: Success", True
+        log.store()
     else:
         log.message, log.success = f'Send Money Store: {response["error"]}', False
+        log.fail()
     log.extra_data.update(log_data)
     log.save()
     return log

@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     "django_extensions",
     "django_filters",
     "corsheaders",
+    "django_fsm",
     "social_django",
     "admin_extra_buttons",
     "adminactions",
@@ -53,6 +54,7 @@ INSTALLED_APPS = (
     "smart_admin.apps.SmartTemplateConfig",
     "import_export",
     "constance",
+    "rest_framework",
 )
 
 MIDDLEWARE = (

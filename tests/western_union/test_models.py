@@ -25,4 +25,4 @@ def test_payment_record_log():
 def test_payment_record_log_payload():
     instruction = PaymentInstructionFactory(payload={"a": "a"})
     prl = PaymentRecordLogFactory(parent=instruction, payload={"b": "b"}, record_code="r")
-    assert prl.get_payload() == {"a": "a", "b": "b", "payment_record_code": "r"}
+    assert prl.get_payload().keys() == {"a", "b", "payment_record_code", "record_uuid"}
