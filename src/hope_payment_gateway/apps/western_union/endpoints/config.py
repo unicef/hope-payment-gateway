@@ -19,10 +19,10 @@ def get_eur(ref_num="N/A"):
     }
 
 
-WMF = "WMF"
-WMN = "WMN"
+WMF = "WMF"  # fixed money transfer
+WMN = "WMN"  # money transfer
 
-WIC = "WIC"
+WIC = "WIC"  # system
 
 # delivery_services_code
 MONEY_IN_TIME = "000"
