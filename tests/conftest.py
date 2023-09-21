@@ -3,7 +3,7 @@ import tempfile
 
 import pytest
 
-from tests import factories
+from .factories import UserFactory, CorridorFactory, PaymentInstructionFactory, PaymentRecordLogFactory
 
 
 def pytest_configure(config):
@@ -14,7 +14,7 @@ def pytest_configure(config):
 
 @pytest.fixture()
 def user(request, db):
-    return factories.UserFactory()
+    return UserFactory()
 
 
 @pytest.fixture()
@@ -25,14 +25,14 @@ def logged_user(client, user):
 
 @pytest.fixture()
 def corridor():
-    return factories.CorridorFactory()
+    return CorridorFactory()
 
 
 @pytest.fixture()
 def pi():
-    return factories.PaymentInstructionFactory()
+    return PaymentInstructionFactory()
 
 
 @pytest.fixture()
 def prl():
-    return factories.PaymentRecordLogFactory()
+    return PaymentRecordLogFactory()
