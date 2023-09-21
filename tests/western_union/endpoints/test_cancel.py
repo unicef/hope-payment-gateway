@@ -2,7 +2,7 @@ import responses
 
 from hope_payment_gateway.apps.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
-from tests.factories import PaymentRecordLogFactory
+from ...factories import PaymentRecordLogFactory
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/search_request.yaml")

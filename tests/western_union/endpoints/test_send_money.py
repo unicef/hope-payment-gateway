@@ -12,7 +12,7 @@ from hope_payment_gateway.apps.western_union.exceptions import (
     PayloadIncompatible,
 )
 from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
-from tests.factories import CorridorFactory, PaymentRecordLogFactory
+from ...factories import CorridorFactory, PaymentRecordLogFactory
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")

@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.urls import reverse
 
-from tests.factories import PaymentRecordLogFactory
+from ...factories import PaymentRecordLogFactory
 
 
 def test_push_notification(django_app, admin_user):
