@@ -191,9 +191,12 @@ CELERY_RESULT_EXPIRES = 600
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
+        'rest_framework.filters.SearchFilter'
+    ]
 }
 
 # django-cors-headers: https://github.com/ottoyiu/django-cors-headers

@@ -22,7 +22,10 @@ def test_cancel(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2HServiceService")
     responses.patch("https://wugateway2pi.westernunion.com/CancelSend_Service_H2HService")
     responses._add_from_file(file_path="tests/western_union/endpoints/cancel.yaml")
-    uuid, mtcn = "681cbf43-a506-4bca-925c-cb10d89f6d92", "0352466394",
+    uuid, mtcn = (
+        "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "0352466394",
+    )
     pl = PaymentRecordLogFactory(uuid=uuid, extra_data={"mtcn": mtcn})
     cancel(uuid, mtcn)
     pl.refresh_from_db()
