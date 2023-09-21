@@ -12,6 +12,7 @@ from hope_payment_gateway.apps.western_union.exceptions import (
     PayloadIncompatible,
 )
 from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
+
 from ...factories import CorridorFactory, PaymentRecordLogFactory
 
 

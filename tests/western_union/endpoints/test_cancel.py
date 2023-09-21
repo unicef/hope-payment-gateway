@@ -2,6 +2,7 @@ import responses
 
 from hope_payment_gateway.apps.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
+
 from ...factories import PaymentRecordLogFactory
 
 
