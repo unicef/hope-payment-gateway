@@ -89,8 +89,10 @@ STATICFILES_FINDERS = [
 
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = (
-    env("ALLOWED_HOST", default="localhost"),
-    "0.0.0.0",
+    # env("ALLOWED_HOST", default="localhost"),
+    # "0.0.0.0",
+    # TODO
+    "*",
 )
 
 LOGIN_URL = "/login/"
@@ -235,7 +237,8 @@ if DEBUG:  # pragma: no cover
 
 
 DEFAULT_FROM_EMAIL = "hope@unicef.org"
-EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
+# EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend" # TODO: when ready, add djcelery_email
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST", default="")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
@@ -279,7 +282,15 @@ CONSTANCE_CONFIG = {
     ),
 }
 
+
+# TODO: rethink this
+os.environ.setdefault("WESTERN_UNION_BASE_URL", "")
+os.environ.setdefault("WESTERN_UNION_PATH", "")
+os.environ.setdefault("WESTERN_UNION_CERT", "")
+os.environ.setdefault("WESTERN_UNION_KEY", "")
+
 WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL")
 WESTERN_UNION_PATH = env("WESTERN_UNION_PATH")
 WESTERN_UNION_CERT = env("WESTERN_UNION_CERT")
 WESTERN_UNION_KEY = env("WESTERN_UNION_KEY")
+

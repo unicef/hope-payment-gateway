@@ -1,0 +1,74 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+pr: none
+resources:
+  - repo: self
+
+variables:
+  # ========================================================================
+  #                          Mandatory variables 
+  # ========================================================================
+  Docker.backend.repository: "hope-payment-gateway"
+  Docker.registryConnection.trn: "ICTD-HOPE-DEV-ACR"
+
+
+stages:
+  - stage: build_and_push_backend
+    dependsOn: []
+    displayName: BUILD and PUSH
+    jobs:
+      - job: build_push_backend
+        pool:
+          vmImage: ubuntu-latest
+        displayName: "[BACKEND_BUILD]"
+        steps:
+          - task: Docker@2
+            inputs:
+              containerRegistry: '$(Docker.registryConnection)'
+              command: 'login'
+          - task: Docker@2
+            condition: and(succeeded(), eq(variables.isTraining, true))
+            inputs:
+              containerRegistry: '$(Docker.registryConnection.trn)'
+              command: 'login'
+          # TODO: specify docker target in script
+          - script: |
+              docker buildx create --use
+              docker buildx build \
+              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:trn-$(additionalTag) \
+              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
+              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-$(additionalTag) \
+              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
+              -t $(Docker.url)/$(Docker.backend.repository):trn-$(tag) \
+              --push \
+              ./backend
+            displayName: Docker build trn
+
+  - stage: test
+    displayName: TEST
+    dependsOn: build_and_push_backend
+    jobs:
+      - job: tests
+        pool:
+          vmImage: ubuntu-latest
+        displayName: "[DJANGO TEST]"
+        steps:
+          - task: Docker@2
+            displayName: "[ACR] Login"
+            inputs:
+              command: login
+              containerRegistry: $(Docker.registryConnection)
+          - task: DockerCompose@0
+            displayName: "Run tests"
+            inputs:
+              containerregistrytype: 'Azure Container Registry'
+              azureContainerRegistry: $(Docker.registryConnection)
+              dockerComposeFile: '**/compose.pytest.yml'
+              action: 'Run a Docker Compose command'
+              dockerComposeCommand: 'run backend test'
+              dockerComposeFileArgs: |
+                backend_image=$(Docker.url)/$(Docker.backend.repository):trn-$(tag)
+
