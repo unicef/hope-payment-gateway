@@ -16,7 +16,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
 
 
 class PaymentRecordLogLightSerializer(serializers.ModelSerializer):
-    parent = serializers.ReadOnlyField(source='parent.uuid')
+    parent = serializers.ReadOnlyField(source="parent.uuid")
 
     class Meta:
         model = PaymentRecordLog
@@ -31,7 +31,7 @@ class PaymentRecordLogLightSerializer(serializers.ModelSerializer):
 
 
 class PaymentRecordLogSerializer(serializers.ModelSerializer):
-    parent = serializers.SlugRelatedField(slug_field='uuid', queryset=PaymentInstruction.objects.all())
+    parent = serializers.SlugRelatedField(slug_field="uuid", queryset=PaymentInstruction.objects.all())
 
     class Meta:
         model = PaymentRecordLog

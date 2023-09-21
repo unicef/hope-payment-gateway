@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from hope_payment_gateway.apps.western_union.models import PaymentRecordLog, PaymentInstruction
+from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecordLog
 
 
 class PaymentInstructionFilter(filters.FilterSet):

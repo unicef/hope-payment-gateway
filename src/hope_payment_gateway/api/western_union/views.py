@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
-from hope_api_auth.utils import humanize_errors
 from hope_payment_gateway.api.western_union.filters import PaymentInstructionFilter, PaymentRecordLogFilter
 from hope_payment_gateway.api.western_union.serializers import (
     PaymentInstructionSerializer,
@@ -42,6 +41,10 @@ class PaymentInstructionViewSet(LoggingAPIViewSet):
         return self._change_status("open")
 
     @action(detail=True)  # , methods=['post']
+    def ready(self, request, uuid=None):
+        return self._change_status("ready")
+
+    @action(detail=True)  # , methods=['post']
     def close(self, request, uuid=None):
         return self._change_status("close")
 
@@ -61,7 +64,7 @@ class PaymentInstructionViewSet(LoggingAPIViewSet):
             return Response(
                 {"uuid": obj.uuid, "records": {item.record_code: item.uuid for item in totals}}, status=HTTP_201_CREATED
             )
-        return Response(humanize_errors(serializer.errors), status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class PaymentRecordLogViewSet(LoggingAPIViewSet):
