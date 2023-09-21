@@ -35,12 +35,14 @@ class Corridor(models.Model):  # delivery mechanism
 class PaymentInstruction(TimeStampedModel):
     DRAFT = "DRAFT"
     OPEN = "OPEN"
+    READY = "READY"
     CLOSED = "CLOSED"
     CANCELLED = "CANCELLED"
 
     STATUSES = (
         (DRAFT, "Draft"),
         (OPEN, "Open"),
+        (READY, "Ready"),
         (CLOSED, "Closed"),
         (CANCELLED, "Cancelled"),
     )
@@ -56,7 +58,11 @@ class PaymentInstruction(TimeStampedModel):
     def open(self):
         pass
 
-    @transition(field=status, source=OPEN, target=CLOSED, permission="western_union.change_paymentinstruction")
+    @transition(field=status, source=OPEN, target=READY, permission="western_union.change_paymentinstruction")
+    def ready(self):
+        pass
+
+    @transition(field=status, source=READY, target=CLOSED, permission="western_union.change_paymentinstruction")
     def close(self):
         pass
 
