@@ -1,0 +1,13 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '<?xml version="1.0" encoding="UTF-8"?>
+
+      <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+      xmlns:date="http://exslt.org/dates-and-times"><soapenv:Body><soapenv:Fault xmlns:xrsi="http://www.westernunion.com/schema/xrsi"><faultcode>xrsi:error-reply</faultcode><faultstring>business
+      exception</faultstring><faultactor>cx-fault-actor</faultactor><detail><xrsi:error-reply><error>Rejected</error><PartnerID>WGQCUS1250T</PartnerID></xrsi:error-reply></detail></soapenv:Fault></soapenv:Body></soapenv:Envelope>'
+    content_type: text/plain
+    method: POST
+    status: 500
+    url: https://wugateway2pi.westernunion.com/NisNotification/

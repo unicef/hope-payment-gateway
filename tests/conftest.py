@@ -12,6 +12,11 @@ def pytest_configure(config):
     os.environ["STATIC_ROOT"] = tempfile.gettempdir()
 
 
+@pytest.fixture(autouse=True)
+def use_override_settings(settings):
+    settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
+
+
 @pytest.fixture()
 def user(request, db):
     return UserFactory()
