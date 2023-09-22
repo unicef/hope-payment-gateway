@@ -12,7 +12,8 @@ variables:
   #                          Mandatory variables 
   # ========================================================================
   Docker.backend.repository: "hope-payment-gateway"
-  Docker.registryConnection.trn: "ICTD-HOPE-DEV-ACR"
+  Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
+  Docker.url: "uniappsakshopedev.azurecr.io"
 
 
 stages:
@@ -28,11 +29,6 @@ stages:
           - task: Docker@2
             inputs:
               containerRegistry: '$(Docker.registryConnection)'
-              command: 'login'
-          - task: Docker@2
-            condition: and(succeeded(), eq(variables.isTraining, true))
-            inputs:
-              containerRegistry: '$(Docker.registryConnection.trn)'
               command: 'login'
           # TODO: specify docker target in script
           - script: |
@@ -66,7 +62,7 @@ stages:
             inputs:
               containerregistrytype: 'Azure Container Registry'
               azureContainerRegistry: $(Docker.registryConnection)
-              dockerComposeFile: '**/compose.pytest.yml'
+              dockerComposeFile: '**/compose.test.yml'
               action: 'Run a Docker Compose command'
               dockerComposeCommand: 'run backend test'
               dockerComposeFileArgs: |
