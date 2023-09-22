@@ -36,6 +36,30 @@ def test_send_money_validation(django_app, admin_user):
     assert (resp["title"], resp["code"]) == ("sendmoneyValidation", 200)
 
 
+@responses.activate
+def test_send_money_validation_ko(django_app, admin_user):
+    responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
+    responses._add_from_file(file_path="tests/western_union/endpoints/send_money_validation_ko.yaml")
+    hope_payload = {
+        "record_uuid": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": "681cbf43",
+        "first_name": "Aldo",
+        "last_name": "Baglio",
+        "phone_no": "+229123456",
+        "source_country": "US",
+        "source_currency": "USD",
+        "transaction_type": "WMF",
+        "destination_country": "ES",
+        "destination_currency": "EUR",
+        "duplication_enabled": "D",
+        "amount": 1200,
+        "delivery_services_code": "000",
+    }
+    payload = create_validation_payload(hope_payload)
+    resp = send_money_validation(payload)
+    assert (resp["title"], resp["code"]) == ("business exception [xrsi:error-reply]", 400)
+
+
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_complete.yaml")
 @responses.activate
 def test_send_complete(django_app, admin_user):
