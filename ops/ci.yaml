@@ -30,7 +30,7 @@ stages:
             inputs:
               containerRegistry: '$(Docker.registryConnection)'
               command: 'login'
-          # TODO: specify docker target in script
+          # TODO: specify docker target in script (dist)
           - script: |
               docker buildx create --use
               docker buildx build \
