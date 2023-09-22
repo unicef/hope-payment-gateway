@@ -6,11 +6,6 @@ from hope_payment_gateway.apps.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.western_union.exceptions import (
-    InvalidChoiceFromCorridor,
-    MissingValueInCorridor,
-    PayloadIncompatible,
-)
 from hope_payment_gateway.apps.western_union.models import PaymentRecord
 
 from ...factories import CorridorFactory, PaymentRecordFactory
@@ -98,7 +93,7 @@ def test_send_complete_corridor(django_app, admin_user):
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_services_code": "000",
-        # "corridor": "yes",
+        "corridor": "yes",
         "reason_for_sending": "P012",
     }
     CorridorFactory(
@@ -114,8 +109,38 @@ def test_send_complete_corridor(django_app, admin_user):
     assert "mtcn" in pr.extra_data.keys()
 
 
+def test_send_complete_corridor_no_exist(django_app, admin_user):
+    # responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
+    # responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
+    # responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
+    uuid = "681cbf43-a506-4bca-925c-cb10d89f6d92"
+    hope_payload = {
+        "record_uuid": uuid,
+        "payment_record_code": "Y3snz233UkGt1Gw1",
+        "first_name": "Aliyah",
+        "last_name": "GRAY",
+        "phone_no": "+94786661137",
+        "source_country": "US",
+        "source_currency": "USD",
+        "transaction_type": "WMF",
+        "destination_country": "ES",
+        "destination_currency": "EUR",
+        "duplication_enabled": "D",
+        "amount": 199900,
+        "delivery_services_code": "000",
+        "corridor": "yes",
+        "reason_for_sending": "P012",
+    }
+    pr = PaymentRecordFactory(uuid=uuid)
+    send_money(hope_payload)
+    pr.refresh_from_db()
+    assert not pr.success
+    assert pr.status == PaymentRecord.ERROR
+    assert pr.message == "Invalid corridor for ES/EUR"
+
+
 @pytest.mark.parametrize(
-    "corridor_template,exception",
+    "corridor_template,message",
     [
         (
             {
@@ -125,7 +150,7 @@ def test_send_complete_corridor(django_app, admin_user):
                 },
                 "wallet_details": {"service_provider_code": 22901},
             },
-            InvalidChoiceFromCorridor,
+            "Invalid Choice reason_for_sending for AO12",
         ),
         (
             {
@@ -134,7 +159,7 @@ def test_send_complete_corridor(django_app, admin_user):
                 },
                 "missing_value": {"service_provider_code": 22901},
             },
-            PayloadIncompatible,
+            "Wrong structure: missing_value should not be a leaf",
         ),
         (
             {
@@ -142,11 +167,11 @@ def test_send_complete_corridor(django_app, admin_user):
                     "mobile_phone": {"phone_number": {"country_code": None}},
                 },
             },
-            MissingValueInCorridor,
+            "Missing Value in Corridor country_code",
         ),
     ],
 )
-def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, exception):
+def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message):
     uuid = "681cbf43-a506-4bca-925c-cb10d89f6d92"
     hope_payload = {
         "record_uuid": "681cbf43-a506-4bca-925c-cb10d89f6d92",
@@ -162,6 +187,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, ex
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_services_code": "000",
+        "reason_for_sending": "AO12",
         "corridor": "yes",
     }
     CorridorFactory(
@@ -169,6 +195,9 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, ex
         destination_currency="EUR",
         template=corridor_template,
     )
-    PaymentRecordFactory(uuid=uuid)
-    with pytest.raises(exception):
-        send_money(hope_payload)
+    pr = PaymentRecordFactory(uuid=uuid)
+    send_money(hope_payload)
+    pr.refresh_from_db()
+    assert not pr.success
+    assert pr.status == PaymentRecord.ERROR
+    assert pr.message == message

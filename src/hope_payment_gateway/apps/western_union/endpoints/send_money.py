@@ -3,7 +3,7 @@ from zeep.helpers import serialize_object
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.western_union.endpoints.config import MONEY_IN_TIME, WMF, get_usd, sender, unicef, web
 from hope_payment_gateway.apps.western_union.endpoints.helpers import integrate_payload
-from hope_payment_gateway.apps.western_union.exceptions import InvalidCorridor
+from hope_payment_gateway.apps.western_union.exceptions import InvalidCorridor, PayloadException
 from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecord
 
 
@@ -70,12 +70,14 @@ def create_validation_payload(hope_payload):
 
     if "corridor" in hope_payload:
         try:
+            country = hope_payload["destination_country"]
+            currency = hope_payload["destination_currency"]
             template = Corridor.objects.get(
-                destination_country=hope_payload["destination_country"],
-                destination_currency=hope_payload["destination_currency"],
+                destination_country=country,
+                destination_currency=currency,
             ).template
         except Corridor.DoesNotExist:
-            raise InvalidCorridor
+            raise InvalidCorridor(f"Invalid corridor for {country}/{currency}")
 
         payload = integrate_payload(payload, template)
 
@@ -98,8 +100,9 @@ def send_money(hope_payload):
 
     try:
         payload = create_validation_payload(hope_payload)
-    except InvalidCorridor:
-        log.message = "Corridor for provided country does not exist"
+    except (InvalidCorridor, PayloadException) as exc:
+        log.message = str(exc)
+        log.status = PaymentRecord.ERROR
         log.success = False
         log.save()
         return log

@@ -93,7 +93,7 @@ class PaymentRecord(TimeStampedModel):
     record_code = models.CharField(max_length=64)
     success = models.BooleanField(null=True, blank=True)
     status = FSMField(default=PENDING, protected=False, db_index=True, choices=STATUSES)
-    message = models.CharField(max_length=1024, null=True, blank=True)
+    message = models.CharField(max_length=4096, null=True, blank=True)
     payload = models.JSONField(default=dict)
     extra_data = models.JSONField(default=dict)
 
