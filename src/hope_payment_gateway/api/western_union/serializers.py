@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecord
 
 
 class PaymentInstructionSerializer(serializers.ModelSerializer):
@@ -15,11 +15,11 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
         )
 
 
-class PaymentRecordLogLightSerializer(serializers.ModelSerializer):
+class PaymentRecordLightSerializer(serializers.ModelSerializer):
     parent = serializers.ReadOnlyField(source="parent.uuid")
 
     class Meta:
-        model = PaymentRecordLog
+        model = PaymentRecord
         fields = (
             "id",
             "uuid",
@@ -30,11 +30,11 @@ class PaymentRecordLogLightSerializer(serializers.ModelSerializer):
         )
 
 
-class PaymentRecordLogSerializer(serializers.ModelSerializer):
+class PaymentRecordSerializer(serializers.ModelSerializer):
     parent = serializers.SlugRelatedField(slug_field="uuid", queryset=PaymentInstruction.objects.all())
 
     class Meta:
-        model = PaymentRecordLog
+        model = PaymentRecord
         fields = (
             "id",
             "uuid",

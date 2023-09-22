@@ -6,6 +6,6 @@ app_name = "api"
 
 router = DefaultRouter()
 router.register(r"payment_instructions", views.PaymentInstructionViewSet, basename="payment-instruction")
-router.register(r"payment_records", views.PaymentRecordLogViewSet, basename="payment-record")
+router.register(r"payment_records", views.PaymentRecordViewSet, basename="payment-record")
 
 urlpatterns = router.urls

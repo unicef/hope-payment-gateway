@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import PaymentRecord
 
 
 class PayNotificationView(APIView):
@@ -30,7 +30,7 @@ class NisNotificationView(PayNotificationView):
 
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"] / 100
 
-        pr, updated = PaymentRecordLog.objects.update_or_create(
+        pr, updated = PaymentRecord.objects.update_or_create(
             record_code=record_code,
             defaults={
                 "message": msg,

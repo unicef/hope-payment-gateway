@@ -3,13 +3,18 @@ import tempfile
 
 import pytest
 
-from .factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordLogFactory, UserFactory
+from .factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordFactory, UserFactory
 
 
 def pytest_configure(config):
     os.environ["TESTING"] = "1"
     os.environ["CELERY_TASK_ALWAYS_EAGER"] = "1"
     os.environ["STATIC_ROOT"] = tempfile.gettempdir()
+
+
+@pytest.fixture(autouse=True)
+def use_override_settings(settings):
+    settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
 
 
 @pytest.fixture()
@@ -35,4 +40,4 @@ def pi():
 
 @pytest.fixture()
 def prl():
-    return PaymentRecordLogFactory()
+    return PaymentRecordFactory()

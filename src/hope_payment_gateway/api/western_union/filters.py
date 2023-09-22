@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecord
 
 
 class PaymentInstructionFilter(filters.FilterSet):
@@ -13,9 +13,9 @@ class PaymentInstructionFilter(filters.FilterSet):
         }
 
 
-class PaymentRecordLogFilter(filters.FilterSet):
+class PaymentRecordFilter(filters.FilterSet):
     class Meta:
-        model = PaymentRecordLog
+        model = PaymentRecord
         fields = {
             "uuid": ["exact"],
             "record_code": ["exact", "in"],

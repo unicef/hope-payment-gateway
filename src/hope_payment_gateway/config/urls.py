@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.conf.urls import include
 from django.contrib import admin
-from django.urls import path
 from django.http import HttpResponse
+from django.urls import path
 
 api_patterns = [
     path(r"admin/", admin.site.urls),

@@ -5,7 +5,7 @@ from django.db.models import signals
 
 import factory
 
-from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecord
 
 
 @factory.django.mute_signals(signals.post_save)
@@ -45,9 +45,9 @@ class PaymentInstructionFactory(factory.django.DjangoModelFactory):
         model = PaymentInstruction
 
 
-class PaymentRecordLogFactory(factory.django.DjangoModelFactory):
+class PaymentRecordFactory(factory.django.DjangoModelFactory):
     parent = factory.SubFactory(PaymentInstructionFactory)
     uuid = uuid.uuid4()
 
     class Meta:
-        model = PaymentRecordLog
+        model = PaymentRecord
