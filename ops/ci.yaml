@@ -64,7 +64,7 @@ stages:
               azureContainerRegistry: $(Docker.registryConnection)
               dockerComposeFile: '**/compose.test.yml'
               action: 'Run a Docker Compose command'
-              dockerComposeCommand: 'run backend test'
+              dockerComposeCommand: 'run backend tests'
               dockerComposeFileArgs: |
                 backend_image=$(Docker.url)/$(Docker.backend.repository):trn-$(tag)
 
