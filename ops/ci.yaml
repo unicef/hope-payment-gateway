@@ -14,6 +14,8 @@ variables:
   Docker.backend.repository: "hope-payment-gateway"
   Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
   Docker.url: "uniappsakshopedev.azurecr.io"
+  tag: $(Build.SourceVersion)
+  additionalTag: $(Build.SourceBranchName)
 
 
 stages:
