@@ -55,6 +55,10 @@ class PaymentInstructionViewSet(LoggingAPIViewSet):
     @action(detail=True, methods=["post"])
     def add_records(self, request, uuid=None):
         obj = self.get_object()
+        if obj.status != PaymentInstruction.OPEN:
+            Response(
+                {"message": f"Cannot add records not a Open Plan", "status": obj.status}, status=HTTP_400_BAD_REQUEST
+            )
         data = request.data.copy()
         for record in data:
             record["parent"] = obj.id
