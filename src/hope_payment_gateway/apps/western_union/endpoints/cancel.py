@@ -1,6 +1,6 @@
 from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.western_union.endpoints.config import WIC, agent, get_usd, unicef
-from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import PaymentRecord
 
 
 def search_request(record_code, mtcn):
@@ -39,7 +39,7 @@ def cancel_request(record_code, mtcn, database_key, reason=WIC):
 
 
 def cancel(record_uuid, mtcn):
-    log = PaymentRecordLog.objects.get(uuid=record_uuid)
+    log = PaymentRecord.objects.get(uuid=record_uuid)
     response = search_request(log.record_code, mtcn)
     payload = response["content"]
     try:

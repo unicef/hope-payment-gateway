@@ -4,7 +4,7 @@ from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnio
 from hope_payment_gateway.apps.western_union.endpoints.config import MONEY_IN_TIME, WMF, get_usd, sender, unicef, web
 from hope_payment_gateway.apps.western_union.endpoints.helpers import integrate_payload
 from hope_payment_gateway.apps.western_union.exceptions import InvalidCorridor
-from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import Corridor, PaymentRecord
 
 
 def create_validation_payload(hope_payload):
@@ -94,7 +94,7 @@ def send_money_store(payload):
 
 def send_money(hope_payload):
     record_uuid = hope_payload["record_uuid"]
-    log = PaymentRecordLog.objects.get(uuid=record_uuid)
+    log = PaymentRecord.objects.get(uuid=record_uuid)
 
     try:
         payload = create_validation_payload(hope_payload)

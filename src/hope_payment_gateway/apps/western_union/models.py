@@ -71,7 +71,7 @@ class PaymentInstruction(TimeStampedModel):
         pass
 
 
-class PaymentRecordLog(TimeStampedModel):
+class PaymentRecord(TimeStampedModel):
     PENDING = "PENDING"
     VALIDATION_OK = "VALIDATION_OK"
     TRANSFERRED_TO_FSP = "TRANSFERRED_TO_FSP"

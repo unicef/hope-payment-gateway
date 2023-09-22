@@ -19,7 +19,7 @@ from hope_payment_gateway.apps.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecord
 
 
 @admin.register(Corridor)
@@ -146,8 +146,8 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return TemplateResponse(request, "western_union.html", context)
 
 
-@admin.register(PaymentRecordLog)
-class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+@admin.register(PaymentRecord)
+class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("record_code", "status", "message", "success", "uuid")
     list_filter = ("record_code", "status", "success")
     search_fields = ("transaction_id", "message")
@@ -161,7 +161,7 @@ class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def send_money_validation(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
-        obj = PaymentRecordLog.objects.get(pk=pk)
+        obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
         payload = create_validation_payload(payload)
@@ -170,7 +170,7 @@ class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
     @button()
     def send_money(self, request, pk) -> TemplateResponse:
-        obj = PaymentRecordLog.objects.get(pk=pk)
+        obj = PaymentRecord.objects.get(pk=pk)
         log = send_money(obj.get_payload())
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
@@ -178,7 +178,7 @@ class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     @view(html_attrs={"style": "background-color:yellow;color:blue"})
     def search_request(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
-        obj = PaymentRecordLog.objects.get(pk=pk)
+        obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
             context.update(search_request(obj.record_code, mtcn))
@@ -188,7 +188,7 @@ class PaymentRecordLogAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     @button()
     def cancel(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
-        obj = PaymentRecordLog.objects.get(pk=pk)
+        obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
         log = cancel(obj.record_code, mtcn)

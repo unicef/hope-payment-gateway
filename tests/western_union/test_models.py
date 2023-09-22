@@ -1,6 +1,6 @@
 import pytest
 
-from ..factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordLogFactory
+from ..factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordFactory
 
 
 @pytest.mark.django_db
@@ -17,12 +17,12 @@ def test_payment_instruction():
 
 @pytest.mark.django_db
 def test_payment_record_log():
-    prl = PaymentRecordLogFactory(record_code="RCD-123", message="OK")
+    prl = PaymentRecordFactory(record_code="RCD-123", message="OK")
     assert str(prl) == "RCD-123 / OK"
 
 
 @pytest.mark.django_db
 def test_payment_record_log_payload():
     instruction = PaymentInstructionFactory(payload={"a": "a"})
-    prl = PaymentRecordLogFactory(parent=instruction, payload={"b": "b"}, record_code="r")
+    prl = PaymentRecordFactory(parent=instruction, payload={"b": "b"}, record_code="r")
     assert prl.get_payload().keys() == {"a", "b", "payment_record_code", "record_uuid"}

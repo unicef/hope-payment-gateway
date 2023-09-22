@@ -11,9 +11,9 @@ from hope_payment_gateway.apps.western_union.exceptions import (
     MissingValueInCorridor,
     PayloadIncompatible,
 )
-from hope_payment_gateway.apps.western_union.models import PaymentRecordLog
+from hope_payment_gateway.apps.western_union.models import PaymentRecord
 
-from ...factories import CorridorFactory, PaymentRecordLogFactory
+from ...factories import CorridorFactory, PaymentRecordFactory
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")
@@ -63,12 +63,12 @@ def test_send_complete(django_app, admin_user):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    pr = PaymentRecordLogFactory(uuid=uuid)
+    pr = PaymentRecordFactory(uuid=uuid)
     send_money(hope_payload)
     pr.refresh_from_db()
     assert pr.success
-    assert pr.status == PaymentRecordLog.TRANSFERRED_TO_FSP
-    assert PaymentRecordLog.objects.filter(uuid=uuid).count() == 1
+    assert pr.status == PaymentRecord.TRANSFERRED_TO_FSP
+    assert PaymentRecord.objects.filter(uuid=uuid).count() == 1
 
 
 @responses.activate
@@ -106,11 +106,11 @@ def test_send_complete_corridor(django_app, admin_user):
         destination_currency="EUR",
         template=corridor_template,
     )
-    pr = PaymentRecordLogFactory(uuid=uuid)
+    pr = PaymentRecordFactory(uuid=uuid)
     send_money(hope_payload)
     pr.refresh_from_db()
     assert pr.success
-    assert pr.status == PaymentRecordLog.TRANSFERRED_TO_FSP
+    assert pr.status == PaymentRecord.TRANSFERRED_TO_FSP
     assert "mtcn" in pr.extra_data.keys()
 
 
@@ -169,6 +169,6 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, ex
         destination_currency="EUR",
         template=corridor_template,
     )
-    PaymentRecordLogFactory(uuid=uuid)
+    PaymentRecordFactory(uuid=uuid)
     with pytest.raises(exception):
         send_money(hope_payload)

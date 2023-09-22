@@ -3,7 +3,7 @@ import tempfile
 
 import pytest
 
-from .factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordLogFactory, UserFactory
+from .factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordFactory, UserFactory
 
 
 def pytest_configure(config):
@@ -40,4 +40,4 @@ def pi():
 
 @pytest.fixture()
 def prl():
-    return PaymentRecordLogFactory()
+    return PaymentRecordFactory()
