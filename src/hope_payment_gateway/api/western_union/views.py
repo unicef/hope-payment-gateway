@@ -56,19 +56,22 @@ class PaymentInstructionViewSet(LoggingAPIViewSet):
     def add_records(self, request, uuid=None):
         obj = self.get_object()
         if obj.status != PaymentInstruction.OPEN:
-            Response(
+            return Response(
                 {"message": "Cannot add records to a not Open Plan", "status": obj.status}, status=HTTP_400_BAD_REQUEST
             )
         data = request.data.copy()
         for record in data:
-            record["parent"] = obj.id
+            record["parent"] = obj.uuid
         serializer = PaymentRecordSerializer(data=data, many=True)
         if serializer.is_valid():
             totals = serializer.save()
             return Response(
                 {"uuid": obj.uuid, "records": {item.record_code: item.uuid for item in totals}}, status=HTTP_201_CREATED
             )
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        error_dict = {
+            index: serializer.errors[index] for index in range(len(serializer.errors)) if serializer.errors[index]
+        }
+        return Response({"uuid": obj.uuid, "errors": error_dict}, status=HTTP_400_BAD_REQUEST)
 
 
 class PaymentRecordViewSet(LoggingAPIViewSet):
