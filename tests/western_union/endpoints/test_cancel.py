@@ -27,7 +27,7 @@ def test_cancel(django_app, admin_user):
         "681cbf43-a506-4bca-925c-cb10d89f6d92",
         "0352466394",
     )
-    pl = PaymentRecordFactory(uuid=uuid, extra_data={"mtcn": mtcn})
+    pl = PaymentRecordFactory(uuid=uuid, extra_data={"mtcn": mtcn}, status=PaymentRecord.TRANSFERRED_TO_FSP)
     cancel(uuid, mtcn)
     pl.refresh_from_db()
     assert pl.message, pl.success == ("Cancelled", True)

@@ -59,7 +59,7 @@ def cancel(record_uuid, mtcn):
     if response["code"] == 200:
         log.message = "Cancelled"
         log.success = True
-        log.fail()
+        log.cancel()
     else:
         log.message = "Cancel error"
         log.success = False
