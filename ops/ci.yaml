@@ -40,7 +40,7 @@ stages:
               --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
               -t $(Docker.url)/$(Docker.backend.repository):trn-$(tag) \
               --push \
-              ./backend
+              ./
             displayName: Docker build trn
 
   - stage: test
