@@ -1,9 +1,8 @@
-import uuid
-
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 
 import factory
+from factory.faker import Faker
 
 from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecord
 
@@ -39,7 +38,7 @@ class CorridorFactory(factory.django.DjangoModelFactory):
 
 
 class PaymentInstructionFactory(factory.django.DjangoModelFactory):
-    uuid = uuid.uuid4()
+    uuid = Faker("uuid4")
 
     class Meta:
         model = PaymentInstruction
@@ -47,7 +46,7 @@ class PaymentInstructionFactory(factory.django.DjangoModelFactory):
 
 class PaymentRecordFactory(factory.django.DjangoModelFactory):
     parent = factory.SubFactory(PaymentInstructionFactory)
-    uuid = uuid.uuid4()
+    uuid = Faker("uuid4")
 
     class Meta:
         model = PaymentRecord

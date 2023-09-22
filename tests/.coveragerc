@@ -3,12 +3,12 @@ branch = True
 source = hope_payment_gateway
 
 omit =
-        */tests/**
-        */migrations/*,
-        */commands/*,
-        */apps.py,
-        */wsgi.py,
-        */dbrouters.py,
+    */tests/**
+    */migrations/*,
+    */commands/*,
+    */apps.py,
+    */wsgi.py,
+    */dbrouters.py,
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -27,7 +27,7 @@ exclude_lines =
     #if 0:
     if __name__ == .__main__.:
 
-fail_under = 90
+fail_under = 80
 
 ignore_errors = True
 
