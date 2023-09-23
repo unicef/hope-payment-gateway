@@ -2,8 +2,10 @@ from constance import config
 
 from hope_payment_gateway.apps.western_union.endpoints.send_money import send_money
 from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecord
+from hope_payment_gateway.celery import app
 
 
+@app.task
 def send_money_task():
     records = PaymentRecord.objects.none()
     qs = PaymentInstruction.objects.filter(status=PaymentInstruction.READY)
