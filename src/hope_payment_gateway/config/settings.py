@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     "hope_payment_gateway.web",
     "hope_payment_gateway.apps.core.apps.AppConfig",
     "hope_payment_gateway.apps.western_union.apps.AppConfig",
+    "hope_api_auth",
     "django.contrib.contenttypes",
     "advanced_filters",
     "unicef_security",
@@ -196,6 +197,9 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
         "rest_framework.filters.SearchFilter",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
     ],
 }
 

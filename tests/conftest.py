@@ -3,7 +3,9 @@ import tempfile
 
 import pytest
 
-from .factories import CorridorFactory, PaymentInstructionFactory, PaymentRecordFactory, UserFactory
+from hope_api_auth.models import Grant
+
+from .factories import APITokenFactory, CorridorFactory, PaymentInstructionFactory, PaymentRecordFactory, UserFactory
 
 
 def pytest_configure(config):
@@ -41,3 +43,32 @@ def pi():
 @pytest.fixture()
 def prl():
     return PaymentRecordFactory()
+
+
+@pytest.fixture()
+def token_user(admin_user):
+    user_permissions = [
+        Grant.API_READ_ONLY,
+        Grant.API_PLAN_UPLOAD,
+        Grant.API_PLAN_MANAGE,
+    ]
+    APITokenFactory(
+        user=admin_user,
+        grants=[c.name for c in user_permissions],
+    )
+    return admin_user
+
+
+@pytest.fixture
+def api_client():
+    from rest_framework.test import APIClient
+
+    return APIClient()
+
+
+@pytest.fixture
+def api_client_with_credentials(db, token_user, api_client):
+    token = token_user.apitoken_set.first()
+    api_client.force_authenticate(user=token_user, token=token)
+    yield api_client
+    api_client.force_authenticate(user=None)

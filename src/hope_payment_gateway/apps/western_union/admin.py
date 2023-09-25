@@ -201,7 +201,8 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
         "unicef_id",
         "status",
+        "uuid"
     )
     list_filter = ("status",)
     search_fields = ("unicef_id",)
-    # readonly_fields = ("payload",)
+    readonly_fields = ("uuid, payload",)

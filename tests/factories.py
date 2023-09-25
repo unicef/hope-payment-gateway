@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db.models import signals
+from django.utils import timezone
 
 import factory
 from factory.faker import Faker
 
+from hope_api_auth.models import APIToken, Grant
 from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecord
 
 
@@ -50,3 +52,15 @@ class PaymentRecordFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = PaymentRecord
+
+
+class APITokenFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory(UserFactory)
+    allowed_ips = ""
+    grants = [Grant.API_READ_ONLY]
+    valid_from = timezone.now
+    valid_to = None
+
+    class Meta:
+        model = APIToken
+        django_get_or_create = ("user",)

@@ -1,9 +1,9 @@
 from django_fsm import TransitionNotAllowed
-from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
+from hope_api_auth.views import LoggingAPIViewSet
 from hope_payment_gateway.api.western_union.filters import PaymentInstructionFilter, PaymentRecordFilter
 from hope_payment_gateway.api.western_union.serializers import (
     PaymentInstructionSerializer,
@@ -13,12 +13,12 @@ from hope_payment_gateway.api.western_union.serializers import (
 from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecord
 
 
-class LoggingAPIViewSet(viewsets.ModelViewSet):
+class ProtectedMixin:
     def destroy(self, request, pk=None):
         raise NotImplementedError
 
 
-class PaymentInstructionViewSet(LoggingAPIViewSet):
+class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = PaymentInstructionSerializer
     queryset = PaymentInstruction.objects.all()
 
@@ -74,7 +74,7 @@ class PaymentInstructionViewSet(LoggingAPIViewSet):
         return Response({"uuid": obj.uuid, "errors": error_dict}, status=HTTP_400_BAD_REQUEST)
 
 
-class PaymentRecordViewSet(LoggingAPIViewSet):
+class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = PaymentRecordSerializer
     queryset = PaymentRecord.objects.all()
     lookup_field = "uuid"
