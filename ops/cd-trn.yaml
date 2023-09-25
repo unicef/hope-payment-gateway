@@ -52,5 +52,5 @@ stages:
               arguments: "--timeout 600s"
               overrideValues: "
                 image.repository=$(Docker.url)/$(Docker.backend.repository) \
-                image.tag=:trn-$(tag) \
+                image.tag=trn-$(tag) \
                 "
