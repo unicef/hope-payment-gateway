@@ -6,7 +6,11 @@ resources:
 variables:
   Kubernetes.serviceConnection: "ICTD-HOPE-TRN-uni-apps-aks-hope-dev-ictd-hope-trn-1616938354772"
   Kubernetes.namespace: "ictd-hope-trn"
-  Docker.registry: "uniappsakshopedev.azurecr.io"
+  Docker.backend.repository: "hope-payment-gateway"
+  Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
+  Docker.url: "uniappsakshopedev.azurecr.io"
+  tag: $(Build.SourceVersion)
+
 
 stages:
   - stage: deploy
@@ -47,5 +51,6 @@ stages:
               valueFile: '**/ops/hope-payment-gateway/values.yaml'
               arguments: "--timeout 600s"
               overrideValues: "
-                image.tag=latest \
+                image.repository=$(Docker.url)/$(Docker.backend.repository) \
+                image.tag=:trn-$(tag) \
                 "
