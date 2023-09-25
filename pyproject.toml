@@ -79,6 +79,7 @@ tablib = "*"
 unicef-security = "*"
 wheel = "*"
 zeep = "*"
+uwsgi = "^2.0.22"
 
 
 [tool.poetry.group.dev.dependencies]

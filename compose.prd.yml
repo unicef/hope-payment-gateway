@@ -1,15 +1,12 @@
 version: '3.8'
 
-volumes:
-  postgres_data:
-
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-      target: dev
-    command: dev
+      target: prd
+    command: prd
     environment:
       - SECRET_KEY=secret-key
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
@@ -33,8 +30,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
     ports:
       - 5432:5432
     restart: always

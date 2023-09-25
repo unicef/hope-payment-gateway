@@ -11,6 +11,13 @@ case "$1" in
         python3 manage.py migrate
         pytest
     ;;
+    prd)
+        uwsgi \
+            --http :8000 \
+            --master \
+            --module=src.hope_payment_gateway.config.wsgi \
+            --processes=2
+    ;;
     *)
         exec "$@"
     ;;
