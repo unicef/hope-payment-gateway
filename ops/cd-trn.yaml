@@ -51,6 +51,6 @@ stages:
               valueFile: '**/ops/hope-payment-gateway/values.yaml'
               arguments: "--timeout 600s"
               overrideValues: "
-                image.repository=$(Docker.url)/$(Docker.backend.repository) \
+                image.repository=$(Docker.url)/$(Docker.backend.repository), \
                 image.tag=trn-$(tag) \
                 "
