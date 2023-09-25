@@ -20,7 +20,7 @@ coverage.xml
 .env
 .envrc
 .venv/
-src/hope_payment_gateway/static
+hope_payment_gateway/static
 .DS_Store
 
 .vscode

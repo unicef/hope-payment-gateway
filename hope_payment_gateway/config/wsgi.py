@@ -20,7 +20,7 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE",
-    "src.hope_payment_gateway.config.settings",
+    "hope_payment_gateway.config.settings",
 )
 
 application = get_wsgi_application()

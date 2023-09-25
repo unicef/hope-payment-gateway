@@ -15,7 +15,7 @@ case "$1" in
         uwsgi \
             --http :8000 \
             --master \
-            --module=src.hope_payment_gateway.config.wsgi \
+            --module=hope_payment_gateway.config.wsgi \
             --processes=2
     ;;
     *)
