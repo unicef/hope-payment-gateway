@@ -3,7 +3,7 @@
 set -eou pipefail
 
 production() {
-    export PYTHONPATH=/code/src # hack to find django settings
+    # export PYTHONPATH=/code/src # hack to find django settings
     uwsgi \
         --http :8000 \
         --master \
