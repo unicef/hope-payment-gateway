@@ -70,7 +70,7 @@ class APITokenForm(forms.ModelForm):
 
 @admin.register(APIToken)
 class APITokenAdmin(SmartModelAdmin):
-    list_display = ("__str__", "user", "valid_from", "valid_to")
+    list_display = ("__str__", "user", "valid_from", "valid_to", "key")
     list_filter = (("user", AutoCompleteFilter),)
     autocomplete_fields = ("user",)
     formfield_overrides = {

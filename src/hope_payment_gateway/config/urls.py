@@ -11,7 +11,7 @@ api_patterns = [
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"adminactions/", include("adminactions.urls")),
     path(r"wu/", include("hope_payment_gateway.apps.fsp.western_union.urls", namespace="wu")),
-    path(r"rest/", include("hope_payment_gateway.api.fsp.urls", namespace="rest")),
+    path(r"rest/", include("hope_payment_gateway.api.urls", namespace="rest")),
 ]
 
 urlpatterns = [path("api/", include(api_patterns)), path("health", lambda _: HttpResponse("OK"))]

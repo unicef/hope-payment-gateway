@@ -1,6 +1,15 @@
 from django_filters import rest_framework as filters
 
-from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+
+
+class FinancialServiceProviderFilter(filters.FilterSet):
+    class Meta:
+        model = FinancialServiceProvider
+        fields = {
+            "name": ["exact"],
+            "vision_vendor_number": ["exact"],
+        }
 
 
 class PaymentInstructionFilter(filters.FilterSet):

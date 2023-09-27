@@ -2,21 +2,35 @@ from django_fsm import TransitionNotAllowed
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.viewsets import ModelViewSet
 
 from hope_api_auth.views import LoggingAPIViewSet
-from hope_payment_gateway.api.fsp.filters import PaymentInstructionFilter, PaymentRecordFilter
+from hope_payment_gateway.api.fsp.filters import (
+    FinancialServiceProviderFilter,
+    PaymentInstructionFilter,
+    PaymentRecordFilter,
+)
 from hope_payment_gateway.api.fsp.serializers import (
+    FinancialServiceProviderSerializer,
     PaymentInstructionSerializer,
     PaymentRecordLightSerializer,
     PaymentRecordSerializer,
 )
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
 
 
 class ProtectedMixin:
     def destroy(self, request, pk=None):
         raise NotImplementedError
+
+
+class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet):
+    serializer_class = FinancialServiceProviderSerializer
+    queryset = FinancialServiceProvider.objects.all()
+
+    filterset_class = FinancialServiceProviderFilter
+    search_fields = ["name", "vision_vendor_number"]
 
 
 class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):

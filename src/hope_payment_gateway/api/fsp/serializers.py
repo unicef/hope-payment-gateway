@@ -3,6 +3,12 @@ from rest_framework import serializers
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
 
 
+class FinancialServiceProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FinancialServiceProvider
+        fields = ("name", "vision_vendor_number", "configuration")
+
+
 class PaymentInstructionSerializer(serializers.ModelSerializer):
     fsp = serializers.SlugRelatedField(
         slug_field="vision_vendor_number", queryset=FinancialServiceProvider.objects.all()
