@@ -17,6 +17,7 @@ ENV PYTHONPYCACHEPREFIX=/tmp/pycache \
   POETRY_HOME=/opt/poetry \
   PATH=/opt/venv/bin:/opt/poetry/bin:${PATH}
 
+WORKDIR /code
 
 FROM base as builder
 
