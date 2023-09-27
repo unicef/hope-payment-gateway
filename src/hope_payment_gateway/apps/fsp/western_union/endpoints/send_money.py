@@ -1,3 +1,4 @@
+from django_fsm import TransitionNotAllowed
 from zeep.helpers import serialize_object
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
@@ -104,47 +105,46 @@ def send_money_store(payload):
 
 def send_money(hope_payload):
     record_uuid = hope_payload["record_uuid"]
-    log = PaymentRecord.objects.get(uuid=record_uuid)
+    pr = PaymentRecord.objects.get(uuid=record_uuid)
 
     try:
         payload = create_validation_payload(hope_payload)
-    except (InvalidCorridor, PayloadException) as exc:
-        log.message = str(exc)
-        log.status = PaymentRecord.ERROR
-        log.success = False
-        log.save()
-        return log
-
-    response = send_money_validation(payload)
-    smv_payload = serialize_object(response["content"])
-    log.validate()
-    log.save()
+        response = send_money_validation(payload)
+        smv_payload = serialize_object(response["content"])
+        pr.validate()
+        pr.save()
+    except (InvalidCorridor, PayloadException, TransitionNotAllowed) as exc:
+        pr.message = str(exc)
+        pr.status = PaymentRecord.ERROR
+        pr.success = False
+        pr.save()
+        return pr
 
     if response["code"] != 200:
-        log.message = f'Send Money Validation: {response["error"]}'
-        log.success = False
-        log.fail()
-        log.save()
-        return log
+        pr.message = f'Send Money Validation: {response["error"]}'
+        pr.success = False
+        pr.fail()
+        pr.save()
+        return pr
 
     extra_data = {key: smv_payload[key] for key in ["instant_notification", "mtcn", "new_mtcn", "financials"]}
     log_data = extra_data.copy()
     log_data["record_code"] = hope_payload["payment_record_code"]
     log_data.pop("financials")
-    log.message = "Send Money Validation: Success"
-    log.success = True
-    log.extra_data.update(log_data)
-    log.save()
+    pr.message = "Send Money Validation: Success"
+    pr.success = True
+    pr.extra_data.update(log_data)
+    pr.save()
     for key, value in extra_data.items():
         payload[key] = value
 
     response = send_money_store(payload)
     if response["code"] == 200:
-        log.message, log.success = "Send Money Store: Success", True
-        log.store()
+        pr.message, pr.success = "Send Money Store: Success", True
+        pr.store()
     else:
-        log.message, log.success = f'Send Money Store: {response["error"]}', False
-        log.fail()
-    log.extra_data.update(log_data)
-    log.save()
-    return log
+        pr.message, pr.success = f'Send Money Store: {response["error"]}', False
+        pr.fail()
+    pr.extra_data.update(log_data)
+    pr.save()
+    return pr
