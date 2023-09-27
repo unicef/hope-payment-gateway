@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prd
-    command: prd
     environment:
       - SECRET_KEY=secret-key
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
