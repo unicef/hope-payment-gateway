@@ -24,8 +24,7 @@ class LoggingAPIView(APIView):
         if settings.DEBUG:
             from rest_framework.authentication import BasicAuthentication
 
-            auth_classes.append(BasicAuthentication())
-            return auth_classes
+            auth_classes = [BasicAuthentication()] + auth_classes
         return auth_classes
 
     def get_permissions(self):  # TODO remove me
