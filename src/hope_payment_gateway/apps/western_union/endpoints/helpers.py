@@ -5,7 +5,7 @@ from hope_payment_gateway.apps.western_union.exceptions import (
 )
 
 
-def analyze_node(nodes, partial=[]):
+def analyze_node(nodes, partial=list):
     for item in nodes:
         if isinstance(item, dict):
             news = []

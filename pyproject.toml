@@ -4,22 +4,19 @@ include = '\.pyi?$'
 exclude = '''
 /(
     \.git
-  | \.hg
-  | \.mypy_cache
+  | \.pytest_cache
   | \.tox
   | \.venv
-  | venv
-  | _build
-  | buck-out
+  | ~build
   | build
-  | dist
+  | ops
   | migrations
-  | snapshots
 )/
 '''
 
 [tool.isort]
 profile = "black"
+line_length = 120
 default_section = "THIRDPARTY"
 known_first_party = []
 known_django = "django"
@@ -78,6 +75,7 @@ social-auth-app-django = "*"
 social-auth-core = "*"
 swapper = "*"
 tablib = "*"
+unicef-power-query = "*"
 unicef-security = "*"
 wheel = "*"
 uwsgi = "*"

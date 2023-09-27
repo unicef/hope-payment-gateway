@@ -16,7 +16,8 @@ class WUClient:
 def requests_request():
     request = """
         <?xml version='1.0' encoding='utf-8'?>
-        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xrsi="http://www.westernunion.com/schema/xrsi">
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xrsi="http://www.westernunion.com/schema/xrsi">
            <soapenv:Header/>
            <soapenv:Body>
               <ns2:esp-heartbeat-request xmlns:ns2="http://www.westernunion.com/schema/xrsi">
