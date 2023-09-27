@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     "import_export",
     "constance",
     "rest_framework",
+    "power_query",
 )
 
 MIDDLEWARE = (
