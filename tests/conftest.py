@@ -5,7 +5,7 @@ import pytest
 from strategy_field.utils import fqn
 
 from hope_api_auth.models import Grant
-from hope_payment_gateway.apps.western_union.handlers.western_union import WesternUnionHandler
+from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 
 from .factories import (
     APITokenFactory,

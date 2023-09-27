@@ -3125,6 +3125,35 @@ files = [
 ]
 
 [[package]]
+name = "unicef-power-query"
+version = "0.3.4"
+description = "Provides Basic UNICEF User model and integration with Azure"
+optional = false
+python-versions = "*"
+files = [
+    {file = "unicef-power-query-0.3.4.tar.gz", hash = "sha256:fa650b1a8209f42e13ce5cbb3978584769430867dc2fb33aaf44a336e47128a0"},
+    {file = "unicef_power_query-0.3.4-py2.py3-none-any.whl", hash = "sha256:f9bd7eefb55908eea96ce61e0ff4b0be9f0c1ef0e34485feccde9a23dbd95557"},
+]
+
+[package.dependencies]
+celery = "*"
+django = "*"
+django-admin-extra-buttons = "*"
+django-adminactions = "*"
+django-adminfilters = "*"
+django-concurrency = "*"
+django-import-export = "*"
+django-smart-admin = "*"
+kombu = "*"
+natural-keys = "*"
+redis = "*"
+sentry-sdk = "*"
+tablib = "*"
+
+[package.extras]
+test = ["black", "django-webtest", "factory-boy", "flake8", "freezegun", "isort", "parameterized", "psycopg2", "pytest", "pytest-coverage", "pytest-django", "pytest-echo"]
+
+[[package]]
 name = "unicef-security"
 version = "1.4.4"
 description = "Provides Basic UNICEF User model and integration with Azure"
@@ -3439,4 +3468,4 @@ xmlsec = ["xmlsec (>=0.6.1)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "90b2c7dafa8046e120dcf19b46b8dabed4e563fe47a82996f09855f740c3d15a"
+content-hash = "978fdc07c49159e9174d067917a515f0da2e357ccf43028a22245ffc19478730"

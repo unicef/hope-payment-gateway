@@ -1,6 +1,6 @@
 import responses
 
-from hope_payment_gateway.apps.western_union.endpoints.request import requests_request
+from hope_payment_gateway.apps.fsp.western_union.endpoints.request import requests_request
 
 
 @responses.activate

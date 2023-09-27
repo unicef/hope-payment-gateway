@@ -1,0 +1,187 @@
+[
+{
+    "model": "gateway.paymentinstruction",
+    "pk": 1,
+    "fields": {
+        "created": "2023-09-14T00:08:35.758Z",
+        "modified": "2023-09-20T20:00:21.266Z",
+        "uuid": "63849121-12e9-4878-bee6-36ef02a59381",
+        "unicef_id": "Spain Programme",
+        "status": "READY",
+        "payload": {
+            "destination_country": "ES",
+            "destination_currency": "EUR"
+        },
+        "fsp": 1,
+        "system": 1,
+        "tag": null
+    }
+},
+{
+    "model": "gateway.paymentinstruction",
+    "pk": 2,
+    "fields": {
+        "created": "2023-09-14T00:31:35.504Z",
+        "modified": "2023-09-19T11:29:22.755Z",
+        "uuid": "5fe8eda3-b3b6-46f1-b336-e696bda28ded",
+        "unicef_id": "Benin with corridor",
+        "status": "OPEN",
+        "payload": {
+            "corridor": "Benin",
+            "reason_for_sending": "P019",
+            "destination_country": "BJ",
+            "destination_currency": "XOF",
+            "delivery_services_code": "800"
+        },
+        "fsp": 1,
+        "system": 1,
+        "tag": null
+    }
+},
+{
+    "model": "gateway.paymentinstruction",
+    "pk": 3,
+    "fields": {
+        "created": "2023-09-26T11:50:24.901Z",
+        "modified": "2023-09-26T11:50:24.901Z",
+        "uuid": "1c3e3530-744c-485d-9e51-bb56032abcef",
+        "unicef_id": "123",
+        "status": "DRAFT",
+        "payload": {
+            "a": "A"
+        },
+        "fsp": 1,
+        "system": 1,
+        "tag": null
+    }
+},
+{
+    "model": "gateway.paymentrecord",
+    "pk": 69,
+    "fields": {
+        "created": "2023-09-13T21:30:02.035Z",
+        "modified": "2023-09-27T08:56:38.533Z",
+        "uuid": "e9d9cc65-97e4-41d9-ab7f-727c05816dad",
+        "parent": 1,
+        "record_code": "domenico",
+        "success": false,
+        "status": "ERROR",
+        "message": "Send Money Validation: E9256 SYSTEM ERROR - PLEASE RETRY",
+        "payload": {
+            "amount": 2000,
+            "phone_no": "+39123456",
+            "last_name": "Dome",
+            "first_name": "Nico"
+        },
+        "extra_data": {
+            "mtcn": "8360801003",
+            "new_mtcn": "2326488360801003",
+            "record_code": "domenico",
+            "instant_notification": {
+                "addl_service_block": null,
+                "addl_service_charges": "010300002010030100103MSG02010030101103FEE1204150013041500961501010020100301099200101C0211UDI0000009299210417wufxspd0002046230                                                                                                                                                                               "
+            }
+        }
+    }
+},
+{
+    "model": "gateway.paymentrecord",
+    "pk": 78,
+    "fields": {
+        "created": "2023-09-19T15:46:28.530Z",
+        "modified": "2023-09-27T08:56:43.083Z",
+        "uuid": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "parent": 1,
+        "record_code": "681cbf43",
+        "success": false,
+        "status": "ERROR",
+        "message": "Send Money Validation: E9256 SYSTEM ERROR - PLEASE RETRY",
+        "payload": {
+            "amount": 1200,
+            "phone_no": "+229123456",
+            "last_name": "Baglio",
+            "first_name": "Aldo"
+        },
+        "extra_data": {
+            "mtcn": "5721459261",
+            "new_mtcn": "2326585721459261",
+            "record_code": "681cbf43",
+            "instant_notification": {
+                "addl_service_block": null,
+                "addl_service_charges": "010300002010030100103MSG02010030101103FEE1204150013041500961501010020100301099200101C0211UDI0000009299210417wufxspd0002046230                                                                                                                                                                               "
+            }
+        }
+    }
+},
+{
+    "model": "gateway.paymentrecord",
+    "pk": 83,
+    "fields": {
+        "created": "2023-09-22T23:17:44.541Z",
+        "modified": "2023-09-22T23:17:44.541Z",
+        "uuid": "15c853c5-285f-414e-8a6c-4feed96c4e27",
+        "parent": 2,
+        "record_code": "adalberto",
+        "success": null,
+        "status": "PENDING",
+        "message": null,
+        "payload": {
+            "adalberto": "adalberto"
+        },
+        "extra_data": {}
+    }
+},
+{
+    "model": "gateway.paymentrecord",
+    "pk": 84,
+    "fields": {
+        "created": "2023-09-22T23:21:33.315Z",
+        "modified": "2023-09-22T23:21:33.315Z",
+        "uuid": "a887c08d-3a47-403b-8503-3ae3560e9232",
+        "parent": 2,
+        "record_code": "adalberto",
+        "success": null,
+        "status": "PENDING",
+        "message": null,
+        "payload": {},
+        "extra_data": {}
+    }
+},
+{
+    "model": "gateway.paymentrecord",
+    "pk": 85,
+    "fields": {
+        "created": "2023-09-22T23:22:17.626Z",
+        "modified": "2023-09-22T23:22:17.626Z",
+        "uuid": "ac9bb6f0-26e9-4dba-9f7d-4c2f7989febd",
+        "parent": 2,
+        "record_code": "adalberto",
+        "success": null,
+        "status": "PENDING",
+        "message": null,
+        "payload": {},
+        "extra_data": {}
+    }
+},
+{
+    "model": "gateway.paymentrecord",
+    "pk": 86,
+    "fields": {
+        "created": "2023-09-25T17:33:13.365Z",
+        "modified": "2023-09-25T17:33:13.365Z",
+        "uuid": "26c2d2ce-ace7-40a4-b877-470b7e6c2bf3",
+        "parent": 2,
+        "record_code": "francisco",
+        "success": null,
+        "status": "PENDING",
+        "message": null,
+        "payload": {
+            "amount": 1000,
+            "phone_no": "+39123456",
+            "last_name": "Paco",
+            "first_name": "Fran"
+        },
+        "extra_data": {}
+    }
+}
+]

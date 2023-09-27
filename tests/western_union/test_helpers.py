@@ -1,4 +1,4 @@
-from hope_payment_gateway.apps.western_union.endpoints.helpers import analyze_node
+from hope_payment_gateway.apps.fsp.western_union.endpoints.helpers import analyze_node
 
 
 def test_analyze_node():

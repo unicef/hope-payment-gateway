@@ -29,7 +29,8 @@ DATABASE_APPS_MAPPING: Dict[str, str] = {
 INSTALLED_APPS = (
     "hope_payment_gateway.web",
     "hope_payment_gateway.apps.core.apps.AppConfig",
-    "hope_payment_gateway.apps.western_union.apps.AppConfig",
+    "hope_payment_gateway.apps.gateway.apps.AppConfig",
+    "hope_payment_gateway.apps.fsp.western_union.apps.AppConfig",
     "hope_api_auth",
     "django.contrib.contenttypes",
     "advanced_filters",
@@ -56,6 +57,7 @@ INSTALLED_APPS = (
     "import_export",
     "constance",
     "rest_framework",
+    "power_query",
 )
 
 MIDDLEWARE = (
