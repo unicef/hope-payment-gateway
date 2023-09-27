@@ -1,7 +1,7 @@
 import responses
 
-from hope_payment_gateway.apps.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.western_union.endpoints.send_money import create_validation_payload
+from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
+from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import create_validation_payload
 
 
 def test_client_no_service():

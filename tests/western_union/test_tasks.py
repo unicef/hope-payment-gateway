@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecord
-from hope_payment_gateway.apps.western_union.tasks import western_union_send_task
+from hope_payment_gateway.apps.fsp.western_union.tasks import western_union_send_task
+from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
 
 from ..factories import PaymentInstructionFactory, PaymentRecordFactory
 
@@ -20,7 +20,7 @@ from ..factories import PaymentInstructionFactory, PaymentRecordFactory
     ],
 )
 @pytest.mark.django_db
-@patch("hope_payment_gateway.apps.western_union.handlers.western_union.send_money")
+@patch("hope_payment_gateway.apps.fsp.western_union.handlers.send_money")
 def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
     instr_a = PaymentInstructionFactory(status=PaymentInstruction.READY, fsp=wu)
     instr_b = PaymentInstructionFactory(status=PaymentInstruction.READY, fsp=wu)

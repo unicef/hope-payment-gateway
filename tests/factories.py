@@ -9,13 +9,9 @@ from strategy_field.utils import fqn
 
 from hope_api_auth.models import APIToken, Grant
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.western_union.models import (
-    Corridor,
-    FinancialServiceProvider,
-    PaymentInstruction,
-    PaymentRecord,
-)
-from hope_payment_gateway.apps.western_union.registry import DefaultProcessor
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.registry import DefaultProcessor
 
 
 @factory.django.mute_signals(signals.post_save)

@@ -1,12 +1,12 @@
 import pytest
 import responses
 
-from hope_payment_gateway.apps.western_union.endpoints.send_money import (
+from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     create_validation_payload,
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.western_union.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 from ...factories import CorridorFactory, PaymentRecordFactory
 
