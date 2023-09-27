@@ -58,7 +58,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-        log = cancel(obj.record_code, mtcn)
+        log = cancel(obj.uuid, mtcn)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
