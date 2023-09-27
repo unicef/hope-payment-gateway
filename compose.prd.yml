@@ -11,8 +11,6 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     ports:
       - 8000:8000
-    volumes:
-      - .:/code
     restart: unless-stopped
     depends_on:
       db:
