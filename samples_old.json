@@ -71,7 +71,31 @@
     }
 },
 {
-    "model": "gateway.paymentinstruction",
+    "model": "western_union.financialserviceprovider",
+    "pk": 1,
+    "fields": {
+        "name": "U",
+        "vision_vendor_number": "12345",
+        "strategy": "<hope_payment_gateway.apps.fsp.western_union.handlers.WesternUnionHandler object at 0x115dd7250>",
+        "configuration": {
+            "a": "a"
+        }
+    }
+},
+{
+    "model": "western_union.financialserviceprovider",
+    "pk": 2,
+    "fields": {
+        "name": "Western Union",
+        "vision_vendor_number": "1900723202",
+        "strategy": "<hope_payment_gateway.apps.fsp.western_union.handlers.WesternUnionHandler object at 0x115dd7250>",
+        "configuration": {
+            "a": "a"
+        }
+    }
+},
+{
+    "model": "western_union.paymentinstruction",
     "pk": 1,
     "fields": {
         "created": "2023-09-14T00:08:35.758Z",
@@ -83,13 +107,13 @@
             "destination_country": "ES",
             "destination_currency": "EUR"
         },
-        "fsp": 1,
+        "fsp": 2,
         "system": 1,
         "tag": null
     }
 },
 {
-    "model": "gateway.paymentinstruction",
+    "model": "western_union.paymentinstruction",
     "pk": 2,
     "fields": {
         "created": "2023-09-14T00:31:35.504Z",
@@ -104,13 +128,13 @@
             "destination_currency": "XOF",
             "delivery_services_code": "800"
         },
-        "fsp": 1,
+        "fsp": 2,
         "system": 1,
         "tag": null
     }
 },
 {
-    "model": "gateway.paymentinstruction",
+    "model": "western_union.paymentinstruction",
     "pk": 3,
     "fields": {
         "created": "2023-09-26T11:50:24.901Z",
@@ -127,7 +151,7 @@
     }
 },
 {
-    "model": "gateway.paymentrecord",
+    "model": "western_union.paymentrecord",
     "pk": 69,
     "fields": {
         "created": "2023-09-13T21:30:02.035Z",
@@ -156,7 +180,7 @@
     }
 },
 {
-    "model": "gateway.paymentrecord",
+    "model": "western_union.paymentrecord",
     "pk": 78,
     "fields": {
         "created": "2023-09-19T15:46:28.530Z",
@@ -185,7 +209,7 @@
     }
 },
 {
-    "model": "gateway.paymentrecord",
+    "model": "western_union.paymentrecord",
     "pk": 83,
     "fields": {
         "created": "2023-09-22T23:17:44.541Z",
@@ -203,7 +227,7 @@
     }
 },
 {
-    "model": "gateway.paymentrecord",
+    "model": "western_union.paymentrecord",
     "pk": 84,
     "fields": {
         "created": "2023-09-22T23:21:33.315Z",
@@ -219,7 +243,7 @@
     }
 },
 {
-    "model": "gateway.paymentrecord",
+    "model": "western_union.paymentrecord",
     "pk": 85,
     "fields": {
         "created": "2023-09-22T23:22:17.626Z",
@@ -235,7 +259,7 @@
     }
 },
 {
-    "model": "gateway.paymentrecord",
+    "model": "western_union.paymentrecord",
     "pk": 86,
     "fields": {
         "created": "2023-09-25T17:33:13.365Z",
