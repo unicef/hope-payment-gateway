@@ -10,6 +10,7 @@ from hope_payment_gateway.api.western_union.serializers import (
     PaymentRecordLightSerializer,
     PaymentRecordSerializer,
 )
+from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecord
 
 
@@ -26,6 +27,14 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     filterset_class = PaymentInstructionFilter
     search_fields = ["unicef_id", "uuid"]
 
+    def perform_create(self, serializer):
+        try:
+            self.request.auth
+            system = System.objects.get()
+        except System.DoesNotExist as exc:
+            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+        serializer.save(system=system)
+
     def _change_status(self, status):
         instruction = self.get_object()
         try:
@@ -36,19 +45,19 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         except TransitionNotAllowed as exc:
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
 
-    @action(detail=True)  # , methods=['post']
+    @action(detail=True, methods=["post"])
     def open(self, request, uuid=None):
         return self._change_status("open")
 
-    @action(detail=True)  # , methods=['post']
+    @action(detail=True, methods=["post"])
     def ready(self, request, uuid=None):
         return self._change_status("ready")
 
-    @action(detail=True)  # , methods=['post']
+    @action(detail=True, methods=["post"])
     def close(self, request, uuid=None):
         return self._change_status("close")
 
-    @action(detail=True)  # , methods=['post']
+    @action(detail=True, methods=["post"])
     def cancel(self, request, uuid=None):
         return self._change_status("cancel")
 

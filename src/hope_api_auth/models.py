@@ -66,3 +66,6 @@ class APILogEntry(models.Model):
     url = models.URLField()
     method = models.CharField(max_length=10)
     status_code = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.token} {self.method} {self.timestamp}"

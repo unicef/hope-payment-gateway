@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.conf import settings
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
 
@@ -7,7 +8,6 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from django.conf import settings
 from .auth import GrantedPermission, LoggingTokenAuthentication
 from .models import APILogEntry, Grant
 
@@ -23,6 +23,7 @@ class LoggingAPIView(APIView):
         auth_classes = super().get_authenticators()
         if settings.DEBUG:
             from rest_framework.authentication import BasicAuthentication
+
             auth_classes.append(BasicAuthentication())
             return auth_classes
         return auth_classes
@@ -30,6 +31,7 @@ class LoggingAPIView(APIView):
     def get_permissions(self):  # TODO remove me
         if settings.DEBUG:
             from rest_framework.permissions import IsAuthenticated
+
             return [IsAuthenticated()]
         return super().get_permissions()
 

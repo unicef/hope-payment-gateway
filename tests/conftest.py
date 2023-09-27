@@ -2,10 +2,19 @@ import os
 import tempfile
 
 import pytest
+from strategy_field.utils import fqn
 
 from hope_api_auth.models import Grant
+from hope_payment_gateway.apps.western_union.handlers.western_union import WesternUnionHandler
 
-from .factories import APITokenFactory, CorridorFactory, PaymentInstructionFactory, PaymentRecordFactory, UserFactory
+from .factories import (
+    APITokenFactory,
+    CorridorFactory,
+    FinancialServiceProviderFactory,
+    PaymentInstructionFactory,
+    PaymentRecordFactory,
+    UserFactory,
+)
 
 
 def pytest_configure(config):
@@ -43,6 +52,13 @@ def pi():
 @pytest.fixture()
 def prl():
     return PaymentRecordFactory()
+
+
+@pytest.fixture()
+def wu():
+    return FinancialServiceProviderFactory(
+        name="Western Union", vision_vendor_number="1900723202", strategy=fqn(WesternUnionHandler)
+    )
 
 
 @pytest.fixture()

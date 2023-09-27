@@ -19,7 +19,12 @@ from hope_payment_gateway.apps.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.western_union.models import Corridor, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.western_union.models import (
+    Corridor,
+    FinancialServiceProvider,
+    PaymentInstruction,
+    PaymentRecord,
+)
 
 
 @admin.register(Corridor)
@@ -89,7 +94,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return TemplateResponse(request, "western_union.html", context)
 
     @choice()
-    def das(self, button):
+    def western_union(self, button):
         button.choices = [
             self.das_countries_currencies,
             self.das_origination_currencies,
@@ -198,11 +203,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = (
-        "unicef_id",
-        "status",
-        "uuid"
-    )
+    list_display = ("unicef_id", "status", "uuid")
     list_filter = ("status",)
     search_fields = ("unicef_id",)
-    readonly_fields = ("uuid, payload",)
+    readonly_fields = ("uuid", "payload")
+
+
+@admin.register(FinancialServiceProvider)
+class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = (
+        "name",
+        "vision_vendor_number",
+    )
+    search_fields = ("name", "vision_vendor_number")
