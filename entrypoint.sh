@@ -12,6 +12,7 @@ case "$1" in
         pytest
     ;;
     prd)
+        export PYTHONPATH=/code/src # hack to find django settings
         uwsgi \
             --http :8000 \
             --master \
