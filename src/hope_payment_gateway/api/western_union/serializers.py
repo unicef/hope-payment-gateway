@@ -1,9 +1,14 @@
 from rest_framework import serializers
 
-from hope_payment_gateway.apps.western_union.models import PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.western_union.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
 
 
 class PaymentInstructionSerializer(serializers.ModelSerializer):
+    fsp = serializers.SlugRelatedField(
+        slug_field="vision_vendor_number", queryset=FinancialServiceProvider.objects.all()
+    )
+    system = serializers.PrimaryKeyRelatedField(read_only=True)  # handled in the view
+
     class Meta:
         model = PaymentInstruction
         fields = (
@@ -11,6 +16,8 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "uuid",
             "unicef_id",
             "status",
+            "fsp",
+            "system",
             "payload",
         )
 

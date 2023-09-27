@@ -13,19 +13,34 @@ from tests.factories import PaymentRecordFactory
     [
         ("list", False, 200),
         ("detail", True, 200),
-        ("open", True, 200),
-        ("ready", True, 400),
-        ("close", True, 400),
-        ("cancel", True, 200),
     ],
 )
-def test_payment_instruction_list(api_client_with_credentials, token_user, action, detail, status):
+def test_payment_instruction(api_client_with_credentials, token_user, action, detail, status):
     pr = PaymentRecordFactory()
     if detail:
         url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.uuid])
     else:
         url = reverse(f"rest:payment-instruction-{action}")
     view = api_client_with_credentials.get(url, user=token_user, expect_errors=True)
+    assert view.status_code == status
+
+
+@pytest.mark.parametrize(
+    "action,detail,status",
+    [
+        ("open", True, 200),
+        ("ready", True, 400),
+        ("close", True, 400),
+        ("cancel", True, 200),
+    ],
+)
+def test_payment_instruction_actions(api_client_with_credentials, token_user, action, detail, status):
+    pr = PaymentRecordFactory()
+    if detail:
+        url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.uuid])
+    else:
+        url = reverse(f"rest:payment-instruction-{action}")
+    view = api_client_with_credentials.post(url, user=token_user, expect_errors=True)
     assert view.status_code == status
 
 
@@ -81,7 +96,6 @@ def test_instructions_add_records_ko(api_client_with_credentials, token_user):
     assert view.status_code == 400
     assert view.json()["uuid"] == pr.parent.uuid
     assert view.json()["errors"] == {
-        "0": {"payload": ["This field may not be null."]},
         "2": {"record_code": ["This field may not be null."]},
     }
 

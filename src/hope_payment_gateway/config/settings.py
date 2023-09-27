@@ -282,9 +282,9 @@ USER_FIELDS = ["username", "email", "first_name", "last_name"]
 USERNAME_IS_FULL_EMAIL = True
 
 CONSTANCE_CONFIG = {
-    "WESTERN_UNION_THREASHOLD": (
+    "DEFAULT_THREASHOLD": (
         10000,
-        "Hourly threashold of calls to be made to Western Union API",
+        "Hourly threshold of calls to be made to Western Union API",
         int,
     ),
 }

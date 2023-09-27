@@ -4,6 +4,10 @@ from django.db import models
 
 from django_fsm import FSMField, transition
 from model_utils.models import TimeStampedModel
+from strategy_field.fields import StrategyField
+
+from hope_payment_gateway.apps.core.models import System
+from hope_payment_gateway.apps.western_union.registry import registry
 
 
 class Corridor(models.Model):  # delivery mechanism
@@ -11,25 +15,20 @@ class Corridor(models.Model):  # delivery mechanism
     destination_country = models.CharField(max_length=2)
     destination_currency = models.CharField(max_length=3)
     template_code = models.CharField(max_length=4)
-    template = models.JSONField(default=dict)
+    template = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
         return f"{self.description} / {self.template_code}"
 
-    # example_dict = {
-    #     "wallet_details": {
-    #         "service_provider_code": ["06301", "06302", "06304"]
-    #     },
-    #     "receiver": {
-    #         "mobile_phone": {
-    #             "phone_number": {
-    #                 "country_code": 63,
-    #                 "national_number": None
-    #             }
-    #         },
-    #         "reason_for_sending": ["P012", "P020", "P014"]
-    #     }
-    # }
+
+class FinancialServiceProvider(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    vision_vendor_number = models.CharField(max_length=100, unique=True)
+    strategy = StrategyField(registry=registry)
+    configuration = models.JSONField(default=dict, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} [{self.vision_vendor_number}]"
 
 
 class PaymentInstruction(TimeStampedModel):
@@ -49,7 +48,11 @@ class PaymentInstruction(TimeStampedModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
     unicef_id = models.CharField(max_length=255, db_index=True)
     status = FSMField(default=DRAFT, protected=False, db_index=True, choices=STATUSES)
-    payload = models.JSONField(default=dict)
+    payload = models.JSONField(default=dict, null=True, blank=True)
+
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
+    system = models.ForeignKey(System, on_delete=models.CASCADE)
+    tag = models.CharField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.unicef_id} - {self.status}"
@@ -94,8 +97,8 @@ class PaymentRecord(TimeStampedModel):
     success = models.BooleanField(null=True, blank=True)
     status = FSMField(default=PENDING, protected=False, db_index=True, choices=STATUSES)
     message = models.CharField(max_length=4096, null=True, blank=True)
-    payload = models.JSONField(default=dict)
-    extra_data = models.JSONField(default=dict)
+    payload = models.JSONField(default=dict, null=True, blank=True)
+    extra_data = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
         return f"{self.record_code} / {self.message}"

@@ -1077,6 +1077,23 @@ django-sysinfo = ">=2.6.2"
 dev = ["bump2version", "django-constance", "django-environ", "django-picklefield", "django-webtest", "factory-boy", "factory_boy", "flake8", "isort", "psycopg2", "pyquery", "pytest", "pytest-cov", "pytest-django", "pytest-echo", "pytest-pythonpath", "tox", "whitenoise"]
 
 [[package]]
+name = "django-strategy-field"
+version = "3.0.0"
+description = ""
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-strategy-field-3.0.0.tar.gz", hash = "sha256:a65fcacbf97d3e61a9208c4dd4f2a601ce2819b5e09403c8338c8e08f298bd06"},
+]
+
+[package.dependencies]
+pytz = "*"
+
+[package.extras]
+drf = ["django-rest-framework"]
+test = ["coverage", "django-webtest", "django_dynamic_fixture", "factory-boy", "faker", "flake8", "isort", "pycodestyle (>2.4)", "pytest (<7)", "pytest-coverage", "pytest-django", "pytest-echo", "pytest-pythonpath (>=0.7.4)", "tox", "twine", "webtest"]
+
+[[package]]
 name = "django-sysinfo"
 version = "2.6.2"
 description = "Simple django app to expose system infos: libraries version, databae server infos..."
@@ -3422,4 +3439,4 @@ xmlsec = ["xmlsec (>=0.6.1)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "9af3853bc4924256f6acd06ce53099127e368f804283c48842359d98a7ce0c80"
+content-hash = "90b2c7dafa8046e120dcf19b46b8dabed4e563fe47a82996f09855f740c3d15a"
