@@ -5,7 +5,7 @@ set -eou pipefail
 production() {
     export PYTHONPATH=/code/src # without this, uwsgi can't load python modules
     uwsgi \
-        --http :80 \
+        --http :8000 \
         --master \
         --module=src.hope_payment_gateway.config.wsgi \
         --processes=2
