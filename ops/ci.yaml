@@ -32,7 +32,6 @@ stages:
             inputs:
               containerRegistry: '$(Docker.registryConnection)'
               command: 'login'
-          # TODO: specify docker target in script (dist)
           - script: |
               docker buildx create --use
               docker buildx build \
@@ -41,9 +40,22 @@ stages:
               --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-$(additionalTag) \
               --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
               -t $(Docker.url)/$(Docker.backend.repository):trn-$(tag) \
+              --target prd \
               --push \
               ./
             displayName: Docker build trn
+          - script: |
+              docker buildx create --use
+              docker buildx build \
+              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:dev-$(additionalTag) \
+              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:dev-latest \
+              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:dev-$(additionalTag) \
+              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:dev-latest \
+              -t $(Docker.url)/$(Docker.backend.repository):dev-$(tag) \
+              --target dev \
+              --push \
+              ./
+            displayName: Docker build dev
 
   - stage: test
     displayName: TEST
@@ -68,5 +80,5 @@ stages:
               action: 'Run a Docker Compose command'
               dockerComposeCommand: 'up --exit-code-from backend'
               dockerComposeFileArgs: |
-                backend_image=$(Docker.url)/$(Docker.backend.repository):trn-$(tag)
+                backend_image=$(Docker.url)/$(Docker.backend.repository):dev-$(tag)
 
