@@ -25,6 +25,8 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
       retries: 5
