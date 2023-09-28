@@ -10,13 +10,13 @@ services:
       - SECRET_KEY=secret-key
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     ports:
-      - 8000:8000
+      - 8000:80
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://backend:8000/health"]
+      test: ["CMD", "curl", "-f", "http://backend:80/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,6 +32,6 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
