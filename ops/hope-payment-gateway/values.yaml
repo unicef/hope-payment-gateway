@@ -29,7 +29,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: hpg.unitst.org
+    - host: pg-hope-dev.unitst.org
       paths:
         - path: /
           pathType: Prefix
