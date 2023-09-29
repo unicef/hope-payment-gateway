@@ -8,14 +8,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: dev
     command: tests
     environment:
       - SECRET_KEY=secret-key
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     ports:
       - 8000:8000
-    volumes:
-      - .:/code
     restart: unless-stopped
     depends_on:
       db:
