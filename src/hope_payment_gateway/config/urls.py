@@ -19,7 +19,7 @@ ok = lambda _: HttpResponse("OK")
 urlpatterns = [
     path("api/", include(api_patterns)),
     path("health", ok),
-    path("/", ok),
+    path("", ok),
 ]
 
 
