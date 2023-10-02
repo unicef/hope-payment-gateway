@@ -61,3 +61,7 @@ autoscaling:
 
 secret:
   SECRET_KEY: ""
+  DATABASE_URL: ""
+
+config:
+  WESTERN_UNION_BASE_URL: "https://wugateway2pi.westernunion.com"
