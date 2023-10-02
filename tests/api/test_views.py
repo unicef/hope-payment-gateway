@@ -31,7 +31,8 @@ def test_payment_instruction(api_client_with_credentials, token_user, action, de
         ("open", True, 200),
         ("ready", True, 400),
         ("close", True, 400),
-        ("cancel", True, 200),
+        ("process", True, 400),
+        ("abort", True, 200),
     ],
 )
 def test_payment_instruction_actions(api_client_with_credentials, token_user, action, detail, status):
@@ -101,9 +102,9 @@ def test_instructions_add_records_ko(api_client_with_credentials, token_user):
 
 
 def test_instructions_add_records_invalid_status(api_client_with_credentials, token_user):
-    pr = PaymentRecordFactory(parent__status=PaymentInstruction.CANCELLED)
+    pr = PaymentRecordFactory(parent__status=PaymentInstruction.ABORTED)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.uuid])
     view = api_client_with_credentials.post(url, user=token_user, expect_errors=True)
     assert view.status_code == 400
     assert view.json()["message"] == "Cannot add records to a not Open Plan"
-    assert view.json()["status"] == "CANCELLED"
+    assert view.json()["status"] == "ABORTED"

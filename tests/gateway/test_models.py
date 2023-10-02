@@ -35,10 +35,11 @@ def test_payment_record_payload():
     "transaction_name,source,destination",
     [
         ("open", "DRAFT", "OPEN"),
-        ("ready", "OPEN", "READY"),
-        ("close", "READY", "CLOSED"),
-        ("cancel", "DRAFT", "CANCELLED"),
-        ("cancel", "READY", "CANCELLED"),
+        ("close", "OPEN", "CLOSED"),
+        ("ready", "CLOSED", "READY"),
+        ("process", "READY", "PROCESSED"),
+        ("abort", "DRAFT", "ABORTED"),
+        ("abort", "READY", "ABORTED"),
     ],
 )
 @pytest.mark.django_db
@@ -55,7 +56,7 @@ def test_payment_instruction_transactions_ok(transaction_name, source, destinati
         ("open", "DRAFT", "CANCELLED"),
         ("ready", "OPEN", "DRAFT"),
         ("close", "DRAFT", "CLOSED"),
-        ("cancel", "DRAFT", "CLOSED"),
+        ("abort", "DRAFT", "CLOSED"),
     ],
 )
 @pytest.mark.django_db
