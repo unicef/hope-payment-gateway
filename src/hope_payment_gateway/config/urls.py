@@ -14,7 +14,13 @@ api_patterns = [
     path(r"rest/", include("hope_payment_gateway.api.urls", namespace="rest")),
 ]
 
-urlpatterns = [path("api/", include(api_patterns)), path("health", lambda _: HttpResponse("OK"))]
+ok = lambda _: HttpResponse("OK")
+
+urlpatterns = [
+    path("api/", include(api_patterns)),
+    path("health", ok),
+    path("/", ok),
+]
 
 
 if settings.DEBUG:  # pragma: no cover
