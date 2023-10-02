@@ -1,10 +1,14 @@
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.endpoints.config import WIC, agent, get_usd, unicef
+from hope_payment_gateway.apps.fsp.western_union.endpoints.config import WIC, agent, unicef
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 
-def search_request(record_code, mtcn):
-    frm = get_usd(record_code)
+def search_request(hope_payload, mtcn):
+    frm = {
+        "identifier": hope_payload.get("identifier", "N/A"),
+        "reference_no": hope_payload.get("payment_record_code", "N/A"),
+        "counter_id": hope_payload.get("counter_id", "US125QCUSD1T"),
+    }
     payload = {
         "device": agent,
         "channel": unicef,
@@ -21,8 +25,13 @@ def search_request(record_code, mtcn):
     return client.response_context("Search", payload)
 
 
-def cancel_request(record_code, mtcn, database_key, reason=WIC):
-    frm = get_usd(record_code)
+def cancel_request(hope_payload, mtcn, database_key, reason=WIC):
+    frm = {
+        "identifier": hope_payload.get("identifier", "N/A"),
+        "reference_no": hope_payload.get("payment_record_code", "N/A"),
+        "counter_id": hope_payload.get("counter_id", "N/A"),
+    }
+
     payload = {
         "device": agent,
         "channel": unicef,
@@ -40,7 +49,7 @@ def cancel_request(record_code, mtcn, database_key, reason=WIC):
 
 def cancel(record_uuid, mtcn):
     pr = PaymentRecord.objects.get(uuid=record_uuid)
-    response = search_request(pr.record_code, mtcn)
+    response = search_request(pr.get_payload(), mtcn)
     payload = response["content"]
     try:
         database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
@@ -53,7 +62,7 @@ def cancel(record_uuid, mtcn):
         pr.save()
         return pr
 
-    response = cancel_request(pr.record_code, mtcn, database_key)
+    response = cancel_request(pr.get_payload(), mtcn, database_key)
     extra_data = {"db_key": database_key, "mtcn": mtcn}
 
     if response["code"] == 200:

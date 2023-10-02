@@ -3,22 +3,6 @@ agent = {"type": "AGENT"}
 unicef = {"type": "H2H", "name": "UNICEF", "version": "9500"}
 
 
-def get_usd(ref_num="N/A"):
-    return {
-        "identifier": "WGQCUS1250T",
-        "reference_no": ref_num,
-        "counter_id": "US125QCUSD1T",
-    }
-
-
-def get_eur(ref_num="N/A"):
-    return {
-        "identifier": "WGQCUS125ET",
-        "reference_no": ref_num,
-        "counter_id": "US125QCEUR1T",
-    }
-
-
 WMF = "WMF"  # fixed money transfer
 WMN = "WMN"  # money transfer
 

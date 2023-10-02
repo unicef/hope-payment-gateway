@@ -12,8 +12,8 @@ def test_search_request(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_request.yaml")
     ref_no, mtcn = "Y3snz233UkGt1Gw4", "0352466394"
-    PaymentRecordFactory(record_code=ref_no, extra_data={"mtcn": mtcn})
-    resp = search_request("Y3snz233UkGt1Gw4", mtcn)
+    pr = PaymentRecordFactory(record_code=ref_no, extra_data={"mtcn": mtcn})
+    resp = search_request(pr.get_payload(), mtcn)
     assert (resp["title"], resp["code"]) == ("Search", 200)
 
 
