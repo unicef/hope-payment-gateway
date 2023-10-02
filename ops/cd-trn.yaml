@@ -53,5 +53,6 @@ stages:
               overrideValues: "
                 image.repository=$(Docker.url)/$(Docker.backend.repository),\
                 image.tag=trn-$(tag),\
+                ingress.annotations.appgw\\.ingress\\.kubernetes\\.io/appgw-ssl-certificate=kv-cert-unitst,\
                 secret.SECRET_KEY=$(SECRET_KEY)
                 "
