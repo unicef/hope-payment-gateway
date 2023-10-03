@@ -3,7 +3,13 @@ from django_fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
 
-from ..factories import PaymentInstructionFactory, PaymentRecordFactory
+from ..factories import FinancialServiceProviderFactory, PaymentInstructionFactory, PaymentRecordFactory
+
+
+@pytest.mark.django_db
+def test_fsp():
+    fsp = FinancialServiceProviderFactory(name="Western Union", vision_vendor_number="007")
+    assert str(fsp) == "Western Union [007]"
 
 
 @pytest.mark.django_db

@@ -48,7 +48,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-            context.update(search_request(obj.record_code, mtcn))
+            context.update(search_request(obj.get_payload(), mtcn))
             return TemplateResponse(request, "western_union.html", context)
         messages.warning(request, "Missing MTCN")
 
