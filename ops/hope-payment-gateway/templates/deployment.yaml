@@ -36,7 +36,7 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           volumeMounts:
-          - name: tls
+          - name: {{ include "hope-payment-gateway.fullname" . }}-tls
             mountPath: /etc/tls
             readOnly: true
           # TODO
