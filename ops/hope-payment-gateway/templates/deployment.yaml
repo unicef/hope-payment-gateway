@@ -51,7 +51,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
     volumes:
-    - name: tls
+    - name: {{ include "hope-payment-gateway.fullname" . }}-tls
       secret:
         secretName: {{ include "hope-payment-gateway.fullname" . }}-tls
         optional: true
