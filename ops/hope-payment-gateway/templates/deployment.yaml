@@ -36,7 +36,7 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           volumeMounts:
-          - name: {{ include "hope-payment-gateway.fullname" . }}-tls
+          - name: tls-volume
             mountPath: /etc/tls
             readOnly: true
           # TODO
@@ -51,7 +51,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
     volumes:
-    - name: {{ include "hope-payment-gateway.fullname" . }}-tls
+    - name: tls-volume
       secret:
         secretName: {{ include "hope-payment-gateway.fullname" . }}-tls
         optional: true
