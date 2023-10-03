@@ -12,6 +12,7 @@ def western_union_send_task(vision_vendor_number, tag=None, threshold=config.DEF
     qs = PaymentInstruction.objects.filter(status=PaymentInstruction.READY, fsp=wu)
     if tag:
         qs = qs.filter(tag=tag)
+    processed = []
     for pi in qs:
         new_records = pi.paymentrecord_set.filter(status=PaymentRecord.PENDING)
         if len(list(records)) + new_records.count() >= threshold:
@@ -19,5 +20,7 @@ def western_union_send_task(vision_vendor_number, tag=None, threshold=config.DEF
             records = records | new_records
             break
         records = records | new_records
+        processed.append(pi.pk)
 
     wu.strategy.notify(records)
+    PaymentInstruction.objects.filter(pk__in=processed).update(status=PaymentInstruction.PROCESSED)

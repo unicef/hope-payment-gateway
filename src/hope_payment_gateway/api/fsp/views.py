@@ -72,8 +72,12 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         return self._change_status("close")
 
     @action(detail=True, methods=["post"])
-    def cancel(self, request, uuid=None):
-        return self._change_status("cancel")
+    def process(self, request, uuid=None):
+        return self._change_status("process")
+
+    @action(detail=True, methods=["post"])
+    def abort(self, request, uuid=None):
+        return self._change_status("abort")
 
     @action(detail=True, methods=["post"])
     def add_records(self, request, uuid=None):

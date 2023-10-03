@@ -25,14 +25,16 @@ class PaymentInstruction(TimeStampedModel):
     OPEN = "OPEN"
     READY = "READY"
     CLOSED = "CLOSED"
-    CANCELLED = "CANCELLED"
+    ABORTED = "ABORTED"
+    PROCESSED = "PROCESSED"
 
     STATUSES = (
         (DRAFT, "Draft"),
         (OPEN, "Open"),
-        (READY, "Ready"),
         (CLOSED, "Closed"),
-        (CANCELLED, "Cancelled"),
+        (READY, "Ready"),
+        (PROCESSED, "Processed"),
+        (ABORTED, "Aborted"),
     )
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
     unicef_id = models.CharField(max_length=255, db_index=True)
@@ -50,16 +52,20 @@ class PaymentInstruction(TimeStampedModel):
     def open(self):
         pass
 
-    @transition(field=status, source=OPEN, target=READY, permission="western_union.change_paymentinstruction")
-    def ready(self):
-        pass
-
-    @transition(field=status, source=READY, target=CLOSED, permission="western_union.change_paymentinstruction")
+    @transition(field=status, source=OPEN, target=CLOSED, permission="western_union.change_paymentinstruction")
     def close(self):
         pass
 
-    @transition(field=status, source="*", target=CANCELLED, permission="western_union.change_paymentinstruction")
-    def cancel(self):
+    @transition(field=status, source=CLOSED, target=READY, permission="western_union.change_paymentinstruction")
+    def ready(self):
+        pass
+
+    @transition(field=status, source=READY, target=PROCESSED, permission="western_union.change_paymentinstruction")
+    def process(self):
+        pass
+
+    @transition(field=status, source="*", target=ABORTED, permission="western_union.change_paymentinstruction")
+    def abort(self):
         pass
 
 
@@ -69,6 +75,8 @@ class PaymentRecord(TimeStampedModel):
     TRANSFERRED_TO_FSP = "TRANSFERRED_TO_FSP"
     TRANSFERRED_TO_BENEFICIARY = "TRANSFERRED_TO_BENEFICIARY"
     CANCELLED = "CANCELLED"
+    REFUND = "REFUND"
+    PURGED = "PURGED"
     ERROR = "ERROR"
 
     STATUSES = (
@@ -77,6 +85,8 @@ class PaymentRecord(TimeStampedModel):
         (TRANSFERRED_TO_FSP, "Transferred to FSP"),
         (TRANSFERRED_TO_BENEFICIARY, "Transferred to Beneficiary"),
         (CANCELLED, "Cancelled"),
+        (REFUND, "Refund"),
+        (PURGED, "Purged"),
         (ERROR, "Error"),
     )
 
