@@ -35,6 +35,8 @@ RUN poetry install --without dev
 FROM builder AS dev
 
 RUN poetry install
+
+WORKDIR /code
 COPY ./ ./
 
 ADD entrypoint.sh /usr/local/bin/entrypoint.sh
