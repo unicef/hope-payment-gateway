@@ -65,3 +65,9 @@ secret:
 
 config:
   WESTERN_UNION_BASE_URL: "https://wugateway2pi.westernunion.com"
+
+redis:
+  image:
+    repository: redis
+    tag: latest
+  port: 6379
