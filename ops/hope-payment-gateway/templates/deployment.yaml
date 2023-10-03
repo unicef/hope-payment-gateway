@@ -30,7 +30,7 @@ spec:
           - secretRef:
               name: {{ include "hope-payment-gateway.fullname" . }}
           - configMapRef:
-              name: {{ include "hope-payment-gateway.fullname" . }}
+              name: {{ include "hope-payment-gateway.fullname" . }}-backend
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
