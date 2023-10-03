@@ -54,7 +54,7 @@ stages:
                 image.repository=$(Docker.url)/$(Docker.backend.repository),\
                 image.tag=trn-$(tag),\
                 ingress.annotations.appgw\\.ingress\\.kubernetes\\.io/appgw-ssl-certificate=kv-cert-unitst,\
-                tls.crt=$(TLS_CERT),\
-                tls.key=$(TLS_KEY),\
+                tls.crt=\"$(TLS_CERT)\",\
+                tls.key=\"$(TLS_KEY)\",\
                 secret.SECRET_KEY=$(SECRET_KEY)
                 "
