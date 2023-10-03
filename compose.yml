@@ -21,6 +21,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://backend:8000/health"]
       interval: 10s
@@ -40,6 +42,19 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+  redis:
+    image: redis:7.2
+    ports:
+      - 6379:6379
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       start_period: 5s
       start_interval: 1s
       interval: 5s

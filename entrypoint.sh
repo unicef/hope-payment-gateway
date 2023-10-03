@@ -2,8 +2,9 @@
 
 set -eou pipefail
 
+export PYTHONPATH=/code/src # without this, uwsgi can't load python modules
+
 production() {
-    export PYTHONPATH=/code/src # without this, uwsgi can't load python modules
     uwsgi \
         --http :8000 \
         --master \
