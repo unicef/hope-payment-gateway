@@ -71,3 +71,7 @@ redis:
     repository: redis
     tag: latest
   port: 6379
+
+tls:
+  crt: ""
+  key: ""
