@@ -70,10 +70,17 @@ config:
 
 
 redis:
+  enabled: true
+  fullnameOverride: "hpg-redis"
+  persistence.enabled: true
+  usePassword: false
+  redis:
+    usePassword: false
+  cluster:
+    slaveCount: 0
+    enabled: false
   image:
-    repository: redis
-    tag: latest
-  port: 6379
+    tag: 7.2.1
 
 tls:
   crt: ""
