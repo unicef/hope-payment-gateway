@@ -50,8 +50,8 @@ spec:
           #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-    volumes:
-    - name: tls-volume
-      secret:
-        secretName: {{ include "hope-payment-gateway.fullname" . }}-tls
-        optional: true
+      volumes:
+      - name: tls-volume
+        secret:
+          secretName: {{ include "hope-payment-gateway.fullname" . }}-tls
+          optional: true
