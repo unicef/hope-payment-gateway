@@ -132,6 +132,24 @@ class PaymentRecord(TimeStampedModel):
         pass
 
     @transition(
+        field=status,
+        source=TRANSFERRED_TO_FSP,
+        target=PURGED,
+        permission="western_union.change_paymentrecordlog",
+    )
+    def purge(self):
+        pass
+
+    @transition(
+        field=status,
+        source=TRANSFERRED_TO_FSP,
+        target=REFUND,
+        permission="western_union.change_paymentrecordlog",
+    )
+    def refund(self):
+        pass
+
+    @transition(
         field=status, source=TRANSFERRED_TO_FSP, target=CANCELLED, permission="western_union.change_paymentrecordlog"
     )
     def cancel(self):
