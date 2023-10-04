@@ -291,11 +291,9 @@ CONSTANCE_CONFIG = {
 
 # TODO: rethink this
 os.environ.setdefault("WESTERN_UNION_BASE_URL", "")
-os.environ.setdefault("WESTERN_UNION_PATH", "")
 os.environ.setdefault("WESTERN_UNION_CERT", "")
 os.environ.setdefault("WESTERN_UNION_KEY", "")
 
 WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL")
-WESTERN_UNION_PATH = env("WESTERN_UNION_PATH")
 WESTERN_UNION_CERT = env("WESTERN_UNION_CERT")
 WESTERN_UNION_KEY = env("WESTERN_UNION_KEY")
