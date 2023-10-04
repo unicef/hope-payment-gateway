@@ -124,12 +124,12 @@ USE_I18N = True
 USE_TZ = True
 
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-#         "LOCATION": env("REDIS_URL", default="redis://localhost:6379/0"),
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": env("REDIS_URL"),
+    }
+}
 
 ROOT_URLCONF = "hope_payment_gateway.config.urls"
 WSGI_APPLICATION = "hope_payment_gateway.config.wsgi.application"
@@ -178,7 +178,7 @@ AUTH_USER_MODEL = "core.User"
 HOST = env("HOST", default="http://localhost:8000")
 
 CELERY_ACCEPT_CONTENT = ["pickle", "json", "application/text"]
-CELERY_BROKER_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+CELERY_BROKER_URL = env("REDIS_URL")
 CELERY_BROKER_VISIBILITY_VAR = env("CELERY_VISIBILITY_TIMEOUT", default=1800)  # in seconds
 CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": int(CELERY_BROKER_VISIBILITY_VAR)}
 CELERY_RESULT_BACKEND = "django-db"

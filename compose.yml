@@ -13,6 +13,7 @@ services:
     environment:
       - SECRET_KEY=secret-key
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/0
     ports:
       - 8000:8000
     volumes:
