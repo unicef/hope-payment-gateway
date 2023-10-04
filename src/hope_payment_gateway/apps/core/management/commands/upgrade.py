@@ -51,7 +51,6 @@ class Command(BaseCommand):
             call_command("migrate", verbosity=verbosity - 1)
 
         if options["users"] or _all:
-            call_command("update_notifications", verbosity=verbosity - 1)
             if settings.DEBUG:
                 pwd = "123"
                 admin = os.environ.get("USER", "admin")
