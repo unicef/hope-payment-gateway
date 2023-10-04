@@ -67,7 +67,7 @@ config:
   WESTERN_UNION_BASE_URL: "https://wugateway2pi.westernunion.com"
   WESTERN_UNION_CERT: "/etc/tls/tls.crt"
   WESTERN_UNION_KEY: "/etc/tls/tls.key"
-  REDIS_URL: hpg-redis-master
+  REDIS_URL: redis://hpg-redis-master:6379
 
 
 redis:
