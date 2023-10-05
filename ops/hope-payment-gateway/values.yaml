@@ -70,6 +70,8 @@ config:
   REDIS_URL: "redis://hpg-redis-master:6379"
   STATIC_ROOT: "/static"
   STATIC_URL: "/static/"
+  SENTRY_DSN: "https://08a5403f74bb4397b65450cb31d230a4@excubo.unicef.io/54"
+  SENTRY_ENVIRONMENT: ""
 
 
 redis:
