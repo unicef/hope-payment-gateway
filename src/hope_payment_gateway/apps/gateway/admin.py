@@ -18,7 +18,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("record_code", "status", "message", "success", "uuid")
     list_filter = ("record_code", "status", "success")
     search_fields = ("transaction_id", "message")
-    readonly_fields = ("extra_data", "uuid")
+    # readonly_fields = ("extra_data", "uuid")
 
     @choice(change_list=False)
     def primitives(self, button):
@@ -68,7 +68,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("unicef_id", "status", "uuid")
     list_filter = ("status",)
     search_fields = ("unicef_id",)
-    readonly_fields = ("uuid", "payload")
+    # readonly_fields = ("uuid", "payload")
 
 
 @admin.register(FinancialServiceProvider)

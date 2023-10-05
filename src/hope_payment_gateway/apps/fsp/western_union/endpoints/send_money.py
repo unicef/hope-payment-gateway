@@ -1,3 +1,4 @@
+from constance import config
 from django_fsm import TransitionNotAllowed
 from zeep.helpers import serialize_object
 
@@ -15,7 +16,6 @@ def create_validation_payload(hope_payload):
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
         "counter_id": hope_payload.get("counter_id", "N/A"),
     }
-    print(frm, 111)
     receiver = {
         "name": {"first_name": hope_payload["first_name"], "last_name": hope_payload["last_name"], "name_type": "D"},
         "contact_phone": hope_payload["phone_no"],
@@ -120,7 +120,8 @@ def send_money(hope_payload):
     if response["code"] != 200:
         pr.message = f'Send Money Validation: {response["error"]}'
         pr.success = False
-        pr.fail()
+        if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
+            pr.fail()
         pr.save()
         return pr
 

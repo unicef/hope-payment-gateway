@@ -6,6 +6,10 @@ from rest_framework_xml.parsers import XMLParser
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
+SUCCESS = "DVQRFB51"
+PURGED = "PURGED"
+REFUND = "REFUND"
+
 
 class PayNotificationView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -34,7 +38,6 @@ class NisNotificationView(PayNotificationView):
             record_code=record_code,
             defaults={
                 "message": msg,
-                "success": False,
                 "extra_data": {
                     "mtcn": mtcn,
                     "message_code": msg_code,
@@ -43,9 +46,19 @@ class NisNotificationView(PayNotificationView):
             },
         )
 
-        pr.success = True if msg == "Receiver Paid Notification" else False
         pr.message = msg
-        pr.confirm()
+        pr.success = False
+
+        if msg_code == SUCCESS:
+            pr.confirm()
+            pr.success = True
+        elif msg_code == PURGED:
+            pr.purge()
+        elif msg_code == REFUND:
+            pr.refund()
+        else:
+            pr.error()
+
         pr.save()
         resp = nic_acknowledge(payload)
 
