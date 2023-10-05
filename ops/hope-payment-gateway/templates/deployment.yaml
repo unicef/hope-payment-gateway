@@ -21,7 +21,22 @@ spec:
         {{- include "hope-payment-gateway.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
+        - name: nginx
+          image: "tivix/docker-nginx:v17"
+          env:
+            - name: UPSTREAMS
+              value: "/:localhost:{{ .Values.service.port }}"
+            - name: STATICS
+              value: "/static:/static"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: statics
+              mountPath: /static
+              readOnly: true
+        - name: backend
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -39,18 +54,22 @@ spec:
           - name: tls-volume
             mountPath: /etc/tls
             readOnly: true
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
+          - name: statics
+            mountPath: /static
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      initContainers:
+      - name: statics-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R 82:82 /static"]
+        volumeMounts:
+        - name: statics
+          mountPath: /static
       volumes:
       - name: tls-volume
         secret:
           secretName: {{ include "hope-payment-gateway.fullname" . }}-tls
           optional: true
+      - name: statics
+        persistentVolumeClaim:
+          claimName: {{ include "hope-payment-gateway.fullname" . }}-static
