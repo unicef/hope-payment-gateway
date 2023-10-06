@@ -52,7 +52,7 @@ spec:
               protocol: TCP
           volumeMounts:
           - name: tls-volume
-            mountPath: /etc/tls
+            mountPath: /certs
             readOnly: true
           - name: statics
             mountPath: /static
