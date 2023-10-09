@@ -1,17 +1,12 @@
+from constance import config
+
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import unicef
 
 usd = {
-    "identifier": "WGQCUS1250T",
+    "identifier": config.WESTERN_UNION_DAS_IDENTIFIER,
     "reference_no": "N/A",
-    "counter_id": "US125QCUSD1T",
-}
-
-
-eur = {
-    "identifier": "WGQCUS125ET",
-    "reference_no": "N/A",
-    "counter_id": "US125QCEUR1T",
+    "counter_id": config.WESTERN_UNION_DAS_COUNTER,
 }
 
 

@@ -298,6 +298,8 @@ CONSTANCE_CONFIG = {
         "Error codes which depend on WU",
         str,
     ),
+    "WESTERN_UNION_DAS_IDENTIFIER": ("WGQCUS1250T", "Identifier", str),
+    "WESTERN_UNION_DAS_COUNTER": ("US125QCUSD1T", "Counter", str),
 }
 
 
