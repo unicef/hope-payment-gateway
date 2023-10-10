@@ -3,18 +3,19 @@ from constance import config
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import unicef
 
-usd = {
-    "identifier": config.WESTERN_UNION_DAS_IDENTIFIER,
-    "reference_no": "N/A",
-    "counter_id": config.WESTERN_UNION_DAS_COUNTER,
-}
+def create_usd():
+    return {
+        "identifier": config.WESTERN_UNION_DAS_IDENTIFIER,
+        "reference_no": "N/A",
+        "counter_id": config.WESTERN_UNION_DAS_COUNTER,
+    }
 
 
 def das_countries_currencies():
     payload = {
         "name": "GetCountriesCurrencies",
         "channel": unicef,
-        "foreign_remote_system": usd,
+        "foreign_remote_system": create_usd(),
         "filters": {
             "queryfilter1": "en",
             "queryfilter2": "US USD",  # destination
@@ -28,7 +29,7 @@ def das_origination_currencies():
     payload = {
         "name": "GetOriginationCurrencies",
         "channel": unicef,
-        "foreign_remote_system": usd,
+        "foreign_remote_system": create_usd(),
         "filters": {
             "queryfilter1": "en",
         },
@@ -41,7 +42,7 @@ def das_destination_countries():
     payload = {
         "name": "GetDestinationCountries",
         "channel": unicef,
-        "foreign_remote_system": usd,
+        "foreign_remote_system": create_usd(),
         "filters": {"queryfilter1": "en", "queryfilter2": "US USD"},
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
@@ -52,7 +53,7 @@ def das_destination_currencies(destination_country):
     payload = {
         "name": "GetDestinationCurrencies",
         "channel": unicef,
-        "foreign_remote_system": usd,
+        "foreign_remote_system": create_usd(),
         "filters": {
             "queryfilter1": "en",
             "queryfilter2": "US USD",  # origination country
@@ -67,7 +68,7 @@ def das_delivery_services(destination_country, destination_currency):
     payload = {
         "name": "GetDeliveryServices",
         "channel": unicef,
-        "foreign_remote_system": usd,
+        "foreign_remote_system": create_usd(),
         "filters": {
             "queryfilter1": "en",
             "queryfilter2": "US USD",  # origination country, currency
@@ -83,7 +84,7 @@ def das_delivery_option_template(destination_country, destination_currency, temp
     payload = {
         "name": "GetDeliveryOptionTemplate",
         "channel": unicef,
-        "foreign_remote_system": usd,
+        "foreign_remote_system": create_usd(),
         "filters": {
             "queryfilter1": "en",
             "queryfilter2": f"{destination_country} {destination_currency}",  # destination
