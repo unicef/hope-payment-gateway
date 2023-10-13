@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "hope-payment-gateway.fullname" . }}-backend-release
+  labels:
+    {{- include "hope-payment-gateway.labels" . | nindent 4 }}
+    hope-payment-gateway/job: upgrade
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "hope-payment-gateway.labels" . | nindent 8 }}
+        hope-payment-gateway/job: upgrade
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-backend-release
+          command: ["/bin/sh"]
+          args: ["-c", "python3 /code/manage.py upgrade --all"]
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          - secretRef:
+              name: {{ include "hope-payment-gateway.fullname" . }}
+          - configMapRef:
+              name: {{ include "hope-payment-gateway.fullname" . }}-backend
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: statics
+            mountPath: /static
+      initContainers:
+      - name: statics-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R 82:82 /static"]
+        volumeMounts:
+        - name: statics
+          mountPath: /static
+      restartPolicy: Never
+      volumes:
+      - name: statics
+        persistentVolumeClaim:
+          claimName: {{ include "hope-payment-gateway.fullname" . }}-static
+  backoffLimit: 3
