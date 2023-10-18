@@ -1,8 +1,8 @@
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 
+from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
@@ -12,7 +12,7 @@ REFUND = "REFUND"
 
 
 class PayNotificationView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (WhitelistPermission,)
     parser_classes = [XMLParser]
 
     def post(self, request):
