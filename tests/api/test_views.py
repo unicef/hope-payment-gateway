@@ -9,6 +9,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstruction
 from ..factories import PaymentRecordFactory
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "action,detail,status",
     [
@@ -16,16 +17,18 @@ from ..factories import PaymentRecordFactory
         ("detail", True, 200),
     ],
 )
-def test_payment_instruction(api_client_with_credentials, token_user, action, detail, status):
+def test_payment_instruction(api_client, action, detail, status, token_user):
+    user, token = token_user
     pr = PaymentRecordFactory()
     if detail:
         url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.uuid])
     else:
         url = reverse(f"rest:payment-instruction-{action}")
-    view = api_client_with_credentials.get(url, user=token_user, expect_errors=True)
+    view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
     assert view.status_code == status
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "action,detail,status",
     [
@@ -36,16 +39,18 @@ def test_payment_instruction(api_client_with_credentials, token_user, action, de
         ("abort", True, 200),
     ],
 )
-def test_payment_instruction_actions(api_client_with_credentials, token_user, action, detail, status):
+def test_payment_instruction_actions(api_client, action, detail, status, token_user):
+    user, token = token_user
     pr = PaymentRecordFactory()
     if detail:
         url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.uuid])
     else:
         url = reverse(f"rest:payment-instruction-{action}")
-    view = api_client_with_credentials.post(url, user=token_user, expect_errors=True)
+    view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
     assert view.status_code == status
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "action,detail,status",
     [
@@ -53,29 +58,36 @@ def test_payment_instruction_actions(api_client_with_credentials, token_user, ac
         ("detail", True, 200),
     ],
 )
-def test_payment_record_list(api_client_with_credentials, token_user, action, detail, status):
+def test_payment_record_list(api_client, action, detail, status, token_user):
+    user, token = token_user
     pr = PaymentRecordFactory()
     if detail:
         url = reverse(f"rest:payment-record-{action}", args=[pr.uuid])
     else:
         url = reverse(f"rest:payment-record-{action}")
-    view = api_client_with_credentials.get(url, user=token_user)
+    view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token)
     assert view.status_code == status
 
 
-def test_instructions_add_records_ok(api_client_with_credentials, token_user):
+@pytest.mark.django_db
+def test_instructions_add_records_ok(api_client, token_user):
+    user, token = token_user
     pr = PaymentRecordFactory(parent__status=PaymentInstruction.OPEN)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.uuid])
     payload = [
         {"record_code": "adalberto", "payload": {"key": "value"}},
     ]
-    view = api_client_with_credentials.post(url, json.dumps(payload), user=token_user, content_type="application/json")
+    view = api_client.post(
+        url, json.dumps(payload), content_type="application/json", user=user, HTTP_AUTHORIZATION=token
+    )
     assert view.status_code == 201
     assert view.json()["uuid"] == pr.parent.uuid
     assert "adalberto" in view.json()["records"]
 
 
-def test_instructions_add_records_ko(api_client_with_credentials, token_user):
+@pytest.mark.django_db
+def test_instructions_add_records_ko(api_client, token_user):
+    user, token = token_user
     pr = PaymentRecordFactory(parent__status=PaymentInstruction.OPEN)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.uuid])
     payload = [
@@ -92,8 +104,13 @@ def test_instructions_add_records_ko(api_client_with_credentials, token_user):
             "payload": {"key": "value"},
         },
     ]
-    view = api_client_with_credentials.post(
-        url, json.dumps(payload), user=token_user, content_type="application/json", expect_errors=True
+    view = api_client.post(
+        url,
+        json.dumps(payload),
+        content_type="application/json",
+        user=user,
+        HTTP_AUTHORIZATION=token,
+        expect_errors=True,
     )
     assert view.status_code == 400
     assert view.json()["uuid"] == pr.parent.uuid
@@ -102,10 +119,12 @@ def test_instructions_add_records_ko(api_client_with_credentials, token_user):
     }
 
 
-def test_instructions_add_records_invalid_status(api_client_with_credentials, token_user):
+@pytest.mark.django_db
+def test_instructions_add_records_invalid_status(api_client, token_user):
+    user, token = token_user
     pr = PaymentRecordFactory(parent__status=PaymentInstruction.ABORTED)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.uuid])
-    view = api_client_with_credentials.post(url, user=token_user, expect_errors=True)
+    view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
     assert view.status_code == 400
     assert view.json()["message"] == "Cannot add records to a not Open Plan"
     assert view.json()["status"] == "ABORTED"

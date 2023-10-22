@@ -21,6 +21,10 @@ def pytest_configure(config):
     os.environ["TESTING"] = "1"
     os.environ["CELERY_TASK_ALWAYS_EAGER"] = "1"
     os.environ["STATIC_ROOT"] = tempfile.gettempdir()
+    os.environ["CSRF_COOKIE_SECURE"] = "0"
+    os.environ["SECURE_SSL_REDIRECT"] = "0"
+    os.environ["SESSION_COOKIE_HTTPONLY"] = "0"
+    os.environ["SESSION_COOKIE_SECURE"] = "0"
 
 
 @pytest.fixture(autouse=True)
@@ -62,17 +66,18 @@ def wu():
 
 
 @pytest.fixture()
-def token_user(admin_user):
+def token_user():
+    user = UserFactory()
     user_permissions = [
         Grant.API_READ_ONLY,
         Grant.API_PLAN_UPLOAD,
         Grant.API_PLAN_MANAGE,
     ]
-    APITokenFactory(
-        user=admin_user,
+    token = APITokenFactory(
+        user=user,
         grants=[c.name for c in user_permissions],
     )
-    return admin_user
+    return user, f"Token {token.key}"
 
 
 @pytest.fixture

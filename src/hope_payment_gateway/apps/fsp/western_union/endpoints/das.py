@@ -3,6 +3,7 @@ from constance import config
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import unicef
 
+
 def create_usd():
     return {
         "identifier": config.WESTERN_UNION_DAS_IDENTIFIER,
