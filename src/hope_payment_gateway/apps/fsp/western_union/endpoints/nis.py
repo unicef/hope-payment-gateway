@@ -7,8 +7,9 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.client import Western
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 SUCCESS = "DVQRFB51"
-PURGED = "PURGED"
-REFUND = "REFUND"
+REFUND = "DVQRFB55"
+CANCEL = "DVQRFB54"
+REJECT = "DVQRFB62"
 
 
 class PayNotificationView(APIView):
@@ -52,7 +53,9 @@ class NisNotificationView(PayNotificationView):
         if msg_code == SUCCESS:
             pr.confirm()
             pr.success = True
-        elif msg_code == PURGED:
+        elif msg_code == CANCEL:
+            pr.cancel()
+        elif msg_code == REJECT:
             pr.purge()
         elif msg_code == REFUND:
             pr.refund()
