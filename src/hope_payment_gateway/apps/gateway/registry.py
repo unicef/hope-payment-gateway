@@ -12,7 +12,7 @@ class FSPProcessor:
         pass
 
 
-registry = Registry(FSPProcessor, label_attribute="label")
+registry = Registry(FSPProcessor)
 
 
 class DefaultProcessor(FSPProcessor):
