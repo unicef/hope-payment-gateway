@@ -29,60 +29,99 @@ skip = ["migrations", "snapshots", ".venv"]
 django_settings_module = "hope_payment_gateway.config.settings"
 
 
-[tool.poetry]
-name = "HOPE-Payment-Gateway"
-version = "2023.6.1"
-description = "Country Report on top of HOPE platform."
-authors = ['ddinicola']
+[tool.pdm.build]
+includes = []
 
-[tool.poetry.dependencies]
-python = "3.11.*"
+[tool.pdm.dev-dependencies]
+dev = [
+    "argh",
+    "black",
+    "django-webtest",
+    "faker",
+    "flake8",
+    "flake8-bugbear",
+    "flake8-formatter-junit-xml",
+    "flake8-html",
+    "freezegun",
+    "graphene-stubs",
+    "ipdb",
+    "isort",
+    "openpyxl-stubs",
+    "parameterized",
+    "parso",
+    "pytest",
+    "pytest-cov",
+    "pytest-django",
+    "pytest-echo",
+    "pytest-xdist",
+    "requests-mock",
+    "responses",
+    "snapshottest",
+    "types-freezegun",
+    "types-requests",
+    "types-python-dateutil",
+    "types-pytz",
+    "types-redis",
+    "unittest-xml-reporting",
+    "watchdog",
+]
+[project]
+authors = [
+    {name = "ddinicola"},
+    {name = "Domenico DiNicola", email = "dom.dinicola@gmail.com"},
+]
+requires-python = ">=3.11"
+dependencies = [
+    "Django",
+    "celery[redis]",
+    "djangorestframework",
+    "djangorestframework-xml",
+    "django-admin-extra-buttons",
+    "django-admin-sync",
+    "django-adminactions",
+    "django-adminfilters",
+    "django-advanced-filters",
+    "django-celery-beat",
+    "django-celery-results",
+    "django-concurrency",
+    "django-constance",
+    "django-cors-headers",
+    "django-csp",
+    "django-debug-toolbar",
+    "django-environ",
+    "django-extensions",
+    "django-filter",
+    "django-fsm",
+    "django-import-export",
+    "django-model-utils",
+    "django-mptt",
+    "django-smart-admin",
+    "django-strategy-field",
+    "dj-static",
+    "factory-boy",
+    "gunicorn",
+    "newrelic",
+    "natural-keys",
+    "pre-commit",
+    "psycopg[binary]",
+    "sentry-sdk",
+    "social-auth-app-django",
+    "social-auth-core",
+    "swapper",
+    "tablib",
+    "unicef-power-query",
+    "unicef-security",
+    "wheel",
+    "uwsgi",
+    "zeep",
+]
+name = ""
+version = ""
+description = ""
+readme = "README.md"
+license = {text = "MIT"}
 
-Django = "*"
-celery = {extras = ["redis"], version = "*"}
-djangorestframework = "*"
-djangorestframework-xml = "*"
-django-admin-extra-buttons = "*"
-django-admin-sync = "*"
-django-adminactions = "*"
-django-adminfilters = "*"
-django-advanced-filters = "*"
-django-celery-beat = "*"
-django-celery-results = "*"
-django-concurrency = "*"
-django-constance = "*"
-django-cors-headers = "*"
-django-csp = "*"
-django-debug-toolbar = "*"
-django-environ = "*"
-django-extensions = "*"
-django-filter = "*"
-django-fsm = "*"
-django-import-export = "*"
-django-model-utils = "*"
-django-mptt = "*"
-django-smart-admin = "*"
-django-strategy-field = "*"
-dj-static = "*"
-factory-boy = "*"
-gunicorn = "*"
-newrelic = "*"
-natural-keys = "*"
-pre_commit = "*"
-psycopg = {extras = ["binary"], version = "*"}
-sentry-sdk = "*"
-social-auth-app-django = "*"
-social-auth-core = "*"
-swapper = "*"
-tablib = "*"
-unicef-power-query = "*"
-unicef-security = "*"
-wheel = "*"
-uwsgi = "*"
-zeep = "*"
-
-
-[tool.poetry.group.dev.dependencies]
+[project.group.dev.dependencies]
 argh = "*"
 black = "*"
 django-webtest = "*"
@@ -113,7 +152,3 @@ types-pytz = "*"
 types-redis = "*"
 unittest-xml-reporting = "*"
 watchdog = "*"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"

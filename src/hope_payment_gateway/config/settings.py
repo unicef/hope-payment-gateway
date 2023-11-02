@@ -2,18 +2,17 @@ import datetime
 import os
 from pathlib import Path
 from typing import Dict
+from urllib.parse import urlparse
 
-import environ
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from . import env
+
 SETTINGS_DIR = Path(__file__).parent
 PACKAGE_DIR = SETTINGS_DIR.parent
 DEVELOPMENT_DIR = PACKAGE_DIR.parent.parent
-
-env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env()
 
 DEBUG = env.bool("DEBUG")
 
@@ -75,6 +74,7 @@ MIDDLEWARE = (
 AUTHENTICATION_BACKENDS = (
     "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
     "django.contrib.auth.backends.ModelBackend",
+    *env("AUTHENTICATION_BACKENDS"),
 )
 
 
@@ -124,10 +124,12 @@ USE_I18N = True
 USE_TZ = True
 
 
+CACHE_URL = env("CACHE_URL")
+REDIS_URL = urlparse(CACHE_URL).hostname
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": env.cache_url("REDIS_URL"),
+        "LOCATION": CACHE_URL,
     }
 }
 
@@ -178,7 +180,7 @@ AUTH_USER_MODEL = "core.User"
 HOST = env("HOST", default="http://localhost:8000")
 
 CELERY_ACCEPT_CONTENT = ["pickle", "json", "application/text"]
-CELERY_BROKER_URL = env("REDIS_URL")
+CELERY_BROKER_URL = env("CACHE_URL")
 CELERY_BROKER_VISIBILITY_VAR = env("CELERY_VISIBILITY_TIMEOUT", default=1800)  # in seconds
 CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": int(CELERY_BROKER_VISIBILITY_VAR)}
 CELERY_RESULT_BACKEND = "django-db"

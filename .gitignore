@@ -8,9 +8,6 @@ media
 *.egg*
 celerybeat-schedule
 
-.env
-.envrc
-
 .tox
 .pytest_cache
 .coverage
@@ -18,9 +15,10 @@ coverage.xml
 
 .idea/
 .env
-.envrc
 .venv/
 src/hope_payment_gateway/static
 .DS_Store
 
 .vscode
+
+.pdm-python

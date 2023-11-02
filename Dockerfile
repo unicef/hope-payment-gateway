@@ -12,29 +12,25 @@ RUN apt-get update \
     && mkdir -p /code /tmp /data \
     && chown -R hpg:hpg /code /tmp /data
 
-ENV PYTHONPYCACHEPREFIX=/tmp/pycache \
-  VIRTUAL_ENV=/opt/venv \
-  POETRY_HOME=/opt/poetry \
-  PATH=/opt/venv/bin:/opt/poetry/bin:${PATH}
+ENV PACKAGES_DIR=/packages
+ENV VIRTUAL_ENV=$PACKAGES_DIR/.venv/lib/python3.11/site-packages
+ENV PYTHONPYCACHEPREFIX=/tmp/pycache
+ENV PYTHONPATH=$PYTHONPATH:$VIRTUAL_ENV
+ENV PATH=$PATH:$PACKAGES_DIR/.venv/bin/
 
 WORKDIR /code
 
 FROM base as builder
 
-WORKDIR /tmp
-ADD pyproject.toml /tmp
-ADD poetry.lock /tmp
-RUN python3 -m venv --copies $VIRTUAL_ENV \
-  && python3 -m venv --copies $POETRY_HOME \
-  && $POETRY_HOME/bin/pip install poetry==1.5.1 \
-  && poetry config virtualenvs.create false \
-  && poetry config cache-dir /var/cache/poetry
-RUN poetry install --without dev
-
+WORKDIR $PACKAGES_DIR
+RUN pip install pdm==2.9.3
+ADD pyproject.toml ./
+ADD pdm.lock ./
+RUN pdm sync --prod --no-editable --no-self
 
 FROM builder AS dev
 
-RUN poetry install
+RUN pdm sync --no-editable --no-self
 
 WORKDIR /code
 COPY ./ ./
