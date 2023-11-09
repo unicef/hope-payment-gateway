@@ -4,10 +4,13 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
 
-api_patterns = [
+root_patterns = [
     path(r"admin/", admin.site.urls),
     path(r"security/", include("unicef_security.urls", namespace="security")),
     path(r"social/", include("social_django.urls", namespace="social")),
+]
+
+api_patterns = [
     path(r"accounts/", include("django.contrib.auth.urls")),
     path(r"adminactions/", include("adminactions.urls")),
     path(r"wu/", include("hope_payment_gateway.apps.fsp.western_union.urls", namespace="wu")),
@@ -20,7 +23,7 @@ ok = lambda _: HttpResponse("OK")
 urlpatterns = [
     path("api/", include(api_patterns)),
     path("health", ok),
-    path("", ok),
+    path("", include(root_patterns)),
 ]
 
 

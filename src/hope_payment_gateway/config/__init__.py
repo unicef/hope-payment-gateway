@@ -1,7 +1,6 @@
 from environ import Env
 
 MANDATORY = {
-    "DATABASE_HOPE_URL": (str, "", "HOPE database connection url (forced to be readonly)"),
     "DATABASE_URL": (str, "", "Database connetcion url"),
     "SECRET_KEY": (str, ""),
     "CACHE_URL": (str, "redis://localhost:6379/0"),
