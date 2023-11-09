@@ -31,9 +31,9 @@ INSTALLED_APPS = (
     "hope_payment_gateway.apps.gateway.apps.AppConfig",
     "hope_payment_gateway.apps.fsp.western_union.apps.AppConfig",
     "hope_api_auth",
+    "unicef_security",
     "django.contrib.contenttypes",
     "advanced_filters",
-    "unicef_security",
     "django.contrib.auth",
     "django.contrib.humanize",
     "django.contrib.messages",
@@ -255,11 +255,9 @@ EMAIL_PORT = env("EMAIL_PORT", default=25)
 EMAIL_USE_TLS = env("EMAIL_USE_TLS", default=False)
 EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
 
-KEY = SOCIAL_AUTH_KEY = env("AZURE_B2C_CLIENT_ID", default=None)
-SOCIAL_AUTH_SECRET = env("AZURE_B2C_CLIENT_SECRET", default=None)
-SOCIAL_AUTH_TENANT_NAME = env("TENANT_NAME", default="unicefpartners")
-SOCIAL_AUTH_TENANT_ID = f"{SOCIAL_AUTH_TENANT_NAME}.onmicrosoft.com"
-SOCIAL_AUTH_TENANT_B2C_URL = f"{SOCIAL_AUTH_TENANT_NAME}.b2clogin.com"
+SOCIAL_AUTH_SECRET = env.str("AZURE_CLIENT_SECRET")
+SOCIAL_AUTH_TENANT_ID = env("AZURE_TENANT_ID")
+SOCIAL_AUTH_KEY = env.str("AZURE_CLIENT_KEY")
 
 SOCIAL_AUTH_URL_NAMESPACE = "social"
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
