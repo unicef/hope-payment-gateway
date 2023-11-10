@@ -12,7 +12,7 @@ from hope_payment_gateway.apps.gateway.registry import registry
 
 class FinancialServiceProvider(models.Model):
     name = models.CharField(max_length=64, unique=True)
-    vision_vendor_number = models.CharField(max_length=100, unique=True)
+    vision_vendor_number = models.CharField(max_length=100)
     strategy = StrategyField(registry=registry)
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
@@ -68,6 +68,12 @@ class PaymentInstruction(TimeStampedModel):
     def abort(self):
         pass
 
+    def get_payload(self):
+        payload = self.payload.copy()
+        if self.fsp:
+            payload.update(self.fsp.configuration)
+        return payload
+
 
 class PaymentRecord(TimeStampedModel):
     PENDING = "PENDING"
@@ -103,7 +109,7 @@ class PaymentRecord(TimeStampedModel):
         return f"{self.record_code} / {self.message}"
 
     def get_payload(self):
-        payload = self.parent.payload.copy()
+        payload = self.parent.get_payload()
         payload.update(self.payload)
         payload["payment_record_code"] = self.record_code
         payload["record_uuid"] = self.uuid
@@ -149,9 +155,7 @@ class PaymentRecord(TimeStampedModel):
     def refund(self):
         pass
 
-    @transition(
-        field=status, source=TRANSFERRED_TO_FSP, target=CANCELLED, permission="western_union.change_paymentrecordlog"
-    )
+    @transition(field=status, source="*", target=CANCELLED, permission="western_union.change_paymentrecordlog")
     def cancel(self):
         pass
 
