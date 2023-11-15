@@ -6,9 +6,9 @@ from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
-SUCCESS = "DVQRFB51"
-REFUND = "DVQRFB55"
-CANCEL = "DVQRFB54"
+SUCCESS = "BIS003"
+REFUND = "BIS006"
+CANCEL = "BIS005"
 REJECT = "DVQRFB62"
 
 
@@ -31,7 +31,7 @@ class NisNotificationView(PayNotificationView):
         mtcn = payload["money_transfer_control"]["mtcn"]
         record_code = payload["transaction_id"]
         msg = payload["message_text"]
-        msg_code = payload["message_code"]
+        notification_type = payload["notification_type"]
 
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"] / 100
 
@@ -41,7 +41,7 @@ class NisNotificationView(PayNotificationView):
                 "message": msg,
                 "extra_data": {
                     "mtcn": mtcn,
-                    "message_code": msg_code,
+                    "message_code": notification_type,
                     "delivered_quantity": delivered_quantity,
                 },
             },
@@ -50,14 +50,14 @@ class NisNotificationView(PayNotificationView):
         pr.message = msg
         pr.success = False
 
-        if msg_code == SUCCESS:
+        if notification_type == SUCCESS:
             pr.confirm()
             pr.success = True
-        elif msg_code == CANCEL:
+        elif notification_type == CANCEL:
             pr.cancel()
-        elif msg_code == REJECT:
+        elif notification_type == REJECT:
             pr.purge()
-        elif msg_code == REFUND:
+        elif notification_type == REFUND:
             pr.refund()
         else:
             pr.error()
