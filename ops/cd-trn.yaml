@@ -58,8 +58,8 @@ stages:
                 tls.key=\"$(TLS_KEY)\",\
                 config.SENTRY_ENVIRONMENT=trn,\
                 secret.AZURE_CLIENT_SECRET=$(AZURE_CLIENT_SECRET),\
-                secret.AZURE_TENANT_ID=$(AZURE_TENANT_ID),\
-                secret.AZURE_CLIENT_KEY=$(AZURE_CLIENT_KEY),\
+                secret.AZURE_TENANT_ID=$(AZURE_TENANT_KEY),\
+                secret.AZURE_CLIENT_KEY=$(AZURE_CLIENT_ID),\
                 secret.DATABASE_URL=$(DATABASE_URL),\
                 secret.SECRET_KEY=$(SECRET_KEY)
                 "
