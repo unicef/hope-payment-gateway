@@ -107,7 +107,7 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:
-        from unicef_security.models import User
+        from hope_payment_gateway.apps.core.models import User
 
         self.get_options(options)
         if self.verbosity >= 1:
