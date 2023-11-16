@@ -19,7 +19,15 @@ spec:
       {{- end }}
       labels:
         {{- include "hope-payment-gateway.selectorLabels" . | nindent 8 }}
+        resource: "hpg-deployment"
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels: # so it goes on the same node
+                resource: hpg-job
+            topologyKey: kubernetes.io/hostname
       containers:
         - name: nginx
           image: "tivix/docker-nginx:v17"

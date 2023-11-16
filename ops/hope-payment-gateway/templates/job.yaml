@@ -15,7 +15,15 @@ spec:
       labels:
         {{- include "hope-payment-gateway.labels" . | nindent 8 }}
         hope-payment-gateway/job: upgrade
+        resource: hpg-job
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels: # so it goes on the same node
+                resource: hpg-deployment
+            topologyKey: kubernetes.io/hostname
       containers:
         - name: {{ .Chart.Name }}-backend-release
           command: ["/bin/sh"]
