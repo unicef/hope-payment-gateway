@@ -31,7 +31,7 @@ ingress:
     appgw.ingress.kubernetes.io/request-timeout: "240"
     appgw.ingress.kubernetes.io/appgw-ssl-certificate: ""
   hosts:
-    - host: pg-hope-dev.unitst.org
+    - host: payment-hope-dev.unitst.org
       paths:
         - path: /
           pathType: Prefix
