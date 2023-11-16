@@ -19,7 +19,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-backend-release
           command: ["/bin/sh"]
-          args: ["-c", "python3 /code/manage.py upgrade --all"]
+          args: ["-c", "python3 /code/manage.py upgrade"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

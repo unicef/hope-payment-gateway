@@ -18,7 +18,7 @@ fi
 
 case "$1" in
     dev)
-        python3 manage.py upgrade --all
+        python3 manage.py upgrade
         python3 manage.py runserver 0.0.0.0:8000 
     ;;
     tests)
