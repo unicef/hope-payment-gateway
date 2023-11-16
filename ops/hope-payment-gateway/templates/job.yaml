@@ -20,10 +20,12 @@ spec:
       affinity:
         podAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchLabels: # so it goes on the same node
-                resource: hpg-deployment
-            topologyKey: kubernetes.io/hostname
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  resource: hpg-deployment
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: {{ .Chart.Name }}-backend-release
           command: ["/bin/sh"]
