@@ -80,17 +80,16 @@ config:
 
 
 redis:
-  enabled: true
-  fullnameOverride: "hpg-redis"
-  persistence.enabled: true
-  usePassword: false
-  redis:
-    usePassword: false
-  cluster:
-    slaveCount: 0
+  auth:
     enabled: false
+    sentinel: false
+  fullnameOverride: "hpg-redis"
+  persistence:
+    enabled: true
   image:
     tag: 7.2.1
+  replica:
+    replicaCount: 2
 
 tls:
   crt: ""
