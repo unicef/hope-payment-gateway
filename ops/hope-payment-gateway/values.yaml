@@ -72,6 +72,7 @@ config:
   WESTERN_UNION_CERT: "/certs/tls.crt"
   WESTERN_UNION_KEY: "/certs/tls.key"
   CACHE_URL: "redis://hpg-redis-master:6379/0"
+  CELERY_BROKER_URL: "redis://hpg-redis-master:6379/0"
   STATIC_ROOT: "/static"
   STATIC_URL: "/static/"
   SENTRY_DSN: "https://08a5403f74bb4397b65450cb31d230a4@excubo.unicef.io/54"
