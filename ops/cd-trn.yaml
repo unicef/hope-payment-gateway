@@ -47,7 +47,7 @@ stages:
               releaseName: 'hpg'
               install: true
               waitForExecution: false
-              failOnStderr: true
+              failOnStderr: false
               valueFile: '**/ops/hope-payment-gateway/values.yaml'
               arguments: "--timeout 600s"
               overrideValues: "
