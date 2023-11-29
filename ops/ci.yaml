@@ -61,7 +61,7 @@ stages:
             displayName: "Save tag to file"
           - task: PublishPipelineArtifact@1
             inputs:
-              targetPath: '$(Pipeline.Workspace)'
+              pathToPublish: "$(Build.ArtifactStagingDirectory)/payment-gateway-tag"
               artifact: 'payment-gateway-tag'
               publishLocation: 'pipeline'
             displayName: "Publish tag"
