@@ -60,8 +60,7 @@ stages:
             inputs:
               targetPath: '$(Pipeline.Workspace)'
               artifact: 'payment-gateway-tag'
-              publishLocation: 'filepath'
-              fileSharePath: 'payment-gateway-tag'
+              publishLocation: 'pipeline'
             displayName: "Publish tag"
 
   # TODO
