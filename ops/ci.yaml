@@ -56,7 +56,10 @@ stages:
               --push \
               ./
             displayName: Docker build dev
-          - publish: $(tag)
+          - script: |
+              echo $(tag) > payment-gateway-tag
+            displayName: "Save tag to file"
+          - publish: payment-gateway-tag
             artifact: payment-gateway-tag
             displayName: "Publish tag"
 
