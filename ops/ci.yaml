@@ -56,6 +56,9 @@ stages:
               --push \
               ./
             displayName: Docker build dev
+          - publish: $(tag)
+            artifact: payment-gateway-tag
+            displayName: "Publish tag"
 
   # TODO
   # - stage: test
