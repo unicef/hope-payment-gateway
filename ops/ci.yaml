@@ -56,11 +56,12 @@ stages:
               --push \
               ./
             displayName: Docker build dev
-          - script: |
-              echo $(tag) > payment-gateway-tag
-            displayName: "Save tag to file"
-          - publish: payment-gateway-tag
-            artifact: payment-gateway-tag
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: '$(Pipeline.Workspace)'
+              artifact: 'payment-gateway-tag'
+              publishLocation: 'filepath'
+              fileSharePath: 'payment-gateway-tag'
             displayName: "Publish tag"
 
   # TODO
