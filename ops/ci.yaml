@@ -3,7 +3,8 @@ trigger:
   branches:
     include:
     - develop
-pr: none
+pr:
+  - develop
 resources:
   - repo: self
 
@@ -19,11 +20,11 @@ variables:
 
 
 stages:
-  - stage: build_and_push_backend
+  - stage: build_and_push_dev
     dependsOn: []
-    displayName: BUILD and PUSH
+    displayName: BUILD and PUSH DEV
     jobs:
-      - job: build_push_backend
+      - job: build_push_backend_dev
         pool:
           vmImage: ubuntu-latest
         displayName: "[BACKEND_BUILD]"
@@ -32,18 +33,6 @@ stages:
             inputs:
               containerRegistry: '$(Docker.registryConnection)'
               command: 'login'
-          - script: |
-              docker buildx create --use
-              docker buildx build \
-              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:trn-$(additionalTag) \
-              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
-              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-$(additionalTag) \
-              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
-              -t $(Docker.url)/$(Docker.backend.repository):trn-$(tag) \
-              --target prd \
-              --push \
-              ./
-            displayName: Docker build trn
           - script: |
               docker buildx create --use
               docker buildx build \
@@ -67,29 +56,65 @@ stages:
               publishLocation: 'pipeline'
             displayName: "Publish tag"
 
-  # TODO
-  # - stage: test
-  #   displayName: TEST
-  #   dependsOn: build_and_push_backend
-  #   jobs:
-  #     - job: tests
-  #       pool:
-  #         vmImage: ubuntu-latest
-  #       displayName: "[DJANGO TEST]"
-  #       steps:
-  #         - task: Docker@2
-  #           displayName: "[ACR] Login"
-  #           inputs:
-  #             command: login
-  #             containerRegistry: $(Docker.registryConnection)
-  #         - task: DockerCompose@0
-  #           displayName: "Run tests"
-  #           inputs:
-  #             containerregistrytype: 'Azure Container Registry'
-  #             azureContainerRegistry: $(Docker.registryConnection)
-  #             dockerComposeFile: 'ops/compose.test.yml'
-  #             action: 'Run a Docker Compose command'
-  #             dockerComposeCommand: 'up --exit-code-from backend'
-  #             dockerComposeFileArgs: |
-  #               backend_image=$(Docker.url)/$(Docker.backend.repository):dev-$(tag)
+  - stage: test_dev
+    displayName: TEST
+    dependsOn: build_and_push_dev
+    jobs:
+      - job: tests
+        pool:
+          vmImage: ubuntu-latest
+        displayName: "[DJANGO TEST]"
+        steps:
+          - task: Docker@2
+            displayName: "[ACR] Login"
+            inputs:
+              command: login
+              containerRegistry: $(Docker.registryConnection)
+          - task: DockerCompose@0
+            displayName: "Run tests"
+            inputs:
+              containerregistrytype: 'Azure Container Registry'
+              azureContainerRegistry: $(Docker.registryConnection)
+              dockerComposeFile: 'ops/compose.test.yml'
+              action: 'Run a Docker Compose command'
+              dockerComposeCommand: 'up --exit-code-from backend'
+              dockerComposeFileArgs: |
+                backend_image=$(Docker.url)/$(Docker.backend.repository):dev-$(tag)
 
+
+  - stage: build_and_push_prd
+    displayName: BUILD and PUSH PRD
+    dependsOn: test_dev
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: build_push_backend_prd
+        pool:
+          vmImage: ubuntu-latest
+        displayName: "[BACKEND_BUILD]"
+        steps:
+          - task: Docker@2
+            inputs:
+              containerRegistry: '$(Docker.registryConnection)'
+              command: 'login'
+          - script: |
+              docker buildx create --use
+              docker buildx build \
+              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:trn-$(additionalTag) \
+              --cache-from=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
+              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-$(additionalTag) \
+              --cache-to=$(Docker.url)/$(Docker.backend.repository)-cache:trn-latest \
+              -t $(Docker.url)/$(Docker.backend.repository):trn-$(tag) \
+              --target prd \
+              --push \
+              ./
+            displayName: Docker build prd
+          - script: |
+              mkdir -p $(Build.ArtifactStagingDirectory)/tag
+              echo $(tag) > $(Build.ArtifactStagingDirectory)/tag/hpg.txt
+            displayName: "Save tag to file"
+          - task: PublishPipelineArtifact@1
+            inputs:
+              pathToPublish: "$(Build.ArtifactStagingDirectory)/tag"
+              artifact: 'hope-payment-gateway'
+              publishLocation: 'pipeline'
+            displayName: "Publish tag"
