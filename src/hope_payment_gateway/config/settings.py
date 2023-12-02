@@ -56,6 +56,8 @@ INSTALLED_APPS = (
     "import_export",
     "constance",
     "rest_framework",
+    "django_celery_beat",
+    "django_celery_results",
     "power_query",
 )
 

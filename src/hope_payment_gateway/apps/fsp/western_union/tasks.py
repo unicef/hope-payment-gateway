@@ -5,9 +5,9 @@ from hope_payment_gateway.celery import app
 
 
 @app.task
-def western_union_send_task(vision_vendor_number, tag=None, threshold=None):
+def western_union_send_task(vision_vendor_number="1900723202", tag=None, threshold=1000):
     wu = FinancialServiceProvider.objects.get(vision_vendor_number=vision_vendor_number)
-    threshold = threshold or config.DEFAULT_THRESHOLD
+    threshold = threshold or config.DEFAULT_THREASHOLD
 
     records = PaymentRecord.objects.none()
     qs = PaymentInstruction.objects.filter(status=PaymentInstruction.READY, fsp=wu)
