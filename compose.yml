@@ -3,6 +3,15 @@ version: '3.8'
 volumes:
   postgres_data:
 
+x-django-env: &django-env
+  - SECRET_KEY=secret-key
+  - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+  - CACHE_URL=redis://redis:6379/0
+  - CELERY_BROKER_URL=redis://redis:6379/0
+  - AZURE_CLIENT_SECRET=
+  - AZURE_TENANT_ID=
+  - AZURE_CLIENT_KEY=
+
 services:
   backend:
     build:
@@ -10,14 +19,7 @@ services:
       dockerfile: Dockerfile
       target: dev
     command: dev
-    environment:
-      - SECRET_KEY=secret-key
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
-      - CACHE_URL=redis://redis:6379/0
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - AZURE_CLIENT_SECRET=
-      - AZURE_TENANT_ID=
-      - AZURE_CLIENT_KEY=
+    environment: *django-env
     ports:
       - 8000:8000
     volumes:
@@ -65,3 +67,21 @@ services:
       interval: 5s
       timeout: 4s
       retries: 5
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    command: celery_worker
+    environment: *django-env
+    volumes:
+      - .:/code
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_healthy

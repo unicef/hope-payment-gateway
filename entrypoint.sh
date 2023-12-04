@@ -29,6 +29,10 @@ case "$1" in
     prd)
         production
     ;;
+    celery_worker)
+        export C_FORCE_ROOT=1
+        celery -A src.hope_payment_gateway.celery worker -l info
+    ;;
     *)
         exec "$@"
     ;;
