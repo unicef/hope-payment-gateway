@@ -11,4 +11,4 @@ logger = logging.getLogger(__name__)
 
 app = Celery("hpg")
 app.config_from_object("django.conf:settings", namespace="CELERY")
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS, related_name="celery_tasks")
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
