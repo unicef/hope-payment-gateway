@@ -112,7 +112,7 @@ dependencies = [
     "unicef-power-query",
     "unicef-security",
     "wheel",
-    "uwsgi",
+    "uwsgi>=2.0.23",
     "zeep",
 ]
 name = ""
