@@ -9,13 +9,13 @@ RUN apt-get update \
         --system --uid 82 \
         --disabled-password --home /home/hpg \
         --shell /sbin.nologin --group hpg --gecos hpg \
-    && mkdir -p /code /tmp /data \
-    && chown -R hpg:hpg /code /tmp /data
+    && mkdir -p /code /tmp /data /static \
+    && chown -R hpg:hpg /code /tmp /data /static
 
 ENV PACKAGES_DIR=/packages
 ENV VIRTUAL_ENV=$PACKAGES_DIR/.venv/lib/python3.11/site-packages
 ENV PYTHONPYCACHEPREFIX=/tmp/pycache
-ENV PYTHONPATH=$PYTHONPATH:$VIRTUAL_ENV
+ENV PYTHONPATH=$PYTHONPATH:$VIRTUAL_ENV:/code/src
 ENV PATH=$PATH:$PACKAGES_DIR/.venv/bin/
 
 WORKDIR /code
@@ -41,8 +41,7 @@ ENTRYPOINT ["entrypoint.sh"]
 
 FROM base AS prd
 
-# FIXME
-RUN pip3 install uwsgi==2.0.23
+ENV PATH=$PATH:/code/.venv/bin/
 
 COPY --chown=hpg:hpg ./ ./
 COPY --chown=hpg:hpg --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
