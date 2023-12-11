@@ -15,6 +15,7 @@ coverage.xml
 
 .idea/
 .env
+.envrc
 .venv/
 src/hope_payment_gateway/static
 .DS_Store
