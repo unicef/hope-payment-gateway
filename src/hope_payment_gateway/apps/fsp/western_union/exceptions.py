@@ -6,6 +6,10 @@ class PayloadException(BaseException):
     pass
 
 
+class PayloadMissingKey(PayloadException):
+    pass
+
+
 class MissingValueInCorridor(PayloadException):
     pass
 
