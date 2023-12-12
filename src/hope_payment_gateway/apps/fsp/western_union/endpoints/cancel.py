@@ -70,7 +70,7 @@ def cancel(record_uuid, mtcn):
         pr.success = True
         pr.cancel()
     else:
-        pr.message = "Cancel error"
+        pr.message = f"Cancel error: {response['error']}"
         pr.success = False
         pr.fail()
     pr.extra_data.update(extra_data)
