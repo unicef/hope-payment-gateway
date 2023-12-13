@@ -111,7 +111,6 @@ def send_money(hope_payload):
         payload = create_validation_payload(hope_payload)
         response = send_money_validation(payload)
         smv_payload = serialize_object(response["content"])
-        pr.validate()
         pr.save()
     except (InvalidCorridor, PayloadException, TransitionNotAllowed) as exc:
         pr.message = str(exc)
