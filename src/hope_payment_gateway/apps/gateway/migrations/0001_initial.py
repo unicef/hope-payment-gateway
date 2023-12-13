@@ -98,7 +98,6 @@ class Migration(migrations.Migration):
                     django_fsm.FSMField(
                         choices=[
                             ("PENDING", "Pending"),
-                            ("VALIDATION_OK", "Validation OK"),
                             ("TRANSFERRED_TO_FSP", "Transferred to FSP"),
                             ("TRANSFERRED_TO_BENEFICIARY", "Transferred to Beneficiary"),
                             ("CANCELLED", "Cancelled"),

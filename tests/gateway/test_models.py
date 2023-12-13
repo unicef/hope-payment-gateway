@@ -71,11 +71,10 @@ def test_payment_instruction_transactions_ko(transaction_name, source, destinati
 @pytest.mark.parametrize(
     "transaction_name,source,destination",
     [
-        ("validate", "PENDING", "VALIDATION_OK"),
-        ("store", "VALIDATION_OK", "TRANSFERRED_TO_FSP"),
+        ("store", "PENDING", "TRANSFERRED_TO_FSP"),
         ("confirm", "TRANSFERRED_TO_FSP", "TRANSFERRED_TO_BENEFICIARY"),
         ("cancel", "TRANSFERRED_TO_FSP", "CANCELLED"),
-        ("fail", "VALIDATION_OK", "ERROR"),
+        ("fail", "TRANSFERRED_TO_FSP", "ERROR"),
         ("fail", "TRANSFERRED_TO_BENEFICIARY", "ERROR"),
     ],
 )
@@ -90,11 +89,10 @@ def test_payment_record_transactions_ok(transaction_name, source, destination):
 @pytest.mark.parametrize(
     "transaction_name,source,destination",
     [
-        ("validate", "PENDING", "TRANSFERRED_TO_FSP"),
-        ("store", "VALIDATION_OK", "PENDING"),
+        ("store", "TRANSFERRED_TO_BENEFICIARY", "PENDING"),
         ("confirm", "PENDING", "TRANSFERRED_TO_BENEFICIARY"),
         ("cancel", "PENDING", "ERROR"),
-        ("fail", "VALIDATION_OK", "CANCELLED"),
+        ("fail", "PENDING", "CANCELLED"),
         ("cancel", "TRANSFERRED_TO_BENEFICIARY", "ERROR"),
         ("fail", "TRANSFERRED_TO_BENEFICIARY", "CANCELLED"),
     ],

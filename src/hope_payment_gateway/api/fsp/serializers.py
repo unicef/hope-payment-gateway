@@ -55,30 +55,49 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
 
 class PaymentRecordLightSerializer(serializers.ModelSerializer):
     parent = serializers.ReadOnlyField(source="parent.uuid")
+    hope_status = serializers.SerializerMethodField()
+
+    def get_hope_status(self, obj):
+        return {
+            "PENDING": "Pending",
+            "TRANSFERRED_TO_FSP": "Transaction Successful",
+            "ERROR": "Transaction Erroneous",
+            "TRANSFERRED_TO_BENEFICIARY": "Distribution Successful",
+            "CANCELLED": "Force failed",
+            "REFUND": "REFUND",
+            "PURGED": "Force failed",
+        }[obj.status]
 
     class Meta:
         model = PaymentRecord
         fields = (
             "id",
             "uuid",
+            "created",
+            "modified",
             "record_code",
             "parent",
             "status",
+            "hope_status",
             "success",
         )
 
 
-class PaymentRecordSerializer(serializers.ModelSerializer):
+class PaymentRecordSerializer(PaymentRecordLightSerializer):
     parent = serializers.SlugRelatedField(slug_field="uuid", queryset=PaymentInstruction.objects.all())
+    hope_status = serializers.SerializerMethodField()
 
     class Meta:
         model = PaymentRecord
         fields = (
             "id",
             "uuid",
+            "created",
+            "modified",
             "record_code",
             "parent",
             "status",
+            "hope_status",
             "success",
             "message",
             "payload",

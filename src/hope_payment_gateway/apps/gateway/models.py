@@ -77,7 +77,6 @@ class PaymentInstruction(TimeStampedModel):
 
 class PaymentRecord(TimeStampedModel):
     PENDING = "PENDING"
-    VALIDATION_OK = "VALIDATION_OK"
     TRANSFERRED_TO_FSP = "TRANSFERRED_TO_FSP"
     TRANSFERRED_TO_BENEFICIARY = "TRANSFERRED_TO_BENEFICIARY"
     CANCELLED = "CANCELLED"
@@ -87,7 +86,6 @@ class PaymentRecord(TimeStampedModel):
 
     STATUSES = (
         (PENDING, "Pending"),
-        (VALIDATION_OK, "Validation OK"),
         (TRANSFERRED_TO_FSP, "Transferred to FSP"),
         (TRANSFERRED_TO_BENEFICIARY, "Transferred to Beneficiary"),
         (CANCELLED, "Cancelled"),
@@ -115,13 +113,9 @@ class PaymentRecord(TimeStampedModel):
         payload["record_uuid"] = self.uuid
         return payload
 
-    @transition(field=status, source=PENDING, target=VALIDATION_OK, permission="western_union.change_paymentrecordlog")
-    def validate(self):
-        pass
-
     @transition(
         field=status,
-        source=VALIDATION_OK,
+        source=PENDING,
         target=TRANSFERRED_TO_FSP,
         permission="western_union.change_paymentrecordlog",
     )
