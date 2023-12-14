@@ -1,0 +1,34 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load payment %}
+{% block action-content %}
+    <form method="post">{% csrf_token %}
+        {% if qs %}
+            <table>
+                <tr>
+                    {% for field in fields %}
+                        <th>
+                            {{ field|title }}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th>Fields:</th>
+                    {% for record in qs %}
+                    <tr>
+                        {% for field in fields %}
+                            <td>{% get_value record field %}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tr>
+            </table>
+                {{ form }}
+            <input type="submit" name="export" value="Export">
+        {% else %}
+            <table>
+                {{ form }}
+            </table>
+            <input type="submit" name="preview" value="Preview">
+            <input type="button" value="Back" onclick="location.href='.'">
+        {% endif %}
+        </form>
+{% endblock %}

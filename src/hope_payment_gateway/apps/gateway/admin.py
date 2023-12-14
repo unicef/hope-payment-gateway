@@ -1,5 +1,12 @@
+import csv
+from typing import List
+
+from django import forms
 from django.contrib import admin, messages
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.template.response import TemplateResponse
+from django.utils import timezone
 
 from admin_extra_buttons.decorators import button, choice, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
@@ -11,6 +18,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money_validation,
 )
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.templatetags.payment import get_value
 
 
 @admin.register(PaymentRecord)
@@ -63,12 +71,57 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         messages.add_message(request, loglevel, log.message)
 
 
+class ExportForm(forms.Form):
+    record_fields = forms.CharField(
+        widget=forms.Textarea,
+        required=False,
+        help_text="one line for each field we want to export",
+    )
+
+    # def __init__(self, *args: Any, **kwargs: Any) -> None:
+    #     if request := kwargs.pop("request", None):
+    #         if is_root(request):
+    #             self.base_fields["status"].choices = self.STATUSES_CHOICES + self.STATUSES_ROOT_CHOICES
+    #     super().__init__(*args, **kwargs)
+
+    def clean_record_fields(self) -> List:
+        return self.cleaned_data["record_fields"].split("\r\n")
+
+
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("unicef_id", "status", "uuid")
     list_filter = ("status",)
     search_fields = ("unicef_id",)
     # readonly_fields = ("uuid", "payload")
+
+    @button()
+    def export(self, request, pk) -> TemplateResponse:
+        ctx = self.get_common_context(request, title="Export Payment Instruction")
+        if request.method == "POST":
+            obj = self.get_object(request, str(pk))
+            qs = PaymentRecord.objects.filter(parent=obj).select_related("parent__fsp")
+            form = ExportForm(request.POST)
+            if form.is_valid():
+                if fields := form.cleaned_data.get("record_fields", None):
+                    ctx["fields"] = fields
+            if "preview" in request.POST:
+                ctx["qs"] = qs[:2]
+            elif "export" in request.POST:
+                response = HttpResponse(content_type="text/csv")
+                filename = "{}_export_{}.csv".format(obj.unicef_id, timezone.now().date())
+                response["Content-Disposition"] = f'attachment; filename="{filename}"'
+                headers = ctx["fields"]
+                writer = csv.writer(response)
+                writer.writerow(headers)
+                for item in qs:
+                    writer.writerow([get_value(item, field) for field in headers])
+                return response
+        else:
+            form = ExportForm()
+
+        ctx["form"] = form
+        return render(request, "payment_instruction/export.html", ctx)
 
 
 @admin.register(FinancialServiceProvider)
