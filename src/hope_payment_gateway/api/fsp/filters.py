@@ -26,6 +26,8 @@ class PaymentRecordFilter(filters.FilterSet):
     class Meta:
         model = PaymentRecord
         fields = {
+            "created": ["lt", "lte", "gt", "gte"],
+            "modified": ["lt", "lte", "gt", "gte"],
             "uuid": ["exact"],
             "record_code": ["exact", "in"],
             "parent__uuid": ["exact", "in"],
