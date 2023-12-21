@@ -59,6 +59,8 @@ INSTALLED_APPS = (
     "django_celery_beat",
     "django_celery_results",
     "power_query",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
 )
 
 MIDDLEWARE = (
@@ -204,6 +206,17 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
         "rest_framework.filters.SearchFilter",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Payment Gateway API",
+    "DESCRIPTION": "Payment Gateway to integrate HOPE with FSP",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": True,
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 # django-cors-headers: https://github.com/ottoyiu/django-cors-headers

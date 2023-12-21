@@ -15,6 +15,7 @@ api_patterns = [
     path(r"adminactions/", include("adminactions.urls")),
     path(r"wu/", include("hope_payment_gateway.apps.fsp.western_union.urls", namespace="wu")),
     path(r"rest/", include("hope_payment_gateway.api.urls", namespace="rest")),
+    path(r"schema/", include("hope_payment_gateway.api.docs", namespace="docs")),
     path(r"sentry_debug/", lambda _: 1 / 0),
 ]
 
