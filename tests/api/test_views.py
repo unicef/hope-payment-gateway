@@ -21,7 +21,7 @@ def test_payment_instruction(api_client, action, detail, status, token_user):
     user, token = token_user
     pr = PaymentRecordFactory()
     if detail:
-        url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.uuid])
+        url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.remote_id])
     else:
         url = reverse(f"rest:payment-instruction-{action}")
     view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
@@ -43,7 +43,7 @@ def test_payment_instruction_actions(api_client, action, detail, status, token_u
     user, token = token_user
     pr = PaymentRecordFactory()
     if detail:
-        url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.uuid])
+        url = reverse(f"rest:payment-instruction-{action}", args=[pr.parent.remote_id])
     else:
         url = reverse(f"rest:payment-instruction-{action}")
     view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
@@ -62,7 +62,7 @@ def test_payment_record_list(api_client, action, detail, status, token_user):
     user, token = token_user
     pr = PaymentRecordFactory()
     if detail:
-        url = reverse(f"rest:payment-record-{action}", args=[pr.uuid])
+        url = reverse(f"rest:payment-record-{action}", args=[pr.remote_id])
     else:
         url = reverse(f"rest:payment-record-{action}")
     view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token)
@@ -73,7 +73,7 @@ def test_payment_record_list(api_client, action, detail, status, token_user):
 def test_instructions_add_records_ok(api_client, token_user):
     user, token = token_user
     pr = PaymentRecordFactory(parent__status=PaymentInstruction.OPEN)
-    url = reverse("rest:payment-instruction-add-records", args=[pr.parent.uuid])
+    url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     payload = [
         {"record_code": "adalberto", "payload": {"key": "value"}},
     ]
@@ -81,7 +81,7 @@ def test_instructions_add_records_ok(api_client, token_user):
         url, json.dumps(payload), content_type="application/json", user=user, HTTP_AUTHORIZATION=token
     )
     assert view.status_code == 201
-    assert view.json()["uuid"] == pr.parent.uuid
+    assert view.json()["remote_id"] == pr.parent.remote_id
     assert "adalberto" in view.json()["records"]
 
 
@@ -89,7 +89,7 @@ def test_instructions_add_records_ok(api_client, token_user):
 def test_instructions_add_records_ko(api_client, token_user):
     user, token = token_user
     pr = PaymentRecordFactory(parent__status=PaymentInstruction.OPEN)
-    url = reverse("rest:payment-instruction-add-records", args=[pr.parent.uuid])
+    url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     payload = [
         {
             "record_code": "alfio",
@@ -113,7 +113,7 @@ def test_instructions_add_records_ko(api_client, token_user):
         expect_errors=True,
     )
     assert view.status_code == 400
-    assert view.json()["uuid"] == pr.parent.uuid
+    assert view.json()["remote_id"] == pr.parent.remote_id
     assert view.json()["errors"] == {
         "2": {"record_code": ["This field may not be null."]},
     }
@@ -123,7 +123,7 @@ def test_instructions_add_records_ko(api_client, token_user):
 def test_instructions_add_records_invalid_status(api_client, token_user):
     user, token = token_user
     pr = PaymentRecordFactory(parent__status=PaymentInstruction.ABORTED)
-    url = reverse("rest:payment-instruction-add-records", args=[pr.parent.uuid])
+    url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
     assert view.status_code == 400
     assert view.json()["message"] == "Cannot add records to a not Open Plan"

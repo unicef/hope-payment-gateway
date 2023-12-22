@@ -7,6 +7,7 @@ class FinancialServiceProviderFilter(filters.FilterSet):
     class Meta:
         model = FinancialServiceProvider
         fields = {
+            "remote_id": ["exact"],
             "name": ["exact"],
             "vision_vendor_number": ["exact"],
         }
@@ -16,7 +17,7 @@ class PaymentInstructionFilter(filters.FilterSet):
     class Meta:
         model = PaymentInstruction
         fields = {
-            "uuid": ["exact"],
+            "remote_id": ["exact"],
             "unicef_id": ["exact", "in"],
             "status": ["exact", "in"],
         }
@@ -28,8 +29,8 @@ class PaymentRecordFilter(filters.FilterSet):
         fields = {
             "created": ["lt", "lte", "gt", "gte"],
             "modified": ["lt", "lte", "gt", "gte"],
-            "uuid": ["exact"],
+            "remote_id": ["exact"],
             "record_code": ["exact", "in"],
-            "parent__uuid": ["exact", "in"],
+            "parent__remote_id": ["exact", "in"],
             "status": ["exact", "in"],
         }

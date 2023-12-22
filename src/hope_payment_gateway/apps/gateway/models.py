@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 
 from django_fsm import FSMField, transition
@@ -11,6 +9,7 @@ from hope_payment_gateway.apps.gateway.registry import registry
 
 
 class FinancialServiceProvider(models.Model):
+    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     name = models.CharField(max_length=64, unique=True)
     vision_vendor_number = models.CharField(max_length=100)
     strategy = StrategyField(registry=registry)
@@ -36,7 +35,7 @@ class PaymentInstruction(TimeStampedModel):
         (PROCESSED, "Processed"),
         (ABORTED, "Aborted"),
     )
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
+    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     unicef_id = models.CharField(max_length=255, db_index=True)
     status = FSMField(default=DRAFT, protected=False, db_index=True, choices=STATUSES)
     payload = models.JSONField(default=dict, null=True, blank=True)
@@ -94,7 +93,7 @@ class PaymentRecord(TimeStampedModel):
         (ERROR, "Error"),
     )
 
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
+    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64)
     success = models.BooleanField(null=True, blank=True)
@@ -110,7 +109,7 @@ class PaymentRecord(TimeStampedModel):
         payload = self.parent.get_payload()
         payload.update(self.payload)
         payload["payment_record_code"] = self.record_code
-        payload["record_uuid"] = self.uuid
+        payload["remote_id"] = self.remote_id
         return payload
 
     @transition(
