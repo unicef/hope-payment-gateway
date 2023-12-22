@@ -23,8 +23,7 @@ case "$1" in
     ;;
     tests)
         ./wait-for-it.sh db:5432
-        python3 manage.py migrate
-        pytest
+        pytest --create-db
     ;;
     prd)
         production

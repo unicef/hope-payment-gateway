@@ -59,6 +59,8 @@ INSTALLED_APPS = (
     "django_celery_beat",
     "django_celery_results",
     "power_query",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
 )
 
 MIDDLEWARE = (
@@ -204,6 +206,17 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
         "rest_framework.filters.SearchFilter",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Payment Gateway API",
+    "DESCRIPTION": "Payment Gateway to integrate HOPE with FSP",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": True,
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 # django-cors-headers: https://github.com/ottoyiu/django-cors-headers
@@ -257,9 +270,9 @@ EMAIL_PORT = env("EMAIL_PORT", default=25)
 EMAIL_USE_TLS = env("EMAIL_USE_TLS", default=False)
 EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
 
-SOCIAL_AUTH_SECRET = env.str("AZURE_CLIENT_SECRET")
-SOCIAL_AUTH_TENANT_ID = env("AZURE_TENANT_ID")
-SOCIAL_AUTH_KEY = env.str("AZURE_CLIENT_KEY")
+SOCIAL_AUTH_SECRET = env.str("AZURE_CLIENT_SECRET", default="")
+SOCIAL_AUTH_TENANT_ID = env("AZURE_TENANT_ID", default="")
+SOCIAL_AUTH_KEY = env.str("AZURE_CLIENT_KEY", default="")
 
 SOCIAL_AUTH_URL_NAMESPACE = "social"
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False

@@ -7,3 +7,5 @@ exclude =
 ignore =
     W503,
     # line break before binary operator
+    E731,
+    # do not assign a lambda expression, use a def

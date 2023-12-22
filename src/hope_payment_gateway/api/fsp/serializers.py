@@ -57,7 +57,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
     parent = serializers.ReadOnlyField(source="parent.uuid")
     hope_status = serializers.SerializerMethodField()
 
-    def get_hope_status(self, obj):
+    def get_hope_status(self, obj: PaymentRecord) -> str:
         return {
             "PENDING": "Pending",
             "TRANSFERRED_TO_FSP": "Transaction Successful",

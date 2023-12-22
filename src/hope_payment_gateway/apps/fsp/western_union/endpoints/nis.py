@@ -15,6 +15,7 @@ REJECT = "DVQRFB62"
 class PayNotificationView(APIView):
     permission_classes = (WhitelistPermission,)
     parser_classes = [XMLParser]
+    serializer_class = None
 
     def post(self, request):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
