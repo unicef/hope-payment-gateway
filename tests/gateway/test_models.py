@@ -28,7 +28,7 @@ def test_payment_record():
 def test_payment_record_payload():
     instruction = PaymentInstructionFactory(payload={"a": "a"})
     prl = PaymentRecordFactory(parent=instruction, payload={"b": "b"}, record_code="r")
-    assert prl.get_payload().keys() == {"a", "b", "payment_record_code", "record_uuid"}
+    assert prl.get_payload().keys() == {"a", "b", "payment_record_code", "remote_id"}
 
 
 @pytest.mark.parametrize(

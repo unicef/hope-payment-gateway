@@ -4,7 +4,6 @@ from django.utils import timezone
 
 import factory
 from factory import fuzzy
-from factory.faker import Faker
 from strategy_field.utils import fqn
 
 from hope_api_auth.models import APIToken, Grant
@@ -53,6 +52,7 @@ class SystemFactory(factory.django.DjangoModelFactory):
 
 
 class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
+    remote_id = fuzzy.FuzzyText()
     name = fuzzy.FuzzyText()
     vision_vendor_number = fuzzy.FuzzyText()
     strategy = fqn(DefaultProcessor)
@@ -62,17 +62,17 @@ class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
 
 
 class PaymentInstructionFactory(factory.django.DjangoModelFactory):
-    uuid = Faker("uuid4")
     fsp = factory.SubFactory(FinancialServiceProviderFactory)
     system = factory.SubFactory(SystemFactory)
+    remote_id = fuzzy.FuzzyText()
 
     class Meta:
         model = PaymentInstruction
 
 
 class PaymentRecordFactory(factory.django.DjangoModelFactory):
+    remote_id = fuzzy.FuzzyText()
     parent = factory.SubFactory(PaymentInstructionFactory)
-    uuid = Faker("uuid4")
 
     class Meta:
         model = PaymentRecord

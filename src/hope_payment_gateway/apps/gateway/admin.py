@@ -15,10 +15,9 @@ from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, P
 
 @admin.register(PaymentRecord)
 class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("record_code", "status", "message", "success", "uuid")
+    list_display = ("record_code", "status", "message", "success", "remote_id")
     list_filter = ("record_code", "status", "success")
     search_fields = ("transaction_id", "message")
-    # readonly_fields = ("extra_data", "uuid")
 
     @choice(change_list=False)
     def primitives(self, button):
@@ -58,17 +57,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-        log = cancel(obj.uuid, mtcn)
+        log = cancel(obj.remote_id, mtcn)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("unicef_id", "status", "uuid")
+    list_display = ("unicef_id", "status", "remote_id")
     list_filter = ("status",)
     search_fields = ("unicef_id",)
-    # readonly_fields = ("uuid", "payload")
 
 
 @admin.register(FinancialServiceProvider)
@@ -76,5 +74,6 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
         "name",
         "vision_vendor_number",
+        "remote_id",
     )
-    search_fields = ("name", "vision_vendor_number")
+    search_fields = ("remote_id", "name", "vision_vendor_number")

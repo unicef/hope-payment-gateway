@@ -104,8 +104,8 @@ def send_money_store(payload):
 
 
 def send_money(hope_payload):
-    record_uuid = hope_payload["record_uuid"]
-    pr = PaymentRecord.objects.get(uuid=record_uuid)
+    remote_id = hope_payload["remote_id"]
+    pr = PaymentRecord.objects.get(remote_id=remote_id)
 
     try:
         payload = create_validation_payload(hope_payload)

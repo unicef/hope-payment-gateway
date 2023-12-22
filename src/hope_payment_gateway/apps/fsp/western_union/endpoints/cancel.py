@@ -47,8 +47,8 @@ def cancel_request(hope_payload, mtcn, database_key, reason=WIC):
     return client.response_context("CancelSend", payload)
 
 
-def cancel(record_uuid, mtcn):
-    pr = PaymentRecord.objects.get(uuid=record_uuid)
+def cancel(remote_id, mtcn):
+    pr = PaymentRecord.objects.get(remote_id=remote_id)
     response = search_request(pr.get_payload(), mtcn)
     payload = response["content"]
     try:

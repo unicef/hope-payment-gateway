@@ -30,16 +30,16 @@ class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet):
     queryset = FinancialServiceProvider.objects.all()
 
     filterset_class = FinancialServiceProviderFilter
-    search_fields = ["name", "vision_vendor_number"]
+    search_fields = ["name", "vision_vendor_number", "remote_id"]
 
 
 class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = PaymentInstructionSerializer
     queryset = PaymentInstruction.objects.all()
 
-    lookup_field = "uuid"
+    lookup_field = "remote_id"
     filterset_class = PaymentInstructionFilter
-    search_fields = ["unicef_id", "uuid"]
+    search_fields = ["unicef_id", "remote_id"]
 
     def perform_create(self, serializer):
         try:
@@ -60,27 +60,27 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"])
-    def open(self, request, uuid=None):
+    def open(self, request, remote_id=None):
         return self._change_status("open")
 
     @action(detail=True, methods=["post"])
-    def ready(self, request, uuid=None):
+    def ready(self, request, remote_id=None):
         return self._change_status("ready")
 
     @action(detail=True, methods=["post"])
-    def close(self, request, uuid=None):
+    def close(self, request, remote_id=None):
         return self._change_status("close")
 
     @action(detail=True, methods=["post"])
-    def process(self, request, uuid=None):
+    def process(self, request, remote_id=None):
         return self._change_status("process")
 
     @action(detail=True, methods=["post"])
-    def abort(self, request, uuid=None):
+    def abort(self, request, remote_id=None):
         return self._change_status("abort")
 
     @action(detail=True, methods=["post"])
-    def add_records(self, request, uuid=None):
+    def add_records(self, request, remote_id=None):
         obj = self.get_object()
         if obj.status != PaymentInstruction.OPEN:
             return Response(
@@ -88,25 +88,26 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
             )
         data = request.data.copy()
         for record in data:
-            record["parent"] = obj.uuid
+            record["parent"] = obj.remote_id
         serializer = PaymentRecordSerializer(data=data, many=True)
         if serializer.is_valid():
             totals = serializer.save()
             return Response(
-                {"uuid": obj.uuid, "records": {item.record_code: item.uuid for item in totals}}, status=HTTP_201_CREATED
+                {"remote_id": obj.remote_id, "records": {item.record_code: item.remote_id for item in totals}},
+                status=HTTP_201_CREATED,
             )
         error_dict = {
             index: serializer.errors[index] for index in range(len(serializer.errors)) if serializer.errors[index]
         }
-        return Response({"uuid": obj.uuid, "errors": error_dict}, status=HTTP_400_BAD_REQUEST)
+        return Response({"remote_id": obj.remote_id, "errors": error_dict}, status=HTTP_400_BAD_REQUEST)
 
 
 class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = PaymentRecordSerializer
     queryset = PaymentRecord.objects.all()
-    lookup_field = "uuid"
+    lookup_field = "remote_id"
     filterset_class = PaymentRecordFilter
-    search_fields = ("uuid", "record_code")
+    search_fields = ("remote_id", "record_code")
 
     def get_serializer_class(self):
         if self.action == "list":

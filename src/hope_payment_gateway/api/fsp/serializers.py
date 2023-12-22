@@ -10,7 +10,7 @@ class FinancialServiceProviderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FinancialServiceProvider
-        fields = ("name", "vision_vendor_number", "configuration", "payload")
+        fields = ("remote_id", "name", "vision_vendor_number", "configuration", "payload")
 
     def get_payload(self, obj: Any) -> Any:
         return {
@@ -44,7 +44,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
         model = PaymentInstruction
         fields = (
             "id",
-            "uuid",
+            "remote_id",
             "unicef_id",
             "status",
             "fsp",
@@ -54,7 +54,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
 
 
 class PaymentRecordLightSerializer(serializers.ModelSerializer):
-    parent = serializers.ReadOnlyField(source="parent.uuid")
+    parent = serializers.ReadOnlyField(source="parent.remote_id")
     hope_status = serializers.SerializerMethodField()
 
     def get_hope_status(self, obj: PaymentRecord) -> str:
@@ -72,7 +72,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
         model = PaymentRecord
         fields = (
             "id",
-            "uuid",
+            "remote_id",
             "created",
             "modified",
             "record_code",
@@ -84,14 +84,14 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
 
 
 class PaymentRecordSerializer(PaymentRecordLightSerializer):
-    parent = serializers.SlugRelatedField(slug_field="uuid", queryset=PaymentInstruction.objects.all())
+    parent = serializers.SlugRelatedField(slug_field="remote_id", queryset=PaymentInstruction.objects.all())
     hope_status = serializers.SerializerMethodField()
 
     class Meta:
         model = PaymentRecord
         fields = (
             "id",
-            "uuid",
+            "remote_id",
             "created",
             "modified",
             "record_code",
