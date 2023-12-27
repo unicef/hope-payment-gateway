@@ -3,6 +3,7 @@ from django.template.response import TemplateResponse
 
 from admin_extra_buttons.decorators import button, choice, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
+from adminactions.export import base_export
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
@@ -10,6 +11,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
+from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
 
 
@@ -18,6 +20,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("record_code", "status", "message", "success", "remote_id")
     list_filter = ("record_code", "status", "success")
     search_fields = ("transaction_id", "message")
+
+    actions = [export_as_template]
 
     @choice(change_list=False)
     def primitives(self, button):
@@ -61,12 +65,37 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("parent__fsp")
+
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("unicef_id", "status", "remote_id")
     list_filter = ("status",)
     search_fields = ("unicef_id",)
+
+    @button()
+    def export(self, request, pk) -> TemplateResponse:
+        obj = self.get_object(request, str(pk))
+        queryset = PaymentRecord.objects.filter(parent=obj).select_related("parent__fsp")
+
+        # hack to use the action
+        request.POST["action"] = 0
+        request.POST["_selected_action"] = list()
+        request.POST["select_across"] = "0"
+
+        return base_export(
+            self,
+            request,
+            queryset,
+            name=export_as_template.short_description,
+            impl=export_as_template_impl,
+            title=export_as_template.short_description.capitalize(),
+            action_short_description=export_as_template.short_description,
+            template="payment_instruction/export.html",
+            form_class=TemplateExportForm,
+        )
 
 
 @admin.register(FinancialServiceProvider)
