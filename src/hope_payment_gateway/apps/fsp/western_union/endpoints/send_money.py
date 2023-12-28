@@ -64,6 +64,7 @@ def create_validation_payload(hope_payload):
     }
 
     delivery_services = {"code": hope_payload.get("delivery_services_code", MONEY_IN_TIME)}
+    partner_notification = {"partner_notification": {"notification_requested": "Y"}}
 
     payload = {
         "device": web,
@@ -74,6 +75,7 @@ def create_validation_payload(hope_payload):
         "financials": financials,
         "delivery_services": delivery_services,
         "foreign_remote_system": frm,
+        "partner_info_buffer": partner_notification,
         "wallet_details": {"service_provider_code": None},
     }
 
