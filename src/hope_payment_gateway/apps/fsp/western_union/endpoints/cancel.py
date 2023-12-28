@@ -9,6 +9,7 @@ def search_request(hope_payload, mtcn):
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
         "counter_id": hope_payload.get("counter_id", "US125QCUSD1T"),
     }
+    partner_notification = {"partner_notification": {"notification_requested": "Y"}}
     payload = {
         "device": agent,
         "channel": unicef,
@@ -20,6 +21,7 @@ def search_request(hope_payload, mtcn):
         },
         "search_flag": "CANCEL_SEND",
         "foreign_remote_system": frm,
+        "partner_info_buffer": partner_notification,
     }
     client = WesternUnionClient("Search_Service_H2HServiceService.wsdl")
     return client.response_context("Search", payload)
