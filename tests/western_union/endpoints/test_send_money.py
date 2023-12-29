@@ -66,10 +66,10 @@ def test_send_complete(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
-    remote_id = "681cbf43-a506-4bca-925c-cb10d89f6d92"
+    record_code = "Y3snz233UkGt1Gw4"
     hope_payload = {
-        "remote_id": remote_id,
-        "payment_record_code": "Y3snz233UkGt1Gw4",
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -82,12 +82,12 @@ def test_send_complete(django_app, admin_user):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    pr = PaymentRecordFactory(remote_id=remote_id)
+    pr = PaymentRecordFactory(record_code=record_code)
     send_money(hope_payload)
     pr.refresh_from_db()
     assert pr.success
     assert pr.status == PaymentRecord.TRANSFERRED_TO_FSP
-    assert PaymentRecord.objects.filter(remote_id=remote_id).count() == 1
+    assert PaymentRecord.objects.filter(record_code=record_code).count() == 1
 
 
 @responses.activate
@@ -95,7 +95,7 @@ def test_send_complete_corridor(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
-    remote_id = "681cbf43-a506-4bca-925c-cb10d89f6d92"
+    record_code = "Y3snz233UkGt1Gw1"
     corridor_template = {
         "receiver": {
             "mobile_phone": {"phone_number": {"country_code": 229, "national_number": None}},
@@ -104,8 +104,8 @@ def test_send_complete_corridor(django_app, admin_user):
         "wallet_details": {"service_provider_code": "22901"},
     }
     hope_payload = {
-        "remote_id": remote_id,
-        "payment_record_code": "Y3snz233UkGt1Gw1",
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -125,7 +125,7 @@ def test_send_complete_corridor(django_app, admin_user):
         destination_currency="EUR",
         template=corridor_template,
     )
-    pr = PaymentRecordFactory(remote_id=remote_id)
+    pr = PaymentRecordFactory(record_code=record_code)
     send_money(hope_payload)
     pr.refresh_from_db()
     assert pr.success
@@ -137,10 +137,10 @@ def test_send_complete_corridor_no_exist(django_app, admin_user):
     # responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     # responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     # responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
-    remote_id = "681cbf43-a506-4bca-925c-cb10d89f6d92"
+    record_code = "Y3snz233UkGt1Gw1"
     hope_payload = {
-        "remote_id": remote_id,
-        "payment_record_code": "Y3snz233UkGt1Gw1",
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -155,7 +155,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user):
         "corridor": "yes",
         "reason_for_sending": "P012",
     }
-    pr = PaymentRecordFactory(remote_id=remote_id)
+    pr = PaymentRecordFactory(record_code=record_code)
     send_money(hope_payload)
     pr.refresh_from_db()
     assert not pr.success
@@ -196,10 +196,10 @@ def test_send_complete_corridor_no_exist(django_app, admin_user):
     ],
 )
 def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message):
-    remote_id = "681cbf43-a506-4bca-925c-cb10d89f6d92"
+    record_code = "Y3snz233UkGt1Gw1"
     hope_payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
-        "payment_record_code": "Y3snz233UkGt1Gw1",
+        "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "phone_no": "+94786661137",
@@ -219,7 +219,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         destination_currency="EUR",
         template=corridor_template,
     )
-    pr = PaymentRecordFactory(remote_id=remote_id)
+    pr = PaymentRecordFactory(record_code=record_code)
     send_money(hope_payload)
     pr.refresh_from_db()
     assert not pr.success

@@ -106,8 +106,8 @@ def send_money_store(payload):
 
 
 def send_money(hope_payload):
-    remote_id = hope_payload["remote_id"]
-    pr = PaymentRecord.objects.get(remote_id=remote_id)
+    record_code = hope_payload["payment_record_code"]
+    pr = PaymentRecord.objects.get(record_code=record_code, status=PaymentRecord.PENDING)
 
     try:
         payload = create_validation_payload(hope_payload)
