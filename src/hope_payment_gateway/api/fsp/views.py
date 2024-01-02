@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+
 from django_fsm import TransitionNotAllowed
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -43,8 +45,8 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
 
     def perform_create(self, serializer):
         try:
-            self.request.auth
-            system = System.objects.get()
+            owner = get_user_model().objects.get(apitoken=self.request.auth)
+            system = System.objects.get(owner=owner)
         except System.DoesNotExist as exc:
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
         serializer.save(system=system)
