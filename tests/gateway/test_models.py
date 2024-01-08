@@ -21,7 +21,7 @@ def test_payment_instruction():
 @pytest.mark.django_db
 def test_payment_record():
     prl = PaymentRecordFactory(record_code="RCD-123", message="OK")
-    assert str(prl) == "RCD-123 / OK"
+    assert str(prl) == "RCD-123 / PENDING"
 
 
 @pytest.mark.django_db

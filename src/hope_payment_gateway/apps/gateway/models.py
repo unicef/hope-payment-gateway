@@ -103,7 +103,7 @@ class PaymentRecord(TimeStampedModel):
     extra_data = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.record_code} / {self.message}"
+        return f"{self.record_code} / {self.status}"
 
     def get_payload(self):
         payload = self.parent.get_payload()
