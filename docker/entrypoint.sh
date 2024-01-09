@@ -6,7 +6,7 @@ production() {
     uwsgi \
         --http :8000 \
         --master \
-        --module=src.hope_payment_gateway.config.wsgi \
+        --module=hope_payment_gateway.config.wsgi \
         --processes=2 \
         --buffer-size=8192
 }
@@ -31,10 +31,10 @@ case "$1" in
     ;;
     celery_worker)
         export C_FORCE_ROOT=1
-        celery -A src.hope_payment_gateway.celery worker -l info
+        celery -A hope_payment_gateway.celery worker -l info
     ;;
     celery_beat)
-        celery -A src.hope_payment_gateway.celery beat -l info
+        celery -A hope_payment_gateway.celery beat -l info
     ;;
     *)
         exec "$@"
