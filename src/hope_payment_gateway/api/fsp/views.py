@@ -4,7 +4,6 @@ from django_fsm import TransitionNotAllowed
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
-from rest_framework.viewsets import ModelViewSet
 
 from hope_api_auth.views import LoggingAPIViewSet
 from hope_payment_gateway.api.fsp.filters import (
@@ -27,7 +26,7 @@ class ProtectedMixin:
         raise NotImplementedError
 
 
-class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet):
+class FinancialServiceProviderViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = FinancialServiceProviderSerializer
     queryset = FinancialServiceProvider.objects.all()
 
