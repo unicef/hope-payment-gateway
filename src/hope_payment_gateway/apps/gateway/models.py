@@ -93,7 +93,7 @@ class PaymentRecord(TimeStampedModel):
         (ERROR, "Error"),
     )
 
-    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
+    remote_id = models.CharField(max_length=255, db_index=True, unique=True)
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64)
     success = models.BooleanField(null=True, blank=True)
