@@ -16,7 +16,12 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prd
-    command: sh -c "entrypoint.sh ./wait-for-it.sh db:5432 && entrypoint.sh prd"
+    command: |
+      sh -c "
+        entrypoint.sh ./wait-for-it.sh db:5432
+        python3 manage.py upgrade
+        entrypoint.sh prd
+      "
     environment: *django-env
     ports:
       - 8000:8000
@@ -65,7 +70,31 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prd
-    command: celery_worker
+    command: |
+      sh -c "
+        entrypoint.sh ./wait-for-it.sh db:5432
+        entrypoint.sh celery_worker
+      "
+    environment: *django-env
+    volumes:
+      - .:/code
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prd
+    command: |
+      sh -c "
+        entrypoint.sh ./wait-for-it.sh db:5432
+        entrypoint.sh celery_beat
+      "
     environment: *django-env
     volumes:
       - .:/code

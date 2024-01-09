@@ -40,7 +40,7 @@ RUN pdm sync --no-editable --no-self
 WORKDIR /code
 COPY ./ ./
 
-ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
 
@@ -52,5 +52,5 @@ COPY --chown=hpg:hpg ./ ./
 COPY --chown=hpg:hpg --from=builder $PACKAGES_DIR $PACKAGES_DIR
 USER hpg
 
-ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
