@@ -12,8 +12,8 @@ from ..factories import PaymentInstructionFactory, PaymentRecordFactory
     "rec_a,rec_b,total",
     [
         (5, 4, 9),
-        (5, 8, 10),
-        (20, 0, 10),
+        (5, 8, 5),
+        (5, 5, 10),
         (4, 0, 4),
         (0, 4, 4),
         (0, 0, 0),
