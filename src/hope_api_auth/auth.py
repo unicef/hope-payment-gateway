@@ -43,4 +43,5 @@ class GrantedPermission(IsAuthenticated):
                 return True
             elif view.permission:
                 return view.permission.name in request.auth.grants
-        return False
+
+        return bool(request.user and request.user.is_authenticated and request.user.is_superuser)
