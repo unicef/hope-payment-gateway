@@ -31,29 +31,23 @@ class NisNotificationView(PayNotificationView):
         ]
         mtcn = payload["money_transfer_control"]["mtcn"]
         record_code = payload["transaction_id"]
-        msg = payload["message_text"]
         notification_type = payload["notification_type"]
 
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"] / 100
 
-        pr, updated = PaymentRecord.objects.update_or_create(
-            record_code=record_code,
-            defaults={
-                "message": msg,
-                "extra_data": {
-                    "mtcn": mtcn,
-                    "message_code": notification_type,
-                    "delivered_quantity": delivered_quantity,
-                },
-            },
-        )
-
-        pr.message = msg
+        pr = PaymentRecord.objects.get(record_code=record_code)
         pr.success = False
 
         if notification_type == SUCCESS:
             pr.confirm()
             pr.success = True
+            pr.extra_data.update(
+                {
+                    "mtcn": mtcn,
+                    "message_code": notification_type,
+                    "delivered_quantity": delivered_quantity,
+                }
+            )
         elif notification_type == CANCEL:
             pr.cancel()
         elif notification_type == REJECT:
