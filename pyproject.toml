@@ -105,7 +105,7 @@ dependencies = [
     "natural-keys",
     "pre-commit",
     "psycopg[binary]",
-    "sentry-sdk",
+    "sentry-sdk<1.18",
     "social-auth-app-django",
     "social-auth-core",
     "swapper",
