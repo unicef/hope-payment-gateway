@@ -35,9 +35,7 @@ class FinancialServiceProviderSerializer(serializers.ModelSerializer):
 
 
 class PaymentInstructionSerializer(serializers.ModelSerializer):
-    fsp = serializers.SlugRelatedField(
-        slug_field="vision_vendor_number", queryset=FinancialServiceProvider.objects.all()
-    )
+    fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
     system = serializers.PrimaryKeyRelatedField(read_only=True)  # handled in the view
 
     class Meta:
