@@ -10,7 +10,7 @@ class FinancialServiceProviderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FinancialServiceProvider
-        fields = ("remote_id", "name", "vision_vendor_number", "configuration", "payload")
+        fields = ("id", "remote_id", "name", "vision_vendor_number", "configuration", "payload")
 
     def get_payload(self, obj: Any) -> Any:
         return {
