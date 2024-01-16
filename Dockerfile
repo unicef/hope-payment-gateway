@@ -25,9 +25,7 @@ FROM base as builder
 WORKDIR $PACKAGES_DIR
 RUN pip install pdm==2.9.3
 ADD pyproject.toml ./
-
 ADD pdm.toml.template ./pdm.toml
-
 ADD pdm.lock ./
 RUN pdm sync --prod --no-editable --no-self
 
