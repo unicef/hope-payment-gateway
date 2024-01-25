@@ -48,6 +48,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "fsp",
             "system",
             "payload",
+            "extra",
         )
 
 
@@ -77,7 +78,6 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "parent",
             "status",
             "hope_status",
-            "success",
         )
 
 
@@ -96,7 +96,6 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
             "parent",
             "status",
             "hope_status",
-            "success",
             "message",
             "payload",
             "extra_data",

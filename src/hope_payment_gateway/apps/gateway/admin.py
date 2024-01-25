@@ -20,6 +20,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("record_code", "status", "message", "success", "remote_id")
     list_filter = ("record_code", "status", "success")
     search_fields = ("transaction_id", "message")
+    # readonly_fields = ("extra_data", )
 
     actions = [export_as_template]
 
@@ -74,6 +75,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("unicef_id", "status", "remote_id")
     list_filter = ("status",)
     search_fields = ("unicef_id",)
+    # readonly_fields = ("extra",)
 
     @button()
     def export(self, request, pk) -> TemplateResponse:
