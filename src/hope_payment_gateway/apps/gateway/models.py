@@ -11,7 +11,7 @@ from hope_payment_gateway.apps.gateway.registry import registry
 class FinancialServiceProvider(models.Model):
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     name = models.CharField(max_length=64, unique=True)
-    vision_vendor_number = models.CharField(max_length=100)
+    vision_vendor_number = models.CharField(max_length=100, unique=True)
     strategy = StrategyField(registry=registry)
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
@@ -43,6 +43,7 @@ class PaymentInstruction(TimeStampedModel):
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
     system = models.ForeignKey(System, on_delete=models.CASCADE)
     tag = models.CharField(null=True, blank=True)
+    extra = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
         return f"{self.unicef_id} - {self.status}"
@@ -69,8 +70,8 @@ class PaymentInstruction(TimeStampedModel):
 
     def get_payload(self):
         payload = self.payload.copy()
-        if self.fsp:
-            payload.update(self.fsp.configuration)
+        if "business_area" in self.extra:
+            payload.update(self.fsp.configuration[self.extra["business_area"]])
         return payload
 
 
