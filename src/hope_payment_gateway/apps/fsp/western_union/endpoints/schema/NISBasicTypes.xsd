@@ -2,8 +2,9 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xrsi="http://www.westernunion.com/schema/xrsi" jxb:version="1.0" targetNamespace="http://www.westernunion.com/schema/xrsi">
   <xsd:annotation>
     <xsd:documentation>
-			$Revision: 1.1 $
-			$Date: 2014/07/02 19:22:48 $</xsd:documentation>
+			$Revision: 1.0 $
+			$Date: 2012/03/18 $
+	</xsd:documentation>
   </xsd:annotation>
   
   <xsd:simpleType name="gwp_gbs_device_type">
@@ -174,6 +175,7 @@
     </xsd:restriction>
   </xsd:simpleType>
   
+
  
   <xsd:simpleType name="postal_code">
     <xsd:restriction base="xsd:string">
@@ -1197,20 +1199,9 @@
           <xsd:documentation>Successful or likely to be successful</xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
- <!--  <xsd:enumeration value="1000">
-        <xsd:annotation>
-          <xsd:documentation>Rejected</xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-      <xsd:enumeration value="2000">
-        <xsd:annotation>
-          <xsd:documentation>Queued or likely to be queued</xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration> -->
-      <!-- START - Added New Enumerations - SIVAJI G -->
       <xsd:enumeration value="1000">
         <xsd:annotation>
-          <xsd:documentation>MTCN not found</xsd:documentation>
+          <xsd:documentation>Rejected</xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
        <xsd:enumeration value="1010">
@@ -1220,10 +1211,9 @@
       </xsd:enumeration>
 	  <xsd:enumeration value="2000">
         <xsd:annotation>
-          <xsd:documentation>Temporary Partner System Error, Retry</xsd:documentation>
+          <xsd:documentation>Queued or likely to be queued</xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-      <!-- END -->
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:simpleType name="transaction_status">
@@ -1474,6 +1464,7 @@
       <xsd:maxLength value="09"/>
     </xsd:restriction>
   </xsd:simpleType>
+
   <xsd:simpleType name="mobile_number">
     <xsd:annotation>
       <xsd:documentation>Mobile Number</xsd:documentation>
@@ -1855,6 +1846,7 @@
       <xsd:maxLength value="2"/>
     </xsd:restriction>
   </xsd:simpleType>
+
   <xsd:simpleType name="Beneficiary_Profession">
     <xsd:restriction base="xsd:string">
       <xsd:minLength value="0"/>
@@ -2050,10 +2042,8 @@
       <xsd:enumeration value="BIS008"/>
       <xsd:enumeration value="BIS009"/>
       <xsd:enumeration value="BIS010"/>
-       <!-- START - Added New Enumerations - SIVAJI G -->
-	  <xsd:enumeration value="BIS011"/>
-	  <xsd:enumeration value="BIS012"/>
-	  <!-- END -->
+      <xsd:enumeration value="BIS011"/>
+      <xsd:enumeration value="BIS012"/>
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:simpleType name="message_code">
@@ -2079,43 +2069,19 @@
       <xsd:minLength value="0"/>
       <xsd:maxLength value="30"/>
     </xsd:restriction>
-  </xsd:simpleType>  
-  <xsd:simpleType name="queue_name">
+  </xsd:simpleType>
+ <xsd:simpleType name="reason_code">
     <xsd:restriction base="xsd:string">
       <xsd:minLength value="0"/>
-      <xsd:maxLength value="8"/>
+      <xsd:maxLength value="6"/>
     </xsd:restriction>
   </xsd:simpleType>
-  <xsd:simpleType name="send_device_id">
+ <xsd:simpleType name="reason_desc">
     <xsd:restriction base="xsd:string">
       <xsd:minLength value="0"/>
-      <xsd:maxLength value="2"/>
+      <xsd:maxLength value="380"/>
     </xsd:restriction>
   </xsd:simpleType>
-  <xsd:simpleType name="pay_device_id">
-    <xsd:restriction base="xsd:string">
-      <xsd:minLength value="0"/>
-      <xsd:maxLength value="2"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-  <xsd:simpleType name="multicsc_indicator">
-    <xsd:restriction base="xsd:string">
-      <xsd:minLength value="0"/>
-      <xsd:maxLength value="1"/>
-    </xsd:restriction>
-  </xsd:simpleType>  
-  <xsd:simpleType name="access_token">
-    <xsd:restriction base="xsd:string">
-      <xsd:minLength value="0"/>
-      <xsd:maxLength value="100"/>
-    </xsd:restriction>
-  </xsd:simpleType>  
-  <xsd:simpleType name="created">
-    <xsd:restriction base="xsd:string">
-      <xsd:minLength value="0"/>
-      <xsd:maxLength value="30"/>
-    </xsd:restriction>
-  </xsd:simpleType>    
   <xsd:element name="ip_address">
     <xsd:annotation>
       <xsd:appinfo source="WMQI_APPINFO">
