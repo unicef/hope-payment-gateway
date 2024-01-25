@@ -16,8 +16,18 @@ DEVELOPMENT_DIR = PACKAGE_DIR.parent.parent
 
 DEBUG = env.bool("DEBUG")
 
+RO_CONN = dict(**env.db("DATABASE_URL")).copy()
+RO_CONN.update(
+    {
+        "OPTIONS": {"options": "-c default_transaction_read_only=on"},
+        "TEST": {
+            "READ_ONLY": True,  # Do not manage this database during tests
+        },
+    }
+)
 DATABASES = {
-    "default": env.db(default="psql://postgres:pass@db:5432/postgres"),
+    "default": env.db("DATABASE_URL"),
+    "read_only": RO_CONN,
 }
 
 DATABASE_ROUTERS = ("hope_payment_gateway.apps.core.dbrouters.DbRouter",)
@@ -84,9 +94,9 @@ AUTHENTICATION_BACKENDS = (
 
 # path
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-MEDIA_ROOT = env("MEDIA_ROOT", default="/tmp/media/")
+MEDIA_ROOT = env("MEDIA_ROOT")
+MEDIA_URL = env("MEDIA_URL")
 STATIC_ROOT = env("STATIC_ROOT", default=os.path.join(BASE_DIR, "static"))
-MEDIA_URL = "/dm-media/"
 STATIC_URL = env("STATIC_URL", default="/static/")
 STATICFILES_DIRS = []
 STATICFILES_FINDERS = [
@@ -94,6 +104,14 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+STORAGES = {
+    "default": {
+        "BACKEND": env.str("DEFAULT_FILE_STORAGE", default="hope_payment_gateway.apps.core.storage.MediaStorage"),
+    },
+    "staticfiles": {
+        "BACKEND": env.str("STATIC_FILE_STORAGE", default="django.contrib.staticfiles.storage.StaticFilesStorage"),
+    },
+}
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = (
     # env("ALLOWED_HOST", default="localhost"),
@@ -319,11 +337,9 @@ CONSTANCE_CONFIG = {
 CONSTANCE_REDIS_CONNECTION = CACHE_URL
 
 
-# TODO: rethink this
-os.environ.setdefault("WESTERN_UNION_BASE_URL", "")
-os.environ.setdefault("WESTERN_UNION_CERT", "")
-os.environ.setdefault("WESTERN_UNION_KEY", "")
+WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL", default="")
+WESTERN_UNION_CERT = env("WESTERN_UNION_CERT", default="")
+WESTERN_UNION_KEY = env("WESTERN_UNION_KEY", default="")
 
-WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL")
-WESTERN_UNION_CERT = env("WESTERN_UNION_CERT")
-WESTERN_UNION_KEY = env("WESTERN_UNION_KEY")
+POWER_QUERY_DB_ALIAS = "read_only"
+POWER_QUERY_EXTRA_CONNECTIONS = []
