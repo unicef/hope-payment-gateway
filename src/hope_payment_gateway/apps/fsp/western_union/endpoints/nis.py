@@ -29,7 +29,6 @@ class NisNotificationView(PayNotificationView):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
             "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
         ]
-        breakpoint()
         mtcn = payload["money_transfer_control"]["mtcn"]
         record_code = payload["transaction_id"]
         notification_type = payload["notification_type"]
@@ -70,4 +69,4 @@ def nic_acknowledge(payload):
     # payload["ack_message"] = "SUCCESS"
 
     client = WesternUnionClient("NisNotification.wsdl")
-    return client.response_context("NotifServiceReply", payload)
+    return client.response_context("NotifService", payload)
