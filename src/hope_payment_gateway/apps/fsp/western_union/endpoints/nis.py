@@ -1,8 +1,8 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 
-from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
@@ -13,7 +13,7 @@ REJECT = "DVQRFB62"
 
 
 class PayNotificationView(APIView):
-    permission_classes = (WhitelistPermission,)
+    permission_classes = (IsAuthenticated,)
     parser_classes = [XMLParser]
     serializer_class = None
 
@@ -29,6 +29,7 @@ class NisNotificationView(PayNotificationView):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
             "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
         ]
+        breakpoint()
         mtcn = payload["money_transfer_control"]["mtcn"]
         record_code = payload["transaction_id"]
         notification_type = payload["notification_type"]
@@ -64,10 +65,9 @@ class NisNotificationView(PayNotificationView):
 
 
 def nic_acknowledge(payload):
-    payload.pop("notification_type")
     payload.pop("message_code")
     payload.pop("message_text")
-    payload["ack_message"] = "SUCCESS"
+    # payload["ack_message"] = "SUCCESS"
 
     client = WesternUnionClient("NisNotification.wsdl")
     return client.response_context("NotifServiceReply", payload)
