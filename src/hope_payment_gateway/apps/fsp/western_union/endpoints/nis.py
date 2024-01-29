@@ -60,7 +60,7 @@ class NisNotificationView(PayNotificationView):
         pr.save()
         resp = nic_acknowledge(payload)
 
-        return Response(resp)
+        return Response(resp, status=resp.get("code", None))
 
 
 def nic_acknowledge(payload):

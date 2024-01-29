@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import sentry_sdk
 from requests import Session
 from zeep import Client, Settings
 from zeep.exceptions import Fault, TransportError
@@ -36,10 +37,12 @@ class WesternUnionClient:
         except TransportError as exc:
             title = f"{exc.message} [{exc.status_code}]"
             code = 400
+            sentry_sdk.capture_exception(exc)
         except TypeError as exc:
             title = "Invalid Payload"
             code = 400
             error = str(exc)
+            sentry_sdk.capture_exception(exc)
         except Fault as exc:
             title = f"{exc.message} [{exc.code}]"
             response = etree_to_string(exc.detail)
@@ -48,5 +51,6 @@ class WesternUnionClient:
             except BaseException:
                 error = "generic error"
             code = 400
+            sentry_sdk.capture_exception(exc)
 
         return {"title": title, "content": response, "format": format, "code": code, "error": error}
