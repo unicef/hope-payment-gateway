@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db.models import signals
 from django.utils import timezone
 
@@ -36,6 +37,23 @@ class AdminFactory(UserFactory):
 
 class AnonUserFactory(UserFactory):
     username = "anonymous"
+
+
+class GroupFactory(factory.django.DjangoModelFactory):
+    name = factory.Sequence(lambda n: "name%03d" % n)
+
+    @factory.post_generation
+    def permissions(self, create, extracted, **kwargs):
+        if not create:
+            return  # Simple build, do nothing.
+
+        if extracted:
+            for permission in extracted:  # A list of groups were passed in, use them
+                self.permissions.add(permission)
+
+    class Meta:
+        model = Group
+        django_get_or_create = ("name",)
 
 
 class CorridorFactory(factory.django.DjangoModelFactory):
