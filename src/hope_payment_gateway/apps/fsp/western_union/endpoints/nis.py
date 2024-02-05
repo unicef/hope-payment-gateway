@@ -31,7 +31,7 @@ class NisNotificationView(WesternUnionApi):
 
     def post(self, request):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
-            "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
+            "{http://www.westernunion.com/schema/xrsi}nis-notification-reply"
         ]
 
         record_code = payload["transaction_id"]
