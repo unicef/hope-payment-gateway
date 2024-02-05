@@ -1,7 +1,9 @@
+from django_fsm import TransitionNotAllowed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
+from rest_framework_xml.renderers import XMLRenderer
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
@@ -12,50 +14,62 @@ CANCEL = "BIS005"
 REJECT = "DVQRFB62"
 
 
-class PayNotificationView(APIView):
+class WesternUnionApi(APIView):
     permission_classes = (IsAuthenticated,)
-    parser_classes = [XMLParser]
+    parser_classes = (XMLParser,)
     serializer_class = None
+    renderer_classes = (XMLRenderer,)
 
-    def post(self, request):
+
+class NisNotificationView(WesternUnionApi):
+    def get(self, request):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
             "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
         ]
+
         return Response(payload)
 
-
-class NisNotificationView(PayNotificationView):
     def post(self, request):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
             "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
         ]
-        mtcn = payload["money_transfer_control"]["mtcn"]
+
         record_code = payload["transaction_id"]
+
+        mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
 
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"] / 100
 
-        pr = PaymentRecord.objects.get(record_code=record_code)
-        pr.success = False
-
-        if notification_type == SUCCESS:
-            pr.confirm()
-            pr.success = True
-            pr.extra_data.update(
-                {
-                    "mtcn": mtcn,
-                    "message_code": notification_type,
-                    "delivered_quantity": delivered_quantity,
-                }
+        try:
+            pr = PaymentRecord.objects.get(record_code=record_code)
+        except PaymentRecord.DoesNotExist:
+            return Response(
+                {"cannot_find_transaction": f"Cannot find payment with reference {record_code}", "status": 400}
             )
-        elif notification_type == CANCEL:
-            pr.cancel()
-        elif notification_type == REJECT:
-            pr.purge()
-        elif notification_type == REFUND:
-            pr.refund()
-        else:
-            pr.error()
+
+        pr.success = False
+        try:
+            if notification_type == SUCCESS:
+                pr.confirm()
+                pr.success = True
+                pr.extra_data.update(
+                    {
+                        "mtcn": mtcn,
+                        "message_code": notification_type,
+                        "delivered_quantity": delivered_quantity,
+                    }
+                )
+            elif notification_type == CANCEL:
+                pr.cancel()
+            elif notification_type == REJECT:
+                pr.purge()
+            elif notification_type == REFUND:
+                pr.refund()
+            else:
+                pr.error()
+        except TransitionNotAllowed as e:
+            return Response({"transition_not_allowed": str(e), "status": 400})
 
         pr.save()
         resp = nic_acknowledge(payload)
@@ -66,7 +80,9 @@ class NisNotificationView(PayNotificationView):
 def nic_acknowledge(payload):
     payload.pop("message_code")
     payload.pop("message_text")
-    # payload["ack_message"] = "SUCCESS"
+    payload.pop("payout_info")
+    payload["ack_message"] = "Acknowledged"
 
     client = WesternUnionClient("NisNotification.wsdl")
-    return client.response_context("NotifService", payload)
+    resp = client.response_context("NotifServiceReply", payload)
+    return resp

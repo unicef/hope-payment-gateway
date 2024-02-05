@@ -7,12 +7,6 @@ import responses
 from ...factories import PaymentRecordFactory
 
 
-def test_push_notification(api_client, admin_user):
-    xml = open(Path(__file__).parent / "push_notification.xml", "r")
-    url = reverse("western_union:pay-notification-view")
-    api_client.post(url, data=xml.read(), user=admin_user, content_type="application/xml")
-
-
 @responses.activate
 def test_nis_notification_rejected(api_client, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
