@@ -107,7 +107,7 @@ dependencies = [
     "paramiko",
     "pre-commit",
     "psycopg[binary]",
-    "sentry-sdk<1.18",
+    "sentry-sdk",
     "social-auth-app-django",
     "social-auth-core",
     "swapper",
@@ -115,7 +115,7 @@ dependencies = [
     "unicef-power-query",
     "unicef-security",
     "wheel",
-    "uwsgi>=2.0.23",
+    "uwsgi",
     "zeep",
 ]
 name = "hope_payment_gateway"
