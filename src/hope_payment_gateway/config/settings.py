@@ -266,6 +266,7 @@ if SENTRY_DSN:  # pragma: no cover
         dsn=SENTRY_DSN,
         # by default this is False, must be set to True so the library attaches the request data to the event
         send_default_pii=True,
+        enable_tracing=True,
         integrations=[DjangoIntegration(), CeleryIntegration()],
         environment=env("SENTRY_ENVIRONMENT", default=None),
     )
