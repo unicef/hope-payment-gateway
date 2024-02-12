@@ -78,6 +78,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "parent",
             "status",
             "hope_status",
+            "extra_data",
         )
 
 
