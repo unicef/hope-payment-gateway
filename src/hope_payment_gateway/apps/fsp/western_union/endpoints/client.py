@@ -21,7 +21,7 @@ class WesternUnionClient:
         self.client = Client(wsdl, transport=transport, settings=settings)
         self.client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
-    def response_context(self, service_name, payload):
+    def response_context(self, service_name, payload, address=None):
         response = ""
         error = ""
         format = "string"
@@ -54,3 +54,6 @@ class WesternUnionClient:
             sentry_sdk.capture_exception(exc)
 
         return {"title": title, "content": response, "format": format, "code": code, "error": error}
+
+    def prepare(self, service_name, payload):
+        return self.client.create_message(self.client.service, service_name, **payload)

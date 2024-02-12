@@ -1,12 +1,13 @@
+from django.http import HttpResponse
+
 from django_fsm import TransitionNotAllowed
+from lxml import etree
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 from rest_framework_xml.renderers import XMLRenderer
-from sentry_sdk.integrations.wsgi import get_client_ip
 
-# from hope_payment_gateway.apps.core.permissions import get_client_ip
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
@@ -35,8 +36,6 @@ class NisNotificationView(WesternUnionApi):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
             "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
         ]
-        ip_address = get_client_ip(request.META)
-
         record_code = payload["transaction_id"]
 
         mtcn = payload["money_transfer_control"]["mtcn"]
@@ -75,16 +74,17 @@ class NisNotificationView(WesternUnionApi):
             return Response({"transition_not_allowed": str(e), "status": 400})
 
         pr.save()
-        resp = nic_acknowledge(payload, ip_address)
 
-        return Response(resp, status=resp.get("code", None))
+        resp = nic_acknowledge(payload)
+        return HttpResponse(resp, content_type="application/xml")
 
 
-def nic_acknowledge(payload, ip_address):
+def nic_acknowledge(payload):
     for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
         payload.pop(tag_name, None)
     payload["ack_message"] = "Acknowledged"
 
     client = WesternUnionClient("NisNotification.wsdl")
-    resp = client.response_context("NotifServiceReply", payload)
-    return resp
+    node = client.prepare("NotifServiceReply", payload)
+    data = etree.tostring(node, pretty_print=True, with_tail=True).decode()
+    return data
