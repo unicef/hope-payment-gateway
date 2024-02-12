@@ -41,7 +41,7 @@ class NisNotificationView(WesternUnionApi):
         mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
 
-        delivered_quantity = payload["payment_details"]["origination"]["principal_amount"] / 100
+        delivered_quantity = payload["payment_details"]["origination"]["principal_amount"]
 
         try:
             pr = PaymentRecord.objects.get(record_code=record_code)
