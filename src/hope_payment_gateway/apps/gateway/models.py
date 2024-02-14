@@ -18,13 +18,6 @@ class FinancialServiceProvider(models.Model):
     def __str__(self):
         return f"{self.name} [{self.vision_vendor_number}]"
 
-    def get_configuration(self, config_key):  # will become strategy
-        try:
-            config = FinancialServiceProviderConfig.objects.get(key=config_key, fsp=self).configuration
-        except FinancialServiceProviderConfig.DoesNotExist:
-            config = self.configuration
-        return config
-
 
 class FinancialServiceProviderConfig(models.Model):
     key = models.CharField(max_length=16, db_index=True)
@@ -90,7 +83,7 @@ class PaymentInstruction(TimeStampedModel):
     def get_payload(self):
         payload = self.payload.copy()
         if "business_area" in self.extra:
-            config_payload = self.fsp.get_configuration(self.extra["business_area"])
+            config_payload = self.fsp.strategy.get_configuration(self.extra["business_area"])
             payload.update(config_payload)
         return payload
 
