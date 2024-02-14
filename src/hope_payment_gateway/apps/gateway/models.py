@@ -18,6 +18,25 @@ class FinancialServiceProvider(models.Model):
     def __str__(self):
         return f"{self.name} [{self.vision_vendor_number}]"
 
+    def get_configuration(self, config_key):  # will become strategy
+        try:
+            config = FinancialServiceProviderConfig.objects.get(key=config_key, fsp=self).configuration
+        except FinancialServiceProviderConfig.DoesNotExist:
+            config = self.configuration
+        return config
+
+
+class FinancialServiceProviderConfig(models.Model):
+    key = models.CharField(max_length=16, db_index=True)
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
+    configuration = models.JSONField(default=dict, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.fsp} [{self.key}]"
+
+    class Meta:
+        unique_together = ("key", "fsp")
+
 
 class PaymentInstruction(TimeStampedModel):
     DRAFT = "DRAFT"
@@ -71,7 +90,8 @@ class PaymentInstruction(TimeStampedModel):
     def get_payload(self):
         payload = self.payload.copy()
         if "business_area" in self.extra:
-            payload.update(self.fsp.configuration[self.extra["business_area"]])
+            config_payload = self.fsp.get_configuration(self.extra["business_area"])
+            payload.update(config_payload)
         return payload
 
 
