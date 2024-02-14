@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.contrib.admin.options import TabularInline
 from django.template.response import TemplateResponse
 
 from admin_extra_buttons.decorators import button, choice, view
@@ -12,7 +13,12 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money_validation,
 )
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    FinancialServiceProviderConfig,
+    PaymentInstruction,
+    PaymentRecord,
+)
 
 
 @admin.register(PaymentRecord)
@@ -100,6 +106,11 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         )
 
 
+class FinancialServiceProviderConfigInline(TabularInline):
+    model = FinancialServiceProviderConfig
+    extra = 1
+
+
 @admin.register(FinancialServiceProvider)
 class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
@@ -108,3 +119,4 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         "remote_id",
     )
     search_fields = ("remote_id", "name", "vision_vendor_number")
+    inlines = (FinancialServiceProviderConfigInline,)
