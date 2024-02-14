@@ -4,9 +4,11 @@ from django_fsm import TransitionNotAllowed
 from lxml import etree
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 from rest_framework_xml.renderers import XMLRenderer
+from zeep.exceptions import ValidationError
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
@@ -75,7 +77,10 @@ class NisNotificationView(WesternUnionApi):
 
         pr.save()
 
-        resp = nic_acknowledge(payload)
+        try:
+            resp = nic_acknowledge(payload)
+        except ValidationError as exp:
+            return Response({"validation_error": str(exp)}, status=HTTP_400_BAD_REQUEST)
         return HttpResponse(resp, content_type="application/xml")
 
 
