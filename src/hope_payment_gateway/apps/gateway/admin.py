@@ -58,7 +58,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-            context.update(search_request(obj.get_payload(), mtcn))
+            frm = obj.extra_data.get("foreign_remote_system", None)
+            context.update(search_request(frm, mtcn))
             return TemplateResponse(request, "western_union.html", context)
         messages.warning(request, "Missing MTCN")
 
@@ -68,7 +69,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-        log = cancel(obj.pk, mtcn)
+        log = cancel(obj.pk)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
