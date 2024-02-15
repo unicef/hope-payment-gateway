@@ -31,8 +31,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     actions = [export_as_template]
 
     @choice(change_list=False)
-    def primitives(self, button):
-        button.choices = [self.send_money_validation, self.search_request]
+    def western_union(self, button):
+        button.choices = [self.send_money_validation, self.send_money, self.search_request, self.cancel]
         return button
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"})
@@ -45,7 +45,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         context.update(send_money_validation(payload))
         return TemplateResponse(request, "western_union.html", context)
 
-    @button()
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def send_money(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         log = send_money(obj.get_payload())
@@ -63,7 +63,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             return TemplateResponse(request, "western_union.html", context)
         messages.warning(request, "Missing MTCN")
 
-    @button()
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def cancel(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
