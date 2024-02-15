@@ -38,7 +38,7 @@ class NisNotificationView(WesternUnionApi):
         payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
             "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
         ]
-        record_code = payload["transaction_id"]
+        fsp_code = payload["transaction_id"]
 
         mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
@@ -46,10 +46,10 @@ class NisNotificationView(WesternUnionApi):
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"]
 
         try:
-            pr = PaymentRecord.objects.get(record_code=record_code)
+            pr = PaymentRecord.objects.get(fsp_code=fsp_code)
         except PaymentRecord.DoesNotExist:
             return Response(
-                {"cannot_find_transaction": f"Cannot find payment with reference {record_code}"},
+                {"cannot_find_transaction": f"Cannot find payment with reference {fsp_code}"},
                 status=HTTP_400_BAD_REQUEST,
             )
 
@@ -74,7 +74,7 @@ class NisNotificationView(WesternUnionApi):
             else:
                 pr.error()
         except TransitionNotAllowed as e:
-            return Response({"transition_not_allowed": str(e), "status": 400})
+            return Response({"transition_not_allowed": str(e)}, status=HTTP_400_BAD_REQUEST)
 
         pr.save()
 
