@@ -68,13 +68,11 @@ def cancel(pk, mtcn):
     extra_data = {"db_key": database_key, "mtcn": mtcn}
 
     if response["code"] == 200:
-        pr.message = "Cancelled"
+        pr.message = "Request for cancel"
         pr.success = True
-        pr.cancel()
     else:
-        pr.message = f"Cancel error: {response['error']}"
+        pr.message = f"Cancel request error: {response['error']}"
         pr.success = False
-        pr.fail()
     pr.extra_data.update(extra_data)
     pr.save()
     return pr
