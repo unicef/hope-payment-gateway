@@ -18,6 +18,7 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentRecordSerializer,
 )
 from hope_payment_gateway.apps.core.models import System
+from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
 
 
@@ -114,3 +115,12 @@ class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
         if self.action == "list":
             return PaymentRecordLightSerializer
         return super().get_serializer_class()
+
+    @action(detail=True, methods=["post"])
+    def cancel(self, request):
+        record = self.get_object()
+        try:
+            cancel(record.pk)
+            return Response({"message": "cancel triggered"})
+        except TransitionNotAllowed as exc:
+            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
