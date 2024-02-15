@@ -113,6 +113,7 @@ def send_money(hope_payload):
         payload = create_validation_payload(hope_payload)
         response = send_money_validation(payload)
         smv_payload = serialize_object(response["content"])
+        pr.fsp_code = smv_payload["new_mtcn"]
         pr.save()
     except (InvalidCorridor, PayloadException, TransitionNotAllowed) as exc:
         pr.message = str(exc)
@@ -124,7 +125,6 @@ def send_money(hope_payload):
     if response["code"] != 200:
         pr.message = f'Send Money Validation: {response["error"]}'
         pr.success = False
-        pr.fsp_code = smv_payload["new_mtcn"]
         if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
             pr.fail()
         pr.save()
