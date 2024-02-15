@@ -82,8 +82,8 @@ class PaymentInstruction(TimeStampedModel):
 
     def get_payload(self):
         payload = self.payload.copy()
-        if "business_area" in self.extra:
-            config_payload = self.fsp.strategy.get_configuration(self.extra["business_area"])
+        if "config_key" in self.extra:
+            config_payload = self.fsp.strategy.get_configuration(self.extra["config_key"])
             payload.update(config_payload)
         return payload
 
