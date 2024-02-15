@@ -1,3 +1,5 @@
+import random
+
 from constance import config
 from django_fsm import TransitionNotAllowed
 from zeep.helpers import serialize_object
@@ -14,10 +16,13 @@ def create_validation_payload(hope_payload):
     for key in ["first_name", "last_name", "amount", "destination_country", "destination_currency"]:
         if key not in hope_payload.keys():
             raise PayloadMissingKey("{} is missing in the payload".format(key))
+
+    counter_ids = hope_payload.get("counter_id", "N/A")
+    counter_id = random.choice(counter_ids) if isinstance(counter_ids, list) else counter_ids
     frm = {
         "identifier": hope_payload.get("identifier", "N/A"),
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
-        "counter_id": hope_payload.get("counter_id", "N/A"),
+        "counter_id": counter_id,
     }
     receiver = {
         "name": {"first_name": hope_payload["first_name"], "last_name": hope_payload["last_name"], "name_type": "D"},
@@ -130,7 +135,10 @@ def send_money(hope_payload):
         pr.save()
         return pr
 
-    extra_data = {key: smv_payload[key] for key in ["instant_notification", "mtcn", "new_mtcn", "financials"]}
+    extra_data = {
+        key: smv_payload[key]
+        for key in ["foreign_remote_system", "instant_notification", "mtcn", "new_mtcn", "financials"]
+    }
     log_data = extra_data.copy()
     log_data["record_code"] = hope_payload["payment_record_code"]
     log_data.pop("financials")
