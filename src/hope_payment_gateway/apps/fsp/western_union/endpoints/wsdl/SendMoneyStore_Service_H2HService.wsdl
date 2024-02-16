@@ -39,8 +39,11 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="SendMoneyStore_Service_H2H">
-    <wsdl:port binding="tns:SendMoneyStore_H2H_MSetSOAP_HTTP_Binding" name="SOAP_HTTP_Port">
+    <wsdl:port binding="tns:SendMoneyStore_H2H_MSetSOAP_HTTP_Binding" name="SOAP_HTTP_Port_uat">
       <soap:address location="https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H"/>
+    </wsdl:port>
+    <wsdl:port binding="tns:SendMoneyStore_H2H_MSetSOAP_HTTP_Binding" name="SOAP_HTTP_Port_prd">
+      <soap:address location="https://wugateway2.westernunion.com/SendMoneyStore_Service_H2H"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

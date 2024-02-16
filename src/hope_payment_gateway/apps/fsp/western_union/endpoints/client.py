@@ -23,12 +23,18 @@ class WesternUnionClient:
         self.client = Client(wsdl, transport=transport, settings=settings)
         self.client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
-    def response_context(self, service_name, payload, address=None):
+    def response_context(self, service_name, payload, wsdl_name=None, port=None):
         response = ""
         error = ""
         format = "string"
         try:
-            service = getattr(self.client.service, service_name)
+            if wsdl_name and port:
+                client_binded = self.client.bind(wsdl_name, port)
+            else:
+                client_binded = self.client.service
+            service = getattr(client_binded, service_name)
+        except ValueError as exc:
+            return {"title": str(exc), "code": 400}
         except AttributeError as exc:
             return {"title": str(exc), "code": 500}
         try:
