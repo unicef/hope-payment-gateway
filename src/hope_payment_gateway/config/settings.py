@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from . import env
 
@@ -267,7 +268,7 @@ if SENTRY_DSN:  # pragma: no cover
         # by default this is False, must be set to True so the library attaches the request data to the event
         send_default_pii=True,
         enable_tracing=True,
-        integrations=[DjangoIntegration(), CeleryIntegration()],
+        integrations=[DjangoIntegration(), CeleryIntegration(), LoggingIntegration()],
         environment=env("SENTRY_ENVIRONMENT", default=None),
     )
 
