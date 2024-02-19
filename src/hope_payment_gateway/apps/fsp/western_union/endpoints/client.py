@@ -50,7 +50,7 @@ class WesternUnionClient:
             response = etree_to_string(exc.detail)
             try:
                 error = exc.detail.xpath("//error/text()")[0]
-            except BaseException:
+            except BaseException:  # noqa: B036
                 error = "generic error"
             code = 400
             logger.exception(exc)
