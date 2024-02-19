@@ -1,7 +1,9 @@
 import random
 
+import phonenumbers
 from constance import config
 from django_fsm import TransitionNotAllowed
+from phonenumbers.phonenumberutil import NumberParseException
 from zeep.helpers import serialize_object
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
@@ -24,13 +26,22 @@ def create_validation_payload(hope_payload):
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
         "counter_id": counter_id,
     }
+    raw_phone_no = hope_payload.get("phone_no", "N/A")
+    try:
+        phone_no = phonenumbers.parse(raw_phone_no, None)
+        phone_number = phone_no.national_number
+        country_code = phone_no.country_code
+    except NumberParseException:
+        phone_number = raw_phone_no
+        country_code = None
+
     receiver = {
         "name": {"first_name": hope_payload["first_name"], "last_name": hope_payload["last_name"], "name_type": "D"},
-        "contact_phone": hope_payload.get("phone_no", "N/A"),
+        "contact_phone": phone_number,
         "mobile_phone": {
             "phone_number": {
-                "country_code": None,
-                "national_number": hope_payload.get("phone_no", "N/A"),
+                "country_code": country_code,
+                "national_number": phone_number,
             },
         },
         "reason_for_sending": hope_payload.get("reason_for_sending", None),

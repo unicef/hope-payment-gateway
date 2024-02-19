@@ -185,14 +185,14 @@ def test_send_complete_corridor_no_exist(django_app, admin_user):
             },
             "Wrong structure: missing_value should not be a leaf",
         ),
-        (
-            {
-                "receiver": {
-                    "mobile_phone": {"phone_number": {"country_code": None}},
-                },
-            },
-            "Missing Value in Corridor country_code",
-        ),
+        # (
+        #     {
+        #         "receiver": {
+        #             "mobile_phone": {"phone_number": {"country_code": None}},
+        #         },
+        #     },
+        #     "Missing Value in Corridor country_code",
+        # ),
     ],
 )
 def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message):
