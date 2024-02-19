@@ -105,6 +105,7 @@ dependencies = [
     "newrelic",
     "natural-keys",
     "paramiko",
+    "phonenumbers",
     "pre-commit",
     "psycopg[binary]",
     "sentry-sdk",
