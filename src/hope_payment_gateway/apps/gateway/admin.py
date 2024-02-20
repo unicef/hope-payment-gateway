@@ -90,9 +90,12 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         queryset = PaymentRecord.objects.filter(parent=obj).select_related("parent__fsp")
 
         # hack to use the action
-        request.POST["action"] = 0
-        request.POST["_selected_action"] = list()
-        request.POST["select_across"] = "0"
+        post_dict = request.POST.copy()
+        post_dict["action"] = 0
+        post_dict["_selected_action"] = list()
+        post_dict["select_across"] = "0"
+
+        request.POST = post_dict
 
         return base_export(
             self,
