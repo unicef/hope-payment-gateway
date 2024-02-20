@@ -49,8 +49,11 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     def send_money(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         log = send_money(obj.get_payload())
-        loglevel = messages.SUCCESS if log.success else messages.ERROR
-        messages.add_message(request, loglevel, log.message)
+        if log is None:
+            messages.add_message(request, messages.ERROR, "Invalid record")
+        else:
+            loglevel = messages.SUCCESS if log.success else messages.ERROR
+            messages.add_message(request, loglevel, log.message)
 
     @view(html_attrs={"style": "background-color:yellow;color:blue"})
     def search_request(self, request, pk) -> TemplateResponse:

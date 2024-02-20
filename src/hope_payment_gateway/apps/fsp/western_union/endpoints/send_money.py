@@ -123,7 +123,10 @@ def send_money_store(payload):
 
 def send_money(hope_payload):
     record_code = hope_payload["payment_record_code"]
-    pr = PaymentRecord.objects.get(record_code=record_code, status=PaymentRecord.PENDING)
+    try:
+        pr = PaymentRecord.objects.get(record_code=record_code, status=PaymentRecord.PENDING)
+    except PaymentRecord.DoesNotExist:
+        return None
 
     try:
         payload = create_validation_payload(hope_payload)
