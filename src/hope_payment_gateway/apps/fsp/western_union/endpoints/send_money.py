@@ -53,8 +53,8 @@ def create_validation_payload(hope_payload):
     payment_details = {
         "recording_country_currency": {  # sending country
             "iso_code": {
-                "country_code": "US",
-                "currency_code": "USD",
+                "country_code": hope_payload.get("origination_country", "US"),
+                "currency_code": hope_payload.get("origination_currency", "USD"),
             },
         },
         "destination_country_currency": {  # destination
@@ -65,8 +65,8 @@ def create_validation_payload(hope_payload):
         },
         "originating_country_currency": {  # sending country
             "iso_code": {
-                "country_code": "US",
-                "currency_code": "USD",
+                "country_code": hope_payload.get("origination_country", "US"),
+                "currency_code": hope_payload.get("origination_currency", "USD"),
             },
         },
         "transaction_type": hope_payload.get("transaction_type", WMF),
