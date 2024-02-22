@@ -55,8 +55,11 @@
 		</operation>
 	</binding>
 	<wsdl:service name="NisNotification">
-		<wsdl:port name="NisNotificationSOAP" binding="tns:NisNotificationSOAP_HTTP_Binding">
+		<wsdl:port name="NisNotificationSOAP_uat" binding="tns:NisNotificationSOAP_HTTP_Binding">
 			<soap:address location="https://wugateway2pi.westernunion.com/NisNotification/"/>
+		</wsdl:port>
+		<wsdl:port name="NisNotificationSOAP_prd" binding="tns:NisNotificationSOAP_HTTP_Binding">
+			<soap:address location="https://wugateway2.westernunion.com/NisNotification/"/>
 		</wsdl:port>
 	</wsdl:service>
 </definitions>

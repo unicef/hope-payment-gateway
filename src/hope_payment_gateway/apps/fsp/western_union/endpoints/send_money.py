@@ -112,13 +112,19 @@ def create_validation_payload(hope_payload):
 
 
 def send_money_validation(payload):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
-    return client.response_context("sendmoneyValidation", payload)
+    return client.response_context(
+        "sendmoneyValidation", payload, "SendmoneyValidation_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+    )
 
 
 def send_money_store(payload):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     client = WesternUnionClient("SendMoneyStore_Service_H2HService.wsdl")
-    return client.response_context("SendMoneyStore_H2H", payload)
+    return client.response_context(
+        "SendMoneyStore_H2H", payload, "SendMoneyStore_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+    )
 
 
 def send_money(hope_payload):

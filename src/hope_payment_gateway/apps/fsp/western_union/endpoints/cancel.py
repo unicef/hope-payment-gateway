@@ -1,9 +1,12 @@
+from constance import config
+
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import WIC, agent, unicef
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 
 def search_request(frm, mtcn):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     partner_notification = {"partner_notification": {"notification_requested": "Y"}}
     payload = {
         "device": agent,
@@ -19,10 +22,11 @@ def search_request(frm, mtcn):
         "partner_info_buffer": partner_notification,
     }
     client = WesternUnionClient("Search_Service_H2HServiceService.wsdl")
-    return client.response_context("Search", payload)
+    return client.response_context("Search", payload, "Search_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def cancel_request(frm, mtcn, database_key, reason=WIC):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "device": agent,
         "channel": unicef,
@@ -35,7 +39,7 @@ def cancel_request(frm, mtcn, database_key, reason=WIC):
     }
 
     client = WesternUnionClient("CancelSend_Service_H2HService.wsdl")
-    return client.response_context("CancelSend", payload)
+    return client.response_context("CancelSend", payload, "CancelSend_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def cancel(pk):
