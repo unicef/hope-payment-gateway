@@ -5,6 +5,8 @@ from django.template.response import TemplateResponse
 from admin_extra_buttons.decorators import button, choice, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
+from adminfilters.autocomplete import AutoCompleteFilter
+from adminfilters.mixin import AdminFiltersMixin
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
@@ -22,9 +24,13 @@ from hope_payment_gateway.apps.gateway.models import (
 
 
 @admin.register(PaymentRecord)
-class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("record_code", "parent", "status", "message", "success", "remote_id")
-    list_filter = ("record_code", "status", "success")
+    list_filter = (
+        ("parent", AutoCompleteFilter),
+        "status",
+        "success",
+    )
     search_fields = ("transaction_id", "message")
     # readonly_fields = ("extra_data", )
 
