@@ -108,9 +108,9 @@ class PaymentRecord(TimeStampedModel):
         (ERROR, "Error"),
     )
 
-    remote_id = models.CharField(max_length=255, db_index=True, unique=True)
+    remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
-    record_code = models.CharField(max_length=64)
+    record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
     fsp_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)  # Western Union MTCN
     success = models.BooleanField(null=True, blank=True)
     status = FSMField(default=PENDING, protected=False, db_index=True, choices=STATUSES)
