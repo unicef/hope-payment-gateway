@@ -16,8 +16,8 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 def create_validation_payload(hope_payload):
     for key in ["first_name", "last_name", "amount", "destination_country", "destination_currency"]:
-        if key not in hope_payload.keys():
-            raise PayloadMissingKey("{} is missing in the payload".format(key))
+        if not (key in hope_payload.keys() and hope_payload[key]):
+            raise PayloadMissingKey("InvalidPayload: {} is missing in the payload".format(key))
 
     counter_ids = hope_payload.get("counter_id", "N/A")
     counter_id = random.choice(counter_ids) if isinstance(counter_ids, list) else counter_ids

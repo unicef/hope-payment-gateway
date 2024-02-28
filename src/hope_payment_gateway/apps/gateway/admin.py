@@ -47,9 +47,13 @@ class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
-        payload = create_validation_payload(payload)
-        context.update(send_money_validation(payload))
-        return TemplateResponse(request, "western_union.html", context)
+        try:
+            payload = create_validation_payload(payload)
+            context.update(send_money_validation(payload))
+            return TemplateResponse(request, "western_union.html", context)
+        except BaseException as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return obj
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def send_money(self, request, pk) -> TemplateResponse:
