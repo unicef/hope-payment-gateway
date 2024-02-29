@@ -60,7 +60,7 @@ class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         log = send_money(obj.get_payload())
         if log is None:
-            messages.add_message(request, messages.ERROR, "Invalid record")
+            messages.add_message(request, messages.ERROR, "Invalid record: Invalid status")
         else:
             loglevel = messages.SUCCESS if log.success else messages.ERROR
             messages.add_message(request, loglevel, log.message)
