@@ -28,9 +28,10 @@ class WesternUnionApi(APIView):
 
 class NisNotificationView(WesternUnionApi):
     def get(self, request):
-        payload = request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
-            "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
-        ]
+        payload = {"western_union": "this is 200, not an error"}
+        # request.data["{http://schemas.xmlsoap.org/soap/envelope/}Body"][
+        #     "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
+        # ]
 
         return Response(payload)
 
