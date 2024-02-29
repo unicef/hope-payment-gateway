@@ -14,6 +14,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
+from hope_payment_gateway.apps.fsp.western_union.exceptions import PayloadMissingKey
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
@@ -51,7 +52,7 @@ class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin)
             payload = create_validation_payload(payload)
             context.update(send_money_validation(payload))
             return TemplateResponse(request, "western_union.html", context)
-        except BaseException as e:
+        except PayloadMissingKey as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
