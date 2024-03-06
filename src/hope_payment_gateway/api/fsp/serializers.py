@@ -78,6 +78,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "fsp_code",
             "parent",
             "status",
+            "message",
             "hope_status",
             "extra_data",
         )
