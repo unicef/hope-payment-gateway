@@ -63,8 +63,8 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "ERROR": "Transaction Erroneous",
             "TRANSFERRED_TO_BENEFICIARY": "Distribution Successful",
             "CANCELLED": "Force failed",
-            "REFUND": "REFUND",
-            "PURGED": "Force failed",
+            "REFUND": "Force failed",
+            "PURGED": "Not Distributed",
         }[obj.status]
 
     class Meta:
@@ -78,6 +78,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "fsp_code",
             "parent",
             "status",
+            "message",
             "hope_status",
             "extra_data",
         )

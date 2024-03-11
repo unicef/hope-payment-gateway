@@ -72,6 +72,7 @@ class PaymentInstructionFactory(factory.django.DjangoModelFactory):
 
 class PaymentRecordFactory(factory.django.DjangoModelFactory):
     remote_id = fuzzy.FuzzyText()
+    record_code = fuzzy.FuzzyText()
     parent = factory.SubFactory(PaymentInstructionFactory)
 
     class Meta:

@@ -1,6 +1,6 @@
+import logging
 from pathlib import Path
 
-import sentry_sdk
 from requests import Session
 from zeep import Client, Settings
 from zeep.exceptions import Fault, TransportError
@@ -8,6 +8,8 @@ from zeep.transports import Transport
 from zeep.wsdl.utils import etree_to_string
 
 from hope_payment_gateway.config.settings import WESTERN_UNION_CERT, WESTERN_UNION_KEY
+
+logger = logging.getLogger(__name__)
 
 
 class WesternUnionClient:
@@ -21,12 +23,18 @@ class WesternUnionClient:
         self.client = Client(wsdl, transport=transport, settings=settings)
         self.client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
-    def response_context(self, service_name, payload, address=None):
+    def response_context(self, service_name, payload, wsdl_name=None, port=None):
         response = ""
         error = ""
         format = "string"
         try:
-            service = getattr(self.client.service, service_name)
+            if wsdl_name and port:
+                client_binded = self.client.bind(wsdl_name, port)
+            else:
+                client_binded = self.client.service
+            service = getattr(client_binded, service_name)
+        except ValueError as exc:
+            return {"title": str(exc), "code": 400}
         except AttributeError as exc:
             return {"title": str(exc), "code": 500}
         try:
@@ -37,21 +45,21 @@ class WesternUnionClient:
         except TransportError as exc:
             title = f"{exc.message} [{exc.status_code}]"
             code = 400
-            sentry_sdk.capture_exception(exc)
+            logger.exception(exc)
         except TypeError as exc:
             title = "Invalid Payload"
             code = 400
             error = str(exc)
-            sentry_sdk.capture_exception(exc)
+            logger.exception(exc)
         except Fault as exc:
             title = f"{exc.message} [{exc.code}]"
             response = etree_to_string(exc.detail)
             try:
                 error = exc.detail.xpath("//error/text()")[0]
-            except BaseException:
+            except BaseException:  # noqa: B036
                 error = "generic error"
             code = 400
-            sentry_sdk.capture_exception(exc)
+            logger.exception(exc)
 
         return {"title": title, "content": response, "format": format, "code": code, "error": error}
 

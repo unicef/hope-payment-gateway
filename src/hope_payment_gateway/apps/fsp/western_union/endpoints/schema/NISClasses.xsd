@@ -248,7 +248,7 @@
   </xsd:complexType>
   <xsd:complexType name="mobile_phone">
     <xsd:sequence>
-      <xsd:element name="phone_number" type="xrsi:international_phone_number"/>
+      <xsd:element minOccurs="0" name="phone_number" type="xrsi:international_phone_number"/>
       <xsd:element minOccurs="0" name="identity" type="xrsi:mobile_phone_identity"/>
     </xsd:sequence>
   </xsd:complexType>

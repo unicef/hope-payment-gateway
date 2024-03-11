@@ -1,14 +1,12 @@
+from constance import config
+
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import WIC, agent, unicef
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 
-def search_request(hope_payload, mtcn):
-    frm = {
-        "identifier": hope_payload.get("identifier", "N/A"),
-        "reference_no": hope_payload.get("payment_record_code", "N/A"),
-        "counter_id": hope_payload.get("counter_id", "US125QCUSD1T"),
-    }
+def search_request(frm, mtcn):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     partner_notification = {"partner_notification": {"notification_requested": "Y"}}
     payload = {
         "device": agent,
@@ -24,16 +22,11 @@ def search_request(hope_payload, mtcn):
         "partner_info_buffer": partner_notification,
     }
     client = WesternUnionClient("Search_Service_H2HServiceService.wsdl")
-    return client.response_context("Search", payload)
+    return client.response_context("Search", payload, "Search_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
-def cancel_request(hope_payload, mtcn, database_key, reason=WIC):
-    frm = {
-        "identifier": hope_payload.get("identifier", "N/A"),
-        "reference_no": hope_payload.get("payment_record_code", "N/A"),
-        "counter_id": hope_payload.get("counter_id", "N/A"),
-    }
-
+def cancel_request(frm, mtcn, database_key, reason=WIC):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "device": agent,
         "channel": unicef,
@@ -46,12 +39,14 @@ def cancel_request(hope_payload, mtcn, database_key, reason=WIC):
     }
 
     client = WesternUnionClient("CancelSend_Service_H2HService.wsdl")
-    return client.response_context("CancelSend", payload)
+    return client.response_context("CancelSend", payload, "CancelSend_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
-def cancel(pk, mtcn):
+def cancel(pk):
     pr = PaymentRecord.objects.get(pk=pk)
-    response = search_request(pr.get_payload(), mtcn)
+    mtcn = pr.extra_data.get("mtcn", None)
+    frm = pr.extra_data.get("foreign_remote_system", None)
+    response = search_request(frm, mtcn)
     payload = response["content"]
     try:
         database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
@@ -64,7 +59,7 @@ def cancel(pk, mtcn):
         pr.save()
         return pr
 
-    response = cancel_request(pr.get_payload(), mtcn, database_key)
+    response = cancel_request(frm, mtcn, database_key)
     extra_data = {"db_key": database_key, "mtcn": mtcn}
 
     if response["code"] == 200:

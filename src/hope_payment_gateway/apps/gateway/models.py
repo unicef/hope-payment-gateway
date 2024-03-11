@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 from django_fsm import FSMField, transition
 from model_utils.models import TimeStampedModel
@@ -82,8 +83,8 @@ class PaymentInstruction(TimeStampedModel):
 
     def get_payload(self):
         payload = self.payload.copy()
-        if "business_area" in self.extra:
-            config_payload = self.fsp.strategy.get_configuration(self.extra["business_area"])
+        if "config_key" in self.extra:
+            config_payload = self.fsp.strategy.get_configuration(self.extra["config_key"])
             payload.update(config_payload)
         return payload
 
@@ -107,9 +108,9 @@ class PaymentRecord(TimeStampedModel):
         (ERROR, "Error"),
     )
 
-    remote_id = models.CharField(max_length=255, db_index=True, unique=True)
+    remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
-    record_code = models.CharField(max_length=64)
+    record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
     fsp_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)  # Western Union MTCN
     success = models.BooleanField(null=True, blank=True)
     status = FSMField(default=PENDING, protected=False, db_index=True, choices=STATUSES)

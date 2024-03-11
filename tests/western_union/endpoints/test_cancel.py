@@ -11,9 +11,25 @@ from ...factories import PaymentRecordFactory
 def test_search_request(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_request.yaml")
-    ref_no, mtcn = "Y3snz233UkGt1Gw4", "0352466394"
-    pr = PaymentRecordFactory(record_code=ref_no, extra_data={"mtcn": mtcn})
-    resp = search_request(pr.get_payload(), mtcn)
+    ref_no, mtcn, frm = (
+        "Y3snz233UkGt1Gw4",
+        "0352466394",
+        {
+            "identifier": "IDENTIFIER",
+            "reference_no": "REFNO",
+            "counter_id": "COUNTER",
+            "operator_id": None,
+            "partnership_indicator": None,
+        },
+    )
+    PaymentRecordFactory(
+        record_code=ref_no,
+        extra_data={
+            "mtcn": mtcn,
+            "foreign_remote_system": frm,
+        },
+    )
+    resp = search_request(frm, mtcn)
     assert (resp["title"], resp["code"]) == ("Search", 200)
 
 
@@ -23,9 +39,21 @@ def test_cancel(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2HServiceService")
     responses.patch("https://wugateway2pi.westernunion.com/CancelSend_Service_H2HService")
     responses._add_from_file(file_path="tests/western_union/endpoints/cancel.yaml")
-    mtcn = "0352466394"
-    pl = PaymentRecordFactory(extra_data={"mtcn": mtcn}, status=PaymentRecord.TRANSFERRED_TO_FSP)
-    cancel(pl.pk, mtcn)
+    mtcn, frm = "0352466394", {
+        "identifier": "IDENTIFIER",
+        "reference_no": "REFNO",
+        "counter_id": "COUNTER",
+        "operator_id": None,
+        "partnership_indicator": None,
+    }
+    pl = PaymentRecordFactory(
+        extra_data={
+            "mtcn": mtcn,
+            "foreign_remote_system": frm,
+        },
+        status=PaymentRecord.TRANSFERRED_TO_FSP,
+    )
+    cancel(pl.pk)
     pl.refresh_from_db()
     assert pl.message, pl.success == ("Cancelled", True)
 
@@ -34,9 +62,8 @@ def test_cancel(django_app, admin_user):
 def test_search_ko(django_app, admin_user):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_ko.yaml")
-    mtcn = "6022825782"
     pl = PaymentRecordFactory()
-    cancel(pl.pk, mtcn)
+    cancel(pl.pk)
     pl.refresh_from_db()
     assert pl.message == "Search Error: No Money Transfer Key"
     assert not pl.success

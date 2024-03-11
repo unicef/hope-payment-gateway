@@ -5,6 +5,8 @@ from django.template.response import TemplateResponse
 from admin_extra_buttons.decorators import button, choice, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
+from adminfilters.autocomplete import AutoCompleteFilter
+from adminfilters.mixin import AdminFiltersMixin
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
@@ -12,6 +14,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
+from hope_payment_gateway.apps.fsp.western_union.exceptions import PayloadMissingKey
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
@@ -22,17 +25,21 @@ from hope_payment_gateway.apps.gateway.models import (
 
 
 @admin.register(PaymentRecord)
-class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("record_code", "status", "message", "success", "remote_id")
-    list_filter = ("record_code", "status", "success")
-    search_fields = ("transaction_id", "message")
+class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = ("record_code", "fsp_code", "parent", "status", "message", "success", "remote_id")
+    list_filter = (
+        ("parent", AutoCompleteFilter),
+        "status",
+        "success",
+    )
+    search_fields = ("record_code", "fsp_code", "message")
     # readonly_fields = ("extra_data", )
 
     actions = [export_as_template]
 
     @choice(change_list=False)
-    def primitives(self, button):
-        button.choices = [self.send_money_validation, self.search_request]
+    def western_union(self, button):
+        button.choices = [self.send_money_validation, self.send_money, self.search_request, self.cancel]
         return button
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"})
@@ -41,16 +48,23 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
-        payload = create_validation_payload(payload)
-        context.update(send_money_validation(payload))
-        return TemplateResponse(request, "western_union.html", context)
+        try:
+            payload = create_validation_payload(payload)
+            context.update(send_money_validation(payload))
+            return TemplateResponse(request, "western_union.html", context)
+        except PayloadMissingKey as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return obj
 
-    @button()
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def send_money(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         log = send_money(obj.get_payload())
-        loglevel = messages.SUCCESS if log.success else messages.ERROR
-        messages.add_message(request, loglevel, log.message)
+        if log is None:
+            messages.add_message(request, messages.ERROR, "Invalid record: Invalid status")
+        else:
+            loglevel = messages.SUCCESS if log.success else messages.ERROR
+            messages.add_message(request, loglevel, log.message)
 
     @view(html_attrs={"style": "background-color:yellow;color:blue"})
     def search_request(self, request, pk) -> TemplateResponse:
@@ -58,17 +72,18 @@ class PaymentRecordAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-            context.update(search_request(obj.get_payload(), mtcn))
+            frm = obj.extra_data.get("foreign_remote_system", None)
+            context.update(search_request(frm, mtcn))
             return TemplateResponse(request, "western_union.html", context)
         messages.warning(request, "Missing MTCN")
 
-    @button()
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def cancel(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-        log = cancel(obj.pk, mtcn)
+        log = cancel(obj.pk)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
@@ -89,9 +104,12 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         queryset = PaymentRecord.objects.filter(parent=obj).select_related("parent__fsp")
 
         # hack to use the action
-        request.POST["action"] = 0
-        request.POST["_selected_action"] = list()
-        request.POST["select_across"] = "0"
+        post_dict = request.POST.copy()
+        post_dict["action"] = 0
+        post_dict["_selected_action"] = list()
+        post_dict["select_across"] = "0"
+
+        request.POST = post_dict
 
         return base_export(
             self,

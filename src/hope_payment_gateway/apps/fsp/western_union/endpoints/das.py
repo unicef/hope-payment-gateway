@@ -13,6 +13,7 @@ def create_usd():
 
 
 def das_countries_currencies():
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "name": "GetCountriesCurrencies",
         "channel": unicef,
@@ -23,10 +24,11 @@ def das_countries_currencies():
         },
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    return client.response_context("DAS_Service", payload)
+    return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_origination_currencies():
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "name": "GetOriginationCurrencies",
         "channel": unicef,
@@ -36,10 +38,11 @@ def das_origination_currencies():
         },
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    return client.response_context("DAS_Service", payload)
+    return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_destination_countries():
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "name": "GetDestinationCountries",
         "channel": unicef,
@@ -47,10 +50,11 @@ def das_destination_countries():
         "filters": {"queryfilter1": "en", "queryfilter2": "US USD"},
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    return client.response_context("DAS_Service", payload)
+    return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_destination_currencies(destination_country):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "name": "GetDestinationCurrencies",
         "channel": unicef,
@@ -62,10 +66,11 @@ def das_destination_currencies(destination_country):
         },
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    return client.response_context("DAS_Service", payload)
+    return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_delivery_services(destination_country, destination_currency):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "name": "GetDeliveryServices",
         "channel": unicef,
@@ -78,10 +83,11 @@ def das_delivery_services(destination_country, destination_currency):
         },
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    return client.response_context("DAS_Service", payload)
+    return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_delivery_option_template(destination_country, destination_currency, template_code):
+    wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "name": "GetDeliveryOptionTemplate",
         "channel": unicef,
@@ -94,4 +100,4 @@ def das_delivery_option_template(destination_country, destination_currency, temp
         },
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    return client.response_context("DAS_Service", payload)
+    return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
