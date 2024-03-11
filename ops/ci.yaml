@@ -3,21 +3,31 @@ trigger:
   branches:
     include:
     - develop
+    - master
 pr:
-  - develop
+- develop
+- master
 resources:
   - repo: self
 
 variables:
-  # ========================================================================
-  #                          Mandatory variables 
-  # ========================================================================
   Docker.backend.repository: "hope-payment-gateway"
-  Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
-  Docker.url: "uniappsakshopedev.azurecr.io"
   tag: $(Build.SourceVersion)
   additionalTag: $(Build.SourceBranchName)
-  pipelineId: 1143
+
+  ${{ if eq(variables['Build.SourceBranch'], 'develop') }}:
+    Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
+    Docker.url: "uniappsakshopedev.azurecr.io"
+    pipelineId: 1143
+  ${{ if eq(variables['Build.SourceBranch'], 'master') }}:
+    Docker.registryConnection: "ICTD-HOPE-PRD-ACR"
+    Docker.url: "uniappsakshopeprd.azurecr.io"
+    pipelineId: 1235
+  ${{ else }}:
+    Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
+    Docker.url: "uniappsakshopedev.azurecr.io"
+    pipelineId: null
+  
 
 
 stages:
