@@ -21,7 +21,7 @@ variables:
     pipelineId: 1143
   ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
     Docker.registryConnection: "ICTD-HOPE-PRD-ACR"
-    Docker.url: "uniappsakshopeprd.azurecr.io"
+    Docker.url: "uniappsakshope.azurecr.io"
     pipelineId: 1235
   ${{ else }}:
     Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
