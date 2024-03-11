@@ -15,11 +15,11 @@ variables:
   tag: $(Build.SourceVersion)
   additionalTag: $(Build.SourceBranchName)
 
-  ${{ if eq(variables['Build.SourceBranch'], 'develop') }}:
+  ${{ if eq(variables['Build.SourceBranchName'], 'develop') }}:
     Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
     Docker.url: "uniappsakshopedev.azurecr.io"
     pipelineId: 1143
-  ${{ if eq(variables['Build.SourceBranch'], 'master') }}:
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
     Docker.registryConnection: "ICTD-HOPE-PRD-ACR"
     Docker.url: "uniappsakshopeprd.azurecr.io"
     pipelineId: 1235
