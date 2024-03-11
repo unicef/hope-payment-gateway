@@ -153,6 +153,7 @@ def send_money(hope_payload):
     if response["code"] != 200:
         pr.message = f'Send Money Validation: {response["error"]}'
         pr.success = False
+        pr.fsp_code = smv_payload["new_mtcn"]
         if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
             pr.fail()
         pr.save()
