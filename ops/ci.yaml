@@ -21,11 +21,11 @@ variables:
     Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
     Docker.url: "uniappsakshopedev.azurecr.io"
     pipelineId: 1143
-  ${{ if eq(variables['Build.SourceBranchName'], 'staging') }}:
+  ${{ elseif eq(variables['Build.SourceBranchName'], 'staging') }}:
     Docker.registryConnection: "ICTD-HOPE-DEV-ACR"
     Docker.url: "uniappsakshopedev.azurecr.io"
     pipelineId: 1284
-  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+  ${{ elseif eq(variables['Build.SourceBranchName'], 'master') }}:
     Docker.registryConnection: "ICTD-HOPE-PRD-ACR"
     Docker.url: "uniappsakshope.azurecr.io"
     pipelineId: 1235
