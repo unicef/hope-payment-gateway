@@ -35,7 +35,7 @@ OPTIONAL = {
     "SECURE_SSL_REDIRECT": (bool, True),
     "SECURE_HSTS_PRELOAD": (bool, True),
     "SIGNING_BACKEND": (str, "django.core.signing.TimestampSigner"),
-    "STATIC_FILE_STORAGE": (str, "django.contrib.staticfiles.storage.StaticFilesStorage"),
+    "STATIC_FILE_STORAGE": (str, "hope_payment_gateway.apps.core.storage.StaticStorage"),
     "MEDIA_URL": (str, "/media/"),
     "MEDIA_ROOT": (str, "/tmp/media/"),
     "SENTRY_DSN": (str, ""),
