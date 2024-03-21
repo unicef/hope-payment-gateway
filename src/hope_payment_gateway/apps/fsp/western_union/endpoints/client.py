@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+from lxml import etree
 from requests import Session
 from zeep import Client, Settings
 from zeep.exceptions import Fault, TransportError
@@ -64,4 +65,6 @@ class WesternUnionClient:
         return {"title": title, "content": response, "format": format, "code": code, "error": error}
 
     def prepare(self, service_name, payload):
-        return self.client.create_message(self.client.service, service_name, **payload)
+        node = self.client.create_message(self.client.service, service_name, **payload)
+        data = etree.tostring(node, pretty_print=True, with_tail=True).decode()
+        return node, data

@@ -1,7 +1,6 @@
 from django.http import HttpResponse
 
 from django_fsm import TransitionNotAllowed
-from lxml import etree
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
@@ -112,6 +111,5 @@ class NisNotificationView(WesternUnionApi):
         payload["ack_message"] = "Acknowledged"
 
         client = WesternUnionClient("NisNotification.wsdl")
-        node = client.prepare("NotifServiceReply", payload)
-        data = etree.tostring(node, pretty_print=True, with_tail=True).decode()
+        _, data = client.prepare("NotifServiceReply", payload)
         return data

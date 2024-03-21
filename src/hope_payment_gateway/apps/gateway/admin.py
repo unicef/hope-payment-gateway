@@ -7,8 +7,10 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
+from lxml import etree
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
+from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     create_validation_payload,
     send_money,
@@ -39,8 +41,31 @@ class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin)
 
     @choice(change_list=False)
     def western_union(self, button):
-        button.choices = [self.send_money_validation, self.send_money, self.search_request, self.cancel]
+        button.choices = [
+            self.prepare_payload,
+            self.send_money_validation,
+            self.send_money,
+            self.search_request,
+            self.cancel,
+        ]
         return button
+
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
+    def prepare_payload(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        obj = PaymentRecord.objects.get(pk=pk)
+        payload = obj.get_payload()
+        try:
+            payload = create_validation_payload(payload)
+            client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
+            _, data = client.prepare("sendmoneyValidation", payload)
+            context["title"] = "Payload"
+            context["content"] = data
+            return TemplateResponse(request, "western_union.html", context)
+
+        except PayloadMissingKey as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return obj
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"})
     def send_money_validation(self, request, pk) -> TemplateResponse:
