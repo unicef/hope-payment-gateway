@@ -26,7 +26,7 @@ def create_validation_payload(hope_payload):
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
         "counter_id": counter_id,
     }
-    raw_phone_no = hope_payload.get("phone_number", "N/A")
+    raw_phone_no = hope_payload.get("phone_no", "N/A")
     try:
         phone_no = phonenumbers.parse(raw_phone_no, None)
         phone_number = phone_no.national_number
