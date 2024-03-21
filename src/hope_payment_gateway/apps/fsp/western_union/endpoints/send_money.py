@@ -7,7 +7,7 @@ from phonenumbers.phonenumberutil import NumberParseException
 from zeep.helpers import serialize_object
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.endpoints.config import MONEY_IN_TIME, WMF, sender, unicef, web
+from hope_payment_gateway.apps.fsp.western_union.endpoints.config import MONEY_IN_TIME, WALLET, WMF, sender, unicef, web
 from hope_payment_gateway.apps.fsp.western_union.endpoints.helpers import integrate_payload
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException, PayloadMissingKey
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
@@ -26,7 +26,7 @@ def create_validation_payload(hope_payload):
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
         "counter_id": counter_id,
     }
-    raw_phone_no = hope_payload.get("phone_no", "N/A")
+    raw_phone_no = hope_payload.get("phone_number", "N/A")
     try:
         phone_no = phonenumbers.parse(raw_phone_no, None)
         phone_number = phone_no.national_number
@@ -92,10 +92,10 @@ def create_validation_payload(hope_payload):
         "delivery_services": delivery_services,
         "foreign_remote_system": frm,
         "partner_info_buffer": partner_notification,
-        "wallet_details": {"service_provider_code": None},
+        "wallet_details": {"service_provider_code": hope_payload.get("service_provider_code", None)},
     }
 
-    if "corridor" in hope_payload:
+    if "delivery_services_code" in hope_payload and hope_payload["delivery_services_code"] == WALLET:
         try:
             country = hope_payload["destination_country"]
             currency = hope_payload["destination_currency"]

@@ -7,7 +7,6 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
-from lxml import etree
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
@@ -16,7 +15,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.fsp.western_union.exceptions import PayloadMissingKey
+from hope_payment_gateway.apps.fsp.western_union.exceptions import PayloadException
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
@@ -63,7 +62,7 @@ class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin)
             context["content"] = data
             return TemplateResponse(request, "western_union.html", context)
 
-        except PayloadMissingKey as e:
+        except PayloadException as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
@@ -77,7 +76,7 @@ class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin)
             payload = create_validation_payload(payload)
             context.update(send_money_validation(payload))
             return TemplateResponse(request, "western_union.html", context)
-        except PayloadMissingKey as e:
+        except PayloadException as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
