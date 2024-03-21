@@ -116,8 +116,7 @@ def test_send_complete_corridor(django_app, admin_user):
         "destination_currency": "EUR",
         "duplication_enabled": "D",
         "amount": 199900,
-        "delivery_services_code": "000",
-        "corridor": "yes",
+        "delivery_services_code": "800",
         "reason_for_sending": "P012",
     }
     CorridorFactory(
@@ -151,8 +150,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user):
         "destination_currency": "EUR",
         "duplication_enabled": "D",
         "amount": 199900,
-        "delivery_services_code": "000",
-        "corridor": "yes",
+        "delivery_services_code": "800",
         "reason_for_sending": "P012",
     }
     pr = PaymentRecordFactory(record_code=record_code)
@@ -210,9 +208,8 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         "destination_currency": "EUR",
         "duplication_enabled": "D",
         "amount": 199900,
-        "delivery_services_code": "000",
+        "delivery_services_code": "800",
         "reason_for_sending": "AO12",
-        "corridor": "yes",
     }
     CorridorFactory(
         destination_country="ES",
