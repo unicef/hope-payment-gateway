@@ -1,5 +1,3 @@
-from django.http import HttpResponse
-
 from django_fsm import TransitionNotAllowed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -21,34 +19,31 @@ REJECT = "DVQRFB62"
 
 class WesternUnionApi(APIView):
     permission_classes = (IsAuthenticated,)
-    parser_classes = (XMLParser,)
     serializer_class = None
+
+
+class XMLViewMixin:
+    parser_classes = (XMLParser,)
     renderer_classes = (XMLRenderer,)
 
 
 class NisNotificationView(WesternUnionApi):
+    content_type = None
+
     @staticmethod
     def get_payload(request):
-        header = "{http://schemas.xmlsoap.org/soap/envelope/}Body"
-        secondary_header = "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
+        return request.data
 
-        try:
-            return request.data[header][secondary_header]
-        except KeyError:
-            if header in request.data:
-                key = secondary_header
-                keys = ", ".join(request.data[header].keys())
-            else:
-                key = header
-                keys = ", ".join(request.data.keys())
-            raise InvalidRequest(f"header {key} not in {keys}")
+    @staticmethod
+    def prepare_response(payload):  # TODO
+        return payload
 
     def get(self, request):
         try:
             payload = self.get_payload(request)
         except InvalidRequest as e:
             return Response(
-                {"invalid_request": e},
+                {"invalid_request": str(e)},
                 status=HTTP_400_BAD_REQUEST,
             )
         return Response(payload)
@@ -58,7 +53,7 @@ class NisNotificationView(WesternUnionApi):
             payload = self.get_payload(request)
         except InvalidRequest as e:
             return Response(
-                {"invalid_request": e},
+                {"invalid_request": str(e)},
                 status=HTTP_400_BAD_REQUEST,
             )
         fsp_code = payload["transaction_id"]
@@ -100,16 +95,39 @@ class NisNotificationView(WesternUnionApi):
         pr.save()
 
         try:
-            resp = self.nic_acknowledge(payload)
+            for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
+                payload.pop(tag_name, None)
+            payload["ack_message"] = "Acknowledged"
+            resp = self.prepare_response(payload)
         except ValidationError as exp:
             return Response({"validation_error": str(exp)}, status=HTTP_400_BAD_REQUEST)
-        return HttpResponse(resp, content_type="application/xml")
+        return Response(resp)
 
-    def nic_acknowledge(self, payload):
-        for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
-            payload.pop(tag_name, None)
-        payload["ack_message"] = "Acknowledged"
 
+class NisNotificationJSONView(NisNotificationView):
+    pass
+
+
+class NisNotificationXMLView(XMLViewMixin, NisNotificationView):
+
+    @staticmethod
+    def get_payload(request):
+        header = "{http://schemas.xmlsoap.org/soap/envelope/}Body"
+        secondary_header = "{http://www.westernunion.com/schema/xrsi}nis-notification-request"
+
+        try:
+            return request.data[header][secondary_header]
+        except KeyError:
+            if header in request.data:
+                key = secondary_header
+                keys = ", ".join(request.data[header].keys())
+            else:
+                key = header
+                keys = ", ".join(request.data.keys())
+            raise InvalidRequest(f"header {key} not in {keys}")
+
+    @staticmethod
+    def prepare_response(payload):
         client = WesternUnionClient("NisNotification.wsdl")
         _, data = client.prepare("NotifServiceReply", payload)
         return data
