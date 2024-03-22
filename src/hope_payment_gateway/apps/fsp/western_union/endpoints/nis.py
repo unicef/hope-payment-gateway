@@ -1,3 +1,4 @@
+import sentry_sdk
 from django_fsm import TransitionNotAllowed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -6,7 +7,6 @@ from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 from rest_framework_xml.renderers import XMLRenderer
 from zeep.exceptions import ValidationError
-
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.exceptions import InvalidRequest
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
@@ -29,6 +29,10 @@ class XMLViewMixin:
 
 class NisNotificationView(WesternUnionApi):
     content_type = None
+
+    def dispatch(self, request, *args, **kwargs):
+        sentry_sdk.capture_message("Western Union Testing")
+        return super().dispatch(request, *args, **kwargs)
 
     @staticmethod
     def get_payload(request):
