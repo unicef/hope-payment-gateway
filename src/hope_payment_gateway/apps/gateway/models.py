@@ -10,7 +10,7 @@ from hope_payment_gateway.apps.gateway.registry import registry
 
 
 class FinancialServiceProvider(models.Model):
-    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
+    remote_id = models.CharField(max_length=255, db_index=True, unique=True)
     name = models.CharField(max_length=64, unique=True)
     vision_vendor_number = models.CharField(max_length=100, unique=True)
     strategy = StrategyField(registry=registry)
@@ -48,7 +48,7 @@ class PaymentInstruction(TimeStampedModel):
         (PROCESSED, "Processed"),
         (ABORTED, "Aborted"),
     )
-    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
+    remote_id = models.CharField(max_length=255, db_index=True, unique=True)
     unicef_id = models.CharField(max_length=255, db_index=True)
     status = FSMField(default=DRAFT, protected=False, db_index=True, choices=STATUSES)
     payload = models.JSONField(default=dict, null=True, blank=True)
