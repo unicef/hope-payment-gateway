@@ -1,3 +1,5 @@
+from django.http import HttpResponse
+
 import sentry_sdk
 from django_fsm import TransitionNotAllowed
 from rest_framework.permissions import IsAuthenticated
@@ -5,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
-from rest_framework_xml.renderers import XMLRenderer
 from zeep.exceptions import ValidationError
+
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.exceptions import InvalidRequest
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
@@ -24,7 +26,6 @@ class WesternUnionApi(APIView):
 
 class XMLViewMixin:
     parser_classes = (XMLParser,)
-    renderer_classes = (XMLRenderer,)
 
 
 class NisNotificationView(WesternUnionApi):
@@ -68,6 +69,7 @@ class NisNotificationView(WesternUnionApi):
         try:
             pr = PaymentRecord.objects.get(fsp_code=fsp_code)
         except PaymentRecord.DoesNotExist:
+            breakpoint()
             return Response(
                 {"cannot_find_transaction": f"Cannot find payment with reference {fsp_code}"},
                 status=HTTP_400_BAD_REQUEST,
@@ -105,7 +107,8 @@ class NisNotificationView(WesternUnionApi):
             resp = self.prepare_response(payload)
         except ValidationError as exp:
             return Response({"validation_error": str(exp)}, status=HTTP_400_BAD_REQUEST)
-        return Response(resp)
+        return HttpResponse(resp, content_type="application/xml")
+        # return Response(resp)
 
 
 class NisNotificationJSONView(NisNotificationView):

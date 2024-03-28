@@ -66,5 +66,5 @@ class WesternUnionClient:
 
     def prepare(self, service_name, payload):
         node = self.client.create_message(self.client.service, service_name, **payload)
-        data = etree.tostring(node, pretty_print=True, with_tail=True).decode()
+        data = etree.tostring(node, pretty_print=True, with_tail=True)
         return node, data
