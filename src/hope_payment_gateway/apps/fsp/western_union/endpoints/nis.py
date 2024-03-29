@@ -69,7 +69,6 @@ class NisNotificationView(WesternUnionApi):
         try:
             pr = PaymentRecord.objects.get(fsp_code=fsp_code)
         except PaymentRecord.DoesNotExist:
-            breakpoint()
             return Response(
                 {"cannot_find_transaction": f"Cannot find payment with reference {fsp_code}"},
                 status=HTTP_400_BAD_REQUEST,
