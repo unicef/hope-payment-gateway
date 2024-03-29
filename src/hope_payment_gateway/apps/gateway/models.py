@@ -58,6 +58,9 @@ class PaymentInstruction(TimeStampedModel):
     tag = models.CharField(null=True, blank=True)
     extra = models.JSONField(default=dict, null=True, blank=True)
 
+    class Meta:
+        unique_together = ("system", "remote_id")
+
     def __str__(self):
         return f"{self.unicef_id} - {self.status}"
 
