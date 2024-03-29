@@ -51,6 +51,19 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "extra",
         )
 
+    def create(self, validated_data):
+        try:
+            instance = PaymentInstruction.objects.get(
+                remote_id=validated_data["remote_id"], system=validated_data["system"]
+            )
+        except PaymentInstruction.DoesNotExist:
+            instance = None
+
+        if instance:
+            return super().update(instance, validated_data)
+        else:
+            return super().create(validated_data)
+
 
 class PaymentRecordLightSerializer(serializers.ModelSerializer):
     parent = serializers.ReadOnlyField(source="parent.remote_id")

@@ -44,11 +44,13 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["unicef_id", "remote_id"]
 
     def perform_create(self, serializer):
+
         try:
             owner = get_user_model().objects.get(apitoken=self.request.auth)
             system = System.objects.get(owner=owner)
         except System.DoesNotExist as exc:
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+
         serializer.save(system=system)
 
     def _change_status(self, status):
