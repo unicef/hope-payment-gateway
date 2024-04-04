@@ -43,7 +43,7 @@
       <soap:address location="https://wugateway2pi.westernunion.com/DAS_Service_H2H"/>
     </wsdl:port>
     <wsdl:port binding="tns:DASInquiry_H2H_SOAP_HTTP_Binding" name="SOAP_HTTP_Port_prd">
-      <soap:address location="https://wugateway2pi.westernunion.com/DAS_Service_H2H"/>
+      <soap:address location="https://wugateway2.westernunion.com/DAS_Service_H2H"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
