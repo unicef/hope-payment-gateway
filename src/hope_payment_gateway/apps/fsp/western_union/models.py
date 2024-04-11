@@ -10,3 +10,6 @@ class Corridor(models.Model):  # delivery mechanism
 
     def __str__(self):
         return f"{self.description} / {self.template_code}"
+
+    class Meta:
+        unique_together = ("destination_country", "destination_currency")

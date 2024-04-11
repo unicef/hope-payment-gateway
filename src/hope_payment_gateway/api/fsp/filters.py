@@ -1,6 +1,11 @@
 from django_filters import rest_framework as filters
 
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    FinancialServiceProviderConfig,
+    PaymentInstruction,
+    PaymentRecord,
+)
 
 
 class FinancialServiceProviderFilter(filters.FilterSet):
@@ -10,6 +15,15 @@ class FinancialServiceProviderFilter(filters.FilterSet):
             "remote_id": ["exact"],
             "name": ["exact"],
             "vision_vendor_number": ["exact"],
+        }
+
+
+class FinancialServiceProviderConfigFilter(filters.FilterSet):
+    class Meta:
+        model = FinancialServiceProviderConfig
+        fields = {
+            "key": ["exact"],
+            "fsp": ["exact"],
         }
 
 

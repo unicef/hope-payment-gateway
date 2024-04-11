@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Q
 
 from django_fsm import FSMField, transition
 from model_utils.models import TimeStampedModel
@@ -21,12 +20,13 @@ class FinancialServiceProvider(models.Model):
 
 
 class FinancialServiceProviderConfig(models.Model):
-    key = models.CharField(max_length=16, db_index=True)
+    key = models.CharField(max_length=16, db_index=True, unique=True)
+    label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.fsp} [{self.key}]"
+        return f"{self.fsp} [{self.label}]"
 
     class Meta:
         unique_together = ("key", "fsp")

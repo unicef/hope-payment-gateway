@@ -2,15 +2,16 @@ from typing import Any
 
 from rest_framework import serializers
 
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    FinancialServiceProviderConfig,
+    PaymentInstruction,
+    PaymentRecord,
+)
 
 
-class FinancialServiceProviderSerializer(serializers.ModelSerializer):
+class PayloadMixin:
     payload = serializers.SerializerMethodField()
-
-    class Meta:
-        model = FinancialServiceProvider
-        fields = ("id", "remote_id", "name", "vision_vendor_number", "configuration", "payload")
 
     def get_payload(self, obj: Any) -> Any:
         return {
@@ -32,6 +33,36 @@ class FinancialServiceProviderSerializer(serializers.ModelSerializer):
                 "phone_no": "optional: 63123123",
             },
         }
+
+
+class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = FinancialServiceProvider
+        fields = (
+            "id",
+            "remote_id",
+            "name",
+            "vision_vendor_number",
+            "configuration",
+        )
+
+
+class FinancialServiceProviderConfigSerializer(
+    PayloadMixin,
+    serializers.ModelSerializer,
+):
+
+    configuration = serializers.SerializerMethodField()
+
+    def get_configuration(self, obj: Any) -> Any:
+        for crypt in ["counter_id", "identificator"]:
+            obj.configuration.pop(crypt, None)
+        return obj.configuration
+
+    class Meta:
+        model = FinancialServiceProviderConfig
+        fields = "__all__"
 
 
 class PaymentInstructionSerializer(serializers.ModelSerializer):

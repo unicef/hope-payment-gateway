@@ -7,11 +7,13 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 from hope_api_auth.views import LoggingAPIViewSet
 from hope_payment_gateway.api.fsp.filters import (
+    FinancialServiceProviderConfigFilter,
     FinancialServiceProviderFilter,
     PaymentInstructionFilter,
     PaymentRecordFilter,
 )
 from hope_payment_gateway.api.fsp.serializers import (
+    FinancialServiceProviderConfigSerializer,
     FinancialServiceProviderSerializer,
     PaymentInstructionSerializer,
     PaymentRecordLightSerializer,
@@ -19,7 +21,12 @@ from hope_payment_gateway.api.fsp.serializers import (
 )
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    FinancialServiceProviderConfig,
+    PaymentInstruction,
+    PaymentRecord,
+)
 
 
 class ProtectedMixin:
@@ -33,6 +40,14 @@ class FinancialServiceProviderViewSet(ProtectedMixin, LoggingAPIViewSet):
 
     filterset_class = FinancialServiceProviderFilter
     search_fields = ["name", "vision_vendor_number", "remote_id"]
+
+
+class ConfigurationViewSet(ProtectedMixin, LoggingAPIViewSet):
+    serializer_class = FinancialServiceProviderConfigSerializer
+    queryset = FinancialServiceProviderConfig.objects.all()
+
+    filterset_class = FinancialServiceProviderConfigFilter
+    search_fields = ["description"]
 
 
 class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
