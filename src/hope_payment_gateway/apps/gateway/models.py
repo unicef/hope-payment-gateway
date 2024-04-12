@@ -7,6 +7,9 @@ from strategy_field.fields import StrategyField
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.registry import registry
 
+# class DeliveryMechanism(models.Model):
+#     name = models.CharField(max_length=128, unique=True)
+
 
 class FinancialServiceProvider(models.Model):
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
@@ -22,7 +25,7 @@ class FinancialServiceProvider(models.Model):
 class FinancialServiceProviderConfig(models.Model):
     key = models.CharField(max_length=16, db_index=True, unique=True)
     label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
-    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):

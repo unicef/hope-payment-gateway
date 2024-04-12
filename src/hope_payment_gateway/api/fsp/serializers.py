@@ -35,7 +35,28 @@ class PayloadMixin:
         }
 
 
+class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
+
+    # configuration = serializers.SerializerMethodField()
+    # def get_configuration(self, obj: Any) -> Any:
+    #     for crypt in ["counter_id", "identifier"]:
+    #         obj.configuration.pop(crypt, None)
+    #     return obj.configuration
+
+    class Meta:
+        model = FinancialServiceProviderConfig
+        fields = ("id", "fsp", "key", "label")
+
+
+class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FinancialServiceProviderConfig
+        fields = ("id", "key", "label")
+
+
 class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializer):
+    configs = FinancialServiceProviderConfigNestedSerializer(many=True, read_only=True)
 
     class Meta:
         model = FinancialServiceProvider
@@ -44,25 +65,8 @@ class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializ
             "remote_id",
             "name",
             "vision_vendor_number",
-            "configuration",
+            "configs",
         )
-
-
-class FinancialServiceProviderConfigSerializer(
-    PayloadMixin,
-    serializers.ModelSerializer,
-):
-
-    configuration = serializers.SerializerMethodField()
-
-    def get_configuration(self, obj: Any) -> Any:
-        for crypt in ["counter_id", "identificator"]:
-            obj.configuration.pop(crypt, None)
-        return obj.configuration
-
-    class Meta:
-        model = FinancialServiceProviderConfig
-        fields = "__all__"
 
 
 class PaymentInstructionSerializer(serializers.ModelSerializer):

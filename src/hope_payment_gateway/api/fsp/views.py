@@ -36,7 +36,7 @@ class ProtectedMixin:
 
 class FinancialServiceProviderViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = FinancialServiceProviderSerializer
-    queryset = FinancialServiceProvider.objects.all()
+    queryset = FinancialServiceProvider.objects.prefetch_related("configs")
 
     filterset_class = FinancialServiceProviderFilter
     search_fields = ["name", "vision_vendor_number", "remote_id"]
