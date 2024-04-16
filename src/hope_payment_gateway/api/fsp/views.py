@@ -7,12 +7,14 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 from hope_api_auth.views import LoggingAPIViewSet
 from hope_payment_gateway.api.fsp.filters import (
+    DeliveryMechanismFilter,
     FinancialServiceProviderConfigFilter,
     FinancialServiceProviderFilter,
     PaymentInstructionFilter,
     PaymentRecordFilter,
 )
 from hope_payment_gateway.api.fsp.serializers import (
+    DeliveryMechanismSerializer,
     FinancialServiceProviderConfigSerializer,
     FinancialServiceProviderSerializer,
     PaymentInstructionSerializer,
@@ -22,6 +24,7 @@ from hope_payment_gateway.api.fsp.serializers import (
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel
 from hope_payment_gateway.apps.gateway.models import (
+    DeliveryMechanism,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -32,6 +35,14 @@ from hope_payment_gateway.apps.gateway.models import (
 class ProtectedMixin:
     def destroy(self, request, pk=None):
         raise NotImplementedError
+
+
+class DeliveryMechanismViewSet(ProtectedMixin, LoggingAPIViewSet):
+    serializer_class = DeliveryMechanismSerializer
+    queryset = DeliveryMechanism.objects.all()
+
+    filterset_class = DeliveryMechanismFilter
+    search_fields = ["code", "name"]
 
 
 class FinancialServiceProviderViewSet(ProtectedMixin, LoggingAPIViewSet):

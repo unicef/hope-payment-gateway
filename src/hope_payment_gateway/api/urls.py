@@ -7,12 +7,13 @@ app_name = "api"
 
 router = DefaultRouter()
 
+router.register(r"delivery_mechanisms", views.DeliveryMechanismViewSet, basename="delivery_mechanism")
 router.register(r"fsp", views.FinancialServiceProviderViewSet, basename="fsp")
 router.register(r"payment_instructions", views.PaymentInstructionViewSet, basename="payment-instruction")
 router.register(r"payment_records", views.PaymentRecordViewSet, basename="payment-record")
 router.register(r"config", views.ConfigurationViewSet, basename="config")
 
-router.register(r"wu/corridors", wu_views.CorridorViewSet, basename="corridors")
+router.register(r"wu/corridors", wu_views.CorridorViewSet, basename="corridor")
 
 
 urlpatterns = router.urls

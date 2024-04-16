@@ -1,11 +1,22 @@
+import django_filters
 from django_filters import rest_framework as filters
 
 from hope_payment_gateway.apps.gateway.models import (
+    DeliveryMechanism,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
 )
+
+
+class DeliveryMechanismFilter(filters.FilterSet):
+    class Meta:
+        model = DeliveryMechanism
+        fields = {
+            "code": ["exact"],
+            "name": ["exact", "contains"],
+        }
 
 
 class FinancialServiceProviderFilter(filters.FilterSet):
@@ -19,11 +30,17 @@ class FinancialServiceProviderFilter(filters.FilterSet):
 
 
 class FinancialServiceProviderConfigFilter(filters.FilterSet):
+    delivery_mechanism_name = django_filters.CharFilter(
+        field_name="delivery_mechanism__name", lookup_expr="starts_with"
+    )
+    fsp_name = django_filters.CharFilter(field_name="fsp__name", lookup_expr="starts_with")
+
     class Meta:
         model = FinancialServiceProviderConfig
         fields = {
             "key": ["exact"],
             "fsp": ["exact"],
+            "delivery_mechanism": ["exact"],
         }
 
 
