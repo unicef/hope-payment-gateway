@@ -7,11 +7,16 @@ from strategy_field.fields import StrategyField
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.registry import registry
 
-# class DeliveryMechanism(models.Model):
-#     name = models.CharField(max_length=128, unique=True)
+
+class DeliveryMechanism(TimeStampedModel):
+    code = models.CharField(max_length=32, unique=True)
+    name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return f"{self.name} [{self.code}]"
 
 
-class FinancialServiceProvider(models.Model):
+class FinancialServiceProvider(TimeStampedModel):
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     name = models.CharField(max_length=64, unique=True)
     vision_vendor_number = models.CharField(max_length=100, unique=True)
@@ -26,13 +31,19 @@ class FinancialServiceProviderConfig(models.Model):
     key = models.CharField(max_length=16, db_index=True, unique=True)
     label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
+    delivery_mechanism = models.ForeignKey(
+        DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp", null=True, blank=True
+    )
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.fsp} [{self.label}]"
+        if self.delivery_mechanism:
+            return f"{self.fsp}/{self.delivery_mechanism} [{self.label}]"
+        else:
+            return f"{self.fsp} [{self.label}]"
 
     class Meta:
-        unique_together = ("key", "fsp")
+        unique_together = ("key", "fsp", "delivery_mechanism")
 
 
 class PaymentInstruction(TimeStampedModel):

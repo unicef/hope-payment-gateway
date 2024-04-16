@@ -18,6 +18,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
 from hope_payment_gateway.apps.fsp.western_union.exceptions import PayloadException
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
+    DeliveryMechanism,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -162,3 +163,12 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     )
     search_fields = ("remote_id", "name", "vision_vendor_number")
     inlines = (FinancialServiceProviderConfigInline,)
+
+
+@admin.register(DeliveryMechanism)
+class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = (
+        "code",
+        "name",
+    )
+    search_fields = ("code", "name")

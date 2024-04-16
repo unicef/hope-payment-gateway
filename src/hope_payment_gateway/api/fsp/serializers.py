@@ -3,6 +3,7 @@ from typing import Any
 from rest_framework import serializers
 
 from hope_payment_gateway.apps.gateway.models import (
+    DeliveryMechanism,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -35,24 +36,33 @@ class PayloadMixin:
         }
 
 
-class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
-
-    # configuration = serializers.SerializerMethodField()
-    # def get_configuration(self, obj: Any) -> Any:
-    #     for crypt in ["counter_id", "identifier"]:
-    #         obj.configuration.pop(crypt, None)
-    #     return obj.configuration
+class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
 
     class Meta:
-        model = FinancialServiceProviderConfig
-        fields = ("id", "fsp", "key", "label")
+        model = DeliveryMechanism
+        fields = (
+            "id",
+            "code",
+            "name",
+        )
 
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
+    delivery_mechanism_name = serializers.CharField(source="delivery_mechanism.name", allow_null=True)
 
     class Meta:
         model = FinancialServiceProviderConfig
-        fields = ("id", "key", "label")
+        fields = ("id", "key", "label", "delivery_mechanism", "delivery_mechanism_name")
+
+
+class FinancialServiceProviderLightSerializer(PayloadMixin, serializers.ModelSerializer):
+    class Meta:
+        model = FinancialServiceProvider
+        fields = (
+            "id",
+            "name",
+            "vision_vendor_number",
+        )
 
 
 class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializer):
@@ -66,6 +76,21 @@ class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializ
             "name",
             "vision_vendor_number",
             "configs",
+        )
+
+
+class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
+    fsp = FinancialServiceProviderLightSerializer()
+    delivery_mechanism = DeliveryMechanismSerializer()
+
+    class Meta:
+        model = FinancialServiceProviderConfig
+        fields = (
+            "id",
+            "key",
+            "label",
+            "fsp",
+            "delivery_mechanism",
         )
 
 
