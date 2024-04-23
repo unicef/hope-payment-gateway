@@ -28,13 +28,22 @@ from hope_payment_gateway.apps.gateway.models import (
 
 @admin.register(PaymentRecord)
 class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("record_code", "fsp_code", "parent", "status", "message", "success", "remote_id")
+    list_display = (
+        "record_code",
+        "fsp_code",
+        "parent",
+        "status",
+        "message",
+        "success",
+        "remote_id",
+        "confirmation_code",
+    )
     list_filter = (
         ("parent", AutoCompleteFilter),
         "status",
         "success",
     )
-    search_fields = ("record_code", "fsp_code", "message")
+    search_fields = ("record_code", "fsp_code", "confirmation_code", "message")
     # readonly_fields = ("extra_data", )
 
     actions = [export_as_template]
