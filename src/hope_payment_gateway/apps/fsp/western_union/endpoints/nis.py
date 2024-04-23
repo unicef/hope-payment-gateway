@@ -93,7 +93,7 @@ class NisNotificationView(WesternUnionApi):
             elif notification_type == REFUND:
                 pr.refund()
             else:
-                pr.error()
+                pr.fail()
         except TransitionNotAllowed as e:
             return Response({"transition_not_allowed": str(e)}, status=HTTP_400_BAD_REQUEST)
 
