@@ -128,7 +128,8 @@ class PaymentRecord(TimeStampedModel):
     remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
-    fsp_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)  # Western Union MTCN
+    fsp_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)
+    confirmation_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)  # Western Union MTCN
     success = models.BooleanField(null=True, blank=True)
     status = FSMField(default=PENDING, protected=False, db_index=True, choices=STATUSES)
     message = models.CharField(max_length=4096, null=True, blank=True)
