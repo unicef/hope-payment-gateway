@@ -163,7 +163,7 @@ files = [
 
 [[package]]
 name = "black"
-version = "24.3.0"
+version = "24.4.0"
 requires_python = ">=3.8"
 summary = "The uncompromising code formatter."
 dependencies = [
@@ -174,21 +174,21 @@ dependencies = [
     "platformdirs>=2",
 ]
 files = [
-    {file = "black-24.3.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:4f1373a7808a8f135b774039f61d59e4be7eb56b2513d3d2f02a8b9365b8a8a9"},
-    {file = "black-24.3.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:aadf7a02d947936ee418777e0247ea114f78aff0d0959461057cae8a04f20597"},
-    {file = "black-24.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:65c02e4ea2ae09d16314d30912a58ada9a5c4fdfedf9512d23326128ac08ac3d"},
-    {file = "black-24.3.0-cp311-cp311-win_amd64.whl", hash = "sha256:bf21b7b230718a5f08bd32d5e4f1db7fc8788345c8aea1d155fc17852b3410f5"},
-    {file = "black-24.3.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:2818cf72dfd5d289e48f37ccfa08b460bf469e67fb7c4abb07edc2e9f16fb63f"},
-    {file = "black-24.3.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:4acf672def7eb1725f41f38bf6bf425c8237248bb0804faa3965c036f7672d11"},
-    {file = "black-24.3.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c7ed6668cbbfcd231fa0dc1b137d3e40c04c7f786e626b405c62bcd5db5857e4"},
-    {file = "black-24.3.0-cp312-cp312-win_amd64.whl", hash = "sha256:56f52cfbd3dabe2798d76dbdd299faa046a901041faf2cf33288bc4e6dae57b5"},
-    {file = "black-24.3.0-py3-none-any.whl", hash = "sha256:41622020d7120e01d377f74249e677039d20e6344ff5851de8a10f11f513bf93"},
-    {file = "black-24.3.0.tar.gz", hash = "sha256:a0c9c4a0771afc6919578cec71ce82a3e31e054904e7197deacbc9382671c41f"},
+    {file = "black-24.4.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:8e5537f456a22cf5cfcb2707803431d2feeb82ab3748ade280d6ccd0b40ed2e8"},
+    {file = "black-24.4.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:64e60a7edd71fd542a10a9643bf369bfd2644de95ec71e86790b063aa02ff745"},
+    {file = "black-24.4.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5cd5b4f76056cecce3e69b0d4c228326d2595f506797f40b9233424e2524c070"},
+    {file = "black-24.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:64578cf99b6b46a6301bc28bdb89f9d6f9b592b1c5837818a177c98525dbe397"},
+    {file = "black-24.4.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:f95cece33329dc4aa3b0e1a771c41075812e46cf3d6e3f1dfe3d91ff09826ed2"},
+    {file = "black-24.4.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:4396ca365a4310beef84d446ca5016f671b10f07abdba3e4e4304218d2c71d33"},
+    {file = "black-24.4.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:44d99dfdf37a2a00a6f7a8dcbd19edf361d056ee51093b2445de7ca09adac965"},
+    {file = "black-24.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:21f9407063ec71c5580b8ad975653c66508d6a9f57bd008bb8691d273705adcd"},
+    {file = "black-24.4.0-py3-none-any.whl", hash = "sha256:74eb9b5420e26b42c00a3ff470dc0cd144b80a766128b1771d07643165e08d0e"},
+    {file = "black-24.4.0.tar.gz", hash = "sha256:f07b69fda20578367eaebbd670ff8fc653ab181e1ff95d84497f9fa20e7d0641"},
 ]
 
 [[package]]
 name = "celery"
-version = "5.3.6"
+version = "5.4.0"
 requires_python = ">=3.8"
 summary = "Distributed Task Queue."
 dependencies = [
@@ -203,23 +203,23 @@ dependencies = [
     "vine<6.0,>=5.1.0",
 ]
 files = [
-    {file = "celery-5.3.6-py3-none-any.whl", hash = "sha256:9da4ea0118d232ce97dff5ed4974587fb1c0ff5c10042eb15278487cdd27d1af"},
-    {file = "celery-5.3.6.tar.gz", hash = "sha256:870cc71d737c0200c397290d730344cc991d13a057534353d124c9380267aab9"},
+    {file = "celery-5.4.0-py3-none-any.whl", hash = "sha256:369631eb580cf8c51a82721ec538684994f8277637edde2dfc0dacd73ed97f64"},
+    {file = "celery-5.4.0.tar.gz", hash = "sha256:504a19140e8d3029d5acad88330c541d4c3f64c789d85f94756762d8bca7e706"},
 ]
 
 [[package]]
 name = "celery"
-version = "5.3.6"
+version = "5.4.0"
 extras = ["redis"]
 requires_python = ">=3.8"
 summary = "Distributed Task Queue."
 dependencies = [
-    "celery==5.3.6",
+    "celery==5.4.0",
     "redis!=4.5.5,<6.0.0,>=4.5.2",
 ]
 files = [
-    {file = "celery-5.3.6-py3-none-any.whl", hash = "sha256:9da4ea0118d232ce97dff5ed4974587fb1c0ff5c10042eb15278487cdd27d1af"},
-    {file = "celery-5.3.6.tar.gz", hash = "sha256:870cc71d737c0200c397290d730344cc991d13a057534353d124c9380267aab9"},
+    {file = "celery-5.4.0-py3-none-any.whl", hash = "sha256:369631eb580cf8c51a82721ec538684994f8277637edde2dfc0dacd73ed97f64"},
+    {file = "celery-5.4.0.tar.gz", hash = "sha256:504a19140e8d3029d5acad88330c541d4c3f64c789d85f94756762d8bca7e706"},
 ]
 
 [[package]]
@@ -753,16 +753,16 @@ files = [
 
 [[package]]
 name = "django-fsm"
-version = "2.8.1"
+version = "3.0.0"
 summary = "Django friendly finite state machine support."
 files = [
-    {file = "django-fsm-2.8.1.tar.gz", hash = "sha256:fd9f8de9f33188e50f876ce53908fbd7289e5031a44ffdb97d43909e56699ef8"},
-    {file = "django_fsm-2.8.1-py2.py3-none-any.whl", hash = "sha256:e2c02cbf273fb9691aa9a907c29990afdd21a4adea09c5640344c93fbe03f8d9"},
+    {file = "django-fsm-3.0.0.tar.gz", hash = "sha256:0112bcac573ad14051cf8ebe73bf296b6d5409f093e5f1677eb16e2196e263b3"},
+    {file = "django_fsm-3.0.0-py2.py3-none-any.whl", hash = "sha256:fa28f84f47eae7ce9247585ac6c1895e4ada08efff93fb243a59e9ff77b2d4ec"},
 ]
 
 [[package]]
 name = "django-import-export"
-version = "3.3.7"
+version = "3.3.8"
 requires_python = ">=3.8"
 summary = "Django application and library for importing and exporting data with included admin integration."
 dependencies = [
@@ -771,8 +771,8 @@ dependencies = [
     "tablib[html,ods,xls,xlsx,yaml]==3.5.0",
 ]
 files = [
-    {file = "django-import-export-3.3.7.tar.gz", hash = "sha256:39a4216c26a2dba6429b64c68b3fe282a6279bb71afb4015c13df0696bdbb4cd"},
-    {file = "django_import_export-3.3.7-py3-none-any.whl", hash = "sha256:dffedd53bed33cfcceb3b2f13d4fd93a21826f9a2ae37b9926a1e1f4be24bcb9"},
+    {file = "django-import-export-3.3.8.tar.gz", hash = "sha256:4deabc557801d368093608c86fd0f4831bc9540e2ea41ca2f023e2efb3eb6f48"},
+    {file = "django_import_export-3.3.8-py3-none-any.whl", hash = "sha256:2eac09e8cec8670f36e24314760448011ad23c51e8fb930d55f50d0c3c926da0"},
 ]
 
 [[package]]
@@ -1039,15 +1039,15 @@ files = [
 
 [[package]]
 name = "faker"
-version = "24.7.1"
+version = "24.11.0"
 requires_python = ">=3.8"
 summary = "Faker is a Python package that generates fake data for you."
 dependencies = [
     "python-dateutil>=2.4",
 ]
 files = [
-    {file = "Faker-24.7.1-py3-none-any.whl", hash = "sha256:73f2bd886e8ce751e660c7d37a6c0a128aab5e1551359335bb79cfea0f4fabfc"},
-    {file = "Faker-24.7.1.tar.gz", hash = "sha256:39d34c63f0d62ed574161e23fe32008917b923d18098ce94c2650fe16463b7d5"},
+    {file = "Faker-24.11.0-py3-none-any.whl", hash = "sha256:adb98e771073a06bdc5d2d6710d8af07ac5da64c8dc2ae3b17bb32319e66fd82"},
+    {file = "Faker-24.11.0.tar.gz", hash = "sha256:34b947581c2bced340c39b35f89dbfac4f356932cfff8fe893bde854903f0e6e"},
 ]
 
 [[package]]
@@ -1090,7 +1090,7 @@ files = [
 
 [[package]]
 name = "flake8-bugbear"
-version = "24.2.6"
+version = "24.4.21"
 requires_python = ">=3.8.1"
 summary = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle."
 dependencies = [
@@ -1098,8 +1098,8 @@ dependencies = [
     "flake8>=6.0.0",
 ]
 files = [
-    {file = "flake8-bugbear-24.2.6.tar.gz", hash = "sha256:f9cb5f2a9e792dd80ff68e89a14c12eed8620af8b41a49d823b7a33064ac9658"},
-    {file = "flake8_bugbear-24.2.6-py3-none-any.whl", hash = "sha256:663ef5de80cd32aacd39d362212983bc4636435a6f83700b4ed35acbd0b7d1b8"},
+    {file = "flake8_bugbear-24.4.21-py3-none-any.whl", hash = "sha256:58581060a1650f4b11344795db8a4934867d4450486319ece86d7720a9414036"},
+    {file = "flake8_bugbear-24.4.21.tar.gz", hash = "sha256:d1a87b8f6ca1ed28772c36515f751ea3709e041d78bca60590a570b9cb802e55"},
 ]
 
 [[package]]
@@ -1131,15 +1131,15 @@ files = [
 
 [[package]]
 name = "freezegun"
-version = "1.4.0"
+version = "1.5.0"
 requires_python = ">=3.7"
 summary = "Let your Python tests travel through time"
 dependencies = [
     "python-dateutil>=2.7",
 ]
 files = [
-    {file = "freezegun-1.4.0-py3-none-any.whl", hash = "sha256:55e0fc3c84ebf0a96a5aa23ff8b53d70246479e9a68863f1fcac5a3e52f19dd6"},
-    {file = "freezegun-1.4.0.tar.gz", hash = "sha256:10939b0ba0ff5adaecf3b06a5c2f73071d9678e507c5eaedb23c761d56ac774b"},
+    {file = "freezegun-1.5.0-py3-none-any.whl", hash = "sha256:ec3f4ba030e34eb6cf7e1e257308aee2c60c3d038ff35996d7475760c9ff3719"},
+    {file = "freezegun-1.5.0.tar.gz", hash = "sha256:200a64359b363aa3653d8aac289584078386c7c3da77339d257e46a01fb5c77c"},
 ]
 
 [[package]]
@@ -1157,15 +1157,15 @@ files = [
 
 [[package]]
 name = "gunicorn"
-version = "21.2.0"
-requires_python = ">=3.5"
+version = "22.0.0"
+requires_python = ">=3.7"
 summary = "WSGI HTTP Server for UNIX"
 dependencies = [
     "packaging",
 ]
 files = [
-    {file = "gunicorn-21.2.0-py3-none-any.whl", hash = "sha256:3213aa5e8c24949e792bcacfc176fef362e7aac80b76c56f6b5122bf350722f0"},
-    {file = "gunicorn-21.2.0.tar.gz", hash = "sha256:88ec8bff1d634f98e61b9f65bc4bf3cd918a90806c6f5c48bc5603849ec81033"},
+    {file = "gunicorn-22.0.0-py3-none-any.whl", hash = "sha256:350679f91b24062c86e386e198a15438d53a7a8207235a78ba1b53df4c4378d9"},
+    {file = "gunicorn-22.0.0.tar.gz", hash = "sha256:4a0b436239ff76fb33f11c07a16482c521a7e09c1ce3cc293c2330afe01bec63"},
 ]
 
 [[package]]
@@ -1505,19 +1505,19 @@ files = [
 
 [[package]]
 name = "newrelic"
-version = "9.8.0"
+version = "9.9.0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "New Relic Python Agent"
 files = [
-    {file = "newrelic-9.8.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:26f75e0bb749314a18e43aba54802e3753a08a446b326ebf6653f9ea2b66da63"},
-    {file = "newrelic-9.8.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:708dc11213cac17eaae2a0151a9c49febdbdeba0f20ca9e572b148ab77c5af97"},
-    {file = "newrelic-9.8.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:8978eb4a4f43af7f778b63251d4931519023ee1f188ff62a148e6f467ba925c5"},
-    {file = "newrelic-9.8.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:15ab0ff9c2526c73ad3538cb2451a651dc577369c049a379abedb946a3357a52"},
-    {file = "newrelic-9.8.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6a1e188aa29c8f8a9d12388778caab36b921a4b200475056df5895f7bd95fee0"},
-    {file = "newrelic-9.8.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a5d9e8f491c88ad2cb71f3d8b3de73540a497b4d2c2f0178573fabf0faf0676a"},
-    {file = "newrelic-9.8.0-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:5b917026043fac50e687c82cd9922759d849320bfd467daffee6392b7e874875"},
-    {file = "newrelic-9.8.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:6bcec1a613bb523278bf2356e207b882eee105f4226b06b62fc7e38e4d30189f"},
-    {file = "newrelic-9.8.0.tar.gz", hash = "sha256:373ceaf8876019cbc8893c0d3eac979aab26a8476902e409937b34b5581510d1"},
+    {file = "newrelic-9.9.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cf3c13d264cd089d467e9848fb6875907940202d22475b506a70683f04ef82af"},
+    {file = "newrelic-9.9.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a57ff176818037983589c15b6dca03841fcef1429c279f5948800caa333fb476"},
+    {file = "newrelic-9.9.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:63b230dd5d093874c0137eddc738cb028e17326d2a8a98cbc12c665bbdf6ec67"},
+    {file = "newrelic-9.9.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:4cf5d85a4a8e8de6e0aeb7a76afad9264d0c0dc459bc3f1a8b02a0e48a9a26da"},
+    {file = "newrelic-9.9.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:de2ac509f8730fc6f6819f13a9ebbe52865397d526ca4dbe963a0e9865bb0500"},
+    {file = "newrelic-9.9.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d8304317ff27bb50fd94f1e6e8c3ae0c59151ee85de2ea0269dbe7e982512c45"},
+    {file = "newrelic-9.9.0-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:b773ee74d869bf632ce1e12903cc8e7ae8b5697ef9ae97169ed263a5d3a87f76"},
+    {file = "newrelic-9.9.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:4356690cbc9e5e662defa2af15aba05901cf9b285a8d02aeb90718e84dd6d779"},
+    {file = "newrelic-9.9.0.tar.gz", hash = "sha256:2182673a01f04a0ed4a0bb3f49e8fa869044c37558c8f409c96de13105f58a57"},
 ]
 
 [[package]]
@@ -1659,11 +1659,11 @@ files = [
 
 [[package]]
 name = "phonenumbers"
-version = "8.13.34"
+version = "8.13.35"
 summary = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
 files = [
-    {file = "phonenumbers-8.13.34-py2.py3-none-any.whl", hash = "sha256:bc0bb5d3bab29e28549194f6bf57cb3ca03c3dd84238af12674fe24031631bda"},
-    {file = "phonenumbers-8.13.34.tar.gz", hash = "sha256:7c2676be07b7d0f74411e275e0660380a0ec3ee0d359f070d719424bd2c5f62e"},
+    {file = "phonenumbers-8.13.35-py2.py3-none-any.whl", hash = "sha256:58286a8e617bd75f541e04313b28c36398be6d4443a778c85e9617a93c391310"},
+    {file = "phonenumbers-8.13.35.tar.gz", hash = "sha256:64f061a967dcdae11e1c59f3688649e697b897110a33bb74d5a69c3e35321245"},
 ]
 
 [[package]]
@@ -2209,15 +2209,15 @@ files = [
 
 [[package]]
 name = "sentry-sdk"
-version = "1.44.1"
+version = "1.45.0"
 summary = "Python client for Sentry (https://sentry.io)"
 dependencies = [
     "certifi",
     "urllib3>=1.26.11; python_version >= \"3.6\"",
 ]
 files = [
-    {file = "sentry-sdk-1.44.1.tar.gz", hash = "sha256:24e6a53eeabffd2f95d952aa35ca52f0f4201d17f820ac9d3ff7244c665aaf68"},
-    {file = "sentry_sdk-1.44.1-py2.py3-none-any.whl", hash = "sha256:5f75eb91d8ab6037c754a87b8501cc581b2827e923682f593bed3539ce5b3999"},
+    {file = "sentry-sdk-1.45.0.tar.gz", hash = "sha256:509aa9678c0512344ca886281766c2e538682f8acfa50fd8d405f8c417ad0625"},
+    {file = "sentry_sdk-1.45.0-py2.py3-none-any.whl", hash = "sha256:1ce29e30240cc289a027011103a8c83885b15ef2f316a60bcc7c5300afa144f1"},
 ]
 
 [[package]]
@@ -2458,17 +2458,17 @@ files = [
 
 [[package]]
 name = "types-pytz"
-version = "2024.1.0.20240203"
+version = "2024.1.0.20240417"
 requires_python = ">=3.8"
 summary = "Typing stubs for pytz"
 files = [
-    {file = "types-pytz-2024.1.0.20240203.tar.gz", hash = "sha256:c93751ee20dfc6e054a0148f8f5227b9a00b79c90a4d3c9f464711a73179c89e"},
-    {file = "types_pytz-2024.1.0.20240203-py3-none-any.whl", hash = "sha256:9679eef0365db3af91ef7722c199dbb75ee5c1b67e3c4dd7bfbeb1b8a71c21a3"},
+    {file = "types-pytz-2024.1.0.20240417.tar.gz", hash = "sha256:6810c8a1f68f21fdf0f4f374a432487c77645a0ac0b31de4bf4690cf21ad3981"},
+    {file = "types_pytz-2024.1.0.20240417-py3-none-any.whl", hash = "sha256:8335d443310e2db7b74e007414e74c4f53b67452c0cb0d228ca359ccfba59659"},
 ]
 
 [[package]]
 name = "types-redis"
-version = "4.6.0.20240311"
+version = "4.6.0.20240423"
 requires_python = ">=3.8"
 summary = "Typing stubs for redis"
 dependencies = [
@@ -2476,8 +2476,8 @@ dependencies = [
     "types-pyOpenSSL",
 ]
 files = [
-    {file = "types-redis-4.6.0.20240311.tar.gz", hash = "sha256:e049bbdff0e0a1f8e701b64636811291d21bff79bf1e7850850a44055224a85f"},
-    {file = "types_redis-4.6.0.20240311-py3-none-any.whl", hash = "sha256:6b9d68a29aba1ee400c823d8e5fe88675282eb69d7211e72fe65dbe54b33daca"},
+    {file = "types-redis-4.6.0.20240423.tar.gz", hash = "sha256:f5e372d9db3c2109f579ff9de5073cb2f239689a2dfd68ef2ca8d244172b19a9"},
+    {file = "types_redis-4.6.0.20240423-py3-none-any.whl", hash = "sha256:963219f01e1a132bd05e6e7b328c432fb099ea885895900bfc6e2a44a449256c"},
 ]
 
 [[package]]
@@ -2595,10 +2595,10 @@ files = [
 
 [[package]]
 name = "uwsgi"
-version = "2.0.24"
+version = "2.0.25.1"
 summary = "The uWSGI server"
 files = [
-    {file = "uwsgi-2.0.24.tar.gz", hash = "sha256:77b6dd5cd633f4ae87ee393f7701f617736815499407376e78f3d16467523afe"},
+    {file = "uwsgi-2.0.25.1.tar.gz", hash = "sha256:d653d2d804c194c8cbe2585fa56efa2650313ae75c686a9d7931374d4dfbfc6e"},
 ]
 
 [[package]]
