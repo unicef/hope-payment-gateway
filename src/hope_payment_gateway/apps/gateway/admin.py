@@ -1,8 +1,16 @@
+import csv
+import logging
+from typing import TYPE_CHECKING, Optional, Union
+
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
+from django.db.utils import IntegrityError
+from django.forms import FileField, FileInput, Form
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 
-from admin_extra_buttons.decorators import button, choice, view
+from admin_extra_buttons.decorators import button, choice, link, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
@@ -25,9 +33,19 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentRecord,
 )
 
+if TYPE_CHECKING:
+    from django.http import HttpRequest, HttpResponsePermanentRedirect, HttpResponseRedirect
+
+
+logger = logging.getLogger(__name__)
+
+
+class ImportCSVForm(Form):
+    file = FileField(widget=FileInput(attrs={"accept": "text/csv"}))
+
 
 @admin.register(PaymentRecord)
-class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin):
+class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
     list_display = (
         "record_code",
         "fsp_code",
@@ -124,6 +142,16 @@ class PaymentRecordAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin)
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("parent__fsp")
 
+    @link()
+    def instruction(self, button: button) -> Optional[str]:
+        if "original" in button.context:
+            obj = button.context["original"]
+            button.href = reverse("admin:gateway_paymentinstruction_change", args=[obj.parent.pk])
+            button.visible = True
+        else:
+            button.visible = False
+        return None
+
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
@@ -156,6 +184,58 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             template="payment_instruction/export.html",
             form_class=TemplateExportForm,
         )
+
+    @button()
+    def import_records(
+        self, request: "HttpRequest", pk: int
+    ) -> Union["HttpResponsePermanentRedirect", "HttpResponseRedirect", TemplateResponse]:
+        context = self.get_common_context(request, processed=False)
+        if request.method == "POST":
+            form = ImportCSVForm(data=request.POST, files=request.FILES)
+            if form.is_valid():
+                csv_file = form.cleaned_data["file"]
+                data_set = csv_file.read().decode("utf-8-sig").splitlines()
+                reader = csv.DictReader(data_set)
+                try:
+                    instruction = None
+
+                    n = 0
+                    for row in reader:
+                        parent = self.model.objects.get(pk=pk)
+                        payload = {
+                            key: row[key]
+                            for key, value in row.items()
+                            if key in ["first_name", "last_name", "amount", "phone_no", "service_provider_code"]
+                        }
+                        PaymentRecord.objects.create(
+                            record_code=row["record_code"], remote_id=row["record_code"], parent=parent, payload=payload
+                        )
+                        n += 1
+
+                    self.message_user(request, f"Uploaded {n} records {instruction}")
+
+                    return redirect("admin:gateway_paymentinstruction_change", object_id=pk)
+                except IntegrityError as e:
+                    logger.error(e)
+                    self.message_user(request, str(e), messages.ERROR)
+                except Exception as e:
+                    logger.error(e)
+                    self.message_user(request, "Unable to parse the file, please check the format", messages.ERROR)
+        else:
+            form = ImportCSVForm()
+        context["form"] = form
+        return TemplateResponse(request, "admin/gateway/import_records_csv.html", context)
+
+    @link()
+    def records(self, button: button) -> Optional[str]:
+        if "original" in button.context:
+            obj = button.context["original"]
+            url = reverse("admin:gateway_paymentrecord_changelist")
+            button.href = f"{url}?parent={obj.pk}"
+            button.visible = True
+        else:
+            button.visible = False
+        return None
 
 
 class FinancialServiceProviderConfigInline(TabularInline):
