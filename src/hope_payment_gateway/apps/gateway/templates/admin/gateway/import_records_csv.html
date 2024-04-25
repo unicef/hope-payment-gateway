@@ -1,0 +1,43 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+
+{% block content %}
+
+{% if form %}
+    <h4>Upload a csv file with headers in the format bellow:</h4>
+
+    <p>
+        <table>
+             <thead>
+                 <tr>
+                     <th><strong>record_code</strong></th>
+                     <th><strong>first_name</strong></th>
+                     <th><strong>last_name</strong></th>
+                     <th><strong>amount</strong></th>
+                     <th><strong>phone_no</strong></th>
+                     <th><strong>service_provider_code</strong></th>
+                 </tr>
+             </thead>
+             <tbody>
+                 <tr>
+                     <td>REC-1234-0000</td>
+                     <td>John</td>
+                     <td>Smith</td>
+                     <td>1000</td>
+                     <td>+393383040500</td>
+                     <td>KE-AIRTEL</td>
+                 </tr>
+             </tbody>
+        </table>
+    </p>
+
+    <hr>
+    <form method="POST" id="load_users" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {{form}}
+        <div><input type="submit" value="Import"></div>
+    </form>
+{% endif %}
+
+{% endblock content %}
