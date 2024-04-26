@@ -137,4 +137,32 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: template_code"
         )
         context.update(das_delivery_option_template(destination_country, destination_currency, template_code))
+        rows = context['content']['MTML']['REPLY']['DATA_CONTEXT']['RECORDSET']['GETDELIVERYOPTIONTEMPLATE']
+        template = {}
+        # if not obj.template:
+        prev_t_index = -1
+        for row in rows:
+            t_index = row['T_INDEX']
+            if t_index != "000":
+                print(11, t_index)
+                if t_index != prev_t_index:
+                    structure = row['DESCRIPTION'].split(";")[0].split(".")
+                    print(structure)
+                    print("-------")
+                    # base = template
+                    # for i in range(len(structure)):
+                    #     field = structure[i]
+                    #     if i == len(structure) - 1:
+                    #         base[field] = None
+                    #     else:
+                    #         if field not in base:
+                    #             base[field] = []
+                    #         base = field[base]
+                    #     print("base", base)
+                else:
+                    breakpoint()
+                    description = row['DESCRIPTION'].split(";")[2].strip()
+                    print("base", description)
+            prev_t_index = t_index
+        # print(template)
         return TemplateResponse(request, "western_union.html", context)
