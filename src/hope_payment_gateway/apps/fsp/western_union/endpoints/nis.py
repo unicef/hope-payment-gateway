@@ -67,6 +67,14 @@ class NisNotificationView(WesternUnionApi):
         delivered_quantity = payload["payment_details"]["origination"]["principal_amount"]
 
         try:
+            for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
+                payload.pop(tag_name, None)
+            payload["ack_message"] = "Acknowledged"
+            resp = self.prepare_response(payload)
+        except ValidationError as exp:
+            return Response({"validation_error": str(exp)}, status=HTTP_400_BAD_REQUEST)
+
+        try:
             pr = PaymentRecord.objects.get(fsp_code=fsp_code)
         except PaymentRecord.DoesNotExist:
             return Response(
@@ -99,13 +107,6 @@ class NisNotificationView(WesternUnionApi):
 
         pr.save()
 
-        try:
-            for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
-                payload.pop(tag_name, None)
-            payload["ack_message"] = "Acknowledged"
-            resp = self.prepare_response(payload)
-        except ValidationError as exp:
-            return Response({"validation_error": str(exp)}, status=HTTP_400_BAD_REQUEST)
         return HttpResponse(resp, content_type="application/xml")
         # return Response(resp)
 
