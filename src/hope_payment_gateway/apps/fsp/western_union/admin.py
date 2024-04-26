@@ -137,32 +137,37 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: template_code"
         )
         context.update(das_delivery_option_template(destination_country, destination_currency, template_code))
-        rows = context['content']['MTML']['REPLY']['DATA_CONTEXT']['RECORDSET']['GETDELIVERYOPTIONTEMPLATE']
+        rows = context["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]["GETDELIVERYOPTIONTEMPLATE"]
         template = {}
-        # if not obj.template:
-        prev_t_index = -1
-        for row in rows:
-            t_index = row['T_INDEX']
-            if t_index != "000":
-                print(11, t_index)
-                if t_index != prev_t_index:
-                    structure = row['DESCRIPTION'].split(";")[0].split(".")
-                    print(structure)
-                    print("-------")
-                    # base = template
-                    # for i in range(len(structure)):
-                    #     field = structure[i]
-                    #     if i == len(structure) - 1:
-                    #         base[field] = None
-                    #     else:
-                    #         if field not in base:
-                    #             base[field] = []
-                    #         base = field[base]
-                    #     print("base", base)
-                else:
-                    breakpoint()
-                    description = row['DESCRIPTION'].split(";")[2].strip()
-                    print("base", description)
-            prev_t_index = t_index
-        # print(template)
+        structure = []
+        if not obj.template:
+            for row in rows:
+                t_index = row["T_INDEX"]
+                if t_index != "000":
+                    first_value = row["DESCRIPTION"].split(";")[0].split(".")
+
+                    if len(first_value) == 1:
+                        description = row["DESCRIPTION"].split(";")[2].strip()
+                        base = template
+                        for item in structure[:-1]:
+                            base = base[item]
+                        if not base[structure[-1]]:
+                            base[structure[-1]] = description
+                        elif isinstance(base[structure[-1]], list):
+                            base[structure[-1]].append(description)
+                        else:
+                            base[structure[-1]] = [base[structure[-1]], description]
+                    else:
+                        base = template
+                        structure = first_value
+                        for i in range(len(first_value)):
+                            field = first_value[i]
+                            if i == len(first_value) - 1:
+                                base[field] = None
+                            else:
+                                if field not in base:
+                                    base[field] = {}
+                                base = base[field]
+            obj.template = template
+            obj.save()
         return TemplateResponse(request, "western_union.html", context)

@@ -26,8 +26,8 @@ class WesternUnionApi(APIView):
 
 
 class XMLViewMixin:
-    parser_classes = (XMLParser, )
-    renderer_classes = (XMLRenderer, )
+    parser_classes = (XMLParser,)
+    renderer_classes = (XMLRenderer,)
 
 
 class NisNotificationView(WesternUnionApi):
