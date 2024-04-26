@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
+from rest_framework_xml.renderers import XMLRenderer
 from zeep.exceptions import ValidationError
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
@@ -25,7 +26,8 @@ class WesternUnionApi(APIView):
 
 
 class XMLViewMixin:
-    parser_classes = (XMLParser,)
+    parser_classes = (XMLParser, )
+    renderer_classes = (XMLRenderer, )
 
 
 class NisNotificationView(WesternUnionApi):
