@@ -37,6 +37,7 @@ dev = [
     "argh",
     "black",
     "django-webtest",
+    "drf-api-checker",
     "faker",
     "flake8",
     "flake8-bugbear",
