@@ -4,7 +4,7 @@ from django.urls import reverse
 
 import responses
 
-from ...factories import PaymentRecordFactory
+from factories import PaymentRecordFactory
 
 
 @responses.activate

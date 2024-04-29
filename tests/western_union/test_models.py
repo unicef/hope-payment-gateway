@@ -1,6 +1,6 @@
 import pytest
 
-from ..factories import CorridorFactory
+from factories import CorridorFactory
 
 
 @pytest.mark.django_db

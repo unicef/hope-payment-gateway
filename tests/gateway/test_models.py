@@ -3,7 +3,7 @@ from django_fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
 
-from ..factories import FinancialServiceProviderFactory, PaymentInstructionFactory, PaymentRecordFactory
+from factories import FinancialServiceProviderFactory, PaymentInstructionFactory, PaymentRecordFactory
 
 
 @pytest.mark.django_db

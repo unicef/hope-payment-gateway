@@ -8,7 +8,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
 )
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
-from ...factories import CorridorFactory, PaymentRecordFactory
+from factories import CorridorFactory, PaymentRecordFactory
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")

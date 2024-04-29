@@ -6,7 +6,7 @@ import pytest
 
 from hope_payment_gateway.apps.gateway.models import PaymentInstruction
 
-from ..factories import PaymentRecordFactory
+from factories import PaymentRecordFactory
 
 
 @pytest.mark.django_db
