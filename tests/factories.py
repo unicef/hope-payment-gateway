@@ -10,7 +10,13 @@ from strategy_field.utils import fqn
 from hope_api_auth.models import APIToken, Grant
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import (
+    DeliveryMechanism,
+    FinancialServiceProvider,
+    FinancialServiceProviderConfig,
+    PaymentInstruction,
+    PaymentRecord,
+)
 from hope_payment_gateway.apps.gateway.registry import DefaultProcessor
 
 
@@ -69,6 +75,14 @@ class SystemFactory(factory.django.DjangoModelFactory):
         model = System
 
 
+class DeliveryMechanismFactory(factory.django.DjangoModelFactory):
+    code = fuzzy.FuzzyText()
+    name = fuzzy.FuzzyText()
+
+    class Meta:
+        model = DeliveryMechanism
+
+
 class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
     remote_id = fuzzy.FuzzyText()
     name = fuzzy.FuzzyText()
@@ -77,6 +91,16 @@ class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = FinancialServiceProvider
+
+
+class FinancialServiceProviderConfigFactory(factory.django.DjangoModelFactory):
+    key = fuzzy.FuzzyText()
+    label = fuzzy.FuzzyText()
+    fsp = factory.SubFactory(FinancialServiceProviderFactory)
+    delivery_mechanism = factory.SubFactory(DeliveryMechanismFactory)
+
+    class Meta:
+        model = FinancialServiceProviderConfig
 
 
 class PaymentInstructionFactory(factory.django.DjangoModelFactory):

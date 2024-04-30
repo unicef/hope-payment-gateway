@@ -20,6 +20,7 @@ class LoggingTokenAuthentication(TokenAuthentication):
     model = APIToken
 
     def authenticate_credentials(self, key: str) -> Tuple[User, APIToken]:
+        # breakpoint()
         try:
             token = (
                 APIToken.objects.select_related("user")
@@ -38,6 +39,8 @@ class LoggingTokenAuthentication(TokenAuthentication):
 
 class GrantedPermission(IsAuthenticated):
     def has_permission(self, request: Request, view: Any) -> bool:
+        print(request.auth)
+        # breakpoint()
         if bool(request.auth):
             if view.permission == "any":
                 return True

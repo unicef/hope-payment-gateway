@@ -1,0 +1,16 @@
+{
+    "corridor": {
+        "master": {
+            "model": "western_union.corridor",
+            "pk": 48,
+            "fields": {
+                "description": "",
+                "destination_country": "",
+                "destination_currency": "",
+                "template_code": "",
+                "template": {}
+            }
+        },
+        "deps": []
+    }
+}

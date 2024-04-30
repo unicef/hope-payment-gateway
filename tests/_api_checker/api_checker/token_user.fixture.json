@@ -1,0 +1,62 @@
+{
+    "token_user": {
+        "master": [
+            {
+                "model": "core.user",
+                "pk": 1096,
+                "fields": {
+                    "password": "password",
+                    "last_login": null,
+                    "is_superuser": false,
+                    "username": "user000",
+                    "first_name": "Tiffany",
+                    "last_name": "Hunter",
+                    "email": "m000@mailinator.com",
+                    "is_staff": false,
+                    "is_active": true,
+                    "date_joined": "2024-04-30T13:26:18.524Z",
+                    "azure_id": null,
+                    "job_title": null,
+                    "display_name": "Tiffany Hunter:",
+                    "groups": [],
+                    "user_permissions": []
+                }
+            },
+            {
+                "model": "hope_api_auth.apitoken",
+                "pk": 134,
+                "fields": {
+                    "user": 1096,
+                    "key": "9e98393930c52ebdf76fd837f5a743f576ec60c6",
+                    "allowed_ips": "",
+                    "valid_from": "2024-04-30",
+                    "valid_to": null,
+                    "grants": "[\"API_READ_ONLY\", \"API_PLAN_UPLOAD\", \"API_PLAN_MANAGE\"]"
+                }
+            }
+        ],
+        "deps": [
+            {
+                "model": "core.user",
+                "pk": 1096,
+                "fields": {
+                    "password": "password",
+                    "last_login": null,
+                    "is_superuser": false,
+                    "username": "user000",
+                    "first_name": "Tiffany",
+                    "last_name": "Hunter",
+                    "email": "m000@mailinator.com",
+                    "is_staff": false,
+                    "is_active": true,
+                    "date_joined": "2024-04-30T13:26:18.524Z",
+                    "azure_id": null,
+                    "job_title": null,
+                    "display_name": "Tiffany Hunter:",
+                    "groups": [],
+                    "user_permissions": []
+                }
+            }
+        ]
+    }
+}

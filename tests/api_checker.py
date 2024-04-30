@@ -5,9 +5,11 @@ from functools import wraps
 import pytest
 from drf_api_checker.pytest import default_fixture_name
 from drf_api_checker.recorder import BASE_DATADIR, Recorder
-from factories import UserFactory
+from factories import APITokenFactory, UserFactory
 from rest_framework.response import Response
 from rest_framework.test import APIClient
+
+from hope_api_auth.models import Grant
 
 
 def frozenfixture(fixture_name=default_fixture_name, is_fixture=True):
@@ -43,16 +45,27 @@ def frozenfixture(fixture_name=default_fixture_name, is_fixture=True):
 
 
 @frozenfixture(is_fixture=False)
-def get_user():
-    return UserFactory(is_superuser=True, username="user999")
+def token_user():
+    user = UserFactory()
+    user_permissions = [
+        Grant.API_READ_ONLY,
+        Grant.API_PLAN_UPLOAD,
+        Grant.API_PLAN_MANAGE,
+    ]
+    token = APITokenFactory(
+        user=user,
+        grants=[c.name for c in user_permissions],
+    )
+    return user, token
 
 
 class LastModifiedRecorder(Recorder):
     @property
     def client(self):
-        user = get_user()
+
+        user, token = token_user()
         client = APIClient()
-        client.force_authenticate(user)
+        client.force_authenticate(user=user, token=token)
         return client
 
     def assert_modified(self, response: Response, stored: Response, path: str):
