@@ -1,11 +1,10 @@
 from unittest.mock import patch
 
 import pytest
+from factories import PaymentInstructionFactory, PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.tasks import western_union_send_task
 from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
-
-from factories import PaymentInstructionFactory, PaymentRecordFactory
 
 
 @pytest.mark.parametrize(

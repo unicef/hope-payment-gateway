@@ -1,5 +1,6 @@
 import pytest
 import responses
+from factories import CorridorFactory, PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     create_validation_payload,
@@ -7,8 +8,6 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money_validation,
 )
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
-
-from factories import CorridorFactory, PaymentRecordFactory
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")

@@ -3,7 +3,6 @@ from pathlib import Path
 from django.urls import reverse
 
 import responses
-
 from factories import PaymentRecordFactory
 
 

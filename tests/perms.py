@@ -3,9 +3,8 @@ from random import choice
 
 from django.contrib.auth.models import Permission
 
-from faker import Faker
-
 from factories import APITokenFactory, GroupFactory
+from faker import Faker
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"

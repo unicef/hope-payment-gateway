@@ -5,10 +5,9 @@ from functools import wraps
 import pytest
 from drf_api_checker.pytest import default_fixture_name
 from drf_api_checker.recorder import BASE_DATADIR, Recorder
+from factories import UserFactory
 from rest_framework.response import Response
 from rest_framework.test import APIClient
-
-from factories import UserFactory
 
 
 def frozenfixture(fixture_name=default_fixture_name, is_fixture=True):
