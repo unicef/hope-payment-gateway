@@ -139,7 +139,8 @@ def send_money(hope_payload):
         payload = create_validation_payload(hope_payload)
         response = send_money_validation(payload)
         if response["code"] != 200:
-            pr.message = f"Validation failed: {response['title']}"
+            pr.message = f"Validation failed: {response['error']}"
+            pr.save()
             return pr
         smv_payload = serialize_object(response["content"])
         pr.confirmation_code = smv_payload["mtcn"]
