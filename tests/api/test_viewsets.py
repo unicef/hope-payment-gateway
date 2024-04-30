@@ -32,9 +32,9 @@ def corridor(request, db):
     return CorridorFactory()
 
 
-# @frozenfixture()
-# def configuration(request, db, fsp):
-#     return FinancialServiceProviderConfigFactory(fsp=fsp)
+@frozenfixture()
+def configuration(request, db, fsp):
+    return FinancialServiceProviderConfigFactory(fsp=fsp)
 
 
 @pytest.mark.django_db
@@ -56,10 +56,10 @@ def test_payment_records(request, django_app, p_record):
     return reverse("api:payment-record-list")
 
 
-# @pytest.mark.django_db
-# @contract(LastModifiedRecorder)
-# def test_api_config(request, django_app, configuration):
-#     return reverse("api:config-list")
+@pytest.mark.django_db
+@contract(LastModifiedRecorder)
+def test_api_config(request, django_app, configuration):
+    return reverse("api:config-list")
 
 
 @pytest.mark.django_db
