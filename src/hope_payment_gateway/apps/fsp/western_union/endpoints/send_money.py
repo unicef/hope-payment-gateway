@@ -21,6 +21,7 @@ def create_validation_payload(hope_payload):
 
     counter_ids = hope_payload.get("counter_id", "N/A")
     counter_id = random.choice(counter_ids) if isinstance(counter_ids, list) else counter_ids
+    transaction_type = hope_payload.get("transaction_type", WMF)
     frm = {
         "identifier": hope_payload.get("identifier", "N/A"),
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
@@ -46,9 +47,9 @@ def create_validation_payload(hope_payload):
         },
         "reason_for_sending": hope_payload.get("reason_for_sending", None),
     }
+    amount_key = "destination_principal_amount" if transaction_type == WMF else "originators_principal_amount"
     financials = {
-        # "originators_principal_amount": amount,
-        "destination_principal_amount": hope_payload["amount"],
+        amount_key: hope_payload["amount"],
     }
     payment_details = {
         "recording_country_currency": {  # sending country
@@ -69,7 +70,7 @@ def create_validation_payload(hope_payload):
                 "currency_code": hope_payload.get("origination_currency", "USD"),
             },
         },
-        "transaction_type": hope_payload.get("transaction_type", WMF),
+        "transaction_type": transaction_type,
         "payment_type": "Cash",
         "duplicate_detection_flag": hope_payload.get("duplication_enabled", "D"),
         # needed for US and MEX

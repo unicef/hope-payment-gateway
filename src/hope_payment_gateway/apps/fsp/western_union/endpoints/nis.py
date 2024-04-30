@@ -15,9 +15,10 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.exceptions import Inv
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 SUCCESS = "BIS003"
-REFUND = "BIS006"
 CANCEL = "BIS005"
-REJECT = "DVQRFB62"
+REFUND = "BIS006"
+REJECT = "BIS011"
+PURGED = "BIS016"
 
 
 class WesternUnionApi(APIView):

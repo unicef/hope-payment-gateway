@@ -13,7 +13,7 @@ router.register(r"payment_instructions", views.PaymentInstructionViewSet, basena
 router.register(r"payment_records", views.PaymentRecordViewSet, basename="payment-record")
 router.register(r"config", views.ConfigurationViewSet, basename="config")
 
-router.register(r"wu/corridors", wu_views.CorridorViewSet, basename="corridor")
+router.register(r"wu/corridors", wu_views.CorridorViewSet, basename="wu-corridor")
 
 
 urlpatterns = router.urls

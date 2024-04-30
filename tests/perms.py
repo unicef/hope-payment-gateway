@@ -5,7 +5,7 @@ from django.contrib.auth.models import Permission
 
 from faker import Faker
 
-from .factories import APITokenFactory, GroupFactory
+from factories import APITokenFactory, GroupFactory
 
 whitespace = " \t\n\r\v\f"
 lowercase = "abcdefghijklmnopqrstuvwxyz"

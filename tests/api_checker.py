@@ -8,7 +8,7 @@ from drf_api_checker.recorder import BASE_DATADIR, Recorder
 from rest_framework.response import Response
 from rest_framework.test import APIClient
 
-from tests.factories import UserFactory
+from factories import UserFactory
 
 
 def frozenfixture(fixture_name=default_fixture_name, is_fixture=True):
