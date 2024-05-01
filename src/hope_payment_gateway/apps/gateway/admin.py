@@ -54,14 +54,14 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         "message",
         "success",
         "remote_id",
-        "confirmation_code",
+        "auth_code",
     )
     list_filter = (
         ("parent", AutoCompleteFilter),
         "status",
         "success",
     )
-    search_fields = ("record_code", "fsp_code", "confirmation_code", "message")
+    search_fields = ("record_code", "fsp_code", "auth_code", "message")
     # readonly_fields = ("extra_data", )
 
     actions = [export_as_template]

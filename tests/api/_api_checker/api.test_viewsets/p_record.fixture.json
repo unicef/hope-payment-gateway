@@ -2,15 +2,15 @@
     "p_record": {
         "master": {
             "model": "gateway.paymentrecord",
-            "pk": 1409,
+            "pk": 14,
             "fields": {
-                "created": "2024-04-30T13:26:18.596Z",
-                "modified": "2024-04-30T13:26:18.596Z",
-                "remote_id": "JzFxVRDvThNO",
+                "created": "2024-05-01T08:34:24.783Z",
+                "modified": "2024-05-01T08:34:24.783Z",
+                "remote_id": "bUaRSTKMqoth",
                 "parent": 750,
-                "record_code": "IkTAxEyoZFEH",
+                "record_code": "DuiXdnkODTyV",
                 "fsp_code": null,
-                "confirmation_code": null,
+                "auth_code": null,
                 "success": null,
                 "status": "PENDING",
                 "message": null,

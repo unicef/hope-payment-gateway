@@ -1,0 +1,31 @@
+{
+    "status_code": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "Vary": "Accept, origin",
+        "Allow": "GET, POST, HEAD, OPTIONS",
+        "X-Frame-Options": "DENY",
+        "Content-Length": "205",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "same-origin",
+        "Cross-Origin-Opener-Policy": "same-origin"
+    },
+    "data": [
+        {
+            "id": 2,
+            "key": "HMlJNeAUrPov",
+            "label": "hddXlBKjHRRq",
+            "fsp": {
+                "id": 717,
+                "name": "dXKJxnrciVEJ",
+                "vision_vendor_number": "ABudUmYEozKU"
+            },
+            "delivery_mechanism": {
+                "id": 2,
+                "code": "cwaRdxoOZYsf",
+                "name": "sVbCuPAUzZAD"
+            }
+        }
+    ],
+    "content_type": "application/json"
+}
