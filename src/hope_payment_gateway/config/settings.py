@@ -208,12 +208,4 @@ EMAIL_PORT = env("EMAIL_PORT", default=25)
 EMAIL_USE_TLS = env("EMAIL_USE_TLS", default=False)
 EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
 
-from .fragments.celery import *  # noqa
-from .fragments.constance import *  # noqa
-from .fragments.cors import *  # noqa
-from .fragments.debug_toolbar import *  # noqa
-from .fragments.power_query import *  # noqa
-from .fragments.rest_framework import *  # noqa
-from .fragments.sentry import *  # noqa
-from .fragments.social_auth import *  # noqa
-from .fragments.western_union import *  # noqa
+from .fragments import *  # noqa
