@@ -1,0 +1,10 @@
+from ..settings import env
+
+WESTERN_UNION_BASE_URL = env("WESTERN_UNION_BASE_URL", default="")
+WESTERN_UNION_CERT = env("WESTERN_UNION_CERT", default="")
+WESTERN_UNION_KEY = env("WESTERN_UNION_KEY", default="")
+
+FTP_WESTERN_UNION_SERVER = env("FTP_WESTERN_UNION_SERVER", default="westu.f.unicef.org")
+FTP_WESTERN_UNION_USERNAME = env("FTP_WESTERN_UNION_USERNAME", default="username")
+FTP_WESTERN_UNION_PASSWORD = env("FTP_WESTERN_UNION_PASSWORD", default="password")
+FTP_WESTERN_UNION_PORT = env("FTP_WESTERN_UNION_PORT", default=22)
