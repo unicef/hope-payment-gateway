@@ -23,10 +23,12 @@ WORKDIR /code
 FROM base as builder
 
 WORKDIR $PACKAGES_DIR
-RUN pip install pdm==2.9.3
-ADD pyproject.toml ./
-ADD pdm.toml.template ./pdm.toml
-ADD pdm.lock ./
+RUN pip install pdm
+ADD ../pyproject.toml ./
+ADD ../pdm.lock ./
+# ADD ../pdm.toml.template ./pdm.toml
+RUN pdm config python.use_venv false
+RUN pdm config venv.in_project true
 RUN pdm sync --prod --no-editable --no-self
 
 FROM builder AS dev
@@ -34,9 +36,9 @@ FROM builder AS dev
 RUN pdm sync --no-editable --no-self
 
 WORKDIR /code
-COPY ./ ./
+COPY .. ./
 
-ADD docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
 
@@ -44,9 +46,9 @@ FROM base AS prd
 
 ENV PATH=$PATH:/code/.venv/bin/
 
-COPY --chown=hpg:hpg ./ ./
+COPY --chown=hpg:hpg .. ./
 COPY --chown=hpg:hpg --from=builder $PACKAGES_DIR $PACKAGES_DIR
 USER hpg
 
-ADD docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
