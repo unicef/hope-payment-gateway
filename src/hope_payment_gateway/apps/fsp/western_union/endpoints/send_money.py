@@ -97,13 +97,14 @@ def create_validation_payload(hope_payload):
     }
 
     if "delivery_services_code" in hope_payload and hope_payload["delivery_services_code"] == WALLET:
+        country = hope_payload["destination_country"]
+        currency = hope_payload["destination_currency"]
         try:
-            country = hope_payload["destination_country"]
-            currency = hope_payload["destination_currency"]
             template = Corridor.objects.get(
                 destination_country=country,
                 destination_currency=currency,
             ).template
+
         except Corridor.DoesNotExist:
             raise InvalidCorridor(f"Invalid corridor for {country}/{currency}")
 

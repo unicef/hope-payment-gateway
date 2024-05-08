@@ -23,7 +23,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.fsp.western_union.exceptions import PayloadException
+from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
@@ -62,7 +62,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         "success",
     )
     search_fields = ("record_code", "fsp_code", "auth_code", "message")
-    # readonly_fields = ("extra_data", )
+    readonly_fields = ("extra_data",)
 
     actions = [export_as_template]
 
@@ -90,7 +90,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             context["content"] = data
             return TemplateResponse(request, "western_union.html", context)
 
-        except PayloadException as e:
+        except (PayloadException, InvalidCorridor) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
@@ -104,7 +104,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             payload = create_validation_payload(payload)
             context.update(send_money_validation(payload))
             return TemplateResponse(request, "western_union.html", context)
-        except PayloadException as e:
+        except (PayloadException, InvalidCorridor) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
