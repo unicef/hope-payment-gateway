@@ -17,8 +17,9 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecord
 SUCCESS = "BIS003"
 CANCEL = "BIS005"
 REFUND = "BIS006"
-REJECT = "BIS011"
 PURGED = "BIS016"
+REJECT_APN = "BIS011"
+SUCCESS_APN = "BIS012"
 
 
 class WesternUnionApi(APIView):
@@ -67,7 +68,7 @@ class NisNotificationView(WesternUnionApi):
         fsp_code = payload["transaction_id"]
         mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
-        delivered_quantity = payload["payment_details"]["origination"]["principal_amount"]
+        delivered_quantity = payload["payment_details"]["destination"]["expected_payout_amount"]
 
         try:
             for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
@@ -87,7 +88,7 @@ class NisNotificationView(WesternUnionApi):
 
         pr.success = False
         try:
-            if notification_type == SUCCESS:
+            if notification_type in [SUCCESS, SUCCESS_APN]:
                 pr.confirm()
                 pr.success = True
                 pr.extra_data.update(
@@ -99,7 +100,7 @@ class NisNotificationView(WesternUnionApi):
                 )
             elif notification_type == CANCEL:
                 pr.cancel()
-            elif notification_type == REJECT:
+            elif notification_type == REJECT_APN:
                 pr.purge()
             elif notification_type == REFUND:
                 pr.refund()
