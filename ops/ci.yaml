@@ -60,6 +60,7 @@ stages:
               -t $(Docker.url)/$(Docker.backend.repository):dev-$(tag) \
               --target dev \
               --push \
+              -f docker/Dockerfile \
               ./
             displayName: Docker build dev
 
@@ -164,6 +165,7 @@ stages:
               -t $(Docker.url)/$(Docker.backend.repository):prd-$(tag) \
               --target prd \
               --push \
+              -f docker/Dockerfile \
               ./
             displayName: Docker build prd
 
