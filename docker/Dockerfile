@@ -26,7 +26,6 @@ WORKDIR $PACKAGES_DIR
 RUN pip install pdm
 ADD ../pyproject.toml ./
 ADD ../pdm.lock ./
-# ADD ../pdm.toml.template ./pdm.toml
 RUN pdm config python.use_venv false
 RUN pdm config venv.in_project true
 RUN pdm sync --prod --no-editable --no-self
