@@ -1,9 +1,9 @@
 FROM python:3.11-slim-bookworm as base
 
-RUN apt-get update \
-    && apt-get install -y \
+RUN apt update \
+    && apt install --no-install-recommends -y \
         gcc curl libgdal-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && apt clean && rm -rf /var/lib/apt/lists/* \
     && addgroup --system --gid 82 hpg \
     && adduser \
         --system --uid 82 \
@@ -24,8 +24,8 @@ FROM base as builder
 
 WORKDIR $PACKAGES_DIR
 RUN pip install pdm
-ADD ../pyproject.toml ./
-ADD ../pdm.lock ./
+COPY ../pyproject.toml ./
+COPY ../pdm.lock ./
 RUN pdm config python.use_venv false
 RUN pdm config venv.in_project true
 RUN pdm sync --prod --no-editable --no-self
@@ -37,7 +37,7 @@ RUN pdm sync --no-editable --no-self
 WORKDIR /code
 COPY .. ./
 
-ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
 
@@ -49,5 +49,5 @@ COPY --chown=hpg:hpg .. ./
 COPY --chown=hpg:hpg --from=builder $PACKAGES_DIR $PACKAGES_DIR
 USER hpg
 
-ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]

@@ -19,12 +19,11 @@ case "$1" in
     dev)
         ./wait-for-it.sh db:5432
         python3 manage.py upgrade
-        python3 manage.py runserver 0.0.0.0:8000 
+        python3 manage.py runserver 0.0.0.0:8000
     ;;
     tests)
         ./wait-for-it.sh db:5432
-        python3 manage.py migrate
-        pytest
+        pytest --create-db
     ;;
     prd)
         production
