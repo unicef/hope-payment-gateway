@@ -18,7 +18,7 @@ services:
       target: prd
     command: |
       sh -c "
-        entrypoint.sh ./wait-for-it.sh db:5432
+        entrypoint.sh ./docker/wait-for-it.sh db:5432
         python3 manage.py upgrade
         entrypoint.sh prd
       "
@@ -72,7 +72,7 @@ services:
       target: prd
     command: |
       sh -c "
-        entrypoint.sh ./wait-for-it.sh db:5432
+        entrypoint.sh ./docker/wait-for-it.sh db:5432
         entrypoint.sh celery_worker
       "
     environment: *django-env
@@ -92,7 +92,7 @@ services:
       target: prd
     command: |
       sh -c "
-        entrypoint.sh ./wait-for-it.sh db:5432
+        entrypoint.sh ./docker/wait-for-it.sh db:5432
         entrypoint.sh celery_beat
       "
     environment: *django-env
