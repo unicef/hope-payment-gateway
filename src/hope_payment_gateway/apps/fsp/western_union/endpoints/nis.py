@@ -112,7 +112,6 @@ class NisNotificationView(WesternUnionApi):
         pr.save()
 
         return HttpResponse(resp, content_type="application/xml")
-        # return Response(resp)
 
 
 class NisNotificationJSONView(NisNotificationView):
