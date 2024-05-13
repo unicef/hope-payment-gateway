@@ -55,6 +55,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         "success",
         "remote_id",
         "auth_code",
+        "payout_amount",
     )
     list_filter = (
         ("parent", AutoCompleteFilter),

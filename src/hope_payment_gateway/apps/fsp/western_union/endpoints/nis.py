@@ -68,7 +68,7 @@ class NisNotificationView(WesternUnionApi):
         fsp_code = payload["transaction_id"]
         mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
-        delivered_quantity = payload["payment_details"]["destination"]["expected_payout_amount"]
+        payout_amount = payload["payment_details"]["destination"]["expected_payout_amount"]
 
         try:
             for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
@@ -91,11 +91,11 @@ class NisNotificationView(WesternUnionApi):
             if notification_type in [SUCCESS, SUCCESS_APN]:
                 pr.confirm()
                 pr.success = True
+                pr.payout_amount = payout_amount / 100
                 pr.extra_data.update(
                     {
                         "mtcn": mtcn,
                         "message_code": notification_type,
-                        "delivered_quantity": delivered_quantity,
                     }
                 )
             elif notification_type == CANCEL:
