@@ -49,7 +49,7 @@ def create_validation_payload(hope_payload):
     }
     amount_key = "destination_principal_amount" if transaction_type == WMF else "originators_principal_amount"
     financials = {
-        amount_key: hope_payload["amount"],
+        amount_key: hope_payload["amount"] * 100,
     }
     payment_details = {
         "recording_country_currency": {  # sending country

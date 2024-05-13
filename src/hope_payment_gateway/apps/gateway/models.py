@@ -129,12 +129,14 @@ class PaymentRecord(TimeStampedModel):
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
     fsp_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)
-    auth_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)  # Western Union MTCN
     success = models.BooleanField(null=True, blank=True)
     status = FSMField(default=PENDING, protected=False, db_index=True, choices=STATUSES)
     message = models.CharField(max_length=4096, null=True, blank=True)
     payload = models.JSONField(default=dict, null=True, blank=True)
     extra_data = models.JSONField(default=dict, null=True, blank=True)
+
+    auth_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)  # Western Union MTCN
+    payout_amount = models.DecimalField(decimal_places=2, max_digits=12, null=True)
 
     def __str__(self):
         return f"{self.record_code} / {self.status}"
