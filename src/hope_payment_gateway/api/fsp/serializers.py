@@ -154,7 +154,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "status",
             "message",
             "hope_status",
-            "extra_data",
+            "payout_amount",
         )
 
 
@@ -177,5 +177,5 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
             "hope_status",
             "message",
             "payload",
-            "extra_data",
+            "payout_amount",
         )
