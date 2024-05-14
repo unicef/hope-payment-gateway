@@ -134,7 +134,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
 
 class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = PaymentRecordSerializer
-    queryset = PaymentRecord.objects.all()
+    queryset = PaymentRecord.objects.select_related("parent")
     lookup_field = "remote_id"
     filterset_class = PaymentRecordFilter
     search_fields = ("remote_id", "record_code")
