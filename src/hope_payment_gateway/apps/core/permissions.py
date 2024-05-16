@@ -20,5 +20,5 @@ class WhitelistPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if config.WHITELISTED_IPS:
-            return get_client_ip(request) in config.WHITELISTED_IPS.split(";") or settings.DEBUG
+            return get_client_ip(request) in config.WHITELISTED_IPS.split(";")
         return True
