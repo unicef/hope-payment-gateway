@@ -19,4 +19,6 @@ class WhitelistPermission(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return get_client_ip(request) in config.WESTERN_UNION_WHITELISTED_IPS.split(";") or settings.DEBUG
+        if config.WHITELISTED_IPS:
+            return get_client_ip(request) in config.WHITELISTED_IPS.split(";") or settings.DEBUG
+        return True

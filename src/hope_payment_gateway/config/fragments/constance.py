@@ -19,7 +19,8 @@ CONSTANCE_CONFIG = {
     ),
     "WESTERN_UNION_DAS_IDENTIFIER": ("WGQCUS1250T", "Identifier", str),
     "WESTERN_UNION_DAS_COUNTER": ("US125QCUSD1T", "Counter", str),
-    "WESTERN_UNION_WHITELISTED_IPS": ("127.0.0.1", "IPs", str),
     "WESTERN_UNION_WHITELISTED_ENV": ("uat", "Western Union Env", str),
+    "WHITELISTED_IPS": ("127.0.0.1", "IPs", str),
+    "WHITELIST_ENABLED": (True, "Whitelist Enabled", bool),
 }
 CONSTANCE_REDIS_CONNECTION = CACHE_URL
