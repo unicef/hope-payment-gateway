@@ -19,6 +19,6 @@ class WhitelistPermission(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if config.WHITELISTED_IPS:
+        if config.WHITELIST_ENABLED:
             return get_client_ip(request) in config.WHITELISTED_IPS.split(";")
         return True

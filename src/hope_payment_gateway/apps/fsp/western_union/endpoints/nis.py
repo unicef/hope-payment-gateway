@@ -10,6 +10,7 @@ from rest_framework_xml.parsers import XMLParser
 from rest_framework_xml.renderers import XMLRenderer
 from zeep.exceptions import ValidationError
 
+from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.exceptions import InvalidRequest
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
@@ -23,7 +24,7 @@ SUCCESS_APN = "BIS012"
 
 
 class WesternUnionApi(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (WhitelistPermission,)
     serializer_class = None
 
 

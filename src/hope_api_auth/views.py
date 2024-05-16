@@ -8,14 +8,14 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from hope_payment_gateway.apps.core.permissions import WhitelistPermission
-
 from .auth import GrantedPermission, LoggingTokenAuthentication
 from .models import APILogEntry, Grant
 
 
 class LoggingAPIView(APIView):
-    permission_classes = [GrantedPermission, WhitelistPermission]
+    permission_classes = [
+        GrantedPermission,
+    ]
     authentication_classes = [LoggingTokenAuthentication]
     permission = Grant.API_READ_ONLY
     log_http_methods = ["POST", "PUT", "DELETE"]
