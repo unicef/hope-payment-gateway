@@ -98,9 +98,9 @@ class NisNotificationView(WesternUnionApi):
                         "message_code": notification_type,
                     }
                 )
-            elif notification_type == CANCEL:
+            elif notification_type == [CANCEL, REJECT_APN]:
                 pr.cancel()
-            elif notification_type == REJECT_APN:
+            elif notification_type == PURGED:
                 pr.purge()
             elif notification_type == REFUND:
                 pr.refund()
