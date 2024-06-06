@@ -31,9 +31,7 @@ class FinancialServiceProviderConfig(models.Model):
     key = models.CharField(max_length=16, db_index=True, unique=True)
     label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
-    delivery_mechanism = models.ForeignKey(
-        DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp", null=True, blank=True
-    )
+    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
@@ -101,7 +99,9 @@ class PaymentInstruction(TimeStampedModel):
     def get_payload(self):
         payload = self.payload.copy()
         if "config_key" in self.extra:
-            config_payload = self.fsp.strategy.get_configuration(self.extra["config_key"])
+            config_payload = self.fsp.strategy.get_configuration(
+                self.extra["config_key"], self.extra.get("delivery_mechanism", "cash")  # temp fix
+            )
             payload.update(config_payload)
         return payload
 

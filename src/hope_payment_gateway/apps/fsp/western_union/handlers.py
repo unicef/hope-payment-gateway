@@ -8,10 +8,12 @@ class WesternUnionHandler(FSPProcessor):
         for record in records:
             send_money(record.get_payload())
 
-    def get_configuration(self, config_key):
+    def get_configuration(self, config_key, delivery_mechanism):
         wu = FinancialServiceProvider.objects.get(vision_vendor_number="1900723202")
         try:
-            config = FinancialServiceProviderConfig.objects.get(key=config_key, fsp=wu).configuration
+            config = FinancialServiceProviderConfig.objects.get(
+                key=config_key, fsp=wu, delivery_mechanism__code=delivery_mechanism
+            ).configuration
         except FinancialServiceProviderConfig.DoesNotExist:
             config = wu.configuration
         return config
