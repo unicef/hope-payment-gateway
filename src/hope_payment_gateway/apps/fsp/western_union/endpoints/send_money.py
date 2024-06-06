@@ -38,10 +38,10 @@ def create_validation_payload(hope_payload):
 
     receiver = {
         "name": {
-            # "first_name": hope_payload["first_name"],
-            # "last_name": hope_payload["last_name"],
-            "first_name": str(hope_payload["first_name"].encode("utf-8"))[2:-1],
-            "last_name": str(hope_payload["last_name"].encode("utf-8"))[2:-1],
+            "first_name": hope_payload["first_name"],
+            "last_name": hope_payload["last_name"],
+            # "first_name": str(hope_payload["first_name"].encode("utf-8"))[2:-1],
+            # "last_name": str(hope_payload["last_name"].encode("utf-8"))[2:-1],
             "name_type": "D",
         },
         "contact_phone": phone_number,
