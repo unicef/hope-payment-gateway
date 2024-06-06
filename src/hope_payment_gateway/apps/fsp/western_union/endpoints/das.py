@@ -2,7 +2,7 @@ from constance import config
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import unicef
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 
 
 def create_usd():
@@ -123,6 +123,7 @@ def das_delivery_services(destination_country, destination_currency, create_corr
 
 
 def das_delivery_option_template(destination_country, destination_currency, template_code):
+    obj = Corridor.objects.get(destination_country=destination_country, destination_currency=destination_currency)
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = {
         "name": "GetDeliveryOptionTemplate",
@@ -136,4 +137,54 @@ def das_delivery_option_template(destination_country, destination_currency, temp
         },
     }
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
+    context = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
+
+    if "content" in context:
+        rows = context["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
+        template = {}
+        structure = []
+        service_provider_code = False
+        if rows and not obj.template:
+            for row in rows["GETDELIVERYOPTIONTEMPLATE"]:
+                t_index = row["T_INDEX"]
+                if t_index != "000":
+                    first_value = row["DESCRIPTION"].split(";")[0].split(".")
+
+                    if len(first_value) == 1:
+                        code = row["DESCRIPTION"].split(";")[2].strip()
+                        description = row["DESCRIPTION"].split(";")[3].strip()
+                        base = template
+                        for item in structure[:-1]:
+                            base = base[item]
+                        if not base[structure[-1]]:
+                            base[structure[-1]] = code
+                        elif isinstance(base[structure[-1]], list):
+                            base[structure[-1]].append(code)
+                        else:
+                            base[structure[-1]] = [base[structure[-1]], code]
+                        if service_provider_code:
+                            sp, created = ServiceProviderCode.objects.get_or_create(
+                                code=code,
+                                description=description,
+                                country=destination_country,
+                                currency=destination_currency,
+                            )
+                    else:
+                        base = template
+                        structure = first_value
+                        for i in range(len(first_value)):
+                            field = first_value[i]
+                            if i == len(first_value) - 1:
+                                base[field] = None
+                            else:
+                                if field not in base:
+                                    base[field] = {}
+                                base = base[field]
+                        if first_value == ["wallet_details", "service_provider_code"]:
+                            service_provider_code = True
+                        else:
+                            service_provider_code = False
+            obj.template = template
+            obj.save()
+
+        return context
