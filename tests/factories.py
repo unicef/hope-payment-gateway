@@ -9,7 +9,7 @@ from strategy_field.utils import fqn
 
 from hope_api_auth.models import APIToken, Grant
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
     FinancialServiceProvider,
@@ -65,6 +65,11 @@ class GroupFactory(factory.django.DjangoModelFactory):
 class CorridorFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Corridor
+
+
+class ServiceProviderCodeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ServiceProviderCode
 
 
 class SystemFactory(factory.django.DjangoModelFactory):

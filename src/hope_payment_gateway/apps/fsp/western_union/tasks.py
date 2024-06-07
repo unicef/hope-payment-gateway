@@ -1,6 +1,10 @@
 from constance import config
 
-from hope_payment_gateway.apps.fsp.western_union.endpoints.das import das_countries_currencies
+from hope_payment_gateway.apps.fsp.western_union.endpoints.das import (
+    das_countries_currencies,
+    das_delivery_option_template,
+)
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentInstruction, PaymentRecord
 from hope_payment_gateway.celery import app
 
@@ -31,3 +35,11 @@ def western_union_send_task(vision_vendor_number="1900723202", tag=None, thresho
 @app.task
 def update_corridors():
     das_countries_currencies(create_corridors=True)
+
+
+@app.task
+def update_templates():
+    for corridor in Corridor.objects.all():
+        das_delivery_option_template(
+            corridor.destination_country, corridor.destination_currency, corridor.template_code
+        )
