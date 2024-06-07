@@ -9,6 +9,7 @@ from factories import (
     FinancialServiceProviderFactory,
     PaymentInstructionFactory,
     PaymentRecordFactory,
+    ServiceProviderCodeFactory,
 )
 
 
@@ -30,6 +31,11 @@ def p_record(request, db, p_instruction):
 @frozenfixture()
 def corridor(request, db):
     return CorridorFactory()
+
+
+@frozenfixture()
+def service_provider_code(request, db):
+    return ServiceProviderCodeFactory()
 
 
 @frozenfixture()
@@ -66,3 +72,9 @@ def test_api_config(request, django_app, configuration):
 @contract(LastModifiedRecorder)
 def test_api_wu_corridors(request, django_app, corridor):
     return reverse("api:wu-corridor-list")
+
+
+@pytest.mark.django_db
+@contract(LastModifiedRecorder)
+def test_api_wu_service_provider_code(request, django_app, service_provider_code):
+    return reverse("api:wu-service-provider-code-list")

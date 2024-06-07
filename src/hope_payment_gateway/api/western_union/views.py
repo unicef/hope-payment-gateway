@@ -1,8 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
 
-from hope_payment_gateway.api.western_union.filters import CorridorFilter
-from hope_payment_gateway.api.western_union.serializers import CorridorSerializer
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor
+from hope_payment_gateway.api.western_union.filters import CorridorFilter, ServiceProviderCodeFilter
+from hope_payment_gateway.api.western_union.serializers import CorridorSerializer, ServiceProviderCodeSerializer
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 
 
 class ProtectedMixin:
@@ -16,3 +16,11 @@ class CorridorViewSet(ProtectedMixin, ModelViewSet):
 
     filterset_class = CorridorFilter
     search_fields = ["description"]
+
+
+class ServiceProviderCodeViewSet(ProtectedMixin, ModelViewSet):
+    serializer_class = ServiceProviderCodeSerializer
+    queryset = ServiceProviderCode.objects.all()
+
+    filterset_class = ServiceProviderCodeFilter
+    search_fields = ["description", "code"]
