@@ -28,7 +28,7 @@ class FinancialServiceProvider(TimeStampedModel):
 
 
 class FinancialServiceProviderConfig(models.Model):
-    key = models.CharField(max_length=16, db_index=True, unique=True)
+    key = models.CharField(max_length=16, db_index=True)
     label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
     delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
