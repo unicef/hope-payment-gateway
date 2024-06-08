@@ -133,9 +133,9 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
     def get_hope_status(self, obj: PaymentRecord) -> str:
         return {
             "PENDING": "Pending",
-            "TRANSFERRED_TO_FSP": "Transaction Successful",
+            "TRANSFERRED_TO_FSP": "Distribution Successful",
             "ERROR": "Transaction Erroneous",
-            "TRANSFERRED_TO_BENEFICIARY": "Distribution Successful",
+            "TRANSFERRED_TO_BENEFICIARY": "Payment Successful",
             "CANCELLED": "Force failed",
             "REFUND": "Force failed",
             "PURGED": "Not Distributed",
