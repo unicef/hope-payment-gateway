@@ -11,6 +11,7 @@ router.register(r"delivery_mechanisms", views.DeliveryMechanismViewSet, basename
 router.register(r"fsp", views.FinancialServiceProviderViewSet, basename="fsp")
 router.register(r"payment_instructions", views.PaymentInstructionViewSet, basename="payment-instruction")
 router.register(r"payment_records", views.PaymentRecordViewSet, basename="payment-record")
+router.register(r"export_templates", views.ExportTemplateViewSet, basename="export-template")
 router.register(r"config", views.ConfigurationViewSet, basename="config")
 
 router.register(r"wu/corridors", wu_views.CorridorViewSet, basename="wu-corridor")

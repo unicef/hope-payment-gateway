@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from constance import config
 from rest_framework import permissions
 
