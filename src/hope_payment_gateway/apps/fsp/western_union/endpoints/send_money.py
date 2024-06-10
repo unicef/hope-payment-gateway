@@ -141,12 +141,13 @@ def send_money(hope_payload):
         pr = PaymentRecord.objects.get(record_code=record_code, status=PaymentRecord.PENDING)
     except PaymentRecord.DoesNotExist:
         return None
-
     try:
         payload = create_validation_payload(hope_payload)
         response = send_money_validation(payload)
+        pr.refresh_from_db()
         if response["code"] != 200:
             pr.message = f"Validation failed: {response['error']}"
+            pr.success = False
             pr.save()
             return pr
         smv_payload = serialize_object(response["content"])
@@ -185,6 +186,7 @@ def send_money(hope_payload):
         payload[key] = value
 
     response = send_money_store(payload)
+    pr.refresh_from_db()
     if response["code"] == 200:
         pr.message, pr.success = "Send Money Store: Success", True
         pr.store()
