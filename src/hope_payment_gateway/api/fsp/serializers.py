@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
+    ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -179,3 +180,11 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
             "payload",
             "payout_amount",
         )
+
+
+class ExportTemplateSerializer(serializers.ModelSerializer):
+    fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
+
+    class Meta:
+        model = ExportTemplate
+        fields = ("query", "fsp", "config_key")

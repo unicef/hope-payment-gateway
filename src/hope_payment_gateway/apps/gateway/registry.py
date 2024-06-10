@@ -12,8 +12,9 @@ class FSPProcessor:
         pass
 
 
-registry = Registry(FSPProcessor)
-
-
 class DefaultProcessor(FSPProcessor):
     pass
+
+
+registry = Registry(FSPProcessor)
+export_registry = Registry(FSPProcessor)

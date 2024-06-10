@@ -27,6 +27,7 @@ from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorrid
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
+    ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -262,3 +263,9 @@ class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         "name",
     )
     search_fields = ("code", "name")
+
+
+@admin.register(ExportTemplate)
+class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = ("fsp", "config_key", "delivery_mechanism")
+    search_fields = ("config_key", "delivery_mechanism__name")
