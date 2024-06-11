@@ -1,3 +1,5 @@
+import logging
+
 from constance import config
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.das import (
@@ -26,6 +28,9 @@ def western_union_send_task(vision_vendor_number="1900723202", tag=None, thresho
             records_count += records.count()
             if records_count > threshold:
                 break
+
+            logging.info(f"Sending {records_count} records {pi} to Western Union")
+            print(f"PRINT: Sending {records_count} records {pi} to Western Union")
 
             fsp.strategy.notify(records)
             pi.status = PaymentInstruction.PROCESSED
