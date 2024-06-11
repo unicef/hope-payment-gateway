@@ -124,7 +124,7 @@ def send_money_validation(payload):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
     sentry_sdk.capture_message("Western Union: Send Money Validation")
-    print(payload["foreign_remote_number"].get("reference_no", None))
+    print(payload.get("foreign_remote_number", dict()).get("reference_no", None))
     return client.response_context(
         "sendmoneyValidation", payload, "SendmoneyValidation_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
     )
