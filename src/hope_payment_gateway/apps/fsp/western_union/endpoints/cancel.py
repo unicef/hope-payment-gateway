@@ -1,3 +1,5 @@
+import logging
+
 from constance import config
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
@@ -39,7 +41,8 @@ def cancel_request(frm, mtcn, database_key, reason=WIC):
     }
 
     client = WesternUnionClient("CancelSend_Service_H2HService.wsdl")
-    print("CANCEL", payload.get("foreign_remote_system", dict()).get("reference_no", None))
+    ref_no = payload.get("foreign_remote_system", dict()).get("reference_no", "N/A")
+    logging.info(f"CANCEL {ref_no}")
     return client.response_context("CancelSend", payload, "CancelSend_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
@@ -83,7 +86,8 @@ def reset_mtcns(mtcns):
             database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
         except TypeError:
             database_key = None
-            print("ERROR", mtcn)
+            logging.warn(f"ERROR {mtcn}")
         response = cancel_request(frm, mtcn, database_key)
         if response["code"] != 200:
-            print(response["code"], mtcn)
+            code = response["code"]
+            logging.warn(f"{code} {mtcn}")

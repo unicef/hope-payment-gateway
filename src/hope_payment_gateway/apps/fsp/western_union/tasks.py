@@ -30,8 +30,6 @@ def western_union_send_task(vision_vendor_number="1900723202", tag=None, thresho
                 break
 
             logging.info(f"Sending {records_count} records {pi} to Western Union")
-            print(f"PRINT: Sending {records_count} records {pi} to Western Union")
-
             fsp.strategy.notify(records)
             pi.status = PaymentInstruction.PROCESSED
             pi.save()
