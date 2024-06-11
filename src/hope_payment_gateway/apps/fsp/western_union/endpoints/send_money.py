@@ -1,6 +1,7 @@
 import random
 
 import phonenumbers
+import sentry_sdk
 from constance import config
 from django_fsm import TransitionNotAllowed
 from phonenumbers.phonenumberutil import NumberParseException
@@ -122,6 +123,8 @@ def create_validation_payload(hope_payload):
 def send_money_validation(payload):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
+    sentry_sdk.capture_message("Western Union: Send Money Validation")
+    print(payload["foreign_remote_number"].get("reference_no", None))
     return client.response_context(
         "sendmoneyValidation", payload, "SendmoneyValidation_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
     )
@@ -130,6 +133,8 @@ def send_money_validation(payload):
 def send_money_store(payload):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     client = WesternUnionClient("SendMoneyStore_Service_H2HService.wsdl")
+    sentry_sdk.capture_message("Western Union: Send Money Store")
+    print(payload.get("mtcn", None))
     return client.response_context(
         "SendMoneyStore_H2H", payload, "SendMoneyStore_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
     )

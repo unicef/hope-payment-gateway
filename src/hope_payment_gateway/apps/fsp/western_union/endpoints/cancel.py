@@ -71,3 +71,18 @@ def cancel(pk):
     pr.extra_data.update(extra_data)
     pr.save()
     return pr
+
+
+def reset_mtcns(mtcns):
+    frm = {"counter_id": "US125QCUSD8P", "identifier": "WGQCUS1250P", "reference_no": "RCPT-7050-24-0.198.578"}
+    for mtcn in mtcns:
+        response = search_request(frm, mtcn)
+        payload = response["content"]
+        try:
+            database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
+        except TypeError:
+            database_key = None
+            print("ERROR", mtcn)
+        response = cancel_request(frm, mtcn, database_key)
+        if response["code"] != 200:
+            print(response["code"], mtcn)
