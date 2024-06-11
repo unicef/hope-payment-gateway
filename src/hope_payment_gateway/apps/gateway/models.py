@@ -1,11 +1,15 @@
-from django.db import models
+import csv
 
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+from adminactions.api import delimiters, quotes
 from django_fsm import FSMField, transition
 from model_utils.models import TimeStampedModel
 from strategy_field.fields import StrategyField
 
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.gateway.registry import registry
+from hope_payment_gateway.apps.gateway.registry import export_registry, registry
 
 
 class DeliveryMechanism(TimeStampedModel):
@@ -28,12 +32,10 @@ class FinancialServiceProvider(TimeStampedModel):
 
 
 class FinancialServiceProviderConfig(models.Model):
-    key = models.CharField(max_length=16, db_index=True, unique=True)
+    key = models.CharField(max_length=16, db_index=True)
     label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
-    delivery_mechanism = models.ForeignKey(
-        DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp", null=True, blank=True
-    )
+    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
@@ -101,7 +103,9 @@ class PaymentInstruction(TimeStampedModel):
     def get_payload(self):
         payload = self.payload.copy()
         if "config_key" in self.extra:
-            config_payload = self.fsp.strategy.get_configuration(self.extra["config_key"])
+            config_payload = self.fsp.strategy.get_configuration(
+                self.extra["config_key"], self.extra.get("delivery_mechanism", "cash_over_the_counter")  # temp fix
+            )
             payload.update(config_payload)
         return payload
 
@@ -191,3 +195,31 @@ class PaymentRecord(TimeStampedModel):
     @transition(field=status, source="*", target=ERROR, permission="western_union.change_paymentrecordlog")
     def fail(self):
         pass
+
+
+class ExportTemplate(models.Model):
+    query = models.TextField()
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
+    config_key = models.CharField(max_length=32)
+    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="template")
+    strategy = StrategyField(registry=export_registry)
+
+    header = models.BooleanField(default=True)
+    delimiter = models.CharField(choices=list(zip(delimiters, delimiters)), default=",")
+    quotechar = models.CharField(choices=list(zip(quotes, quotes)), default="'")
+    quoting = models.IntegerField(
+        choices=(
+            (csv.QUOTE_ALL, _("All")),
+            (csv.QUOTE_MINIMAL, _("Minimal")),
+            (csv.QUOTE_NONE, _("None")),
+            (csv.QUOTE_NONNUMERIC, _("Non Numeric")),
+        ),
+        default=csv.QUOTE_ALL,
+    )
+    escapechar = models.CharField(choices=(("", ""), ("\\", "\\")), default="", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.fsp} / {self.config_key}"
+
+    class Meta:
+        unique_together = ("fsp", "config_key")
