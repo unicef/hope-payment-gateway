@@ -38,10 +38,10 @@ def create_validation_payload(hope_payload):
 
     receiver = {
         "name": {
-            # "first_name": hope_payload["first_name"],
-            # "last_name": hope_payload["last_name"],
-            "first_name": str(hope_payload["first_name"].encode("utf-8"))[2:-1],
-            "last_name": str(hope_payload["last_name"].encode("utf-8"))[2:-1],
+            "first_name": hope_payload["first_name"],
+            "last_name": hope_payload["last_name"],
+            # "first_name": str(hope_payload["first_name"].encode("utf-8"))[2:-1],
+            # "last_name": str(hope_payload["last_name"].encode("utf-8"))[2:-1],
             "name_type": "D",
         },
         "contact_phone": phone_number,
@@ -122,6 +122,8 @@ def create_validation_payload(hope_payload):
 def send_money_validation(payload):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
+    sentry_sdk.capture_message("Western Union: Send Money Validation")
+    print(payload['foreign_remote_number'].get('reference_no', None))
     return client.response_context(
         "sendmoneyValidation", payload, "SendmoneyValidation_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
     )
@@ -130,6 +132,8 @@ def send_money_validation(payload):
 def send_money_store(payload):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     client = WesternUnionClient("SendMoneyStore_Service_H2HService.wsdl")
+    sentry_sdk.capture_message("Western Union: Send Money Store")
+    print(payload.get('mtcn', None))
     return client.response_context(
         "SendMoneyStore_H2H", payload, "SendMoneyStore_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
     )
@@ -145,8 +149,10 @@ def send_money(hope_payload):
     try:
         payload = create_validation_payload(hope_payload)
         response = send_money_validation(payload)
+        pr.refresh_from_db()
         if response["code"] != 200:
             pr.message = f"Validation failed: {response['error']}"
+            pr.success = False
             pr.save()
             return pr
         smv_payload = serialize_object(response["content"])
@@ -185,6 +191,7 @@ def send_money(hope_payload):
         payload[key] = value
 
     response = send_money_store(payload)
+    pr.refresh_from_db()
     if response["code"] == 200:
         pr.message, pr.success = "Send Money Store: Success", True
         pr.store()
