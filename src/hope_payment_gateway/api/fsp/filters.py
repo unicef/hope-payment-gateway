@@ -3,6 +3,7 @@ from django_filters import rest_framework as filters
 
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
+    ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -64,4 +65,13 @@ class PaymentRecordFilter(filters.FilterSet):
             "record_code": ["exact", "in"],
             "parent__remote_id": ["exact", "in"],
             "status": ["exact", "in"],
+        }
+
+
+class ExportTemplateFilter(filters.FilterSet):
+    class Meta:
+        model = ExportTemplate
+        fields = {
+            "fsp": ["exact"],
+            "config_key": ["exact"],
         }

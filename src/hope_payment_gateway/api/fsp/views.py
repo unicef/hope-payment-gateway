@@ -8,6 +8,7 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from hope_api_auth.views import LoggingAPIViewSet
 from hope_payment_gateway.api.fsp.filters import (
     DeliveryMechanismFilter,
+    ExportTemplateFilter,
     FinancialServiceProviderConfigFilter,
     FinancialServiceProviderFilter,
     PaymentInstructionFilter,
@@ -15,6 +16,7 @@ from hope_payment_gateway.api.fsp.filters import (
 )
 from hope_payment_gateway.api.fsp.serializers import (
     DeliveryMechanismSerializer,
+    ExportTemplateSerializer,
     FinancialServiceProviderConfigSerializer,
     FinancialServiceProviderSerializer,
     PaymentInstructionSerializer,
@@ -23,8 +25,11 @@ from hope_payment_gateway.api.fsp.serializers import (
 )
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel
+from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
+from hope_payment_gateway.apps.gateway.admin import PaymentInstructionAdmin
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
+    ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -131,6 +136,24 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         }
         return Response({"remote_id": obj.remote_id, "errors": error_dict}, status=HTTP_400_BAD_REQUEST)
 
+    @action(detail=True)  # , methods=["post"])
+    def download(self, request, remote_id=None):
+
+        obj = self.get_object()
+        try:
+            dm = DeliveryMechanism.objects.get(code=obj.extra.get("delivery_mechanism", None))
+            export = ExportTemplate.objects.get(
+                fsp=obj.fsp, config_key=obj.extra.get("config_key", None), delivery_mechanism=dm
+            )
+            queryset = PaymentRecord.objects.filter(parent=obj).select_related("parent__fsp")
+
+            return export_as_template_impl(
+                queryset,
+                export.query.split("\r\n"),
+            )
+        except ExportTemplate.DoesNotExist as exc:
+            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+
 
 class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = PaymentRecordSerializer
@@ -152,3 +175,10 @@ class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
             return Response({"message": "cancel triggered"})
         except TransitionNotAllowed as exc:
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+
+
+class ExportTemplateViewSet(ProtectedMixin, LoggingAPIViewSet):
+    serializer_class = ExportTemplateSerializer
+    queryset = ExportTemplate.objects.select_related("fsp")
+    filterset_class = ExportTemplateFilter
+    search_fields = ("config_key",)
