@@ -39,7 +39,7 @@ def cancel_request(frm, mtcn, database_key, reason=WIC):
     }
 
     client = WesternUnionClient("CancelSend_Service_H2HService.wsdl")
-    print('CANCEL', payload.get("foreign_remote_system", dict()).get("reference_no", None))
+    print("CANCEL", payload.get("foreign_remote_system", dict()).get("reference_no", None))
     return client.response_context("CancelSend", payload, "CancelSend_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
