@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 from requests import Session
+from urllib3.connectionpool import HTTPSConnectionPool
 from zeep import Client, Settings
 from zeep.exceptions import Fault, TransportError
 from zeep.transports import Transport
@@ -42,7 +43,7 @@ class WesternUnionClient:
             title = service_name
             format = "json"
             code = 200
-        except TransportError as exc:
+        except (TransportError, HTTPSConnectionPool) as exc:
             title = f"{exc.message} [{exc.status_code}]"
             code = 400
             logger.exception(exc)
@@ -59,6 +60,10 @@ class WesternUnionClient:
             except BaseException:  # noqa: B036
                 error = "generic error"
             code = 400
+            logger.exception(exc)
+        except Exception as exc:
+            code = 400
+            error = str(exc)
             logger.exception(exc)
 
         return {"title": title, "content": response, "format": format, "code": code, "error": error}
