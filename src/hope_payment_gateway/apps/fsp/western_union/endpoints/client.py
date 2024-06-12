@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 from requests import Session
-from urllib3.connectionpool import HTTPSConnectionPool
+from requests.exceptions import ConnectTimeout
 from zeep import Client, Settings
 from zeep.exceptions import Fault, TransportError
 from zeep.transports import Transport
@@ -43,7 +43,7 @@ class WesternUnionClient:
             title = service_name
             format = "json"
             code = 200
-        except (TransportError, HTTPSConnectionPool) as exc:
+        except (TransportError, ConnectTimeout) as exc:
             title = f"{exc.message} [{exc.status_code}]"
             code = 400
             logger.exception(exc)
