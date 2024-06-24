@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 
-from django_fsm import TransitionNotAllowed
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from viewflow.fsm import TransitionNotAllowed
 
 from hope_api_auth.views import LoggingAPIViewSet
 from hope_payment_gateway.api.fsp.filters import (
@@ -25,14 +25,15 @@ from hope_payment_gateway.api.fsp.serializers import (
 )
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel
-from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
-from hope_payment_gateway.apps.gateway.admin import PaymentInstructionAdmin
+from hope_payment_gateway.apps.gateway.actions import export_as_template_impl
+from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
+    PaymentInstructionState,
     PaymentRecord,
 )
 
@@ -87,7 +88,8 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     def _change_status(self, status):
         instruction = self.get_object()
         try:
-            transaction = getattr(instruction, status)
+            flow = PaymentInstructionFlow(instruction)
+            transaction = getattr(flow, status)
             transaction()
             instruction.save()
             return Response({"status": instruction.status})
@@ -117,7 +119,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     @action(detail=True, methods=["post"])
     def add_records(self, request, remote_id=None):
         obj = self.get_object()
-        if obj.status != PaymentInstruction.OPEN:
+        if obj.status != PaymentInstructionState.OPEN:
             return Response(
                 {"message": "Cannot add records to a not Open Plan", "status": obj.status}, status=HTTP_400_BAD_REQUEST
             )

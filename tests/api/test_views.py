@@ -5,7 +5,7 @@ from django.urls import reverse
 import pytest
 from factories import PaymentRecordFactory
 
-from hope_payment_gateway.apps.gateway.models import PaymentInstruction
+from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentInstructionState
 
 
 @pytest.mark.django_db
@@ -71,7 +71,7 @@ def test_payment_record_list(api_client, action, detail, status, token_user):
 @pytest.mark.django_db
 def test_instructions_add_records_ok(api_client, token_user):
     user, token = token_user
-    pr = PaymentRecordFactory(parent__status=PaymentInstruction.OPEN)
+    pr = PaymentRecordFactory(parent__status=PaymentInstructionState.OPEN)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     payload = [
         {"record_code": "adalberto", "remote_id": "adalberto", "payload": {"key": "value"}},
@@ -87,7 +87,7 @@ def test_instructions_add_records_ok(api_client, token_user):
 @pytest.mark.django_db
 def test_instructions_add_records_ko(api_client, token_user):
     user, token = token_user
-    pr = PaymentRecordFactory(parent__status=PaymentInstruction.OPEN)
+    pr = PaymentRecordFactory(parent__status=PaymentInstructionState.OPEN)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     payload = [
         {
@@ -125,7 +125,7 @@ def test_instructions_add_records_ko(api_client, token_user):
 @pytest.mark.django_db
 def test_instructions_add_records_invalid_status(api_client, token_user):
     user, token = token_user
-    pr = PaymentRecordFactory(parent__status=PaymentInstruction.ABORTED)
+    pr = PaymentRecordFactory(parent__status=PaymentInstructionState.ABORTED)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
     assert view.status_code == 400

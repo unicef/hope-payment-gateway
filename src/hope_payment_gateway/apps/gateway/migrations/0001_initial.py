@@ -3,7 +3,6 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import django_fsm
 import model_utils.fields
 import strategy_field.fields
 import uuid
@@ -47,7 +46,7 @@ class Migration(migrations.Migration):
                 ("unicef_id", models.CharField(db_index=True, max_length=255)),
                 (
                     "status",
-                    django_fsm.FSMField(
+                    models.CharField(
                         choices=[
                             ("DRAFT", "Draft"),
                             ("OPEN", "Open"),
@@ -95,7 +94,7 @@ class Migration(migrations.Migration):
                 ("success", models.BooleanField(blank=True, null=True)),
                 (
                     "status",
-                    django_fsm.FSMField(
+                    models.CharField(
                         choices=[
                             ("PENDING", "Pending"),
                             ("TRANSFERRED_TO_FSP", "Transferred to FSP"),

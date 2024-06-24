@@ -4,6 +4,7 @@ from constance import config
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import WIC, agent, unicef
+from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 
@@ -59,7 +60,8 @@ def cancel(pk):
     if not database_key:
         pr.message = "Search Error: No Money Transfer Key"
         pr.success = False
-        pr.fail()
+        flow = PaymentRecordFlow(pr)
+        flow.fail()
         pr.save()
         return pr
 
