@@ -114,6 +114,8 @@ class PaymentRecord(TimeStampedModel):
     auth_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)  # Western Union MTCN
     payout_amount = models.DecimalField(decimal_places=2, max_digits=12, null=True, blank=True)
 
+    marked_for_payment = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.record_code} / {self.status}"
 
