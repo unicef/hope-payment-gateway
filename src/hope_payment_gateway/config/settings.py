@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     "django_extensions",
     "django_filters",
     "corsheaders",
-    "django_fsm",
+    "viewflow",
     "social_django",
     "admin_extra_buttons",
     "adminactions",

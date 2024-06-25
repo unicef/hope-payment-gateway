@@ -1,12 +1,12 @@
 from django.http import HttpResponse
 
 import sentry_sdk
-from django_fsm import TransitionNotAllowed
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 from rest_framework_xml.renderers import XMLRenderer
+from viewflow.fsm import TransitionNotAllowed
 from zeep.exceptions import ValidationError
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission

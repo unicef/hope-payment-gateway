@@ -7,7 +7,7 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
     send_money,
     send_money_validation,
 )
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")
@@ -85,7 +85,7 @@ def test_send_complete(django_app, admin_user):
     send_money(hope_payload)
     pr.refresh_from_db()
     assert pr.success
-    assert pr.status == PaymentRecord.TRANSFERRED_TO_FSP
+    assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
     assert PaymentRecord.objects.filter(record_code=record_code).count() == 1
 
 
@@ -127,7 +127,7 @@ def test_send_complete_corridor(django_app, admin_user):
     send_money(hope_payload)
     pr.refresh_from_db()
     assert pr.success
-    assert pr.status == PaymentRecord.TRANSFERRED_TO_FSP
+    assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
     assert "mtcn" in pr.extra_data.keys()
 
 
@@ -156,7 +156,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user):
     send_money(hope_payload)
     pr.refresh_from_db()
     assert not pr.success
-    assert pr.status == PaymentRecord.ERROR
+    assert pr.status == PaymentRecordState.ERROR
     assert pr.message == "Invalid corridor for ES/EUR"
 
 
@@ -219,5 +219,5 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
     send_money(hope_payload)
     pr.refresh_from_db()
     assert not pr.success
-    assert pr.status == PaymentRecord.ERROR
+    assert pr.status == PaymentRecordState.ERROR
     assert pr.message == message

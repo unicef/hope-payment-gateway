@@ -4,8 +4,8 @@ import random
 import phonenumbers
 import sentry_sdk
 from constance import config
-from django_fsm import TransitionNotAllowed
 from phonenumbers.phonenumberutil import NumberParseException
+from viewflow.fsm import TransitionNotAllowed
 from zeep.helpers import serialize_object
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
@@ -13,7 +13,8 @@ from hope_payment_gateway.apps.fsp.western_union.endpoints.config import MONEY_I
 from hope_payment_gateway.apps.fsp.western_union.endpoints.helpers import integrate_payload
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException, PayloadMissingKey
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
+from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 
 def create_validation_payload(hope_payload):
@@ -146,7 +147,7 @@ def send_money_store(payload):
 def send_money(hope_payload):
     record_code = hope_payload["payment_record_code"]
     try:
-        pr = PaymentRecord.objects.get(record_code=record_code, status=PaymentRecord.PENDING)
+        pr = PaymentRecord.objects.get(record_code=record_code, status=PaymentRecordState.PENDING)
     except PaymentRecord.DoesNotExist:
         return None
     try:
@@ -164,7 +165,7 @@ def send_money(hope_payload):
         pr.save()
     except (InvalidCorridor, PayloadException, TransitionNotAllowed) as exc:
         pr.message = str(exc)
-        pr.status = PaymentRecord.ERROR
+        pr.status = PaymentRecordState.ERROR
         pr.success = False
         pr.save()
         return pr
@@ -197,7 +198,8 @@ def send_money(hope_payload):
     pr.refresh_from_db()
     if response["code"] == 200:
         pr.message, pr.success = "Send Money Store: Success", True
-        pr.store()
+        flow = PaymentRecordFlow(pr)
+        flow.store()
     else:
         pr.message, pr.success = f'Send Money Store: {response["error"]}', False
         pr.fail()

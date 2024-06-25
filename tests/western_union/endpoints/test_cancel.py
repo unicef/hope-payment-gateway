@@ -2,7 +2,8 @@ import responses
 from factories import PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
+from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/search_request.yaml")
@@ -50,7 +51,7 @@ def test_cancel(django_app, admin_user):
             "mtcn": mtcn,
             "foreign_remote_system": frm,
         },
-        status=PaymentRecord.TRANSFERRED_TO_FSP,
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
     cancel(pl.pk)
     pl.refresh_from_db()
@@ -66,4 +67,4 @@ def test_search_ko(django_app, admin_user):
     pl.refresh_from_db()
     assert pl.message == "Search Error: No Money Transfer Key"
     assert not pl.success
-    assert pl.status == PaymentRecord.ERROR
+    assert pl.status == PaymentRecordState.ERROR

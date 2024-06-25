@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from adminactions.api import delimiters, quotes
-from django_fsm import FSMField, transition
 from model_utils.models import TimeStampedModel
 from strategy_field.fields import StrategyField
 
@@ -48,25 +47,23 @@ class FinancialServiceProviderConfig(models.Model):
         unique_together = ("key", "fsp", "delivery_mechanism")
 
 
-class PaymentInstruction(TimeStampedModel):
-    DRAFT = "DRAFT"
-    OPEN = "OPEN"
-    READY = "READY"
-    CLOSED = "CLOSED"
-    ABORTED = "ABORTED"
-    PROCESSED = "PROCESSED"
+class PaymentInstructionState(models.TextChoices):
+    DRAFT = ("DRAFT", "Draft")
+    OPEN = ("OPEN", "Open")
+    CLOSED = ("CLOSED", "Closed")
+    READY = ("READY", "Ready")
+    PROCESSED = ("PROCESSED", "Processed")
+    ABORTED = ("ABORTED", "Aborted")
 
-    STATUSES = (
-        (DRAFT, "Draft"),
-        (OPEN, "Open"),
-        (CLOSED, "Closed"),
-        (READY, "Ready"),
-        (PROCESSED, "Processed"),
-        (ABORTED, "Aborted"),
-    )
+
+class PaymentInstruction(TimeStampedModel):
+
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     unicef_id = models.CharField(max_length=255, db_index=True)
-    status = FSMField(default=DRAFT, protected=False, db_index=True, choices=STATUSES)
+    status = models.CharField(
+        max_length=50, default=PaymentInstructionState.DRAFT, choices=PaymentInstructionState.choices, db_index=True
+    )
+
     payload = models.JSONField(default=dict, null=True, blank=True)
 
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
@@ -80,26 +77,6 @@ class PaymentInstruction(TimeStampedModel):
     def __str__(self):
         return f"{self.unicef_id} - {self.status}"
 
-    @transition(field=status, source=DRAFT, target=OPEN, permission="western_union.change_paymentinstruction")
-    def open(self):
-        pass
-
-    @transition(field=status, source=OPEN, target=CLOSED, permission="western_union.change_paymentinstruction")
-    def close(self):
-        pass
-
-    @transition(field=status, source=CLOSED, target=READY, permission="western_union.change_paymentinstruction")
-    def ready(self):
-        pass
-
-    @transition(field=status, source=READY, target=PROCESSED, permission="western_union.change_paymentinstruction")
-    def process(self):
-        pass
-
-    @transition(field=status, source="*", target=ABORTED, permission="western_union.change_paymentinstruction")
-    def abort(self):
-        pass
-
     def get_payload(self):
         payload = self.payload.copy()
         if "config_key" in self.extra:
@@ -110,31 +87,26 @@ class PaymentInstruction(TimeStampedModel):
         return payload
 
 
-class PaymentRecord(TimeStampedModel):
-    PENDING = "PENDING"
-    TRANSFERRED_TO_FSP = "TRANSFERRED_TO_FSP"
-    TRANSFERRED_TO_BENEFICIARY = "TRANSFERRED_TO_BENEFICIARY"
-    CANCELLED = "CANCELLED"
-    REFUND = "REFUND"
-    PURGED = "PURGED"
-    ERROR = "ERROR"
+class PaymentRecordState(models.TextChoices):
+    PENDING = ("PENDING", "Pending")
+    TRANSFERRED_TO_FSP = ("TRANSFERRED_TO_FSP", "Transferred to FSP")
+    TRANSFERRED_TO_BENEFICIARY = ("TRANSFERRED_TO_BENEFICIARY", "Transferred to Beneficiary")
+    CANCELLED = ("CANCELLED", "Cancelled")
+    REFUND = ("REFUND", "Refund")
+    PURGED = ("PURGED", "Purged")
+    ERROR = ("ERROR", "Error")
 
-    STATUSES = (
-        (PENDING, "Pending"),
-        (TRANSFERRED_TO_FSP, "Transferred to FSP"),
-        (TRANSFERRED_TO_BENEFICIARY, "Transferred to Beneficiary"),
-        (CANCELLED, "Cancelled"),
-        (REFUND, "Refund"),
-        (PURGED, "Purged"),
-        (ERROR, "Error"),
-    )
+
+class PaymentRecord(TimeStampedModel):
 
     remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
     fsp_code = models.CharField(max_length=64, db_index=True, null=True, blank=True)
     success = models.BooleanField(null=True, blank=True)
-    status = FSMField(default=PENDING, protected=False, db_index=True, choices=STATUSES)
+    status = models.CharField(
+        max_length=50, default=PaymentRecordState.PENDING, choices=PaymentRecordState.choices, db_index=True
+    )
     message = models.CharField(max_length=4096, null=True, blank=True)
     payload = models.JSONField(default=dict, null=True, blank=True)
     extra_data = models.JSONField(default=dict, null=True, blank=True)
@@ -151,50 +123,6 @@ class PaymentRecord(TimeStampedModel):
         payload["payment_record_code"] = self.record_code
         payload["remote_id"] = self.remote_id
         return payload
-
-    @transition(
-        field=status,
-        source=PENDING,
-        target=TRANSFERRED_TO_FSP,
-        permission="western_union.change_paymentrecordlog",
-    )
-    def store(self):
-        pass
-
-    @transition(
-        field=status,
-        source=TRANSFERRED_TO_FSP,
-        target=TRANSFERRED_TO_BENEFICIARY,
-        permission="western_union.change_paymentrecordlog",
-    )
-    def confirm(self):
-        pass
-
-    @transition(
-        field=status,
-        source=TRANSFERRED_TO_FSP,
-        target=PURGED,
-        permission="western_union.change_paymentrecordlog",
-    )
-    def purge(self):
-        pass
-
-    @transition(
-        field=status,
-        source=TRANSFERRED_TO_FSP,
-        target=REFUND,
-        permission="western_union.change_paymentrecordlog",
-    )
-    def refund(self):
-        pass
-
-    @transition(field=status, source="*", target=CANCELLED, permission="western_union.change_paymentrecordlog")
-    def cancel(self):
-        pass
-
-    @transition(field=status, source="*", target=ERROR, permission="western_union.change_paymentrecordlog")
-    def fail(self):
-        pass
 
 
 class ExportTemplate(models.Model):
