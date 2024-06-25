@@ -71,7 +71,7 @@ authors = [
     {name = "ddinicola"},
     {name = "Domenico DiNicola", email = "dom.dinicola@gmail.com"},
 ]
-requires-python = "<=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "Django",
     "celery[redis]",
