@@ -198,6 +198,7 @@ def send_money(hope_payload):
     pr.refresh_from_db()
     if response["code"] == 200:
         pr.message, pr.success = "Send Money Store: Success", True
+        pr.marked_for_payment = False
         flow = PaymentRecordFlow(pr)
         flow.store()
     else:

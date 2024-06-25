@@ -7,6 +7,7 @@ class WesternUnionHandler(FSPProcessor):
     def notify(self, records):
         for record in records:
             send_money(record.get_payload())
+        records.update(marked_for_payment=True)
 
     def get_configuration(self, config_key, delivery_mechanism):
         wu = FinancialServiceProvider.objects.get(vision_vendor_number="1900723202")

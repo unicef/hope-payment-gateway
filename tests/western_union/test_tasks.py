@@ -37,6 +37,9 @@ def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
     PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(5, parent__status=PaymentRecordState.PENDING, status=PaymentRecordState.PENDING)
+    PaymentRecordFactory.create_batch(
+        5, parent__status=PaymentRecordState.PENDING, status=PaymentRecordState.PENDING, marked_for_payment=True
+    )
 
     western_union_send_task(vision_vendor_number="1900723202", tag="tag", threshold=10)
     assert len(mock_class.mock_calls) == total
