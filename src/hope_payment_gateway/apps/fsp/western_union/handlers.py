@@ -1,18 +1,8 @@
-from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import send_money
-from hope_payment_gateway.apps.gateway.models import (
-    FinancialServiceProvider,
-    FinancialServiceProviderConfig,
-    PaymentRecord,
-)
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, FinancialServiceProviderConfig
 from hope_payment_gateway.apps.gateway.registry import FSPProcessor
 
 
 class WesternUnionHandler(FSPProcessor):
-    def notify(self, records):
-        to_process = list(PaymentRecord.objects.filter(id__in=records).values_list("id", flat=True))
-        records.update(marked_for_payment=True)
-        for record in PaymentRecord.objects.filter(id__in=to_process):
-            send_money(record.get_payload())
 
     def get_configuration(self, config_key, delivery_mechanism):
         wu = FinancialServiceProvider.objects.get(vision_vendor_number="1900723202")
