@@ -119,6 +119,7 @@ dependencies = [
     "wheel",
     "uwsgi",
     "zeep",
+    "django-phonenumber-field>=8.0.0",
 ]
 name = "hope_payment_gateway"
 version = "0.1"

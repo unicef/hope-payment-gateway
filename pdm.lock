@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:503480bda733bc6ebca0e703a78764d150ef17bb6412d938f4985baf75abb66f"
+content_hash = "sha256:987d810558201a63dfef4dc3540f99c8bb496b712af5b1755d334084d0261130"
 
 [[package]]
 name = "amqp"
@@ -803,6 +803,19 @@ dependencies = [
 files = [
     {file = "django_mptt-0.16.0-py3-none-any.whl", hash = "sha256:8716849ba3318d94e2e100ed0923a05c1ffdf8195f8472b690dbaf737d2af3b5"},
     {file = "django_mptt-0.16.0.tar.gz", hash = "sha256:56c9606bf0b329b5f5afd55dd8bfd073612ea1d5999b10903b09de62bee84c8e"},
+]
+
+[[package]]
+name = "django-phonenumber-field"
+version = "8.0.0"
+requires_python = ">=3.8"
+summary = "An international phone number field for django models."
+dependencies = [
+    "Django>=3.2",
+]
+files = [
+    {file = "django_phonenumber_field-8.0.0-py3-none-any.whl", hash = "sha256:196c917b70c01a98e327f482eb8a4a4a55a29891db551f99078585397370b3ba"},
+    {file = "django_phonenumber_field-8.0.0.tar.gz", hash = "sha256:8a560fe1b01b94c9de8cde22bc373b695f023cc6df4baba00264cb079da9f631"},
 ]
 
 [[package]]

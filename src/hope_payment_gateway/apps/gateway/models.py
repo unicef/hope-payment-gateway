@@ -8,12 +8,13 @@ from model_utils.models import TimeStampedModel
 from strategy_field.fields import StrategyField
 
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.gateway.registry import export_registry, registry
+from hope_payment_gateway.apps.gateway.registry import delivery_mechanism_registry, export_registry, registry
 
 
 class DeliveryMechanism(TimeStampedModel):
     code = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=128)
+    form = StrategyField(registry=delivery_mechanism_registry, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} [{self.code}]"
