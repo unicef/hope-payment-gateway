@@ -13,9 +13,3 @@ class WesternUnionHandler(FSPProcessor):
         except FinancialServiceProviderConfig.DoesNotExist:
             config = wu.configuration
         return config
-
-
-class CSVExportStrategy(FSPProcessor):
-
-    def export(self):
-        pass

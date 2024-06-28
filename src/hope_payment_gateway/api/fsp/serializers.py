@@ -39,13 +39,28 @@ class PayloadMixin:
 
 class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
 
+    form = serializers.SerializerMethodField()
+
+    def get_form(self, obj):
+        if obj.form:
+            form = obj.form.get_form()
+            return [
+                {
+                    field.name: {
+                        "label": field.label,
+                        "type": field.widget_type,
+                        "help_text": field.help_text,
+                        "validators": ", ".join(
+                            [getattr(validator, "__name__", str(validator)) for validator in field.field.validators]
+                        ),
+                    }
+                }
+                for field in form.visible_fields()
+            ]
+
     class Meta:
         model = DeliveryMechanism
-        fields = (
-            "id",
-            "code",
-            "name",
-        )
+        fields = ("id", "code", "name", "form")
 
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):

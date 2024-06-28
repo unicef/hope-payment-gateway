@@ -12,9 +12,15 @@ class FSPProcessor:
         pass
 
 
+class DeliveryMechanismProcessor:
+    def __init__(self, dm):
+        self.dm = dm
+
+
 class DefaultProcessor(FSPProcessor):
     pass
 
 
 registry = Registry(FSPProcessor)
 export_registry = Registry(FSPProcessor)
+delivery_mechanism_registry = Registry(DeliveryMechanismProcessor)

@@ -41,6 +41,19 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+class APIAdminMixin:
+    reverse_name = None
+
+    @link()
+    def api(self, button: button) -> Optional[str]:
+        if self.reverse_name and "original" in button.context:
+            button.href = reverse(f"api:{self.reverse_name}-list")
+            button.visible = True
+        else:
+            button.visible = False
+        return None
+
+
 class ImportCSVForm(Form):
     file = FileField(widget=FileInput(attrs={"accept": "text/csv"}))
 
@@ -258,12 +271,13 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 
 @admin.register(DeliveryMechanism)
-class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+class DeliveryMechanismAdmin(APIAdminMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
         "code",
         "name",
     )
     search_fields = ("code", "name")
+    reverse_name = "delivery_mechanism"
 
 
 @admin.register(ExportTemplate)
