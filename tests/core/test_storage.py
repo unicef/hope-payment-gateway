@@ -10,16 +10,13 @@ def data_set_storage(tmp_path):
     return DataSetStorage(location=str(tmp_path))
 
 
-def test_available_name_with_existing_file(data_set_storage):
+def test_readonly_storage(data_set_storage):
     """
     We test to see if a file can be created and deleted
     """
     file_name = "filetest.txt"
-    data_set_storage.save(file_name, ContentFile("original content"))
-    assert data_set_storage.exists(file_name)
-    available_name = data_set_storage.get_available_name(file_name)
-    assert available_name == file_name
-    assert not data_set_storage.exists(file_name), "The original file should have been deleted"
+    with pytest.raises(RuntimeError):
+        data_set_storage.save(file_name, ContentFile("original content"))
 
 
 def test_media_storage_reads_environment_variables(monkeypatch):

@@ -259,10 +259,7 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 @admin.register(DeliveryMechanism)
 class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = (
-        "code",
-        "name",
-    )
+    list_display = ("code", "name", "type")
     search_fields = ("code", "name")
 
 

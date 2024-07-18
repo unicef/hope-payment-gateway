@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from django.core.files.storage import FileSystemStorage
 
@@ -10,6 +11,17 @@ class DataSetStorage(FileSystemStorage):
         if self.exists(name):
             self.delete(name)
         return name
+
+    def save(self, name: str, content: Any, max_length: int | None = None) -> None:
+        raise RuntimeError("This storage cannot save files")
+
+    def delete(self, name: str) -> None:
+        raise RuntimeError("This storage cannot delete files")
+
+    def open(self, name: str, mode: str = "rb") -> Any:
+        if "w" in mode:
+            raise RuntimeError("This storage cannot open files in write mode")
+        return super().open(name, mode="rb")
 
 
 class SettingsStorage(AzureStorage):

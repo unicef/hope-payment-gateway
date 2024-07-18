@@ -17,6 +17,7 @@ class DeliveryMechanismFilter(filters.FilterSet):
         fields = {
             "code": ["exact"],
             "name": ["exact", "contains"],
+            "type": ["exact"],
         }
 
 
