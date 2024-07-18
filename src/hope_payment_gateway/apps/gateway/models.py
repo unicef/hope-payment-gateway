@@ -12,8 +12,18 @@ from hope_payment_gateway.apps.gateway.registry import export_registry, registry
 
 
 class DeliveryMechanism(TimeStampedModel):
+    IN_CASH = "IN_CASH"
+    VOUCHER = "VOUCHER"
+    DIGITAL = "DIGITAL"
+    DELIVERY_MECHANISM_TYPE = (
+        (IN_CASH, "In Cash"),
+        (VOUCHER, "Voucher"),
+        (DIGITAL, "Digital Asset"),
+    )
     code = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=128)
+    type = models.CharField(choices=DELIVERY_MECHANISM_TYPE, max_length=32)
+    required_fields = models.JSONField(default=dict)
 
     def __str__(self):
         return f"{self.name} [{self.code}]"
