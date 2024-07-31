@@ -16,6 +16,7 @@ from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
 
+from hope_payment_gateway.apps.fsp.moneygram.auth import MoneyGramClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
@@ -68,6 +69,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     readonly_fields = ("extra_data",)
 
     actions = [export_as_template]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("parent__fsp")
 
     @choice(change_list=False)
     def western_union(self, button):
@@ -142,8 +146,34 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related("parent__fsp")
+    @choice(change_list=False)
+    def moneygram(self, button):
+        button.choices = [
+            self.create_transaction,
+        ]
+        return button
+
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
+    def create_transaction(self, request, pk) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+
+        client = MoneyGramClient()
+        resp = client.create_transaction(obj.get_payload())
+
+        data = resp.json()
+        breakpoint()
+        if resp.status_code == 200:
+            loglevel = messages.SUCCESS
+        elif 400 <= resp.status_code < 500:
+            loglevel = messages.WARNING
+            message = resp.json()['error']['message']
+        elif resp.status_code >= 500:
+            loglevel = messages.ERROR
+            message = ",".join([f"{error['message']} ({error['code']})" for error in data["errors"]])
+
+        messages.add_message(request, loglevel, message)
+
+
 
     @link()
     def instruction(self, button: button) -> Optional[str]:
