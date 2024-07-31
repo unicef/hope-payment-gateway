@@ -208,4 +208,6 @@ EMAIL_PORT = env("EMAIL_PORT", default=25)
 EMAIL_USE_TLS = env("EMAIL_USE_TLS", default=False)
 EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
 
+LOGIN_ENABLED = env("LOGIN_ENABLED", default=False)
+
 from .fragments import *  # noqa

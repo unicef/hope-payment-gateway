@@ -17,4 +17,3 @@ CELERY_RESULT_EXPIRES = 600
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
 CELERY_TASK_DEFAULT_QUEUE = "default"
-CELERY_TASK_ROUTES = {"hope_payment_gateway.apps.fsp.western_union.tasks.western_union_notify": {"queue": "executors"}}
