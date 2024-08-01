@@ -12,6 +12,7 @@ from zeep.exceptions import ValidationError
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.exceptions import InvalidRequest
+from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 SUCCESS = "BIS003"
@@ -80,6 +81,7 @@ class NisNotificationView(WesternUnionApi):
 
         try:
             pr = PaymentRecord.objects.get(fsp_code=fsp_code)
+            flow = PaymentRecordFlow(pr)
         except PaymentRecord.DoesNotExist:
             return Response(
                 {"cannot_find_transaction": f"Cannot find payment with reference {fsp_code}"},
@@ -89,7 +91,7 @@ class NisNotificationView(WesternUnionApi):
         pr.success = False
         try:
             if notification_type in [SUCCESS, SUCCESS_APN]:
-                pr.confirm()
+                flow.confirm()
                 pr.success = True
                 pr.payout_amount = payout_amount / 100
                 pr.extra_data.update(
@@ -99,13 +101,13 @@ class NisNotificationView(WesternUnionApi):
                     }
                 )
             elif notification_type in [CANCEL, REJECT_APN]:
-                pr.cancel()
+                flow.cancel()
             elif notification_type == PURGED:
-                pr.purge()
+                flow.purge()
             elif notification_type == REFUND:
-                pr.refund()
+                flow.refund()
             else:
-                pr.fail()
+                flow.fail()
         except TransitionNotAllowed as e:
             return Response({"transition_not_allowed": str(e)}, status=HTTP_400_BAD_REQUEST)
 
