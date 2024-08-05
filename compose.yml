@@ -120,6 +120,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       target: dev
+    ports:
+      - 5555:5555
     command: |
       sh -c "
         entrypoint.sh ./docker/wait-for-it.sh redis:6379
