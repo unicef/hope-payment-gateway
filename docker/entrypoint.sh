@@ -36,7 +36,7 @@ case "$1" in
         celery -A hope_payment_gateway.celery beat -l info
     ;;
     celery_flower)
-        celery flower -A hope_payment_gateway.celery --port=5555
+        celery flower -A hope_payment_gateway.celery --address=0.0.0.0 --broker=$CELERY_BROKER_URL
     ;;
     *)
         exec "$@"
