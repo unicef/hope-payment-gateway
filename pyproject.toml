@@ -65,7 +65,6 @@ dev = [
     "types-redis",
     "unittest-xml-reporting",
     "watchdog",
-    "flower>=2.0.1",
 ]
 [project]
 authors = [
@@ -120,6 +119,7 @@ dependencies = [
     "wheel",
     "uwsgi",
     "zeep",
+    "flower>=2.0.1",
 ]
 name = "hope_payment_gateway"
 version = "0.1"

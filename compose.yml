@@ -119,7 +119,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-      target: dev
+      target: prd
     ports:
       - 5555:5555
     environment:
