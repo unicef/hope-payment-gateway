@@ -24,3 +24,5 @@ src/hope_payment_gateway/static
 
 .pdm-python
 pdm.toml
+
+/__pypackages__

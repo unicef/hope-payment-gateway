@@ -81,6 +81,7 @@ services:
     command: |
       sh -c "
         entrypoint.sh ./docker/wait-for-it.sh db:5432
+        entrypoint.sh ./docker/wait-for-it.sh redis:6379
         entrypoint.sh celery_worker
       "
     environment: *django-env
@@ -101,6 +102,7 @@ services:
     command: |
       sh -c "
         entrypoint.sh ./docker/wait-for-it.sh db:5432
+        entrypoint.sh ./docker/wait-for-it.sh redis:6379
         entrypoint.sh celery_beat
       "
     environment: *django-env
@@ -112,3 +114,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  celery_flower:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: dev
+    ports:
+      - 5555:5555
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    command: |
+      sh -c "
+        entrypoint.sh ./docker/wait-for-it.sh redis:6379
+        entrypoint.sh celery_flower
+      "
