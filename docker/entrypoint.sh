@@ -30,7 +30,7 @@ case "$1" in
     ;;
     celery_worker)
         export C_FORCE_ROOT=1
-        celery -A hope_payment_gateway.celery worker -l info -Q default,executors
+        celery -A hope_payment_gateway.celery worker -l info -Q high,low
     ;;
     celery_beat)
         celery -A hope_payment_gateway.celery beat -l info
