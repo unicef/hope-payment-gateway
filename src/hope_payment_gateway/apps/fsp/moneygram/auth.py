@@ -29,14 +29,15 @@ class MoneyGramClient(metaclass=Singleton):
     token_response = None
 
     def __init__(self):
+        self.get_token()
 
+    def get_token(self):
         url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
         credentials = f"{settings.MONEYGRAM_CLIENT_ID}:{settings.MONEYGRAM_CLIENT_SECRET}"
         encoded_credentials = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
         headers = {"Content-Type": "application/json", "Authorization": "Basic " + encoded_credentials}
 
         try:
-            breakpoint()
             response = requests.get(url, headers=headers)
         except HTTPSConnectionPool:
             self.token = None
@@ -47,52 +48,44 @@ class MoneyGramClient(metaclass=Singleton):
                 self.token = parsed_response["access_token"]
                 self.expires_in = parsed_response["expires_in"]
             else:
-                # error = response.json()["error"]["message"]
                 logger.warning("Invalid token")
                 self.token = None
                 self.token_response = response
 
     def create_transaction(self, hope_payload):
 
-        print(111, self.token)
-
         if self.token:
 
             url = settings.MONEYGRAM_HOST + "/disbursement/v1/transactions"
 
-            for key in ["first_name", "last_name", "amount", "destination_country", "destination_currency"]:
+            for key in [
+                "first_name",
+                "last_name",
+                "amount",
+                "destination_country",
+                "destination_currency",
+                "payment_record_code",
+            ]:
                 if not (key in hope_payload.keys() and hope_payload[key]):
                     raise PayloadMissingKey("InvalidPayload: {} is missing in the payload".format(key))
 
             headers = {
                 "Content-Type": "application/json",
-                "X-MG-ClientRequestId": hope_payload['payment_record_code'],
+                "X-MG-ClientRequestId": hope_payload["payment_record_code"],
                 "Authorization": "Bearer " + self.token,
             }
 
             payload = {
-                "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,  # unique account number
+                "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
                 "targetAudience": "AGENT_FACING",
-                # "userLanguage": "en-US",
-                "userLanguage": "EN-US",
-                # "destinationCountryCode": hope_payload["destination_country"],
+                "userLanguage": "en-US",
                 "destinationCountryCode": "USA",
-                # "destinationCountrySubdivisionCode": "US-MN",
-                "destinationCountrySubdivisionCode": "US-TX",
-                # "serviceOptionCode": "WILL_CALL",
-                "serviceOptionCode": "BANK_DEPOSIT",
-                # "serviceOptionRoutingCode": "74261037",
-                "sendAmount": {
-                    "currencyCode": "USD",  # hope_payload["origination_currency"],
-                    "value": 100  # hope_payload["amount"]
-                },
-                "receiveCurrencyCode": "USD",  # hope_payload["destination_currency"],
-                "initiator": {
-                    "method": "batch",
-                    "userId": "abc",
-                    "userType": "consumer"
-                },
-                "autoCommit": "true",
+                "destinationCountrySubdivisionCode": "US-MN",
+                "serviceOptionCode": "WILL_CALL",
+                "sendAmount": {"currencyCode": hope_payload["origination_currency"], "value": hope_payload["amount"]},
+                "receiveCurrencyCode": hope_payload["destination_currency"],
+                "initiator": {"method": "batch", "userId": "abc", "userType": "consumer"},
+                "autoCommit": True,
                 "receiver": {
                     "name": {
                         "firstName": hope_payload["first_name"],
@@ -110,7 +103,7 @@ class MoneyGramClient(metaclass=Singleton):
 
     def perform_request(self, url, headers, payload=None):
         try:
-            response = requests.post(url, headers, payload)
+            response = requests.post(url, json=payload, headers=headers)
 
             if response.status_code == 200:
                 parsed_response = json.dumps(json.loads(response.text), indent=2)
@@ -121,7 +114,6 @@ class MoneyGramClient(metaclass=Singleton):
 
         except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
             print("An error occurred:", e)
-            breakpoint()
             response = None
 
         return response

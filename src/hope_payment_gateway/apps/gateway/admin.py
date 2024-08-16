@@ -161,19 +161,27 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         resp = client.create_transaction(obj.get_payload())
 
         data = resp.json()
-        breakpoint()
+        msgs = []
         if resp.status_code == 200:
             loglevel = messages.SUCCESS
         elif 400 <= resp.status_code < 500:
             loglevel = messages.WARNING
-            message = resp.json()['error']['message']
+            if "errors" in resp.json():
+                for error in data["errors"]:
+                    msgs.append(f"{error['message']} ({error['code']})")
+            elif "error" in resp.json():
+                msgs.append(resp.json()["error"]["message"])
+            else:
+                msgs = [
+                    "Error",
+                ]
         elif resp.status_code >= 500:
             loglevel = messages.ERROR
-            message = ",".join([f"{error['message']} ({error['code']})" for error in data["errors"]])
+            for error in data["errors"]:
+                msgs.append(f"{error['message']} ({error['code']})")
 
-        messages.add_message(request, loglevel, message)
-
-
+        for msg in msgs:
+            messages.add_message(request, loglevel, msg)
 
     @link()
     def instruction(self, button: button) -> Optional[str]:
