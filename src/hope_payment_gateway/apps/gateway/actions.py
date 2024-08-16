@@ -2,7 +2,6 @@ import collections
 import csv
 import datetime
 import itertools
-from typing import List
 
 from django import forms
 from django.conf import settings
@@ -29,23 +28,18 @@ class TemplateExportForm(CSVConfigForm):
     )
     action = forms.CharField(label="", required=True, initial="", widget=forms.HiddenInput())
 
+    header = forms.HiddenInput()
     columns = forms.CharField(
         widget=forms.Textarea,
         required=True,
         help_text="one line for each field to export",
     )
 
-    # def __init__(self, *args: Any, **kwargs: Any) -> None:
-    #     if request := kwargs.pop("request", None):
-    #         if is_root(request):
-    #             self.base_fields["status"].choices = self.STATUSES_CHOICES + self.STATUSES_ROOT_CHOICES
-    #     super().__init__(*args, **kwargs)
-
-    def clean_columns(self) -> List:
-        return self.cleaned_data["columns"].split("\r\n")
-
-    # def clean_columns(self, values) -> List:
-    #     return values.split("\r\n")
+    def clean(self):
+        cleaned_data = super().clean()
+        cleaned_data["header"] = [value.split("#")[0] for value in self.cleaned_data["columns"].split("\r\n")]
+        cleaned_data["columns"] = [value.split("#")[-1] for value in self.cleaned_data["columns"].split("\r\n")]
+        return cleaned_data
 
 
 def export_as_template_impl(  # noqa: max-complexity: 20
@@ -114,9 +108,9 @@ def export_as_template_impl(  # noqa: max-complexity: 20
     def yield_header():
         if bool(header):
             if isinstance(header, (list, tuple)):
-                yield writer.writerow([clean_value(header) for header in fields])
+                yield writer.writerow([clean_value(hd) for hd in header])
             else:
-                yield writer.writerow([clean_value(f) for f in fields])
+                yield writer.writerow([clean_value(fd) for fd in fields])
         yield ""
 
     def yield_rows():
