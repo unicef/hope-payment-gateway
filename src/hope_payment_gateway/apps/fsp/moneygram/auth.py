@@ -7,20 +7,13 @@ from django.conf import settings
 import requests
 from urllib3.connectionpool import HTTPSConnectionPool
 
+from hope_payment_gateway.apps.core.models import Singleton
+
 logger = logging.getLogger(__name__)
 
 
 class PayloadMissingKey(Exception):
     pass
-
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
 
 
 class MoneyGramClient(metaclass=Singleton):
