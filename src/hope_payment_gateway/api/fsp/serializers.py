@@ -46,6 +46,8 @@ class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
     delivery_mechanism_name = serializers.CharField(source="delivery_mechanism.name", allow_null=True)
+    delivery_mechanism_code = serializers.CharField(source="delivery_mechanism.code", allow_null=True)
+    delivery_mechanism_transfer_type = serializers.CharField(source="delivery_mechanism.transfer_type", allow_null=True)
 
     class Meta:
         model = FinancialServiceProviderConfig

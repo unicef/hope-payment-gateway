@@ -17,5 +17,7 @@ router.register(r"config", views.ConfigurationViewSet, basename="config")
 router.register(r"wu/corridors", wu_views.CorridorViewSet, basename="wu-corridor")
 router.register(r"wu/provider_code", wu_views.ServiceProviderCodeViewSet, basename="wu-service-provider-code")
 
+router.register(r"wu/files", wu_views.FileViewset, basename="wu-files")
+
 
 urlpatterns = router.urls
