@@ -38,7 +38,7 @@ class FileViewset(ViewSet):
     serializer_class = FileSerializer
     filter_backends = list()
     lookup_field = "filename"
-    lookup_value_regex = r"[\w.@]+"
+    lookup_value_regex = r"[\w.;_@]+"
 
     def get_queryset(self):
         return FTPClient().ls()
