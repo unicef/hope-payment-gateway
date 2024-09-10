@@ -51,7 +51,14 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
 
     class Meta:
         model = FinancialServiceProviderConfig
-        fields = ("id", "key", "label", "delivery_mechanism", "delivery_mechanism_name")
+        fields = (
+            "id",
+            "key",
+            "label",
+            "delivery_mechanism",
+            "delivery_mechanism_name",
+            "delivery_mechanism_transfer_type",
+        )
 
 
 class FinancialServiceProviderLightSerializer(PayloadMixin, serializers.ModelSerializer):
