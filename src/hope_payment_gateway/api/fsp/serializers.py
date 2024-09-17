@@ -58,6 +58,7 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
             "delivery_mechanism",
             "delivery_mechanism_name",
             "delivery_mechanism_transfer_type",
+            "delivery_mechanism_code"
         )
 
 
