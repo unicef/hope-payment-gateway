@@ -38,21 +38,21 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     def request(self, request) -> TemplateResponse:
         context = self.get_common_context(request)
         context.update(requests_request())
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @view()
     def das_countries_currencies(self, request) -> TemplateResponse:
         context = self.get_common_context(request)
         context["msg"] = "Countries with related Currencies (Many to many)"
         context.update(das_countries_currencies())
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @view()
     def das_origination_currencies(self, request) -> TemplateResponse:
         context = self.get_common_context(request)
         context["msg"] = "Countries with related iso codes"
         context.update(das_origination_currencies())
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @view()
     def das_destination_currencies(self, request) -> TemplateResponse:
@@ -60,14 +60,14 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         context = self.get_common_context(request)
         context["msg"] = f"currencies allowed for in {destination_country} \n " f"PARAM: destination_country"
         context.update(das_destination_currencies(destination_country))
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @view()
     def das_destination_countries(self, request) -> TemplateResponse:
         context = self.get_common_context(request)
         context["msg"] = "List of destination countries"
         context.update(das_destination_countries())
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @view()
     def das_delivery_services(self, request) -> TemplateResponse:
@@ -80,7 +80,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: destination_currency"
         )
         context.update(das_delivery_services(destination_country, destination_currency))
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @choice()
     def western_union(self, button):
@@ -105,7 +105,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: destination_currency"
         )
         context.update(das_delivery_services(destination_country, destination_currency))
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @view()
     def das_delivery_option_template(self, request) -> TemplateResponse:
@@ -120,7 +120,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: template_code"
         )
         context.update(das_delivery_option_template(destination_country, destination_currency, template_code))
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
     @button()
     def delivery_option_template(self, request, pk) -> TemplateResponse:
@@ -137,7 +137,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: template_code"
         )
         context.update(das_delivery_option_template(destination_country, destination_currency, template_code))
-        return TemplateResponse(request, "western_union.html", context)
+        return TemplateResponse(request, "request.html", context)
 
 
 @admin.register(ServiceProviderCode)

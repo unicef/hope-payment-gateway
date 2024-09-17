@@ -36,6 +36,7 @@ includes = []
 dev = [
     "argh",
     "black",
+    "django-regex",
     "django-webtest",
     "drf-api-checker",
     "faker",
@@ -54,6 +55,7 @@ dev = [
     "pytest-cov",
     "pytest-django",
     "pytest-echo",
+    "pytest-factoryboy",
     "pytest-xdist",
     "requests-mock",
     "responses",
@@ -102,6 +104,7 @@ dependencies = [
     "dj-static",
     "drf-spectacular[sidecar]",
     "factory-boy",
+    "flower",
     "gunicorn",
     "newrelic",
     "natural-keys",
@@ -119,7 +122,6 @@ dependencies = [
     "wheel",
     "uwsgi",
     "zeep",
-    "flower>=2.0.1",
 ]
 name = "hope_payment_gateway"
 version = "0.1"

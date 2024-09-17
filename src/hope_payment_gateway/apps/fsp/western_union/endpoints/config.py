@@ -9,7 +9,7 @@ WMN = "WMN"  # money transfer
 WIC = "WIC"  # system
 
 # delivery_services_code
-MONEY_IN_TIME = "000"
+MONEY_IN_TIME = "000"  # Cash over the counter: collect money kiosk
 WALLET = "800"
 
 
