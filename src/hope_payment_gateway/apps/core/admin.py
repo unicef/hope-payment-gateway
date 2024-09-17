@@ -7,6 +7,9 @@ from hope_payment_gateway.apps.core.models import System, User
 admin.site.site_header = "Payment Gateway"
 
 
+admin.site.site_header = "Payment Gateway"
+
+
 @admin.register(User)
 class UserAdminPlus(UserAdminPlus):
     pass
