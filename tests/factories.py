@@ -41,6 +41,14 @@ class AdminFactory(UserFactory):
     is_superuser = True
 
 
+class SuperUserFactory(UserFactory):
+    username = factory.Sequence(lambda n: "superuser%03d@example.com" % n)
+    email = factory.Sequence(lambda n: "superuser%03d@example.com" % n)
+    is_superuser = True
+    is_staff = True
+    is_active = True
+
+
 class AnonUserFactory(UserFactory):
     username = "anonymous"
 
