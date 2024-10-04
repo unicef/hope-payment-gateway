@@ -21,6 +21,7 @@ def test_get_client_ip_without_x_forwarded_for(request_factory):
 
 
 @pytest.mark.parametrize("ip,expected", [("127.0.0.1", True), ("192.168.1.1", False)])
+@pytest.mark.django_db
 @override_settings(DEBUG=False, WHITELISTED_IPS="127.0.0.1")
 def test_whitelist_permission_allowed(request_factory, ip, expected):
     request = request_factory.get("/admin", HTTP_X_FORWARDED_FOR=ip)
@@ -28,6 +29,7 @@ def test_whitelist_permission_allowed(request_factory, ip, expected):
     assert permission.has_permission(request, None) is expected
 
 
+@pytest.mark.django_db
 def test_whitelist_permission_denied(request_factory):
     request = request_factory.get("/admin", HTTP_X_FORWARDED_FOR="10.0.0.2")
     permission = WhitelistPermission()
