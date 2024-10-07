@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from constance import config
 
@@ -44,7 +43,7 @@ def moneygram_send_task(vision_vendor_number="1900723202", tag=None, threshold=1
 
 
 @app.task
-def moneygram_notify(to_process_ids: List[PaymentRecord]) -> None:
+def moneygram_notify(to_process_ids: list[int]) -> None:
     PaymentRecord.objects.filter(id__in=to_process_ids).update(marked_for_payment=True)
     for record in PaymentRecord.objects.filter(id__in=to_process_ids):
         MoneyGramClient().create_transaction(record.get_payload())

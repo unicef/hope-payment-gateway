@@ -67,6 +67,7 @@ dev = [
     "types-redis",
     "unittest-xml-reporting",
     "watchdog",
+    "pytest-mock>=3.14.0",
 ]
 [project]
 authors = [
