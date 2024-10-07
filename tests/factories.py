@@ -1,3 +1,5 @@
+import string
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import signals
@@ -121,6 +123,20 @@ class PaymentRecordFactory(factory.django.DjangoModelFactory):
     remote_id = fuzzy.FuzzyText()
     record_code = fuzzy.FuzzyText()
     parent = factory.SubFactory(PaymentInstructionFactory)
+    payload = factory.Dict(
+        {
+            "first_name": fuzzy.FuzzyText(),
+            "last_name": fuzzy.FuzzyText(),
+            "amount": fuzzy.FuzzyFloat(low=1.0, high=100.0),
+            "destination_country": fuzzy.FuzzyText(),
+            "destination_currency": fuzzy.FuzzyText(length=3, chars=string.ascii_uppercase),
+        }
+    )
+    extra_data = factory.Dict(
+        {
+            "mtcn": fuzzy.FuzzyText(),
+        }
+    )
 
     class Meta:
         model = PaymentRecord
