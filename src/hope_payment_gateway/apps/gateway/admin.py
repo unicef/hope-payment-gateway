@@ -16,7 +16,7 @@ from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
 
-from hope_payment_gateway.apps.fsp.moneygram.auth import MoneyGramClient
+from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient, PayloadMissingKey
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
@@ -76,16 +76,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     @choice(change_list=False)
     def western_union(self, button):
         button.choices = [
-            self.prepare_payload,
-            self.send_money_validation,
-            self.send_money,
-            self.search_request,
-            self.cancel,
+            self.wu_prepare_payload,
+            self.wu_send_money_validation,
+            self.wu_send_money,
+            self.wu_search_request,
+            self.wu_cancel,
         ]
         return button
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
-    def prepare_payload(self, request, pk) -> TemplateResponse:
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Prepare Payload")
+    def wu_prepare_payload(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
@@ -93,16 +93,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             payload = create_validation_payload(payload)
             client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
             _, data = client.prepare("sendmoneyValidation", payload)
-            context["title"] = "Payload"
+            context["title"] = "Western Union Payload"
             context["content"] = data
             return TemplateResponse(request, "western_union.html", context)
 
-        except (PayloadException, InvalidCorridor) as e:
+        except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
-    def send_money_validation(self, request, pk) -> TemplateResponse:
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Send Money Validation")
+    def wu_send_money_validation(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
@@ -115,8 +115,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
-    def send_money(self, request, pk) -> TemplateResponse:
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Send Money")
+    def wu_send_money(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         log = send_money(obj.get_payload())
         if log is None:
@@ -125,8 +125,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             loglevel = messages.SUCCESS if log.success else messages.ERROR
             messages.add_message(request, loglevel, log.message)
 
-    @view(html_attrs={"style": "background-color:yellow;color:blue"})
-    def search_request(self, request, pk) -> TemplateResponse:
+    @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Search Request")
+    def wu_search_request(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
@@ -136,8 +136,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             return TemplateResponse(request, "western_union.html", context)
         messages.warning(request, "Missing MTCN")
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
-    def cancel(self, request, pk) -> TemplateResponse:
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Cancel")
+    def wu_cancel(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
@@ -146,15 +146,22 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
-    @choice(change_list=False)
-    def moneygram(self, button):
-        button.choices = [
-            self.create_transaction,
-        ]
-        return button
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Prepare Payload")
+    def mg_prepare_payload(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            client = MoneyGramClient()
+            context["title"] = "Moneygram Payload"
+            context["content"] = client.prepare_transaction(obj.get_payload())
+            return TemplateResponse(request, "western_union.html", context)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"})
-    def create_transaction(self, request, pk) -> TemplateResponse:
+        except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return obj
+
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Create Transaction")
+    def mg_create_transaction(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
 
         client = MoneyGramClient()
@@ -175,13 +182,21 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
                 msgs = [
                     "Error",
                 ]
-        elif resp.status_code >= 500:
+        else:
             loglevel = messages.ERROR
             for error in data["errors"]:
                 msgs.append(f"{error['message']} ({error['code']})")
 
         for msg in msgs:
             messages.add_message(request, loglevel, msg)
+
+    @choice(change_list=False)
+    def moneygram(self, button):
+        button.choices = [
+            self.mg_prepare_payload,
+            self.mg_create_transaction,
+        ]
+        return button
 
     @link()
     def instruction(self, button: button) -> Optional[str]:

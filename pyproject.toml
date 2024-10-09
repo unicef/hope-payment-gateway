@@ -36,8 +36,10 @@ includes = []
 dev = [
     "argh",
     "black",
+    "django-regex",
     "django-webtest",
     "drf-api-checker",
+    "factory-boy",
     "faker",
     "flake8",
     "flake8-bugbear",
@@ -50,14 +52,15 @@ dev = [
     "openpyxl-stubs",
     "parameterized",
     "parso",
+    "pre-commit",
     "pytest",
     "pytest-cov",
     "pytest-django",
     "pytest-echo",
+    "pytest-factoryboy",
     "pytest-xdist",
     "requests-mock",
     "responses",
-    "snapshottest",
     "types-freezegun",
     "types-requests",
     "types-python-dateutil",
@@ -71,7 +74,7 @@ authors = [
     {name = "ddinicola"},
     {name = "Domenico DiNicola", email = "dom.dinicola@gmail.com"},
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "Django",
     "celery[redis]",
@@ -96,18 +99,18 @@ dependencies = [
     "django-model-utils",
     "django-mptt",
     "django-smart-admin",
+    "django-smart-env",
     "django-storages[azure]",
     "django-strategy-field",
     "django-viewflow",
     "dj-static",
     "drf-spectacular[sidecar]",
-    "factory-boy",
+    "flower",
     "gunicorn",
     "newrelic",
     "natural-keys",
     "paramiko",
     "phonenumbers",
-    "pre-commit",
     "psycopg[binary]",
     "sentry-sdk",
     "social-auth-app-django",
@@ -119,7 +122,6 @@ dependencies = [
     "wheel",
     "uwsgi",
     "zeep",
-    "flower>=2.0.1",
 ]
 name = "hope_payment_gateway"
 version = "0.1"

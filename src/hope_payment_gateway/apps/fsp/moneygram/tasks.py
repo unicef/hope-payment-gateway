@@ -3,7 +3,7 @@ from typing import List
 
 from constance import config
 
-from hope_payment_gateway.apps.fsp.moneygram.auth import MoneyGramClient
+from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
     PaymentInstruction,

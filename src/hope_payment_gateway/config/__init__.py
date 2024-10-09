@@ -1,4 +1,4 @@
-from environ import Env
+from smart_env import SmartEnv
 
 MANDATORY = {
     "DATABASE_URL": (str, "", "Database connetcion url"),
@@ -19,25 +19,45 @@ DEVELOPMENT = {
 OPTIONAL = {
     "ADMIN_EMAIL": (str, "", "Admin email"),
     "ADMIN_PASSWORD": (str, "", "Admin password"),
-    "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"], "Django ALLOWED_HOSTS"),
-    "AZURE_ACCOUNT_KEY": (str, "", "Azure account Key"),
+    "ALLOWED_HOSTS": (list, ["127.0.0.1", "localhost"]),
+    "AZURE_ACCOUNT_KEY": (str, ""),
     "AZURE_ACCOUNT_NAME": (str, ""),
     "AZURE_CONTAINER": (str, ""),
+    "AZURE_CLIENT_KEY": (str, ""),
+    "AZURE_CLIENT_SECRET": (str, ""),
+    "AZURE_TENANT_ID": (str, ""),
     "CELERY_VISIBILITY_TIMEOUT": (int, 1800),
     "CELERY_TASK_ALWAYS_EAGER": (bool, False),
     "CELERY_TASK_EAGER_PROPAGATES": (bool, True),
+    "CORS_ORIGIN_ALLOW_ALL": (bool, False),
     "CSRF_COOKIE_SECURE": (bool, True),
     "DEBUG": (bool, False, "Django DEBUG"),
+    "DEFAULT_FILE_STORAGE": (str, "django.core.files.storage.FileSystemStorage"),
+    "EMAIL_HOST": (str, ""),
     "EMAIL_HOST_PASSWORD": (str, ""),
     "EMAIL_HOST_USER": (str, ""),
+    "EMAIL_PORT": (int, 587),
+    "EMAIL_USE_SSL": (bool, False),
+    "EMAIL_USE_TLS": (bool, True),
+    "FTP_WESTERN_UNION_PASSWORD": (str, ""),
+    "FTP_WESTERN_UNION_PORT": (int, 22),
+    "FTP_WESTERN_UNION_SERVER": (str, "westu.f.unicef.org"),
+    "FTP_WESTERN_UNION_USERNAME": (str, ""),
+    "HOST": (str, "http://localhost:8000"),
+    "LOGIN_ENABLED": (bool, False),
     "SECURE_HSTS_SECONDS": (int, 60),
     "SESSION_COOKIE_HTTPONLY": (bool, True),
     "SECURE_SSL_REDIRECT": (bool, True),
     "SECURE_HSTS_PRELOAD": (bool, True),
     "SIGNING_BACKEND": (str, "django.core.signing.TimestampSigner"),
-    "STATIC_FILE_STORAGE": (str, "hope_payment_gateway.apps.core.storage.StaticStorage"),
+    "STATIC_FILE_STORAGE": (str, "django.contrib.staticfiles.storage.StaticFilesStorage"),
     "MEDIA_URL": (str, "/media/"),
     "MEDIA_ROOT": (str, "/tmp/media/"),
+    "MONEYGRAM_HOST": (str, ""),
+    "MONEYGRAM_CLIENT_ID": (str, ""),
+    "MONEYGRAM_CLIENT_SECRET": (str, ""),
+    "MONEYGRAM_PARTNER_ID": (str, ""),
+    "MONEYGRAM_REGISTRATION_NUMBER": (str, ""),
     "SENTRY_DSN": (str, ""),
     "SENTRY_URL": (str, "https://excubo.unicef.org/"),
     "SESSION_COOKIE_DOMAIN": (str, "unicef.org"),
@@ -47,16 +67,13 @@ OPTIONAL = {
     "STATIC_URL": (str, "/static/"),
     "STATIC_ROOT": (str, "/tmp/static/"),
     "TIME_ZONE": (str, "UTC"),
+    "WESTERN_UNION_BASE_URL": (str, ""),
+    "WESTERN_UNION_CERT": (str, ""),
+    "WESTERN_UNION_KEY": (str, ""),
     "WP_APPLICATION_SERVER_KEY": (str, ""),
     "WP_CLAIMS": (str, '{"sub": "mailto: hope@unicef.org","aud": "https://android.googleapis.com"}'),
     "WP_PRIVATE_KEY": (str, ""),
 }
-
-
-class SmartEnv(Env):
-    def __init__(self, **scheme):  # type: ignore[no-untyped-def]
-        self.raw = scheme
-        super().__init__(**{k: v[:2] for k, v in scheme.items()})
 
 
 env = SmartEnv(**{**DEVELOPMENT, **MANDATORY, **OPTIONAL})  # type: ignore[no-untyped-call]

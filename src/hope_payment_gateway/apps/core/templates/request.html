@@ -1,0 +1,19 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% load static %}
+
+{% block content %}
+
+    <i>{% autoescape on %}
+        {{ msg | linebreaksbr }}
+    {% endautoescape %}
+    </i>
+
+    <pre>
+        {% if format == "json" %}
+            {{ content | pprint }}
+        {% else %}
+            {{ content }}
+        {% endif %}
+    </pre>
+
+{% endblock %}
