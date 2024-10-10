@@ -56,7 +56,7 @@ class FinancialServiceProviderViewSet(ProtectedMixin, LoggingAPIViewSet):
     queryset = FinancialServiceProvider.objects.prefetch_related("configs")
 
     filterset_class = FinancialServiceProviderFilter
-    search_fields = ["name", "vision_vendor_number", "remote_id"]
+    search_fields = ["name", "vendor_number", "remote_id"]
 
 
 class ConfigurationViewSet(ProtectedMixin, LoggingAPIViewSet):

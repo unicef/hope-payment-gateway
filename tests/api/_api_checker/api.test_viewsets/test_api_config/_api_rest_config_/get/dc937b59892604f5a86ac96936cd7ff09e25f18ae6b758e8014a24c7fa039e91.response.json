@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "302",
+        "Content-Length": "295",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -18,7 +18,7 @@
             "fsp": {
                 "id": 717,
                 "name": "dXKJxnrciVEJ",
-                "vision_vendor_number": "ABudUmYEozKU"
+                "vendor_number": "ABudUmYEozKU"
             },
             "delivery_mechanism": {
                 "id": 1,

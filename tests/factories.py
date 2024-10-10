@@ -91,7 +91,7 @@ class DeliveryMechanismFactory(factory.django.DjangoModelFactory):
 class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
     remote_id = fuzzy.FuzzyText()
     name = fuzzy.FuzzyText()
-    vision_vendor_number = fuzzy.FuzzyText()
+    vendor_number = fuzzy.FuzzyText()
     strategy = fqn(DefaultProcessor)
 
     class Meta:
