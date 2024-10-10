@@ -63,6 +63,7 @@ class WesternUnionClient:
             code = 400
             logger.exception(exc)
         except Exception as exc:
+            title = f"{exc.message} [{exc.code}]"
             code = 400
             error = str(exc)
             logger.exception(exc)
