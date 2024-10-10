@@ -95,7 +95,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             _, data = client.prepare("sendmoneyValidation", payload)
             context["title"] = "Western Union Payload"
             context["content"] = data
-            return TemplateResponse(request, "western_union.html", context)
+            return TemplateResponse(request, "request.html", context)
 
         except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
             messages.add_message(request, messages.ERROR, str(e))
@@ -110,7 +110,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             payload = create_validation_payload(payload)
             context.update(send_money_validation(payload))
-            return TemplateResponse(request, "western_union.html", context)
+            return TemplateResponse(request, "request.html", context)
         except (PayloadException, InvalidCorridor) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
@@ -133,7 +133,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
             frm = obj.extra_data.get("foreign_remote_system", None)
             context.update(search_request(frm, mtcn))
-            return TemplateResponse(request, "western_union.html", context)
+            return TemplateResponse(request, "request.html", context)
         messages.warning(request, "Missing MTCN")
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Cancel")
@@ -154,7 +154,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             client = MoneyGramClient()
             context["title"] = "Moneygram Payload"
             context["content"] = client.prepare_transaction(obj.get_payload())
-            return TemplateResponse(request, "western_union.html", context)
+            return TemplateResponse(request, "request.html", context)
 
         except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
             messages.add_message(request, messages.ERROR, str(e))
