@@ -40,12 +40,12 @@ class DeliveryMechanism(TimeStampedModel):
 class FinancialServiceProvider(TimeStampedModel):
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     name = models.CharField(max_length=64, unique=True)
-    vision_vendor_number = models.CharField(max_length=100, unique=True)
+    vendor_number = models.CharField(max_length=100, unique=True)
     strategy = StrategyField(registry=registry)
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name} [{self.vision_vendor_number}]"
+        return f"{self.name} [{self.vendor_number}]"
 
 
 class FinancialServiceProviderConfig(models.Model):

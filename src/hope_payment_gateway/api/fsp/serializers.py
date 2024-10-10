@@ -68,7 +68,7 @@ class FinancialServiceProviderLightSerializer(PayloadMixin, serializers.ModelSer
         fields = (
             "id",
             "name",
-            "vision_vendor_number",
+            "vendor_number",
         )
 
 
@@ -81,7 +81,7 @@ class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializ
             "id",
             "remote_id",
             "name",
-            "vision_vendor_number",
+            "vendor_number",
             "configs",
         )
 

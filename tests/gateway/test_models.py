@@ -13,7 +13,7 @@ from hope_payment_gateway.apps.gateway.models import (
 
 @pytest.mark.django_db
 def test_fsp():
-    fsp = FinancialServiceProviderFactory(name="Western Union", vision_vendor_number="007")
+    fsp = FinancialServiceProviderFactory(name="Western Union", vendor_number="007")
     assert str(fsp) == "Western Union [007]"
 
 
