@@ -100,12 +100,9 @@ STATICFILES_FINDERS = [
 ]
 
 STORAGES = {
-    "default": {
-        "BACKEND": env.str("DEFAULT_FILE_STORAGE"),
-    },
-    "staticfiles": {
-        "BACKEND": env.str("STATIC_FILE_STORAGE"),
-    },
+    "default": env.storage("FILE_STORAGE_DEFAULT"),
+    "staticfiles": env.storage("FILE_STORAGE_STATIC"),
+    "media": env.storage("FILE_STORAGE_MEDIA"),
 }
 
 SECRET_KEY = env("SECRET_KEY")
