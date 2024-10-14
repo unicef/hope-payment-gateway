@@ -5,7 +5,7 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from .. import env
 
-SENTRY_DSN = env("SENTRY_DSN", default=None)  # noqa: F405
+SENTRY_DSN = env("SENTRY_DSN")
 
 if SENTRY_DSN:  # pragma: no cover
     sentry_sdk.init(
@@ -14,5 +14,5 @@ if SENTRY_DSN:  # pragma: no cover
         send_default_pii=True,
         enable_tracing=True,
         integrations=[DjangoIntegration(), CeleryIntegration(), LoggingIntegration()],
-        environment=env("SENTRY_ENVIRONMENT", default=None),
+        environment=env("SENTRY_ENVIRONMENT"),
     )

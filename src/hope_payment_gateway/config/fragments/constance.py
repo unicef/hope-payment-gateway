@@ -1,6 +1,13 @@
 from hope_payment_gateway.config.settings import CACHE_URL
 
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+
 CONSTANCE_CONFIG = {
+    "MONEYGRAM_THREASHOLD": (
+        10000,
+        "Hourly threshold of calls to be made to MoneyGram API",
+        int,
+    ),
     "WESTERN_UNION_THREASHOLD": (
         10000,
         "Hourly threshold of calls to be made to Western Union API",

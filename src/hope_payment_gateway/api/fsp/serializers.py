@@ -46,10 +46,20 @@ class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
     delivery_mechanism_name = serializers.CharField(source="delivery_mechanism.name", allow_null=True)
+    delivery_mechanism_code = serializers.CharField(source="delivery_mechanism.code", allow_null=True)
+    delivery_mechanism_transfer_type = serializers.CharField(source="delivery_mechanism.transfer_type", allow_null=True)
 
     class Meta:
         model = FinancialServiceProviderConfig
-        fields = ("id", "key", "label", "delivery_mechanism", "delivery_mechanism_name")
+        fields = (
+            "id",
+            "key",
+            "label",
+            "delivery_mechanism",
+            "delivery_mechanism_name",
+            "delivery_mechanism_transfer_type",
+            "delivery_mechanism_code",
+        )
 
 
 class FinancialServiceProviderLightSerializer(PayloadMixin, serializers.ModelSerializer):
@@ -58,7 +68,7 @@ class FinancialServiceProviderLightSerializer(PayloadMixin, serializers.ModelSer
         fields = (
             "id",
             "name",
-            "vision_vendor_number",
+            "vendor_number",
         )
 
 
@@ -71,7 +81,7 @@ class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializ
             "id",
             "remote_id",
             "name",
-            "vision_vendor_number",
+            "vendor_number",
             "configs",
         )
 

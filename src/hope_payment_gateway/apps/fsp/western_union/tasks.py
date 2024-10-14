@@ -20,10 +20,10 @@ from hope_payment_gateway.celery import app
 
 
 @app.task()  # queue="executors"
-def western_union_send_task(vision_vendor_number="1900723202", tag=None, threshold=10000):
+def western_union_send_task(vendor_number="1900723202", tag=None, threshold=10000):
     """Task to trigger Western Union payments"""
     logging.info("Western Union Task started")
-    fsp = FinancialServiceProvider.objects.get(vision_vendor_number=vision_vendor_number)
+    fsp = FinancialServiceProvider.objects.get(vendor_number=vendor_number)
     threshold = threshold or config.WESTERN_UNION_THREASHOLD
 
     records_count = 0

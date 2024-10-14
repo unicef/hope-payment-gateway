@@ -60,7 +60,7 @@ def prl():
 @pytest.fixture()
 def wu():
     return FinancialServiceProviderFactory(
-        name="Western Union", vision_vendor_number="1900723202", strategy=fqn(WesternUnionHandler)
+        name="Western Union", vendor_number="1900723202", strategy=fqn(WesternUnionHandler)
     )
 
 

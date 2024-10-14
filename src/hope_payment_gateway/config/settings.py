@@ -91,8 +91,8 @@ AUTHENTICATION_BACKENDS = (
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = env("MEDIA_URL")
-STATIC_ROOT = env("STATIC_ROOT", default=os.path.join(BASE_DIR, "static"))
-STATIC_URL = env("STATIC_URL", default="/static/")
+STATIC_ROOT = env("STATIC_ROOT")
+STATIC_URL = env("STATIC_URL")
 STATICFILES_DIRS = []
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -100,12 +100,9 @@ STATICFILES_FINDERS = [
 ]
 
 STORAGES = {
-    "default": {
-        "BACKEND": env.str("DEFAULT_FILE_STORAGE", default="hope_payment_gateway.apps.core.storage.MediaStorage"),
-    },
-    "staticfiles": {
-        "BACKEND": env.str("STATIC_FILE_STORAGE", default="django.contrib.staticfiles.storage.StaticFilesStorage"),
-    },
+    "default": env.storage("FILE_STORAGE_DEFAULT"),
+    "staticfiles": env.storage("FILE_STORAGE_STATIC"),
+    "media": env.storage("FILE_STORAGE_MEDIA"),
 }
 
 SECRET_KEY = env("SECRET_KEY")
@@ -195,19 +192,21 @@ LOGGING = {
 
 AUTH_USER_MODEL = "core.User"
 
-HOST = env("HOST", default="http://localhost:8000")
+HOST = env("HOST")
 
 
 DEFAULT_FROM_EMAIL = "hope@unicef.org"
 # EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend" # TODO: when ready, add djcelery_email
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_HOST = env("EMAIL_HOST", default="")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-EMAIL_PORT = env("EMAIL_PORT", default=25)
-EMAIL_USE_TLS = env("EMAIL_USE_TLS", default=False)
-EMAIL_USE_SSL = env("EMAIL_USE_SSL", default=False)
+EMAIL_HOST = env(
+    "EMAIL_HOST",
+)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 
-LOGIN_ENABLED = env("LOGIN_ENABLED", default=False)
+LOGIN_ENABLED = env("LOGIN_ENABLED")
 
 from .fragments import *  # noqa

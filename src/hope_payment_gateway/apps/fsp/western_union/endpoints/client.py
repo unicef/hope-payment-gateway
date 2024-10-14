@@ -1,4 +1,5 @@
 import logging
+import xml.dom.minidom
 from pathlib import Path
 
 from requests import Session
@@ -62,6 +63,7 @@ class WesternUnionClient:
             code = 400
             logger.exception(exc)
         except Exception as exc:
+            title = f"{exc.message} [{exc.code}]"
             code = 400
             error = str(exc)
             logger.exception(exc)
@@ -71,4 +73,5 @@ class WesternUnionClient:
     def prepare(self, service_name, payload):
         node = self.client.create_message(self.client.service, service_name, **payload)
         data = etree_to_string(node)
-        return node, data
+        dom = xml.dom.minidom.parseString(data)
+        return node, dom.toprettyxml()

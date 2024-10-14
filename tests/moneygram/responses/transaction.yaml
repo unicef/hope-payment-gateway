@@ -1,0 +1,24 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "  \n            {\n\"errors\": [{\n \"category\": \"Gateway-50000\",\n\
+      \ \"code\": \"G903\",\n \"message\": \"Access_Token_Expired\"\n }]\n} "
+    content_type: text/plain
+    headers:
+      Set-Cookie: visid_incap_2947185=RIa0o6QLRkigrLEMnRWLl1rgvGYAAAAAQUIPAAAAAACCgSRoPoQqUetVQT2Os3XH;
+        expires=Wed, 13 Aug 2025 22:31:15 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=tsfSXOW4BFV8CzQOdIbzIAAAAAC1TX2TY/99Wm14yAmIb+Cg; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_578_2947185=pFVsX56Mvl2Xdbv9EngFCIvgvGYAAAAA9xiPqZ2FW5ggODsoeGnTWw==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      WWW-Authenticate: 'Bearer realm="null",error="invalid_token",error_description="keymanagement.service.access_token_expired:
+        Access Token expired"'
+      X-CDN: Imperva
+      X-Iinfo: 13-85722317-85722321 NNYY CT(115 232 0) RT(1723654283707 43) q(0 0
+        0 0) r(1 1) U6
+      X-MG-ClientRequestId: code-123
+      X-MG-RequestId: rrt-9054480439679465427-c-gce-38780-127104294-1
+      X-MG-SessionId: ''
+    method: POST
+    status: 401
+    url: https://sandboxapi.moneygram.com/disbursement/v1/transactions

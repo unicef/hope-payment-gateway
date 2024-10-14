@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "112",
+        "Content-Length": "105",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -15,7 +15,7 @@
             "id": 717,
             "remote_id": "XPdEDeFmdXeT",
             "name": "dXKJxnrciVEJ",
-            "vision_vendor_number": "ABudUmYEozKU",
+            "vendor_number": "ABudUmYEozKU",
             "configs": []
         }
     ],
