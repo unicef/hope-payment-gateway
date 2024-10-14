@@ -23,7 +23,6 @@ def test_get_token():
 # @_recorder.record(file_path="tests/moneygram/responses/transaction.yaml")
 @responses.activate
 @pytest.mark.django_db
-@pytest.mark.skip
 @override_settings(MONEYGRAM_HOST="https://sandboxapi.moneygram.com")
 def test_create_transaction():
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
