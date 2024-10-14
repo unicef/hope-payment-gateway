@@ -303,10 +303,10 @@ class FinancialServiceProviderConfigInline(TabularInline):
 class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
         "name",
-        "vision_vendor_number",
+        "vendor_number",
         "remote_id",
     )
-    search_fields = ("remote_id", "name", "vision_vendor_number")
+    search_fields = ("remote_id", "name", "vendor_number")
     inlines = (FinancialServiceProviderConfigInline,)
 
 

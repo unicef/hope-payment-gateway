@@ -27,7 +27,7 @@ class FinancialServiceProviderFilter(filters.FilterSet):
         fields = {
             "remote_id": ["exact"],
             "name": ["exact"],
-            "vision_vendor_number": ["exact"],
+            "vendor_number": ["exact"],
         }
 
 

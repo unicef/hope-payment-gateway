@@ -44,7 +44,7 @@
                     "modified": "2024-04-30T13:26:18.440Z",
                     "remote_id": "XPdEDeFmdXeT",
                     "name": "dXKJxnrciVEJ",
-                    "vision_vendor_number": "ABudUmYEozKU",
+                    "vendor_number": "ABudUmYEozKU",
                     "strategy": "hope_payment_gateway.apps.gateway.registry.DefaultProcessor",
                     "configuration": {}
                 }
