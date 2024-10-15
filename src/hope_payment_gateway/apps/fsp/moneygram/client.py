@@ -7,11 +7,9 @@ from django.conf import settings
 import phonenumbers
 import requests
 from phonenumbers import NumberParseException
-from urllib3.exceptions import PoolError
+from requests.exceptions import ConnectionError
 
 from hope_payment_gateway.apps.core.models import Singleton
-from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +18,13 @@ MONEYGRAM_DM_MAPPING = {
     "WILL_CALL": "WILL_CALL",
     "DIRECT_TO_ACCT": "DIRECT_TO_ACCT",
     "BANK_DEPOSIT": "DIRECT_TO_ACCT",
+    "WILLCALL_TO": "WILLCALL_TO",
+    "2_HOUR": "2_HOUR",
+    "OVERNIGHT": "OVERNIGHT",
+    "OVERNIGHT2ANY": "OVERNIGHT2ANY",
+    "24_HOUR": "24_HOUR",
+    "CARD_DEPOSIT": "CARD_DEPOSIT",
+    "HOME_DELIVERY": "HOME_DELIVERY",
 }
 
 
@@ -27,15 +32,18 @@ class PayloadMissingKey(Exception):
     pass
 
 
+class InvalidToken(Exception):
+    pass
+
+
 class MoneyGramClient(metaclass=Singleton):
     token = ""
     expires_in = None
-    token_response = None
 
     def __init__(self):
-        self.get_token()
+        self.set_token()
 
-    def get_token(self):
+    def set_token(self):
         url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
         credentials = f"{settings.MONEYGRAM_CLIENT_ID}:{settings.MONEYGRAM_CLIENT_SECRET}"
         encoded_credentials = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
@@ -43,21 +51,36 @@ class MoneyGramClient(metaclass=Singleton):
 
         try:
             response = requests.get(url, headers=headers)
-        except PoolError:
+            parsed_response = json.loads(response.text)
+        except ConnectionError:
             self.token = None
-            self.token_response = None
         else:
             if response.status_code == 200:
-                parsed_response = json.loads(response.text)
                 self.token = parsed_response["access_token"]
                 self.expires_in = parsed_response["expires_in"]
             else:
                 logger.warning("Invalid token")
                 self.token = None
-                self.token_response = response
+                error = parsed_response["error"]
+                raise InvalidToken(f"{error['category']}: {error['message']}  [{error['code']}]")
+
+    def get_headers(self, request_id):
+        return {
+            "Content-Type": "application/json",
+            "X-MG-ClientRequestId": request_id,
+            "content-type": "application/json",
+            "Authorization": "Bearer " + self.token,
+        }
+
+    @staticmethod
+    def get_basic_payload():
+        return {
+            "targetAudience": "AGENT_FACING",
+            "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
+            "userLanguage": "en-US",
+        }
 
     def prepare_transaction(self, hope_payload):
-
         raw_phone_no = hope_payload.get("phone_no", "N/A")
         try:
             phone_no = phonenumbers.parse(raw_phone_no, None)
@@ -77,8 +100,8 @@ class MoneyGramClient(metaclass=Singleton):
         ]:
             if not (key in hope_payload.keys() and hope_payload[key]):
                 raise PayloadMissingKey("InvalidPayload: {} is missing in the payload".format(key))
-
-        return {
+        transaction_id = hope_payload["payment_record_code"]
+        payload = {
             "targetAudience": "AGENT_FACING",
             "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
             "userLanguage": "en-US",
@@ -124,58 +147,53 @@ class MoneyGramClient(metaclass=Singleton):
                 }
             },
         }
+        return transaction_id, payload
 
     def create_transaction(self, hope_payload):
 
-        if self.token:
+        endpoint = "/disbursement/v1/transactions"
+        transaction_id, payload = self.prepare_transaction(hope_payload)
+        return self.perform_request(endpoint, transaction_id, payload)
 
-            url = settings.MONEYGRAM_HOST + "/disbursement/v1/transactions"
-            payload = self.prepare_transaction(hope_payload)
-            headers = {
-                "Content-Type": "application/json",
-                "X-MG-ClientRequestId": hope_payload["payment_record_code"],
-                "Authorization": "Bearer " + self.token,
-            }
+    def prepare_quote(self, hope_payload: dict):
 
-            response = self.perform_request(url, headers, payload)
-            self.transaction_callback(hope_payload, response.json())
-            return response
-
-        else:
-            return self.token_response
-
-    def perform_request(self, url, headers, payload=None):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-
-            if response.status_code == 200:
-                parsed_response = json.dumps(json.loads(response.text), indent=2)
-                print(parsed_response)
-            else:
-                print("Request failed with status code:", response.status_code)
-                print(json.dumps(json.loads(response.text), indent=2))
-
-        except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
-            print("An error occurred:", e)
-            response = dict
-
-        return response
-
-    def transaction_callback(self, hope_payload, response):
-        record_code = hope_payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(record_code=record_code)
-        pr.fsp_code = response["referenceNumber"]
-        pr.success = True
-        pr.payout_amount = response["receiveAmount"]["amount"]["value"]
-        pr.extra_data.update(
+        transaction_id = hope_payload["payment_record_code"]
+        payload = self.get_basic_payload()
+        payload.update(
             {
-                "fee": response["receiveAmount"]["fees"]["value"],
-                "fee_currency": response["receiveAmount"]["fees"]["currencyCode"],
-                "taxes": response["receiveAmount"]["taxes"]["value"],
-                "taxes_currency": response["receiveAmount"]["taxes"]["currencyCode"],
-                "expectedPayoutDate": response["expectedPayoutDate"],
-                "transactionId": response["transactionId"],
+                "destinationCountryCode": hope_payload["destination_country"],
+                "serviceOptionCode": hope_payload.get("delivery_services_code", None),
+                "beneficiaryTypeCode": "Consumer",
+                "sendAmount": {"currencyCode": hope_payload["origination_currency"], "value": hope_payload["amount"]},
             }
         )
-        flow = PaymentRecordFlow(pr)
-        flow.store()
+        return transaction_id, payload
+
+    def quote(self, hope_payload):
+
+        endpoint = "/disbursement/v1/transactions/quote"
+        transaction_id, payload = self.prepare_quote(hope_payload)
+        return self.perform_request(endpoint, transaction_id, payload)
+
+    def perform_request(self, endpoint, transaction_id, payload):
+        url = settings.MONEYGRAM_HOST + endpoint
+        headers = self.get_headers(transaction_id)
+        for _ in range(2):
+            try:
+                response = requests.post(url, json=payload, headers=headers)
+                break
+            except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
+                print("An error occurred:", e)
+                response = dict
+                break
+            except Exception as e:
+                print("Token Expired:", e)
+                self.set_token()
+
+        if response.status_code == 200:
+            parsed_response = json.dumps(json.loads(response.text), indent=2)
+            print(parsed_response)
+        else:
+            print("Request failed with status code:", response.status_code)
+            print(json.dumps(json.loads(response.text), indent=2))
+        return response
