@@ -2,6 +2,7 @@ import os
 import tempfile
 
 import pytest
+import responses
 from factories import (
     APITokenFactory,
     CorridorFactory,
@@ -29,6 +30,12 @@ def pytest_configure(config):
 @pytest.fixture(autouse=True)
 def use_override_settings(settings):
     settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
+
+
+@pytest.fixture()
+def mocked_responses():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        yield rsps
 
 
 @pytest.fixture()
