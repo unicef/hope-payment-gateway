@@ -106,18 +106,19 @@ def das_delivery_services(destination_country, destination_currency, create_corr
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     response = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
-    context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
-    if create_corridors and context:
-        for ds in context["GETDELIVERYSERVICES"]:
-            if ds["SVC_CODE"] == "800":
-                Corridor.objects.get_or_create(
-                    destination_country=destination_country,
-                    destination_currency=destination_currency,
-                    defaults={
-                        "description": f"{destination_country}: {destination_currency}",
-                        "template_code": ds["TEMPLT"],
-                    },
-                )
+    if "content" in response and "MTML" in response["content"]:
+        context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
+        if create_corridors and context:
+            for ds in context["GETDELIVERYSERVICES"]:
+                if ds["SVC_CODE"] == "800":
+                    Corridor.objects.get_or_create(
+                        destination_country=destination_country,
+                        destination_currency=destination_currency,
+                        defaults={
+                            "description": f"{destination_country}: {destination_currency}",
+                            "template_code": ds["TEMPLT"],
+                        },
+                    )
 
     return response
 
@@ -139,7 +140,7 @@ def das_delivery_option_template(destination_country, destination_currency, temp
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     context = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
-    if "content" in context:
+    if "content" in context and "MTML" in context["content"]:
         rows = context["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
         template = {}
         structure = []
@@ -170,7 +171,7 @@ def das_delivery_option_template(destination_country, destination_currency, temp
                             else:
                                 base[structure[-1]] = [base[structure[-1]], code]
                             if service_provider_code:
-                                sp, created = ServiceProviderCode.objects.get_or_create(
+                                ServiceProviderCode.objects.get_or_create(
                                     code=code,
                                     description=description,
                                     country=destination_country,
@@ -193,4 +194,4 @@ def das_delivery_option_template(destination_country, destination_currency, temp
                                 service_provider_code = False
                 obj.template = template
                 obj.save()
-        return context
+    return context

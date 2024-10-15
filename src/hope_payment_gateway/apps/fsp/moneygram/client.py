@@ -7,7 +7,7 @@ from django.conf import settings
 import phonenumbers
 import requests
 from phonenumbers import NumberParseException
-from urllib3.connectionpool import HTTPSConnectionPool
+from urllib3.exceptions import PoolError
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
@@ -43,7 +43,7 @@ class MoneyGramClient(metaclass=Singleton):
 
         try:
             response = requests.get(url, headers=headers)
-        except HTTPSConnectionPool:
+        except PoolError:
             self.token = None
             self.token_response = None
         else:
