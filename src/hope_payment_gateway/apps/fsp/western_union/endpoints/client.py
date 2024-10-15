@@ -26,7 +26,7 @@ class WesternUnionClient:
         self.client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
     def response_context(self, service_name, payload, wsdl_name=None, port=None):
-        response = ""
+        response = dict()
         error = ""
         format = "string"
         try:
@@ -63,7 +63,7 @@ class WesternUnionClient:
             code = 400
             logger.exception(exc)
         except Exception as exc:
-            title = f"{exc.message} [{exc.code}]"
+            title = type(exc).__name__
             code = 400
             error = str(exc)
             logger.exception(exc)
