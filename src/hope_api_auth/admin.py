@@ -25,7 +25,6 @@ Name: {obj}
 Key: {obj.key}
 Grants: {obj.grants}
 Expires: {expire}
-Business Areas: {areas}
 
 Regards
 

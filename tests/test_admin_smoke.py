@@ -27,12 +27,17 @@ GLOBAL_EXCLUDED_MODELS = RegexList(
         "authtoken",
         "social_django",
         "depot",
+        "power_query",
+        "django_celery_beat",
+        "advanced_filters",
+        r"core\.User",
     ]
 )
 
 GLOBAL_EXCLUDED_BUTTONS = RegexList(
     [
         r"social.SocialProviderAdmin:test",
+        r"western_union.CorridorAdmin:request",
     ]
 )
 

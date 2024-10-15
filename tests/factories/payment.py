@@ -4,10 +4,12 @@ import factory
 from factory import fuzzy
 from strategy_field.utils import fqn
 
-from hope_api_auth.models import APIToken, Grant
+from hope_api_auth.models import APILogEntry, APIToken, Grant
+from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
+    ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
@@ -15,20 +17,21 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 from hope_payment_gateway.apps.gateway.registry import DefaultProcessor
 
+from . import AutoRegisterModelFactory
 from .user import SystemFactory, UserFactory
 
 
-class CorridorFactory(factory.django.DjangoModelFactory):
+class CorridorFactory(AutoRegisterModelFactory):
     class Meta:
         model = Corridor
 
 
-class ServiceProviderCodeFactory(factory.django.DjangoModelFactory):
+class ServiceProviderCodeFactory(AutoRegisterModelFactory):
     class Meta:
         model = ServiceProviderCode
 
 
-class DeliveryMechanismFactory(factory.django.DjangoModelFactory):
+class DeliveryMechanismFactory(AutoRegisterModelFactory):
     code = fuzzy.FuzzyText()
     name = fuzzy.FuzzyText()
 
@@ -36,7 +39,7 @@ class DeliveryMechanismFactory(factory.django.DjangoModelFactory):
         model = DeliveryMechanism
 
 
-class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
+class FinancialServiceProviderFactory(AutoRegisterModelFactory):
     remote_id = fuzzy.FuzzyText()
     name = fuzzy.FuzzyText()
     vendor_number = fuzzy.FuzzyText()
@@ -46,7 +49,7 @@ class FinancialServiceProviderFactory(factory.django.DjangoModelFactory):
         model = FinancialServiceProvider
 
 
-class FinancialServiceProviderConfigFactory(factory.django.DjangoModelFactory):
+class FinancialServiceProviderConfigFactory(AutoRegisterModelFactory):
     key = fuzzy.FuzzyText()
     label = fuzzy.FuzzyText()
     fsp = factory.SubFactory(FinancialServiceProviderFactory)
@@ -56,7 +59,7 @@ class FinancialServiceProviderConfigFactory(factory.django.DjangoModelFactory):
         model = FinancialServiceProviderConfig
 
 
-class PaymentInstructionFactory(factory.django.DjangoModelFactory):
+class PaymentInstructionFactory(AutoRegisterModelFactory):
     fsp = factory.SubFactory(FinancialServiceProviderFactory)
     system = factory.SubFactory(SystemFactory)
     remote_id = fuzzy.FuzzyText()
@@ -65,7 +68,7 @@ class PaymentInstructionFactory(factory.django.DjangoModelFactory):
         model = PaymentInstruction
 
 
-class PaymentRecordFactory(factory.django.DjangoModelFactory):
+class PaymentRecordFactory(AutoRegisterModelFactory):
     remote_id = fuzzy.FuzzyText()
     record_code = fuzzy.FuzzyText()
     parent = factory.SubFactory(PaymentInstructionFactory)
@@ -74,7 +77,7 @@ class PaymentRecordFactory(factory.django.DjangoModelFactory):
         model = PaymentRecord
 
 
-class APITokenFactory(factory.django.DjangoModelFactory):
+class APITokenFactory(AutoRegisterModelFactory):
     user = factory.SubFactory(UserFactory)
     allowed_ips = ""
     grants = [Grant.API_READ_ONLY]
@@ -84,3 +87,20 @@ class APITokenFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = APIToken
         django_get_or_create = ("user",)
+
+
+class APILogEntryFactory(AutoRegisterModelFactory):
+    token = factory.SubFactory(APITokenFactory)
+    status_code = fuzzy.FuzzyDecimal(200, 599)
+
+    class Meta:
+        model = APILogEntry
+
+
+class ExportTemplateFactory(AutoRegisterModelFactory):
+    fsp = factory.SubFactory(FinancialServiceProviderFactory)
+    delivery_mechanism = factory.SubFactory(DeliveryMechanismFactory)
+    strategy = fqn(WesternUnionHandler)
+
+    class Meta:
+        model = ExportTemplate
