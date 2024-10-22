@@ -8,6 +8,7 @@ import phonenumbers
 import requests
 from phonenumbers import NumberParseException
 from requests.exceptions import ConnectionError
+from rest_framework.response import Response
 
 from hope_payment_gateway.apps.core.models import Singleton
 
@@ -181,6 +182,7 @@ class MoneyGramClient(metaclass=Singleton):
         for _ in range(2):
             try:
                 response = requests.post(url, json=payload, headers=headers)
+                response = Response(response.json(), response.status_code)
                 break
             except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
                 print("An error occurred:", e)
@@ -191,9 +193,9 @@ class MoneyGramClient(metaclass=Singleton):
                 self.set_token()
 
         if response.status_code == 200:
-            parsed_response = json.dumps(json.loads(response.text), indent=2)
+            parsed_response = response.data
             print(parsed_response)
         else:
             print("Request failed with status code:", response.status_code)
-            print(json.dumps(json.loads(response.text), indent=2))
+            print(response.data)
         return response

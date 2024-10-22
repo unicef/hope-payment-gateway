@@ -208,13 +208,13 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
     def handle_mg_response(self, request, resp, pk):
         if resp:
-            data = resp.json()
+            data = resp.data
             msgs = []
             if resp.status_code == 200:
                 context = self.get_common_context(request, pk)
                 context["title"] = "Moneygram Quote"
                 context["format"] = "json"
-                context["content"] = resp.json()
+                context["content"] = data
                 return TemplateResponse(request, "request.html", context)
 
             elif 400 <= resp.status_code < 500:
