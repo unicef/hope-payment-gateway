@@ -17,6 +17,24 @@ from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 
+def get_from_delivery_mechanism(hope_payload, key):
+    delivery_mechanism = hope_payload.get("delivery_mechanism", "")
+    print(22, key, delivery_mechanism)
+    return hope_payload.get(f"{key}__{delivery_mechanism}", None)
+
+
+def get_phone_number(raw_phone_no):
+    try:
+        phone_no = phonenumbers.parse(raw_phone_no, None)
+        phone_number = phone_no.national_number
+        country_code = phone_no.country_code
+    except NumberParseException:
+        phone_number = raw_phone_no
+        country_code = None
+
+    return phone_number, country_code
+
+
 def create_validation_payload(hope_payload):
     for key in ["first_name", "last_name", "amount", "destination_country", "destination_currency"]:
         if not (key in hope_payload.keys() and hope_payload[key]):
@@ -30,14 +48,11 @@ def create_validation_payload(hope_payload):
         "reference_no": hope_payload.get("payment_record_code", "N/A"),
         "counter_id": counter_id,
     }
-    raw_phone_no = hope_payload.get("phone_no", "N/A")
-    try:
-        phone_no = phonenumbers.parse(raw_phone_no, None)
-        phone_number = phone_no.national_number
-        country_code = phone_no.country_code
-    except NumberParseException:
-        phone_number = raw_phone_no
-        country_code = None
+
+    delivery_phone_number = get_from_delivery_mechanism(hope_payload, "delivery_phone_number")
+    print(1111, delivery_phone_number)
+    phone_number, country_code = get_phone_number(delivery_phone_number)
+    contact_no = hope_payload.get("phone_no", "N/A")
 
     receiver = {
         "name": {
@@ -47,7 +62,7 @@ def create_validation_payload(hope_payload):
             # "last_name": str(hope_payload["last_name"].encode("utf-8"))[2:-1],
             "name_type": "D",
         },
-        "contact_phone": phone_number,
+        "contact_phone": contact_no,
         "mobile_phone": {
             "phone_number": {
                 "country_code": country_code,
@@ -102,7 +117,7 @@ def create_validation_payload(hope_payload):
         "delivery_services": delivery_services,
         "foreign_remote_system": frm,
         "partner_info_buffer": partner_notification,
-        "wallet_details": {"service_provider_code": hope_payload.get("service_provider_code", None)},
+        "wallet_details": {"service_provider_code": get_from_delivery_mechanism(hope_payload, "service_provider_code")},
     }
 
     if "delivery_services_code" in hope_payload and hope_payload["delivery_services_code"] == WALLET:

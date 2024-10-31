@@ -86,6 +86,7 @@ dependencies = [
     "django-adminfilters",
     "django-advanced-filters",
     "django-celery-beat",
+    "django-celery-boost",
     "django-celery-results",
     "django-concurrency",
     "django-constance",
