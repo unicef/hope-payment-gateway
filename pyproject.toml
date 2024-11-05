@@ -97,6 +97,7 @@ dependencies = [
     "django-extensions",
     "django-filter",
     "django-import-export",
+    "django-jsoneditor",
     "django-model-utils",
     "django-mptt",
     "django-smart-admin",

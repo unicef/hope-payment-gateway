@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django_extensions",
     "django_filters",
+    "jsoneditor",
     "corsheaders",
     "viewflow",
     "social_django",

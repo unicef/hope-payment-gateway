@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.db.models import JSONField
 from django.template.response import TemplateResponse
 
 from admin_extra_buttons.decorators import button, choice, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
+from jsoneditor.forms import JSONEditor
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.das import (
     das_countries_currencies,
@@ -33,6 +35,9 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         "description",
         "template_code",
     )
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditor},
+    }
 
     @button()
     def request(self, request) -> TemplateResponse:
