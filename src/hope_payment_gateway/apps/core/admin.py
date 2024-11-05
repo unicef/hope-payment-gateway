@@ -9,25 +9,7 @@ admin.site.site_header = "Payment Gateway"
 
 @admin.register(User)
 class UserAdminPlus(UserAdminPlus):
-
-    all_fieldsets = (
-        (None, {"fields": (("username", "azure_id"), "password")}),
-        (
-            "Personal info",
-            {
-                "fields": (
-                    (
-                        "first_name",
-                        "last_name",
-                    ),
-                    ("email", "display_name"),
-                    ("job_title",),
-                )
-            },
-        ),
-        ("NEW", {"fields": ("last_login",)}),
-        ("OLD", {"fields": ("date_joined",)}),
-    )
+    pass
 
 
 @admin.register(System)
