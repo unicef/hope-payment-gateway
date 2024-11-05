@@ -2670,7 +2670,7 @@ files = [
 
 [[package]]
 name = "unicef-security"
-version = "1.6.1"
+version = "1.6.2"
 summary = "Provides Basic UNICEF User model and integration with Azure"
 dependencies = [
     "PyJWT",
@@ -2684,10 +2684,11 @@ dependencies = [
     "requests",
     "setuptools",
     "social-auth-app-django",
+    "wheel",
 ]
 files = [
-    {file = "unicef_security-1.6.1-py2.py3-none-any.whl", hash = "sha256:a957463970f7d948e655d2ed7cb15dd37f22b76724532470e75f415ac9c0c004"},
-    {file = "unicef_security-1.6.1.tar.gz", hash = "sha256:cef6a5ae9a68f726c69b6770158ed25db64f6a8414c3aa9e6335c2a80eed51e6"},
+    {file = "unicef_security-1.6.2-py2.py3-none-any.whl", hash = "sha256:b3ba6bdb1575367dd221ba80f497c07b01c6b6eda99da0d431031eff860e75ed"},
+    {file = "unicef_security-1.6.2.tar.gz", hash = "sha256:4485aedf0c63f629cb4a6c4d1e8495d1c59ab162478417906fd217ba3ac5ffea"},
 ]
 
 [[package]]
