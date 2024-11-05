@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional, Union
 
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
+from django.db.models import JSONField
 from django.db.utils import IntegrityError
 from django.forms import FileField, FileInput, Form
 from django.shortcuts import redirect
@@ -15,6 +16,7 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
+from jsoneditor.forms import JSONEditor
 
 from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient, PayloadMissingKey
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
@@ -67,6 +69,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     )
     search_fields = ("record_code", "fsp_code", "auth_code", "message")
     readonly_fields = ("extra_data",)
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditor},
+    }
 
     actions = [export_as_template]
 
@@ -214,6 +219,9 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("unicef_id", "status", "remote_id")
     list_filter = ("status",)
     search_fields = ("unicef_id",)
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditor},
+    }
     # readonly_fields = ("extra",)
 
     @button()
@@ -308,12 +316,18 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     )
     search_fields = ("remote_id", "name", "vendor_number")
     inlines = (FinancialServiceProviderConfigInline,)
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditor},
+    }
 
 
 @admin.register(DeliveryMechanism)
 class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("code", "name", "transfer_type")
     search_fields = ("code", "name")
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditor},
+    }
 
 
 @admin.register(ExportTemplate)
