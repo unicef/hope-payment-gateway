@@ -1,8 +1,8 @@
 from constance import config
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.endpoints.config import unicef
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider
 
 
 def create_usd():
@@ -16,22 +16,25 @@ def create_usd():
 def das_countries_currencies(create_corridors=False):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     more_data, qf3, qf4, response = True, "", "", None
-
+    payload = FinancialServiceProvider.objects.get(
+        vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+    ).configuration.copy()
     while more_data:
-        payload = {
-            "name": "GetCountriesCurrencies",
-            "channel": unicef,
-            "foreign_remote_system": create_usd(),
-            "filters": {
-                "queryfilter1": "en",
-                "queryfilter2": "US USD",  # destination
-                "queryfilter3": qf3,
-                "queryfilter4": qf4,
-            },
-        }
+        payload.pop("sender", None)
+        payload.update(
+            {
+                "name": "GetCountriesCurrencies",
+                "foreign_remote_system": create_usd(),
+                "filters": {
+                    "queryfilter1": "en",
+                    "queryfilter2": "US USD",  # destination
+                    "queryfilter3": qf3,
+                    "queryfilter4": qf4,
+                },
+            }
+        )
         client = WesternUnionClient("DAS_Service_H2HService.wsdl")
         response = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
-
         context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]
         more_data = context["HEADER"]["DATA_MORE"] == "Y"
 
@@ -50,59 +53,79 @@ def das_countries_currencies(create_corridors=False):
 
 def das_origination_currencies():
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-    payload = {
-        "name": "GetOriginationCurrencies",
-        "channel": unicef,
-        "foreign_remote_system": create_usd(),
-        "filters": {
-            "queryfilter1": "en",
-        },
-    }
+    payload = FinancialServiceProvider.objects.get(
+        vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+    ).configuration.copy()
+    payload.pop("sender", None)
+    payload.update(
+        {
+            "name": "GetOriginationCurrencies",
+            "foreign_remote_system": create_usd(),
+            "filters": {
+                "queryfilter1": "en",
+            },
+        }
+    )
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_destination_countries():
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-    payload = {
-        "name": "GetDestinationCountries",
-        "channel": unicef,
-        "foreign_remote_system": create_usd(),
-        "filters": {"queryfilter1": "en", "queryfilter2": "US USD"},
-    }
+    payload = FinancialServiceProvider.objects.get(
+        vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+    ).configuration.copy()
+    payload.pop("sender", None)
+    payload.update(
+        {
+            "name": "GetDestinationCountries",
+            "foreign_remote_system": create_usd(),
+            "filters": {"queryfilter1": "en", "queryfilter2": "US USD"},
+        }
+    )
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_destination_currencies(destination_country):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-    payload = {
-        "name": "GetDestinationCurrencies",
-        "channel": unicef,
-        "foreign_remote_system": create_usd(),
-        "filters": {
-            "queryfilter1": "en",
-            "queryfilter2": "US USD",  # origination country
-            "queryfilter3": destination_country,
-        },
-    }
+    payload = FinancialServiceProvider.objects.get(
+        vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+    ).configuration.copy()
+    payload.pop("sender", None)
+    payload.update(
+        {
+            "name": "GetDestinationCurrencies",
+            "foreign_remote_system": create_usd(),
+            "filters": {
+                "queryfilter1": "en",
+                "queryfilter2": "US USD",  # origination country
+                "queryfilter3": destination_country,
+            },
+        }
+    )
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
 def das_delivery_services(destination_country, destination_currency, create_corridors=False):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-    payload = {
-        "name": "GetDeliveryServices",
-        "channel": unicef,
-        "foreign_remote_system": create_usd(),
-        "filters": {
-            "queryfilter1": "en",
-            "queryfilter2": "US USD",  # origination country, currency
-            "queryfilter3": f"{destination_country} {destination_currency}",
-            "queryfilter4": "ALL",
-        },
-    }
+    payload = FinancialServiceProvider.objects.get(
+        vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+    ).configuration.copy()
+    payload.pop("sender", None)
+    payload.update(
+        {
+            "name": "GetDeliveryServices",
+            "foreign_remote_system": create_usd(),
+            "filters": {
+                "queryfilter1": "en",
+                "queryfilter2": "US USD",  # origination country, currency
+                "queryfilter3": f"{destination_country} {destination_currency}",
+                "queryfilter4": "ALL",
+            },
+        }
+    )
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     response = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
@@ -126,17 +149,22 @@ def das_delivery_services(destination_country, destination_currency, create_corr
 def das_delivery_option_template(destination_country, destination_currency, template_code):
 
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-    payload = {
-        "name": "GetDeliveryOptionTemplate",
-        "channel": unicef,
-        "foreign_remote_system": create_usd(),
-        "filters": {
-            "queryfilter1": "en",
-            "queryfilter2": f"{destination_country} {destination_currency}",  # destination
-            "queryfilter3": template_code,  # coming delivery services endpoint ***
-            "queryfilter8": "XPath",
-        },
-    }
+    payload = FinancialServiceProvider.objects.get(
+        vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+    ).configuration.copy()
+    payload.pop("sender", None)
+    payload.update(
+        {
+            "name": "GetDeliveryOptionTemplate",
+            "foreign_remote_system": create_usd(),
+            "filters": {
+                "queryfilter1": "en",
+                "queryfilter2": f"{destination_country} {destination_currency}",  # destination
+                "queryfilter3": template_code,  # coming delivery services endpoint ***
+                "queryfilter8": "XPath",
+            },
+        }
+    )
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     context = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
