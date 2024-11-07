@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "118",
+        "Content-Length": "122",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -14,7 +14,7 @@
         {
             "id": 750,
             "remote_id": "sQMWBLWUnMnJ",
-            "unicef_id": "",
+            "external_code": "",
             "status": "DRAFT",
             "fsp": 717,
             "system": 758,

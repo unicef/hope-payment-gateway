@@ -110,7 +110,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "remote_id",
-            "unicef_id",
+            "external_code",
             "status",
             "fsp",
             "system",

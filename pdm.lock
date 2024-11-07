@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:608b883633be4379ebef5b5407f2c140973d1970c469385cf8a7782931dc81b1"
+content_hash = "sha256:9a5f280c6dccb96d36b869ec3b0c8e63493cf35b58ba0330c5b9b36fd5d9d045"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -1761,15 +1761,6 @@ files = [
 ]
 
 [[package]]
-name = "pdfkit"
-version = "1.0.0"
-summary = "Wkhtmltopdf python wrapper to convert html to pdf using the webkit rendering engine and qt"
-files = [
-    {file = "pdfkit-1.0.0-py3-none-any.whl", hash = "sha256:a7a4ca0d978e44fa8310c4909f087052430a6e8e0b1dd7ceef657f139789f96f"},
-    {file = "pdfkit-1.0.0.tar.gz", hash = "sha256:992f821e1e18fc8a0e701ecae24b51a2d598296a180caee0a24c0af181da02a9"},
-]
-
-[[package]]
 name = "pexpect"
 version = "4.9.0"
 summary = "Pexpect allows easy control of interactive console applications."
@@ -2013,20 +2004,6 @@ files = [
     {file = "PyNaCl-1.5.0-cp36-abi3-win32.whl", hash = "sha256:e46dae94e34b085175f8abb3b0aaa7da40767865ac82c928eeb9e57e1ea8a543"},
     {file = "PyNaCl-1.5.0-cp36-abi3-win_amd64.whl", hash = "sha256:20f42270d27e1b6a29f54032090b972d97f0a1b0948cc52392041ef7831fee93"},
     {file = "PyNaCl-1.5.0.tar.gz", hash = "sha256:8ac7448f09ab85811607bdd21ec2464495ac8b7c66d146bf545b0f08fb9220ba"},
-]
-
-[[package]]
-name = "pypdf2"
-version = "3.0.1"
-requires_python = ">=3.6"
-summary = "A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files"
-dependencies = [
-    "dataclasses; python_version < \"3.7\"",
-    "typing-extensions>=3.10.0.0; python_version < \"3.10\"",
-]
-files = [
-    {file = "PyPDF2-3.0.1.tar.gz", hash = "sha256:a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440"},
-    {file = "pypdf2-3.0.1-py3-none-any.whl", hash = "sha256:d16e4205cfee272fbdc0568b68d82be796540b1537508cef59388f839c191928"},
 ]
 
 [[package]]
@@ -2640,32 +2617,6 @@ summary = "Provider of IANA time zone data"
 files = [
     {file = "tzdata-2024.2-py2.py3-none-any.whl", hash = "sha256:a48093786cdcde33cad18c2555e8532f34422074448fbc874186f0abd79565cd"},
     {file = "tzdata-2024.2.tar.gz", hash = "sha256:7d85cc416e9382e69095b7bdf4afd9e3880418a2413feec7069d533d6b4e31cc"},
-]
-
-[[package]]
-name = "unicef-power-query"
-version = "0.4"
-summary = "Provides Basic UNICEF User model and integration with Azure"
-dependencies = [
-    "PyPDF2",
-    "celery",
-    "django",
-    "django-admin-extra-buttons",
-    "django-adminactions",
-    "django-adminfilters",
-    "django-concurrency",
-    "django-import-export",
-    "django-smart-admin",
-    "kombu",
-    "natural-keys",
-    "pdfkit",
-    "redis",
-    "sentry-sdk",
-    "tablib",
-]
-files = [
-    {file = "unicef-power-query-0.4.tar.gz", hash = "sha256:e844e44460cc457a254299d7cf2da9ddfdfb2db13468e6d5f1893bb5d91637b1"},
-    {file = "unicef_power_query-0.4-py2.py3-none-any.whl", hash = "sha256:cef72e0658b434f04821e5b7ad665597a813d05f288e9c8a9791ba475110d037"},
 ]
 
 [[package]]
