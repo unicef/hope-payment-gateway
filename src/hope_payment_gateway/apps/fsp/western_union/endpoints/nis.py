@@ -37,7 +37,7 @@ class NisNotificationView(WesternUnionApi):
     content_type = None
 
     def dispatch(self, request, *args, **kwargs):
-        sentry_sdk.capture_message("Western Union Testing")
+        sentry_sdk.capture_message("Western Union: NIS Notification")
         return super().dispatch(request, *args, **kwargs)
 
     @staticmethod
