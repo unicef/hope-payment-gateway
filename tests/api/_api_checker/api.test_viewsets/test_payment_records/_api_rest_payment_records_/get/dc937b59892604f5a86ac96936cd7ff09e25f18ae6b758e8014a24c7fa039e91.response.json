@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "294",
+        "Content-Length": "270",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -22,7 +22,6 @@
             "parent": "sQMWBLWUnMnJ",
             "status": "PENDING",
             "message": null,
-            "hope_status": "Pending",
             "payout_amount": null
         }
     ],

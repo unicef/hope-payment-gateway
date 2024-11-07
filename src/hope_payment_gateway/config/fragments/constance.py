@@ -24,9 +24,11 @@ CONSTANCE_CONFIG = {
         "Error codes which depend on WU",
         str,
     ),
-    "WESTERN_UNION_DAS_IDENTIFIER": ("WGQCUS1250T", "Identifier", str),
-    "WESTERN_UNION_DAS_COUNTER": ("US125QCUSD1T", "Counter", str),
+    "WESTERN_UNION_DAS_IDENTIFIER": ("", "Identifier", str),
+    "WESTERN_UNION_DAS_COUNTER": ("", "Counter", str),
     "WESTERN_UNION_WHITELISTED_ENV": ("uat", "Western Union Env", str),
+    "WESTERN_UNION_VENDOR_NUMBER": ("", "Western Union Vendor Number", str),
+    "MONEYGRAM_VENDOR_NUMBER": ("", "Moneygram Vendor Number", str),
     "WHITELISTED_IPS": ("127.0.0.1", "IPs", str),
     "WHITELIST_ENABLED": (True, "Whitelist Enabled", bool),
 }

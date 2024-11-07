@@ -56,9 +56,9 @@ class MoneyGramClient(metaclass=Singleton):
                 self.token = None
                 self.token_response = response
 
-    def prepare_transaction(self, hope_payload):
+    def prepare_transaction(self, payload):
 
-        raw_phone_no = hope_payload.get("phone_no", "N/A")
+        raw_phone_no = payload.get("phone_no", "N/A")
         try:
             phone_no = phonenumbers.parse(raw_phone_no, None)
             phone_number = phone_no.national_number
@@ -75,20 +75,20 @@ class MoneyGramClient(metaclass=Singleton):
             "destination_currency",
             "payment_record_code",
         ]:
-            if not (key in hope_payload.keys() and hope_payload[key]):
+            if not (key in payload.keys() and payload[key]):
                 raise PayloadMissingKey("InvalidPayload: {} is missing in the payload".format(key))
 
         return {
             "targetAudience": "AGENT_FACING",
             "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
             "userLanguage": "en-US",
-            "destinationCountryCode": hope_payload["destination_country"],
+            "destinationCountryCode": payload["destination_country"],
             # "destinationCountrySubdivisionCode": "US-NY",
-            "receiveCurrencyCode": hope_payload["destination_currency"],
-            "serviceOptionCode": hope_payload.get("delivery_services_code", "WILL_CALL"),
+            "receiveCurrencyCode": payload["destination_currency"],
+            "serviceOptionCode": payload.get("delivery_services_code", "WILL_CALL"),
             # "serviceOptionRoutingCode": "74261037",  # TODO
             "autoCommit": "true",
-            "sendAmount": {"currencyCode": hope_payload["origination_currency"], "value": hope_payload["amount"]},
+            "sendAmount": {"currencyCode": payload["origination_currency"], "value": payload["amount"]},
             "sender": {
                 "business": {
                     "businessName": "UNICEF",
@@ -110,14 +110,14 @@ class MoneyGramClient(metaclass=Singleton):
             "beneficiary": {
                 "consumer": {
                     "name": {
-                        "firstName": hope_payload["first_name"],
-                        "middleName": hope_payload.get("middle_name", ""),
-                        "lastName": hope_payload["last_name"],
+                        "firstName": payload["first_name"],
+                        "middleName": payload.get("middle_name", ""),
+                        "lastName": payload["last_name"],
                     },
                     "address": {
-                        "line1": hope_payload.get("address", "Via di Acilia"),
-                        "city": hope_payload.get("city", "Roma"),
-                        "countryCode": hope_payload["destination_country"],
+                        "line1": payload.get("address", "Via di Acilia"),
+                        "city": payload.get("city", "Roma"),
+                        "countryCode": payload["destination_country"],
                         "postalCode": 55442,
                     },
                     "mobilePhone": {"number": phone_number, "countryDialCode": country_code},
@@ -125,20 +125,20 @@ class MoneyGramClient(metaclass=Singleton):
             },
         }
 
-    def create_transaction(self, hope_payload):
+    def create_transaction(self, payload):
 
         if self.token:
 
             url = settings.MONEYGRAM_HOST + "/disbursement/v1/transactions"
-            payload = self.prepare_transaction(hope_payload)
+            enriched_payload = self.prepare_transaction(payload)
             headers = {
                 "Content-Type": "application/json",
-                "X-MG-ClientRequestId": hope_payload["payment_record_code"],
+                "X-MG-ClientRequestId": enriched_payload["payment_record_code"],
                 "Authorization": "Bearer " + self.token,
             }
 
             response = self.perform_request(url, headers, payload)
-            self.transaction_callback(hope_payload, response.json())
+            self.transaction_callback(enriched_payload, response.json())
             return response
 
         else:
@@ -161,8 +161,8 @@ class MoneyGramClient(metaclass=Singleton):
 
         return response
 
-    def transaction_callback(self, hope_payload, response):
-        record_code = hope_payload["payment_record_code"]
+    def transaction_callback(self, payload, response):
+        record_code = payload["payment_record_code"]
         pr = PaymentRecord.objects.get(record_code=record_code)
         pr.fsp_code = response["referenceNumber"]
         pr.success = True

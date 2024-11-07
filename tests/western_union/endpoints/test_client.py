@@ -1,4 +1,6 @@
+import pytest
 import responses
+from constance.test import override_config
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import create_validation_payload
@@ -22,10 +24,12 @@ def test_client_invalid():
 
 
 @responses.activate
-def test_client_error():
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_client_error(wu):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_client_error.yaml")
-    hope_payload = {
+    payload = {
         "payment_record_code": "asdasdas",
         "first_name": "Aliyah",
         "last_name": "GRAY",
@@ -39,7 +43,7 @@ def test_client_error():
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = create_validation_payload(hope_payload)
+    payload = create_validation_payload(payload)
     client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
     resp = client.response_context("sendmoneyValidation", payload)
 
@@ -49,10 +53,12 @@ def test_client_error():
 
 
 @responses.activate
-def test_client_non_std_error():
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_client_non_std_error(wu):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_client_non_std_error.yaml")
-    hope_payload = {
+    payload = {
         "payment_record_code": "asdasdas",
         "first_name": "Aliyah",
         "last_name": "GRAY",
@@ -66,7 +72,7 @@ def test_client_non_std_error():
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = create_validation_payload(hope_payload)
+    payload = create_validation_payload(payload)
     client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
     resp = client.response_context("sendmoneyValidation", payload)
 
