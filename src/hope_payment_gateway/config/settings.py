@@ -65,7 +65,6 @@ INSTALLED_APPS = (
     "django_celery_beat",
     "django_celery_results",
     "django_celery_boost",
-    "power_query",
     "drf_spectacular",
     "drf_spectacular_sidecar",
 )
@@ -197,7 +196,7 @@ AUTH_USER_MODEL = "core.User"
 HOST = env("HOST")
 
 
-DEFAULT_FROM_EMAIL = "hope@unicef.org"
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 # EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend" # TODO: when ready, add djcelery_email
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = env(

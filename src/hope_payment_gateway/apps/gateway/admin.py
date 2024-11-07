@@ -216,9 +216,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("unicef_id", "status", "remote_id")
+    list_display = ("external_code", "status", "remote_id")
     list_filter = ("status",)
-    search_fields = ("unicef_id",)
+    search_fields = ("external_code",)
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }

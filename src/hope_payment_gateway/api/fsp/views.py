@@ -73,7 +73,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
 
     lookup_field = "remote_id"
     filterset_class = PaymentInstructionFilter
-    search_fields = ["unicef_id", "remote_id"]
+    search_fields = ["external_code", "remote_id"]
 
     def perform_create(self, serializer):
 

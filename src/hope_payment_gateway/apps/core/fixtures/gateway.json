@@ -6,7 +6,7 @@
         "created": "2023-09-14T00:08:35.758Z",
         "modified": "2023-09-20T20:00:21.266Z",
         "uuid": "63849121-12e9-4878-bee6-36ef02a59381",
-        "unicef_id": "Spain Programme",
+        "external_code": "Spain Programme",
         "status": "READY",
         "payload": {
             "destination_country": "ES",
@@ -24,7 +24,7 @@
         "created": "2023-09-14T00:31:35.504Z",
         "modified": "2023-09-19T11:29:22.755Z",
         "uuid": "5fe8eda3-b3b6-46f1-b336-e696bda28ded",
-        "unicef_id": "Benin with corridor",
+        "external_code": "Benin with corridor",
         "status": "OPEN",
         "payload": {
             "corridor": "Benin",
@@ -45,7 +45,7 @@
         "created": "2023-09-26T11:50:24.901Z",
         "modified": "2023-09-26T11:50:24.901Z",
         "uuid": "1c3e3530-744c-485d-9e51-bb56032abcef",
-        "unicef_id": "123",
+        "external_code": "123",
         "status": "DRAFT",
         "payload": {
             "a": "A"

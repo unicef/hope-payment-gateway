@@ -32,7 +32,10 @@ sender = {
         "state": "NY",
         "postal_code": "10017",
         "country_code": {
-            "iso_code": iso_code("US", "USD"),
+            "iso_code": {
+                "country_code": "US",
+                "currency_code": "USD",
+            },
             "country_name": "US",
         },
         "local_area": "NEW YORK",

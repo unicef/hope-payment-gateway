@@ -51,7 +51,7 @@ class PaymentInstructionFilter(filters.FilterSet):
         model = PaymentInstruction
         fields = {
             "remote_id": ["exact"],
-            "unicef_id": ["exact", "in"],
+            "external_code": ["exact", "in"],
             "status": ["exact", "in"],
         }
 

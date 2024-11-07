@@ -119,7 +119,6 @@ dependencies = [
     "social-auth-core",
     "swapper",
     "tablib",
-    "unicef-power-query",
     "unicef-security",
     "wheel",
     "uwsgi",

@@ -28,7 +28,7 @@ def moneygram_send_task(vendor_number="1900723202", tag=None, threshold=10000):
         qs = qs.filter(tag=tag)
 
     for pi in qs:
-        logging.info(f"Processing payment instruction {pi.unicef_id}")
+        logging.info(f"Processing payment instruction {pi.external_code}")
         records = pi.paymentrecord_set.filter(status=PaymentRecordState.PENDING, marked_for_payment=False)
         records_count += records.count()
         if records_count > threshold:
