@@ -1,14 +1,15 @@
 import responses
+from constance.test import override_config
 from factories import PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
-from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
+from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/search_request.yaml")
 @responses.activate
-def test_search_request(django_app, admin_user):
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_search_request(django_app, admin_user, wu):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_request.yaml")
     ref_no, mtcn, frm = (
@@ -35,7 +36,8 @@ def test_search_request(django_app, admin_user):
 
 # @_recorder.record(file_path="tests/western_union/endpoints/cancel_complete.yaml")
 @responses.activate
-def test_cancel(django_app, admin_user):
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_cancel(django_app, admin_user, wu):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2HServiceService")
     responses.patch("https://wugateway2pi.westernunion.com/CancelSend_Service_H2HService")
     responses._add_from_file(file_path="tests/western_union/endpoints/cancel.yaml")
@@ -59,7 +61,8 @@ def test_cancel(django_app, admin_user):
 
 
 @responses.activate
-def test_search_ko(django_app, admin_user):
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_search_ko(django_app, admin_user, wu):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_ko.yaml")
     pl = PaymentRecordFactory()

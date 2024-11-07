@@ -7,6 +7,7 @@ from django.urls import reverse
 
 import pytest
 from admin_extra_buttons.handlers import ChoiceHandler
+from constance.test import override_config
 from django_regex.utils import RegexList as _RegexList
 from factories import SuperUserFactory
 
@@ -185,7 +186,8 @@ def test_admin_delete(app, modeladmin, record, monkeypatch):
 
 
 @pytest.mark.skip_buttons("security.UserAdmin:link_user_data")
-def test_admin_buttons(app, modeladmin, button_handler, record, monkeypatch):
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_admin_buttons(app, modeladmin, button_handler, record, monkeypatch, wu):
     from admin_extra_buttons.handlers import LinkHandler
 
     if isinstance(button_handler, ChoiceHandler):

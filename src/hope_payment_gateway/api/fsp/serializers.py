@@ -134,18 +134,6 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
 
 class PaymentRecordLightSerializer(serializers.ModelSerializer):
     parent = serializers.ReadOnlyField(source="parent.remote_id")
-    hope_status = serializers.SerializerMethodField()
-
-    def get_hope_status(self, obj: PaymentRecord) -> str:
-        return {
-            "PENDING": "Pending",
-            "TRANSFERRED_TO_FSP": "Transaction Successful",
-            "ERROR": "Transaction Erroneous",
-            "TRANSFERRED_TO_BENEFICIARY": "Distribution Successful",
-            "CANCELLED": "Force failed",
-            "REFUND": "Force failed",
-            "PURGED": "Not Distributed",
-        }[obj.status]
 
     class Meta:
         model = PaymentRecord
@@ -160,14 +148,12 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "parent",
             "status",
             "message",
-            "hope_status",
             "payout_amount",
         )
 
 
 class PaymentRecordSerializer(PaymentRecordLightSerializer):
     parent = serializers.SlugRelatedField(slug_field="remote_id", queryset=PaymentInstruction.objects.all())
-    hope_status = serializers.SerializerMethodField()
 
     class Meta:
         model = PaymentRecord
@@ -181,7 +167,6 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
             "auth_code",
             "parent",
             "status",
-            "hope_status",
             "message",
             "payload",
             "payout_amount",

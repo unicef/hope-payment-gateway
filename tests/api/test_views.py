@@ -5,7 +5,7 @@ from django.urls import reverse
 import pytest
 from factories import PaymentRecordFactory
 
-from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentInstructionState
+from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
 
 
 @pytest.mark.django_db
