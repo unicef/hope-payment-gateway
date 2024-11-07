@@ -77,7 +77,7 @@ class PaymentInstructionState(models.TextChoices):
 class PaymentInstruction(TimeStampedModel):
 
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
-    unicef_id = models.CharField(max_length=255, db_index=True)
+    external_code = models.CharField(max_length=255, db_index=True)
     status = models.CharField(
         max_length=50, default=PaymentInstructionState.DRAFT, choices=PaymentInstructionState.choices, db_index=True
     )
@@ -93,7 +93,7 @@ class PaymentInstruction(TimeStampedModel):
         unique_together = ("system", "remote_id")
 
     def __str__(self):
-        return f"{self.unicef_id} - {self.status}"
+        return f"{self.external_code} - {self.status}"
 
     def get_payload(self):
         payload = self.payload.copy()

@@ -19,7 +19,7 @@ def test_fsp():
 
 @pytest.mark.django_db
 def test_payment_instruction():
-    instruction = PaymentInstructionFactory(unicef_id="UNC-123")
+    instruction = PaymentInstructionFactory(external_code="UNC-123")
     assert str(instruction) == "UNC-123 - DRAFT"
 
 

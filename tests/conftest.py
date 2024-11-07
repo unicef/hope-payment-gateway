@@ -25,6 +25,7 @@ def pytest_configure(config):
     os.environ["SECURE_SSL_REDIRECT"] = "0"
     os.environ["SESSION_COOKIE_HTTPONLY"] = "0"
     os.environ["SESSION_COOKIE_SECURE"] = "0"
+    os.environ["DEFAULT_FROM_EMAIL"] = "test@email.org"
 
 
 @pytest.fixture(autouse=True)
