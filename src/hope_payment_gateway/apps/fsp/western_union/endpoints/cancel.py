@@ -46,7 +46,7 @@ def cancel_request(frm, mtcn, database_key, reason=WIC):
             "reason_for_redelivery": reason,
             "mtcn": mtcn,
             "database_key": database_key,
-            "comments_data": "Cancelled by UNICEF",
+            "comments_data": "Client requested for cancel",
             "disallow_traffic_flag": "Y",
         }
     )

@@ -91,7 +91,7 @@ class MoneyGramClient(metaclass=Singleton):
             "sendAmount": {"currencyCode": payload["origination_currency"], "value": payload["amount"]},
             "sender": {
                 "business": {
-                    "businessName": "UNICEF",
+                    "businessName": " UNICEF",
                     "legalEntityName": "UNICEF",
                     "businessType": "ACCOMMODATION_HOTELS",
                     "businessRegistrationNumber": settings.MONEYGRAM_REGISTRATION_NUMBER,
@@ -133,12 +133,12 @@ class MoneyGramClient(metaclass=Singleton):
             enriched_payload = self.prepare_transaction(payload)
             headers = {
                 "Content-Type": "application/json",
-                "X-MG-ClientRequestId": enriched_payload["payment_record_code"],
+                "X-MG-ClientRequestId": payload["payment_record_code"],
                 "Authorization": "Bearer " + self.token,
             }
 
-            response = self.perform_request(url, headers, payload)
-            self.transaction_callback(enriched_payload, response.json())
+            response = self.perform_request(url, headers, enriched_payload)
+            self.transaction_callback(payload, response.json())
             return response
 
         else:

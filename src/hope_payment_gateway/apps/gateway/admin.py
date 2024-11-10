@@ -158,6 +158,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             client = MoneyGramClient()
             context["title"] = "Moneygram Payload"
+            context["format"] = "json"
             context["content"] = client.prepare_transaction(obj.get_payload())
             return TemplateResponse(request, "request.html", context)
 
