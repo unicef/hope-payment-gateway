@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import Dict
 from urllib.parse import urlparse
 
 from . import env
@@ -11,23 +10,8 @@ DEVELOPMENT_DIR = PACKAGE_DIR.parent.parent
 
 DEBUG = env.bool("DEBUG")
 
-RO_CONN = dict(**env.db("DATABASE_URL")).copy()
-RO_CONN.update(
-    {
-        "OPTIONS": {"options": "-c default_transaction_read_only=on"},
-        "TEST": {
-            "READ_ONLY": True,  # Do not manage this database during tests
-        },
-    }
-)
 DATABASES = {
     "default": env.db("DATABASE_URL"),
-    "read_only": RO_CONN,
-}
-
-DATABASE_ROUTERS = ("hope_payment_gateway.apps.core.dbrouters.DbRouter",)
-DATABASE_APPS_MAPPING: Dict[str, str] = {
-    "hope": "hope",
 }
 
 INSTALLED_APPS = (

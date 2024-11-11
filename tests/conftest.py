@@ -14,6 +14,7 @@ from factories import (
 from strategy_field.utils import fqn
 
 from hope_api_auth.models import Grant
+from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 
 
@@ -31,6 +32,8 @@ def pytest_configure(config):
 @pytest.fixture(autouse=True)
 def use_override_settings(settings):
     settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
+    settings.MONEYGRAM_PARTNER_ID = "AAAAAA"
+    settings.MONEYGRAM_HOST = "https://sandboxapi.moneygram.com"
 
 
 @pytest.fixture()
@@ -104,6 +107,33 @@ def wu():
                 "fraud_warning_consent": "Y",
             },
             "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
+        },
+    )
+
+
+@pytest.fixture()
+def mg():
+    return FinancialServiceProviderFactory(
+        name="MoneyGram",
+        vendor_number="67890",
+        strategy=fqn(MoneyGramHandler),
+        configuration={
+            "business": {
+                "businessName": "Business",
+                "legalEntityName": "Entity",
+                "businessType": "ACCOMMODATION_HOTELS",
+                "businessRegistrationNumber": "10-2030405",
+                "businessIssueDate": "2013-05-26",
+                "businessCountryOfRegistration": "USA",
+                "address": {
+                    "line1": "Piazza della Liberta",
+                    "city": "ROME",
+                    "countrySubdivisionCode": "US-NY",
+                    "countryCode": "USA",
+                    "postalCode": 10001,
+                },
+                "contactDetails": {"phone": {"number": 2003004000, "countryDialCode": 1}},
+            }
         },
     )
 

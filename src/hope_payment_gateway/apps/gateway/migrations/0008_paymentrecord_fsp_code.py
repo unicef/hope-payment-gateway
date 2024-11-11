@@ -12,6 +12,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="paymentrecord",
             name="fsp_code",
-            field=models.CharField(blank=True, db_index=True, max_length=64, null=True),
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                max_length=64,
+                null=True,
+                help_text="new MTCN for western union, transaction id for MoneyGram",
+            ),
         ),
     ]

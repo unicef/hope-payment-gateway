@@ -1,0 +1,64 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"refresh_token_expires_in\" : \"0\",\n  \"api_product_list\" : \"\
+      [DisbursementStatus-Ext, DisbursementRefund-Ext, DisbursementProfiles-Ext, Disbursement-Ext,\
+      \ FxRate-Ext, ReferenceData-Ext]\",\n  \"api_product_list_json\" : [ \"DisbursementStatus-Ext\"\
+      , \"DisbursementRefund-Ext\", \"DisbursementProfiles-Ext\", \"Disbursement-Ext\"\
+      , \"FxRate-Ext\", \"ReferenceData-Ext\" ],\n  \"organization_name\" : \"moneygram\"\
+      ,\n  \"developer.email\" : \"developer@moneygram.com\",\n  \"token_type\" :\
+      \ \"BearerToken\",\n  \"issued_at\" : \"1732270511609\",\n  \"client_id\" :\
+      \ \"0Ycqw5V5RycdkwPFryGTy5fcbHnvXjkW\",\n  \"access_token\" : \"SK2wunRf6cZGxYP3mir3MP3GBfCG\"\
+      ,\n  \"application_name\" : \"6547622b-725c-4bb9-a035-8b32a8e25d5a\",\n  \"\
+      scope\" : \"\",\n  \"expires_in\" : \"3599\",\n  \"refresh_count\" : \"0\",\n\
+      \  \"status\" : \"approved\"\n}"
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, POST
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Set-Cookie: visid_incap_2947185=hKfXBjuGQ92JTYoAjblwFa5ZQGcAAAAAQUIPAAAAAABLTwximItWBz1xRAjV71/g;
+        expires=Fri, 21 Nov 2025 23:03:10 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=aFsvW7+yZjBTP0mqdIbzIAAAAABkRAadS7Wk5M8wCgNzGb6B; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_250_2947185=OaX/fPoAzF9XRWRX5y14A69ZQGcAAAAA5AtGlYBzIA8VSwBEM/puFQ==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 51-99144453-99144457 NNYN CT(124 251 0) RT(1732270510710 23) q(0 0
+        4 1) r(5 5) U16
+      X-MG-ClientRequestId: ''
+      X-MG-RequestId: rrt-616251767693035578-b-gce-2164438-55733818-1
+      X-MG-SessionId: ''
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials
+- response:
+    auto_calculate_content_length: false
+    body: '{"errors":[{"category":"IP-20000","code":"697","message":"Invalid Transaction
+      ID"}]}'
+    content_type: text/plain
+    headers:
+      Server-Timing: intid;desc=7ab59c158f792497
+      Set-Cookie: visid_incap_2947185=hKfXBjuGQ92JTYoAjblwFa5ZQGcAAAAAQUIPAAAAAABLTwximItWBz1xRAjV71/g;
+        expires=Fri, 21 Nov 2025 23:02:27 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=lWA6SpCj/zrouSlqdIbzIAAAAAC9/lrAjt4F6LBOT/4GIOO/; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_250_2947185=lb0qNDAT9h1XRWRX5y14A7BZQGcAAAAAaxYGFDqiDk6iUQ8nLVCnTQ==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 53-119870235-119870250 NNYN CT(131 265 0) RT(1732270511335 39) q(0
+        0 4 0) r(13 13) U16
+      X-MG-ClientRequestId: bd56a68a-91f8-487d-9b25-1a478d4591a6
+      X-MG-RequestId: rrt-5582730233985681462-c-gce-2807937-55130203-1
+      X-MG-SessionId: ''
+      X-transGUID: db9aa8ea-5b23-4cab-95aa-2092c4d309f3
+      x-amz-apigw-id: BpLzmEc-CYcFaDw=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Date: Fri, 22 Nov 2024 10:15:12 GMT
+      x-amzn-Remapped-Server: nginx/1.25.3
+      x-amzn-RequestId: 60d69205-9b4c-4076-9c99-c46ace9901e2
+    method: GET
+    status: 400
+    url: https://sandboxapi.moneygram.com/disbursement/status/v1/transactions/transaction_id?targetAudience=AGENT_FACING&agentPartnerId=AAAAAA&userLanguage=en-US

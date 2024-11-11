@@ -15,12 +15,11 @@ from hope_payment_gateway.celery import app
 
 
 @app.task()  # queue="executors"
-def moneygram_send_task(tag=None, threshold=10000):
+def moneygram_send_money(tag=None, threshold=10000):
     """Task to trigger MoneyGram payments"""
     logging.info("MoneyGram Task started")
     threshold = threshold or config.MONEYGRAM_THREASHOLD
-    vendor_number = threshold or config.MONEYGRAM_VENDOR_NUMBER
-    fsp = FinancialServiceProvider.objects.get(vendor_number=vendor_number)
+    fsp = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER)
 
     records_count = 0
 
@@ -35,7 +34,7 @@ def moneygram_send_task(tag=None, threshold=10000):
         if records_count > threshold:
             break
 
-        logging.info(f"Sending {records_count} records {pi} to Moneygram")
+        logging.info(f"Sending {records_count} records {pi} to MoneyGram")
         records_ids = list(records.values_list("id", flat=True))
         moneygram_notify.delay(records_ids)
         pi.status = PaymentInstructionState.PROCESSED
