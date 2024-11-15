@@ -3,12 +3,7 @@ from factories import FinancialServiceProviderFactory, PaymentInstructionFactory
 from viewflow.fsm.base import TransitionNotAllowed
 
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow, PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import (
-    PaymentInstruction,
-    PaymentInstructionState,
-    PaymentRecord,
-    PaymentRecordState,
-)
+from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, PaymentRecordState
 
 
 @pytest.mark.django_db
@@ -19,7 +14,7 @@ def test_fsp():
 
 @pytest.mark.django_db
 def test_payment_instruction():
-    instruction = PaymentInstructionFactory(unicef_id="UNC-123")
+    instruction = PaymentInstructionFactory(external_code="UNC-123")
     assert str(instruction) == "UNC-123 - DRAFT"
 
 

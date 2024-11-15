@@ -30,6 +30,7 @@ def analyze_node(nodes, partial=None):
 
 
 def integrate_payload(payload, template):
+    print(11, payload, template)
     template_list = analyze_node([template])
     for path in template_list:
         cursor = payload

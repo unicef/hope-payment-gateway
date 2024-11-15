@@ -25,6 +25,7 @@ def pytest_configure(config):
     os.environ["SECURE_SSL_REDIRECT"] = "0"
     os.environ["SESSION_COOKIE_HTTPONLY"] = "0"
     os.environ["SESSION_COOKIE_SECURE"] = "0"
+    os.environ["DEFAULT_FROM_EMAIL"] = "test@email.org"
 
 
 @pytest.fixture(autouse=True)
@@ -67,7 +68,43 @@ def prl():
 @pytest.fixture()
 def wu():
     return FinancialServiceProviderFactory(
-        name="Western Union", vendor_number="1900723202", strategy=fqn(WesternUnionHandler)
+        name="Western Union",
+        vendor_number="12345",
+        strategy=fqn(WesternUnionHandler),
+        configuration={
+            "sender": {
+                "name": {
+                    "name_type": "C",
+                    "business_name": "BUSINESS",
+                },
+                "address": {
+                    "addr_line1": "Piazza della liberta",
+                    "addr_line2": "",
+                    "city": "NEW YORK",
+                    "state": "NY",
+                    "postal_code": "10000",
+                    "country_code": {
+                        "iso_code": {
+                            "country_code": "US",
+                            "currency_code": "USD",
+                        },
+                        "country_name": "US",
+                    },
+                    "local_area": "NEW YORK",
+                    "street": "Piazza della liberta",
+                },
+                "email": "email@email.org",
+                "contact_phone": "6001234000",
+                "mobile_phone": {
+                    "phone_number": {
+                        "country_code": "1",
+                        "national_number": "6001234000",
+                    },
+                },
+                "fraud_warning_consent": "Y",
+            },
+            "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
+        },
     )
 
 

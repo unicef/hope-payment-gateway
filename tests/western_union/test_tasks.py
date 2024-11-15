@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.test import override_settings
 
 import pytest
+from constance.test import override_config
 from factories import PaymentInstructionFactory, PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.tasks import western_union_send_task
@@ -22,6 +23,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, Pa
 )
 @pytest.mark.django_db
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.apps.fsp.western_union.tasks.send_money")
 def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
     instr_a = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=wu, tag="tag")
