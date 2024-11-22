@@ -21,6 +21,7 @@ src/hope_payment_gateway/static
 .DS_Store
 
 .vscode
+.cache
 
 .pdm-python
 pdm.toml

@@ -32,10 +32,12 @@ django_settings_module = "hope_payment_gateway.config.settings"
 [tool.pdm.build]
 includes = []
 
+
 [tool.pdm.dev-dependencies]
 dev = [
     "argh",
     "black",
+    "cairosvg",
     "django-regex",
     "django-webtest",
     "drf-api-checker",
@@ -49,6 +51,29 @@ dev = [
     "graphene-stubs",
     "ipdb",
     "isort",
+    "markupsafe",
+    "mdx-gh-links",
+    "mike",
+    "mkdocs",
+    "mkdocs-alias-plugin",
+    "mkdocs-autolinks-plugin",
+    "mkdocs-awesome-pages-plugin",
+    "mkdocs-click",
+    "mkdocs-embed-external-markdown",
+    "mkdocs-ezglossary-plugin",
+    "mkdocs-ezlinks-plugin",
+    "mkdocs-gen-files",
+    "mkdocs-get-deps",
+    "mkdocs-gitsnippet-plugin",
+    "mkdocs-link-marker",
+    "mkdocs-include-markdown-plugin",
+    "mkdocs-macros-plugin",
+    "mkdocs-material",
+    "mkdocs-panzoom-plugin",
+    "mkdocs-pdf-export-plugin",
+    "mkdocs-simple-hooks",
+    "mkdocstrings[python]",
+    "pymdown-extensions",
     "openpyxl-stubs",
     "parameterized",
     "parso",
@@ -121,7 +146,6 @@ dependencies = [
     "tablib",
     "unicef-security",
     "wheel",
-    "uwsgi",
     "zeep",
 ]
 name = "hope_payment_gateway"
