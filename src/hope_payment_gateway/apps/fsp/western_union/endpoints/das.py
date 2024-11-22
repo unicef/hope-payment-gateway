@@ -5,26 +5,19 @@ from hope_payment_gateway.apps.fsp.western_union.models import Corridor, Service
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider
 
 
-def create_usd():
-    return {
-        "identifier": config.WESTERN_UNION_DAS_IDENTIFIER,
-        "reference_no": "N/A",
-        "counter_id": config.WESTERN_UNION_DAS_COUNTER,
-    }
-
-
-def das_countries_currencies(create_corridors=False):
+def das_countries_currencies(identifier, counter_id, create_corridors=False):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     more_data, qf3, qf4, response = True, "", "", None
     payload = FinancialServiceProvider.objects.get(
         vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
     ).configuration.copy()
+
     while more_data:
         payload.pop("sender", None)
         payload.update(
             {
                 "name": "GetCountriesCurrencies",
-                "foreign_remote_system": create_usd(),
+                "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
                 "filters": {
                     "queryfilter1": "en",
                     "queryfilter2": "US USD",  # destination
@@ -35,23 +28,26 @@ def das_countries_currencies(create_corridors=False):
         )
         client = WesternUnionClient("DAS_Service_H2HService.wsdl")
         response = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
-        context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]
-        more_data = context["HEADER"]["DATA_MORE"] == "Y"
+        if isinstance(response["content"], dict):
+            context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]
+            more_data = context["HEADER"]["DATA_MORE"] == "Y"
 
-        if create_corridors:
-            for country_currency in context["RECORDSET"]["GETCOUNTRIESCURRENCIES"]:
-                country = country_currency["ISO_COUNTRY_CD"]
-                currency = country_currency["CURRENCY_CD"]
-                qf3 = country_currency["COUNTRY_LONG"]
-                qf4 = country_currency["CURRENCY_NAME"]
+            if create_corridors:
+                for country_currency in context["RECORDSET"]["GETCOUNTRIESCURRENCIES"]:
+                    country = country_currency["ISO_COUNTRY_CD"]
+                    currency = country_currency["CURRENCY_CD"]
+                    qf3 = country_currency["COUNTRY_LONG"]
+                    qf4 = country_currency["CURRENCY_NAME"]
 
-                das_delivery_services(country, currency, create_corridors=create_corridors)
+                    das_delivery_services(country, currency, identifier, counter_id, create_corridors=create_corridors)
+            else:
+                more_data = False  # skip we want only 1st page
         else:
             more_data = False  # skip we want only 1st page
     return response
 
 
-def das_origination_currencies():
+def das_origination_currencies(identifier, counter_id):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = FinancialServiceProvider.objects.get(
         vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
@@ -60,7 +56,7 @@ def das_origination_currencies():
     payload.update(
         {
             "name": "GetOriginationCurrencies",
-            "foreign_remote_system": create_usd(),
+            "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
             "filters": {
                 "queryfilter1": "en",
             },
@@ -70,7 +66,7 @@ def das_origination_currencies():
     return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
-def das_destination_countries():
+def das_destination_countries(identifier, counter_id):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = FinancialServiceProvider.objects.get(
         vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
@@ -79,7 +75,7 @@ def das_destination_countries():
     payload.update(
         {
             "name": "GetDestinationCountries",
-            "foreign_remote_system": create_usd(),
+            "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
             "filters": {"queryfilter1": "en", "queryfilter2": "US USD"},
         }
     )
@@ -87,7 +83,7 @@ def das_destination_countries():
     return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
-def das_destination_currencies(destination_country):
+def das_destination_currencies(destination_country, identifier, counter_id):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = FinancialServiceProvider.objects.get(
         vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
@@ -96,7 +92,7 @@ def das_destination_currencies(destination_country):
     payload.update(
         {
             "name": "GetDestinationCurrencies",
-            "foreign_remote_system": create_usd(),
+            "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
             "filters": {
                 "queryfilter1": "en",
                 "queryfilter2": "US USD",  # origination country
@@ -108,7 +104,7 @@ def das_destination_currencies(destination_country):
     return client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
 
-def das_delivery_services(destination_country, destination_currency, create_corridors=False):
+def das_delivery_services(destination_country, destination_currency, identifier, counter_id, create_corridors=False):
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = FinancialServiceProvider.objects.get(
         vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
@@ -117,7 +113,7 @@ def das_delivery_services(destination_country, destination_currency, create_corr
     payload.update(
         {
             "name": "GetDeliveryServices",
-            "foreign_remote_system": create_usd(),
+            "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
             "filters": {
                 "queryfilter1": "en",
                 "queryfilter2": "US USD",  # origination country, currency
@@ -129,7 +125,7 @@ def das_delivery_services(destination_country, destination_currency, create_corr
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
     response = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
-    if "content" in response and "MTML" in response["content"]:
+    if isinstance(response["content"], dict) and "content" in response and "MTML" in response["content"]:
         context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
         if create_corridors and context:
             for ds in context["GETDELIVERYSERVICES"]:
@@ -142,11 +138,10 @@ def das_delivery_services(destination_country, destination_currency, create_corr
                             "template_code": ds["TEMPLT"],
                         },
                     )
-
     return response
 
 
-def das_delivery_option_template(destination_country, destination_currency, template_code):
+def das_delivery_option_template(destination_country, destination_currency, identifier, counter_id, template_code):
 
     wu_env = config.WESTERN_UNION_WHITELISTED_ENV
     payload = FinancialServiceProvider.objects.get(
@@ -156,7 +151,7 @@ def das_delivery_option_template(destination_country, destination_currency, temp
     payload.update(
         {
             "name": "GetDeliveryOptionTemplate",
-            "foreign_remote_system": create_usd(),
+            "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
             "filters": {
                 "queryfilter1": "en",
                 "queryfilter2": f"{destination_country} {destination_currency}",  # destination
@@ -166,10 +161,10 @@ def das_delivery_option_template(destination_country, destination_currency, temp
         }
     )
     client = WesternUnionClient("DAS_Service_H2HService.wsdl")
-    context = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
+    response = client.response_context("DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}")
 
-    if "content" in context and "MTML" in context["content"]:
-        rows = context["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
+    if isinstance(response["content"], dict) and "content" in response and "MTML" in response["content"]:
+        rows = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
         template = {}
         structure = []
         service_provider_code = False
@@ -222,4 +217,4 @@ def das_delivery_option_template(destination_country, destination_currency, temp
                                 service_provider_code = False
                 obj.template = template
                 obj.save()
-    return context
+    return response
