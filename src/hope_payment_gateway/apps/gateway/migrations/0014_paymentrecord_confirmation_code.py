@@ -13,6 +13,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="paymentrecord",
             name="confirmation_code",
-            field=models.CharField(blank=True, db_index=True, max_length=64, null=True),
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                max_length=64,
+                null=True,
+                help_text="MTCN for western union, reference number for MoneyGram",
+            ),
         ),
     ]

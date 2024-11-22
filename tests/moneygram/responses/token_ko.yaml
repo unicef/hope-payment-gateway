@@ -1,0 +1,22 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "  \n            {\n\"error\": {\n \"category\": \"Gateway-50000\",\n \"\
+      code\": \"G905\",\n \"message\": \"Bad_Request\"\n }\n} "
+    content_type: text/plain
+    headers:
+      Set-Cookie: visid_incap_2947185=cLafssAsRu2sH93gBcUhw76rPGcAAAAAQUIPAAAAAAA6b6AY/9WICynbng8+Apue;
+        expires=Tue, 18 Nov 2025 23:03:07 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=SsWkDQx5zw2gfDKfdIbzIAAAAABowNFoPIvjg5pzRDJxH2S2; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_250_2947185=j013TRQ1fUCjPZBI5y14A76rPGcAAAAAP64fNl9pHivOdWEot6FxjQ==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 49-53302251-53302255 NNYN CT(124 253 0) RT(1732029374353 44) q(0 0
+        4 -1) r(6 6) U16
+      X-MG-ClientRequestId: ''
+      X-MG-RequestId: rrt-426941295891377796-c-gce-2106062-50142398-1
+      X-MG-SessionId: ''
+    method: GET
+    status: 400
+    url: https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials

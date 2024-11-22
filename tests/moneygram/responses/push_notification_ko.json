@@ -1,0 +1,14 @@
+{
+    "eventId": "740708201679925945014500444747",
+    "eventDate": "2023-03-27T14:05:44.884026",
+    "subscriptionId": "001cc295-4a40-413d-8639-7469a31001c4",
+    "subscriptionType": "TRANSACTION_STATUS_EVENT",
+    "eventPayload": {
+        "agentPartnerId": "000000000",
+        "referenceNumber": "123456789",
+        "transactionSendDate": "2023-03-27T14:05:41.007",
+        "transactionStatusDate": "2023-03-27T14:05:41.007",
+        "transactionStatus": "SENT",
+        "transactionSubStatus": []
+    }
+}

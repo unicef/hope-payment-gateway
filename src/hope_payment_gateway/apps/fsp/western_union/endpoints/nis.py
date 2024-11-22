@@ -108,8 +108,8 @@ class NisNotificationView(WesternUnionApi):
                 flow.refund()
             else:
                 flow.fail()
-        except TransitionNotAllowed as e:
-            return Response({"transition_not_allowed": str(e)}, status=HTTP_400_BAD_REQUEST)
+        except TransitionNotAllowed:
+            return Response({"error": "transition_not_allowed"}, status=HTTP_400_BAD_REQUEST)
 
         pr.save()
 
