@@ -1,0 +1,76 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"refresh_token_expires_in\" : \"0\",\n  \"api_product_list\" : \"\
+      [DisbursementStatus-Ext, DisbursementRefund-Ext, DisbursementProfiles-Ext, Disbursement-Ext,\
+      \ FxRate-Ext, ReferenceData-Ext]\",\n  \"api_product_list_json\" : [ \"DisbursementStatus-Ext\"\
+      , \"DisbursementRefund-Ext\", \"DisbursementProfiles-Ext\", \"Disbursement-Ext\"\
+      , \"FxRate-Ext\", \"ReferenceData-Ext\" ],\n  \"organization_name\" : \"moneygram\"\
+      ,\n  \"developer.email\" : \"developer@moneygram.com\",\n  \"token_type\" :\
+      \ \"BearerToken\",\n  \"issued_at\" : \"1732554513943\",\n  \"client_id\" :\
+      \ \"0Ycqw5V5RycdkwPFryGTy5fcbHnvXjkW\",\n  \"access_token\" : \"S3C8Wy0SwYGStI9TnCx0YJvhLaYi\"\
+      ,\n  \"application_name\" : \"6547622b-725c-4bb9-a035-8b32a8e25d5a\",\n  \"\
+      scope\" : \"\",\n  \"expires_in\" : \"3599\",\n  \"refresh_count\" : \"0\",\n\
+      \  \"status\" : \"approved\"\n}"
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, POST
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Set-Cookie: visid_incap_2947185=kLYBsJS5QBG0Jn17bR4uCxGvRGcAAAAAQUIPAAAAAAAAnNi5Hh/yvCNSuFOlBE0K;
+        expires=Mon, 24 Nov 2025 22:24:24 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=ZQbhXazmAkNwpqpKdIbzIAAAAABsfLXuCzB1mcnbulnfmbh2; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_1572_2947185=m54tY5dMtlVXSQBw2t3QFRGvRGcAAAAAhlfjwRq+KGAUQ+a/sfEvwg==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 10-15573436-15573452 NNYN CT(128 280 0) RT(1732554512617 109) q(0 0
+        4 -1) r(5 5) U16
+      X-MG-ClientRequestId: ''
+      X-MG-RequestId: rrt-5536188860264669082-f-gce-1437876-66974441-1
+      X-MG-SessionId: ''
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials
+- response:
+    auto_calculate_content_length: false
+    body: '[{"destinationCountryCode":"NGA","serviceOptions":[{"serviceOptionCode":"WILL_CALL","destinationCurrencyCode":"NGN","serviceOptionName":"10
+      Minute Service","serviceOptionDisplayDescription":" ","serviceOptionCategoryId":"1","serviceOptionCategoryDisplayName":"RECEIVE
+      CASH","maxReceiveAmount":"2500000","localCurrency":"USD","indicativeRateAvailable":false},{"serviceOptionCode":"BANK_DEPOSIT","destinationCurrencyCode":"NGN","serviceOptionRoutingCode":"74826841","serviceOptionName":"Bank
+      Deposit - All Banks","serviceOptionDisplayDescription":" ","serviceOptionCategoryId":"2","serviceOptionCategoryDisplayName":"ACCOUNT
+      DEPOSIT","maxReceiveAmount":"7000000","serviceOptionRoutingName":"All Banks","localCurrency":"USD","indicativeRateAvailable":false},{"serviceOptionCode":"DIRECT_TO_ACCT","destinationCurrencyCode":"NGN","serviceOptionRoutingCode":"75388278","serviceOptionName":"Mobile
+      Wallet Deposit - SmartCash / Airtel","serviceOptionDisplayDescription":"Delivery
+      Option 19: Direct to Account","serviceOptionCategoryId":"2","serviceOptionCategoryDisplayName":"ACCOUNT
+      DEPOSIT","maxReceiveAmount":"5000000","serviceOptionRoutingName":"SmartCash
+      / Airtel","localCurrency":"USD","indicativeRateAvailable":false}]}]'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      SendAmountPerTransactionlimit: '{USD=[6000]}'
+      Server-Timing: intid;desc=67c6440e9b52b653
+      Set-Cookie: visid_incap_2947185=OUPHfq2KRzm4hM8J0PbxQRKvRGcAAAAAQUIPAAAAAACn+5fgDyVkpDReTmmeIKMk;
+        expires=Mon, 24 Nov 2025 22:24:23 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=EWsLMSyMBXOLKOHWdIbzIAAAAABRVIOSWMgdvJ98QcEhdCch; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_1572_2947185=BLbZKCzLiwQqTABw2t3QFRKvRGcAAAAA/Bf/XDQWfTS9AVIx9+Qpag==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 8-22844232-22844249 NNYN CT(118 245 0) RT(1732554513552 112) q(0 0
+        4 -1) r(6 6) U16
+      X-MG-ClientRequestId: 88e61495-fae6-4538-b9ab-751ae1337ae0
+      X-MG-RequestId: rrt-9159922092966987834-b-gce-1904548-64503014-1
+      X-MG-SessionId: ''
+      x-amz-apigw-id: B0BLAG9wCYcFUqA=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Date: Mon, 25 Nov 2024 17:08:34 GMT
+      x-amzn-Remapped-Server: nginx/1.25.3
+      x-amzn-RequestId: fc3cda6d-9c61-44c7-b12d-ee9f939aa6dd
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/reference-data/v1/service-options?targetAudience=AGENT_FACING&agentPartnerId=AAAAAA&userLanguage=en-US&destinationCountryCode=NGA

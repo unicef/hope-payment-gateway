@@ -187,8 +187,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_quote_transaction(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            client = MoneyGramClient()
-            resp = client.quote(obj.get_payload())
+            resp = MoneyGramClient().quote(obj.get_payload())
             return self.handle_mg_response(request, resp, pk, "Quote Transaction")
         except InvalidToken as e:
             logger.error(e)
@@ -198,7 +197,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_status(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient.query_status(obj.fsp_code, update=False)
+            resp = MoneyGramClient().query_status(obj.fsp_code, update=False)
             return self.handle_mg_response(request, resp, pk, "Status")
         except InvalidToken as e:
             logger.error(e)
@@ -208,12 +207,42 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_status_update(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient.query_status(obj.fsp_code, update=True)
+            resp = MoneyGramClient().query_status(obj.fsp_code, update=True)
             return self.handle_mg_response(request, resp, pk, "Status + Update")
         except InvalidToken as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
         except TransitionNotAllowed as e:
+            self.message_user(request, str(e), messages.ERROR)
+
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Required Fields")
+    def mg_get_required_fields(self, request, pk) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            resp = MoneyGramClient().get_required_fields(obj.get_payload())
+            return self.handle_mg_response(request, resp, pk, "Required Fields")
+        except InvalidToken as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
+
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Service Options")
+    def mg_get_service_options(self, request, pk) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            resp = MoneyGramClient().get_service_options(obj.get_payload())
+            return self.handle_mg_response(request, resp, pk, "Service Options")
+        except InvalidToken as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
+
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Refund")
+    def mg_refund(self, request, pk) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
+            return self.handle_mg_response(request, resp, pk, "Refund")
+        except InvalidToken as e:
+            logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
     @choice(change_list=False)
@@ -224,6 +253,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.mg_quote_transaction,
             self.mg_status,
             self.mg_status_update,
+            self.mg_get_service_options,
+            self.mg_get_required_fields,
+            self.mg_refund,
         ]
         return button
 
@@ -255,9 +287,11 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
                         msgs.append(f"{error['message']} ({error['code']})")
                         if "offendingFields" in error:
                             for field in error["offendingFields"]:
-                                msgs.append(f"Field: {field['field']}")
+                                if "field" in field:
+                                    msgs.append(f"Field: {field['field']}")
                 elif "error" in data:
-                    msgs.append(data["error"]["message"])
+                    message = data.get("message", data["error"])
+                    msgs.append(message)
                 else:
                     msgs = [
                         "Error",
