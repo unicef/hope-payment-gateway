@@ -1,5 +1,4 @@
 nav:
   - index.md
-  - workflow.md
   - statuses.md
-  - actions.md
+  - workflow.md

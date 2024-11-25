@@ -1,7 +1,6 @@
 # Payment Gateway
 
-The Integration between HOPE and any FSP is performed through a middleware service called Payment Gateway (PG).
-HOPE sends to the PG information regarding Payments through web API.
+The Payment Gateway is a component to perform integration between MIS and FSPs, through web API.
 Each FSP can have a different way to interact with the payment gateway with though strategy pattern.
 
 
@@ -10,13 +9,13 @@ Each FSP can have a different way to interact with the payment gateway with thou
 > Repo: <https://github.com/unicef/hope-payment-gateway>
 
 
-## HOPE / PG Integration API
+## Integration API
 
 PG expose endpoint to accept:
 
 - Payment Plan creation
 - Add Records to Payment Plan
-- Payment Plan ready
+- Set Payment Plan ready
 - Status of payments given a Payment Plan
 
 
@@ -41,9 +40,10 @@ PG expose endpoint to accept:
 - Purged
 - Error
 
+
 ### Financial Service Providers
 
 At the moment the Payment Gateway is integrated with:
 
 - Western Union
-- Moneygram
+- MoneyGram

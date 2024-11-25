@@ -23,7 +23,7 @@ WORKDIR /code
 FROM base as builder
 
 WORKDIR $PACKAGES_DIR
-RUN pip install pdm
+RUN pip install pdm uwsgi
 COPY ../pyproject.toml ./
 COPY ../pdm.lock ./
 RUN pdm config python.use_venv false
