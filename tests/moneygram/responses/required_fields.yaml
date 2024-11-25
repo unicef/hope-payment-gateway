@@ -1,0 +1,234 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"refresh_token_expires_in\" : \"0\",\n  \"api_product_list\" : \"\
+      [DisbursementStatus-Ext, DisbursementRefund-Ext, DisbursementProfiles-Ext, Disbursement-Ext,\
+      \ FxRate-Ext, ReferenceData-Ext]\",\n  \"api_product_list_json\" : [ \"DisbursementStatus-Ext\"\
+      , \"DisbursementRefund-Ext\", \"DisbursementProfiles-Ext\", \"Disbursement-Ext\"\
+      , \"FxRate-Ext\", \"ReferenceData-Ext\" ],\n  \"organization_name\" : \"moneygram\"\
+      ,\n  \"developer.email\" : \"developer@moneygram.com\",\n  \"token_type\" :\
+      \ \"BearerToken\",\n  \"issued_at\" : \"1732555156575\",\n  \"client_id\" :\
+      \ \"0Ycqw5V5RycdkwPFryGTy5fcbHnvXjkW\",\n  \"access_token\" : \"v3jlIqenKnhW4jy0iCwnq6cMA1eA\"\
+      ,\n  \"application_name\" : \"6547622b-725c-4bb9-a035-8b32a8e25d5a\",\n  \"\
+      scope\" : \"\",\n  \"expires_in\" : \"3599\",\n  \"refresh_count\" : \"0\",\n\
+      \  \"status\" : \"approved\"\n}"
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, POST
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Set-Cookie: visid_incap_2947185=EZxShhRcQSaV/gE5/Vbxv5OxRGcAAAAAQUIPAAAAAAAeWXxi5Sqm5/6Xu6uxD5Zi;
+        expires=Mon, 24 Nov 2025 22:24:23 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=TeQQJwJvFTkkghSwdIbzIAAAAACVVauPdafk1GdHVHPKcMau; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_1572_2947185=228OVfBL5X9l+Qdw2t3QFZOxRGcAAAAAdaYEan+X2m8fs0B6HX90YQ==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 16-65203667-65203689 NNYN CT(118 239 0) RT(1732555155318 95) q(0 0
+        3 -1) r(5 5) U16
+      X-MG-ClientRequestId: ''
+      X-MG-RequestId: rrt-4368272924747816858-f-gce-3388182-66761378-1
+      X-MG-SessionId: ''
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials
+- response:
+    auto_calculate_content_length: false
+    body: '{"destinationCountryCode":"NGA","amount":100.0,"sendCurrencyCode":"USD","receiveCurrencyCode":"NGN","serviceOptionCode":"BANK_DEPOSIT","serviceOptionName":"Bank
+      Deposit - All Banks","serviceOptionRoutingCode":"74826841","serviceOptionRoutingName":"All
+      Banks","fieldInfo":[{"field":"destinationCountryCode","dataType":"cntrycode","required":true,"fieldLabel":"Destination
+      Country","displayOrder":"1","fieldMin":"0","fieldMax":"3"},{"field":"destinationCountrySubdivisionCode","dataType":"string","required":false,"fieldLabel":"Destination
+      State/Province","displayOrder":"5"},{"field":"fundInStore.fundInStore","dataType":"boolean","required":true,"fieldLabel":"Transaction
+      Staging","displayOrder":"19"},{"field":"fundInStore.fundInStoreAgentPartnerId","dataType":"string","required":false,"fieldMin":"0","fieldMax":"8"},{"field":"fundingSource.accountIdentifier","dataType":"string","required":false,"fieldMin":"0","fieldMax":"55"},{"field":"fundingSource.provider","dataType":"string","required":false,"fieldMin":"0","fieldMax":"55"},{"field":"fundingSource.providerAccountNumber","dataType":"string","required":false,"fieldMin":"0","fieldMax":"55"},{"field":"fundingSource.providerNetworkCode","dataType":"string","required":false,"fieldMin":"0","fieldMax":"55"},{"field":"fundingSource.tenderType","dataType":"string","required":false,"fieldMin":"0","fieldMax":"30"},{"field":"receipt.primaryLanguage","dataType":"string","required":true,"fieldLabel":"Primary
+      Receipt Language","displayOrder":"13"},{"field":"receipt.secondaryLanguage","dataType":"string","required":true,"fieldLabel":"Secondary
+      Receipt Language","displayOrder":"14"},{"field":"receiveCurrencyCode","dataType":"string","required":true,"fieldLabel":"Receive
+      Currency","displayOrder":"20","fieldMin":"0","fieldMax":"3"},{"field":"receiver.address.city","dataType":"string","required":false,"fieldLabel":"Receiver
+      City","displayOrder":"13","fieldMin":"0","fieldMax":"40","regEx":"^([a-zA-Z
+      \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$"},{"field":"receiver.address.countryCode","dataType":"cntrycode","required":false,"fieldLabel":"Receiver
+      Country","displayOrder":"14","fieldMin":"3","fieldMax":"3"},{"field":"receiver.address.countrySubdivisionCode","dataType":"string","required":false,"fieldLabel":"Receiver
+      State","displayOrder":"15","fieldMin":"0","fieldMax":"2"},{"field":"receiver.address.line1","dataType":"string","required":false,"fieldLabel":"Receiver
+      Street Address","displayOrder":"9","fieldMin":"0","fieldMax":"30","regEx":"^([a-zA-Z0-9
+      \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$","helpTextLong":"Only alpha,
+      numeric and certain special characters (#./''-,()\") are allowed. Minimum 5
+      characters with at least one alpha character. No repeated special characters
+      ( #### or ////). PO Box not allowed"},{"field":"receiver.address.line2","dataType":"string","required":false,"fieldLabel":"Receiver
+      Street Address 2","displayOrder":"10","fieldMin":"0","fieldMax":"80","regEx":"^([a-zA-Z0-9
+      \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$","helpTextLong":"Only alpha,
+      numeric and certain special characters (#./''-,()\") are allowed"},{"field":"receiver.address.line3","dataType":"string","required":false,"fieldLabel":"Receiver
+      Street Address 3","displayOrder":"11","fieldMin":"0","fieldMax":"80","regEx":"^([a-zA-Z0-9
+      \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$","helpTextLong":"Only alpha,
+      numeric and certain special characters (#./''-,()\") are allowed"},{"field":"receiver.address.postalCode","dataType":"string","required":false,"fieldLabel":"Receiver
+      ZIP Code","displayOrder":"16","fieldMin":"0","fieldMax":"10","regEx":"^[0-9a-zA-Z
+      -]*$"},{"field":"receiver.mobilePhone.countryDialCode","dataType":"string","required":false,"fieldLabel":"Receiver
+      Mobile Number Country Code","displayOrder":"17","fieldMin":"0","fieldMax":"5"},{"field":"receiver.mobilePhone.number","dataType":"string","required":false,"fieldLabel":"Receiver
+      Mobile Number","displayOrder":"18","fieldMin":"5","fieldMax":"14","helpTextLong":"Only
+      numeric characters are allowed. Cannot contain a string of repeating numeric
+      characters (example 8888888)"},{"field":"receiver.name.firstName","dataType":"string","required":true,"fieldLabel":"First/Given
+      Name","displayOrder":"1","fieldMin":"1","fieldMax":"20","regEx":"^([a-zA-Z \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot
+      start with special character, cannot contain number. Only alpha characters,
+      dash (-) and apostrophe ('') allowed"},{"field":"receiver.name.lastName","dataType":"string","required":true,"fieldLabel":"Last/Family
+      Name","displayOrder":"3","fieldMin":"1","fieldMax":"30","regEx":"^([a-zA-Z \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot
+      start with special character, cannot contain number. Only alpha characters,
+      dash (-) and apostrophe ('') allowed"},{"field":"receiver.name.middleName","dataType":"string","required":false,"fieldLabel":"Receiver
+      Middle Name","displayOrder":"4","fieldMin":"0","fieldMax":"20","regEx":"^([a-zA-Z
+      \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot start with special character,
+      cannot contain number. Only alpha characters, dash (-) and apostrophe ('') allowed"},{"field":"receiver.name.secondLastName","dataType":"string","required":false,"fieldLabel":"Receiver
+      Second Last/Family Name","displayOrder":"6","fieldMin":"1","fieldMax":"30","regEx":"^([a-zA-Z
+      \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot start with special character,
+      cannot contain number. Only alpha characters, dash (-) and apostrophe ('') allowed"},{"field":"receiverSameAsSender","dataType":"boolean","required":false},{"field":"rewardsNumber","dataType":"string","required":false,"fieldLabel":"MoneyGram
+      Plus Number","displayOrder":"1","fieldMax":"20","regEx":"^[0-9]*$"},{"field":"sendAmount.currencyCode","dataType":"string","required":true,"fieldLabel":"Send
+      Currency","displayOrder":"19","fieldMin":"0","fieldMax":"20"},{"field":"sendAmount.value","dataType":"decimal","required":true,"fieldLabel":"Amount","displayOrder":"18","fieldMin":"0","fieldMax":"20"},{"field":"sender.address.city","dataType":"string","required":true,"fieldLabel":"Sender
+      City","displayOrder":"11","fieldMin":"0","fieldMax":"40","regEx":"^([a-zA-Z
+      \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$"},{"field":"sender.address.countryCode","dataType":"cntrycode","required":true,"fieldLabel":"Sender
+      Country","displayOrder":"12","fieldMin":"3","fieldMax":"3"},{"field":"sender.address.countrySubdivisionCode","dataType":"string","required":false,"fieldLabel":"Sender
+      State","displayOrder":"13","fieldMin":"0","fieldMax":"25"},{"field":"sender.address.line1","dataType":"string","required":true,"fieldLabel":"Sender
+      Street Address","displayOrder":"8","fieldMin":"0","fieldMax":"30","regEx":"^([a-zA-Z0-9
+      \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$","helpTextLong":"Only alpha,
+      numeric and certain special characters (#./''-,()\") are allowed. Minimum 5
+      characters with at least one alpha character. No repeated special characters
+      ( #### or ////). PO Box not allowed"},{"field":"sender.address.line2","dataType":"string","required":false,"fieldLabel":"Sender
+      Street Address 2","displayOrder":"9","fieldMin":"0","fieldMax":"80","regEx":"^([a-zA-Z0-9
+      \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$","helpTextLong":"Only alpha,
+      numeric and certain special characters (#./''-,()\") are allowed"},{"field":"sender.address.line3","dataType":"string","required":false,"fieldLabel":"Address
+      Line 3","displayOrder":"10","fieldMax":"80","regEx":"^([a-zA-Z0-9 \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$","helpTextLong":"Only
+      alpha, numeric and certain special characters (#./''-,()\") are allowed"},{"field":"sender.address.postalCode","dataType":"string","required":false,"fieldLabel":"Sender
+      Zip Code","displayOrder":"14","fieldMin":"0","fieldMax":"10","regEx":"^[0-9a-zA-Z
+      -]*$"},{"field":"sender.email","dataType":"string","required":false,"fieldLabel":"Email","displayOrder":"20","fieldMax":"255","regEx":"^(([\\\\.a-zA-Z0-9_\\\\-])+@([a-zA-Z0-9_\\\\-])+([a-zA-Z0-9_\\\\-])+[\\\\.]{1}([a-zA-Z0-9_\\\\-])+[\\\\.]?([a-zA-Z0-9_\\\\-])+)*$"},{"field":"sender.enrolInRewards","dataType":"boolean","required":false},{"field":"sender.mobilePhone.countryDialCode","dataType":"string","required":true,"fieldLabel":"Primary
+      Phone Country Code","displayOrder":"14","fieldMax":"5"},{"field":"sender.mobilePhone.number","dataType":"string","required":true,"fieldLabel":"Primary
+      Phone Number","displayOrder":"15","fieldMin":"6","fieldMax":"14","regEx":"^([0-9\\.\\-])*$","helpTextLong":"Only
+      numeric characters are allowed. Cannot contain a string of repeating numeric
+      characters (example 8888888)"},{"field":"sender.name.firstName","dataType":"string","required":true,"fieldLabel":"First/Given
+      Name","displayOrder":"1","fieldMin":"1","fieldMax":"20","regEx":"^([a-zA-Z \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot
+      start with special character, cannot contain number. Only alpha characters,
+      dash (-) and apostrophe ('') allowed"},{"field":"sender.name.lastName","dataType":"string","required":true,"fieldLabel":"Last/Family
+      Name","displayOrder":"3","fieldMin":"1","fieldMax":"30","regEx":"^([a-zA-Z \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot
+      start with special character, cannot contain number. Only alpha characters,
+      dash (-) and apostrophe ('') allowed"},{"field":"sender.name.middleName","dataType":"string","required":false,"fieldLabel":"Middle
+      Name","displayOrder":"2","fieldMax":"20","regEx":"^([a-zA-Z \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot
+      start with special character, cannot contain number. Only alpha characters,
+      dash (-) and apostrophe ('') allowed"},{"field":"sender.name.secondLastName","dataType":"string","required":false,"fieldLabel":"Second
+      Last/Family Name","displayOrder":"4","fieldMin":"1","fieldMax":"30","regEx":"^([a-zA-Z
+      \\u00C0-\\u017F\\-\\''\\/])*$","helpTextLong":"Cannot start with special character,
+      cannot contain number. Only alpha characters, dash (-) and apostrophe ('') allowed"},{"field":"sender.notificationLanguagePreference","dataType":"string","required":false,"fieldMin":"0","fieldMax":"5"},{"field":"sender.notificationPreferences.optIn","dataType":"boolean","required":false,"fieldLabel":"Sender
+      Transaction Email Notification Opt-In","displayOrder":"30"},{"field":"sender.notificationPreferences.optIn","dataType":"boolean","required":false,"fieldLabel":"Sender
+      Marketing SMS Notification Opt-In","displayOrder":"32"},{"field":"sender.notificationPreferences.optIn","dataType":"boolean","required":false,"fieldLabel":"Sender
+      Marketing Email Notification Opt-In","displayOrder":"31"},{"field":"sender.personalDetails.birthCity","dataType":"string","required":false,"fieldLabel":"Birth
+      City","displayOrder":"26","fieldMax":"40","regEx":"^([a-zA-Z \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$"},{"field":"sender.personalDetails.birthCountryCode","dataType":"string","required":false,"fieldLabel":"Birth
+      Country","displayOrder":"25","fieldMin":"3","fieldMax":"3"},{"field":"sender.personalDetails.citizenshipCountryCode","dataType":"string","required":false,"fieldLabel":"Country
+      of Citizenship","displayOrder":"32","fieldMin":"3","fieldMax":"3"},{"field":"sender.personalDetails.dateOfBirth","dataType":"date","required":true,"fieldLabel":"Sender
+      Date of Birth","displayOrder":"21","fieldMin":"0","fieldMax":"30"},{"field":"sender.personalDetails.genderCode","dataType":"enum","required":false,"fieldLabel":"Gender","displayOrder":"21","fieldMax":"30","enumerationItem":[{"value":"MALE","description":"Male"},{"value":"FEMALE","description":"Female"},{"value":"UNKNOWN","description":"Not
+      Known / Not Given"}]},{"field":"sender.personalDetails.occupationCode","dataType":"enum","required":false,"fieldLabel":"Occupation","displayOrder":"22","fieldMax":"30","enumerationItem":[{"value":"ADMIN","description":"Administrative"},{"value":"AGRICULTURE","description":"Agriculture"},{"value":"AUTOMOTIVE_SALES","description":"Automotive"},{"value":"BANKING","description":"Financial
+      Services"},{"value":"CLERGY","description":"Religious"},{"value":"COMPUTER","description":"Information
+      Technology (IT)"},{"value":"CUSTOMER_CARE","description":"Customer Care/Retail"},{"value":"EDUCATION","description":"Education"},{"value":"ENGINEER","description":"Engineer"},{"value":"FACTORY","description":"Physical
+      Worker"},{"value":"HEALTH_SERVICES","description":"Healthcare"},{"value":"PUBLIC_OFFICIAL","description":"Public
+      Servant"},{"value":"RESTAURANT","description":"Restaurant"},{"value":"RETIRED","description":"Retiree"},{"value":"STUDENT","description":"Student"},{"value":"UNEMPLOYED","description":"Unemployed/Homemaker"},{"value":"CONSULTING","description":"Consulting"},{"value":"ENTERTAINMENT","description":"Entertainment"},{"value":"EXECUTIVE","description":"Executive"},{"value":"EXPLICIT_SERVICES","description":"Explicit
+      Services"},{"value":"HUMAN_RESOURCES","description":"Human Resources"},{"value":"LEGAL","description":"Legal"},{"value":"PERSONAL_SERVICES","description":"Personal
+      Services"},{"value":"SPORT","description":"Sport"},{"value":"ENTREPRENEUR","description":"Entrepreneur"}]},{"field":"sender.primaryIdentification.expirationDay","dataType":"gDay","required":false,"fieldLabel":"ID
+      Expiry Day","displayOrder":"8","exampleText":"dd"},{"field":"sender.primaryIdentification.expirationMonth","dataType":"gMonth","required":false,"fieldLabel":"ID
+      Expiry Month","displayOrder":"7","exampleText":"mm"},{"field":"sender.primaryIdentification.expirationYear","dataType":"gYear","required":false,"fieldLabel":"ID
+      Expiry Year","displayOrder":"6","exampleText":"yyyy"},{"field":"sender.primaryIdentification.id","dataType":"string","required":true,"fieldLabel":"Sender
+      ID Number","displayOrder":"2","fieldMin":"0","fieldMax":"25"},{"field":"sender.primaryIdentification.issueAuthority","dataType":"enum","required":false,"fieldLabel":"ID
+      Issue Authority","displayOrder":"12","fieldMax":"30","enumerationItem":[{"value":"AB","description":"Agency
+      or Bureau"},{"value":"CO","description":"Commissioners Office"},{"value":"CON","description":"Consulate"},{"value":"COR","description":"Corporation"},{"value":"EMB","description":"Embassy"}]},{"field":"sender.primaryIdentification.issueCity","dataType":"string","required":false,"fieldLabel":"ID
+      Issue City","displayOrder":"11","fieldMax":"40","regEx":"^([a-zA-Z \\u00C0-\\u017F\\#\\/\\.\\\"\\''\\,\\(\\)\\-])*$"},{"field":"sender.primaryIdentification.issueCountryCode","dataType":"cntrycode","required":true,"fieldLabel":"Sender
+      ID Country","displayOrder":"3","fieldMin":"3","fieldMax":"3"},{"field":"sender.primaryIdentification.issueCountrySubdivisionCode","dataType":"string","required":false,"fieldLabel":"Sender
+      ID State","displayOrder":"4","fieldMin":"0","fieldMax":"40"},{"field":"sender.primaryIdentification.issueDay","dataType":"gDay","required":false,"fieldLabel":"ID
+      Issue Day","displayOrder":"5"},{"field":"sender.primaryIdentification.issueMonth","dataType":"gMonth","required":false,"fieldLabel":"ID
+      Issue Month","displayOrder":"4"},{"field":"sender.primaryIdentification.issueYear","dataType":"gYear","required":false,"fieldLabel":"ID
+      Issue Year","displayOrder":"3"},{"field":"sender.primaryIdentification.typeCode","dataType":"enum","required":true,"fieldLabel":"Sender
+      ID Type","displayOrder":"1","fieldMin":"0","fieldMax":"30","enumerationItem":[{"value":"ALN","description":"Alien
+      ID"},{"value":"DRV","description":"Drivers License"},{"value":"GOV","description":"Government
+      ID"},{"value":"PAS","description":"Passport"},{"value":"STA","description":"State
+      ID"}]},{"field":"sender.secondaryIdentification.expirationDay","dataType":"gDay","required":false,"fieldLabel":"Secondary
+      ID Expiry Day","displayOrder":"8","exampleText":"dd"},{"field":"sender.secondaryIdentification.expirationMonth","dataType":"gMonth","required":false,"fieldLabel":"Secondary
+      ID Expiry Month","displayOrder":"7","exampleText":"mm"},{"field":"sender.secondaryIdentification.expirationYear","dataType":"gYear","required":false,"fieldLabel":"Secondary
+      ID Expiry Year","displayOrder":"6","exampleText":"yyyy"},{"field":"sender.secondaryIdentification.id","dataType":"string","required":false,"fieldLabel":"Sender
+      Secondary ID Number","displayOrder":"14","fieldMin":"0","fieldMax":"20"},{"field":"sender.secondaryIdentification.issueAuthority","dataType":"enum","required":false,"fieldLabel":"Secondary
+      ID Issue Authority","displayOrder":"12","fieldMax":"30","enumerationItem":[{"value":"AB","description":"Agency
+      or Bureau"},{"value":"CO","description":"Commissioners Office"},{"value":"CON","description":"Consulate"},{"value":"COR","description":"Corporation"},{"value":"EMB","description":"Embassy"}]},{"field":"sender.secondaryIdentification.issueCountryCode","dataType":"string","required":false,"fieldLabel":"Secondary
+      ID Issue Country","displayOrder":"9"},{"field":"sender.secondaryIdentification.issueCountrySubdivisionCode","dataType":"string","required":false,"fieldLabel":"Secondary
+      ID Issue State/Province","displayOrder":"10"},{"field":"sender.secondaryIdentification.issueDay","dataType":"gDay","required":false,"fieldLabel":"Secondary
+      ID Issue Day","displayOrder":"5"},{"field":"sender.secondaryIdentification.issueMonth","dataType":"gMonth","required":false,"fieldLabel":"Secondary
+      ID Issue Month","displayOrder":"4"},{"field":"sender.secondaryIdentification.issueYear","dataType":"gYear","required":false,"fieldLabel":"Secondary
+      ID Issue Year","displayOrder":"3"},{"field":"sender.secondaryIdentification.typeCode","dataType":"enum","required":false,"fieldLabel":"Sender
+      Secondary ID Type","displayOrder":"13","fieldMin":"0","fieldMax":"30","enumerationItem":[{"value":"ALN","description":"Alien
+      ID"},{"value":"INT","description":"International ID"},{"value":"SSN","description":"Social
+      Security Number"},{"value":"TAX","description":"Tax ID"}]},{"field":"serviceOptionCode","dataType":"string","required":true,"fieldLabel":"Service
+      Option","displayOrder":"8"},{"field":"serviceOptionRoutingCode","dataType":"string","required":true,"fieldLabel":"Receive
+      Agent ID","displayOrder":"17","fieldMin":"0","fieldMax":"20"},{"field":"targetAccount.accountNumber","dataType":"string","required":true,"fieldLabel":"NUBAN","displayOrder":"8","fieldMin":"10","fieldMax":"11","regEx":"[0-9]*"},{"field":"targetAccount.bankName","dataType":"string","required":true,"fieldLabel":"Bank
+      Name","displayOrder":"3","fieldMin":"3","fieldMax":"7","enumerationItem":[{"value":"100003","description":"9
+      PAYMENT SERVICE BANK"},{"value":"100011","description":"AB MICROFINANCE BANK"},{"value":"000014","description":"ACCESS
+      BANK"},{"value":"100008","description":"ACCION MICROFINANCE BANK"},{"value":"000009","description":"CITI
+      BANK"},{"value":"000010","description":"ECOBANK"},{"value":"100001","description":"ENTERPRISE
+      BANK"},{"value":"100006","description":"FAIRMONEY MICROFINANCE BANK LTD"},{"value":"000003","description":"FCMB"},{"value":"000007","description":"FIDELITY
+      BANK"},{"value":"100010","description":"FINA TRUST MICROFINANCE BANK"},{"value":"000016","description":"FIRST
+      BANK OF NIGERIA"},{"value":"000027","description":"GLOBUS BANK"},{"value":"000034","description":"SIGNATURE
+      BANK LTD"},{"value":"000013","description":"GUARANTY TRUST BANK"},{"value":"000020","description":"HERITAGE
+      BANK"},{"value":"000006","description":"JAIZ BANK"},{"value":"000002","description":"KEYSTONE
+      BANK"},{"value":"100004","description":"KUDA MICRO-FINANCE BANK"},{"value":"100007","description":"LAPO
+      MICROFINANCE BANK"},{"value":"000029","description":"LOTUS BANK"},{"value":"100013","description":"LOVONUS
+      MICROFINANCE BANK"},{"value":"100009","description":"MUTUAL TRUST MICROFINANCE
+      BANK"},{"value":"000036","description":"OPTIMUS BANK"},{"value":"000030","description":"PARALLEX
+      BANK"},{"value":"000008","description":"POLARIS BANK LTD"},{"value":"000031","description":"PREMIUM
+      TRUST BANK"},{"value":"000023","description":"PROVIDUS BANK"},{"value":"100012","description":"SPARKLE
+      MICRO-FINANCE BANK"},{"value":"000012","description":"STANBIC IBTC BANK"},{"value":"000021","description":"STANDARD
+      CHARTERED BANK NIGERIA LTD"},{"value":"000001","description":"STERLING BANK"},{"value":"000022","description":"SUNTRUST
+      BANK NIGERIA LIMITED"},{"value":"100002","description":"TAJ BANK"},{"value":"000025","description":"TITAN
+      TRUST BANK LTD"},{"value":"000018","description":"UNION BANK"},{"value":"000004","description":"UNITED
+      BANK FOR AFRICA"},{"value":"000011","description":"UNITY BANK"},{"value":"100005","description":"VFD
+      MICRO-FINANCE BANK"},{"value":"000017","description":"WEMA BANK"},{"value":"000015","description":"ZENITH
+      BANK"}]},{"field":"targetAccountprofileid","dataType":"string","required":false,"fieldLabel":"Receiver
+      Registration Number (RRN)","displayOrder":"16","fieldMin":"0","fieldMax":"20"},{"field":"transactionInformation.intendedUseOfMGIServicesCode","dataType":"enum","required":false,"fieldLabel":"Why
+      do you typically use MoneyGram?","displayOrder":"10","fieldMax":"30","enumerationItem":[{"value":"BUSINESS_RELATED","description":"Business-Related"},{"value":"CHARITY_SUPPORT","description":"Charity
+      Support"},{"value":"FAMILY_FRIENDS_SUPPORT","description":"Family/Friend Support"},{"value":"THIRD_PARTY","description":"Third
+      Party"}]},{"field":"transactionInformation.proofOfFundsCode","dataType":"enum","required":false,"fieldLabel":"Proof
+      of Funds","displayOrder":"1","fieldMax":"30","enumerationItem":[{"value":"ACT_OF_ATTORNEY","description":"Act
+      of Attorney"},{"value":"BANK_STATEMENT","description":"Bank account statement/withdrawl
+      slip"},{"value":"NATIONAL_LOTTERY","description":"Copy of Check"},{"value":"PAYROLL_SLIP","description":"Payroll
+      slip"},{"value":"SALE_CERTIFICATE","description":"Sales certificate"},{"value":"TAX_NOTICE","description":"Income
+      Tax Notice"}]},{"field":"transactionInformation.purposeOfTransactionCode","dataType":"enum","required":false,"fieldLabel":"Purpose
+      of Transaction","displayOrder":"7","fieldMax":"30","enumerationItem":[{"value":"BUSINESS_EXPENSE","description":"Business
+      Expense"},{"value":"DONATION","description":"Donation"},{"value":"EDUCATION_TRAIN","description":"Education"},{"value":"GIFT","description":"Gift"},{"value":"INVEST_SAVING","description":"Investment"},{"value":"LEGAL_OBLIGATION","description":"Legal
+      Obligation"},{"value":"LOAN","description":"Loan"},{"value":"TRAVEL_EXPENSES","description":"Travel
+      Expenses"},{"value":"BILLS","description":"Bills"},{"value":"FOOD","description":"Food"},{"value":"MEDICAL","description":"Medical
+      Expenses"},{"value":"PURCHASE_GOODS","description":"Payment for Goods/Services"},{"value":"PERSONAL_USE","description":"Personal
+      Need/Expense"},{"value":"SALARY","description":"Salary"}]},{"field":"transactionInformation.relationshipToReceiver","dataType":"enum","required":false,"fieldLabel":"Relationship
+      to Receiver","displayOrder":"5","fieldMax":"30","enumerationItem":[{"value":"ACQUAINTANCE","description":"Acquaintance"},{"value":"BUSINESS_PARTNER","description":"Business
+      Partner"},{"value":"CLIENT","description":"Client"},{"value":"EMPLOY_EMPLOYER","description":"Employee"},{"value":"FAMILY","description":"Family
+      Member"},{"value":"FRIEND","description":"Close Friend"},{"value":"CONTRACTOR","description":"Contractor"},{"value":"EMPLOYER","description":"Employer"},{"value":"MYSELF","description":"Myself"},{"value":"ONLINE_FRIEND","description":"Online
+      Friend"},{"value":"THIRD_PARTY","description":"Third Party"},{"value":"VENDOR","description":"Vendor"}]},{"field":"transactionInformation.sourceOfFundsCode","dataType":"enum","required":false,"fieldLabel":"Source
+      of Funds","displayOrder":"3","fieldMax":"30","enumerationItem":[{"value":"LOAN","description":"Loan"},{"value":"SAVINGS","description":"Savings"},{"value":"SALE_OF_PROPERTY","description":"Sale
+      of Property"},{"value":"SALARY_EMPLOY","description":"Salary"},{"value":"FAMILY_FUNDS","description":"Family
+      Funds"},{"value":"INHERITANCE","description":"Inheritance"},{"value":"LOTTERY_GAMBLING","description":"Lottery/Gambling"},{"value":"PENSION","description":"Pension"},{"value":"SOCIAL_BENEFITS","description":"Social
+      Benefits"},{"value":"THIRD_PARTY","description":"Third Party"}]}]}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Server-Timing: intid;desc=e5c32c56f4541e43
+      Set-Cookie: visid_incap_2947185=4QhkYq+fQOCpd3+SLFFiE5exRGcAAAAAQUIPAAAAAAD3vY/saLBTEfjZAcI9D8D6;
+        expires=Mon, 24 Nov 2025 22:24:23 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=xwcTM0GEIjPa2e+UdIbzIAAAAABGDVecn07GiQiNXOlGX5r1; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_1572_2947185=nxbmZ32pRja0BQhw2t3QFZexRGcAAAAACmM7X/edFwtK65kHMyLClA==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 13-41942440-41942451 NNYY CT(119 243 0) RT(1732555158376 156) q(0 0
+        0 -1) r(11 12) U16
+      X-MG-ClientRequestId: c9267b4f-36ec-40a5-bd6b-c6ff0f7ca3e3
+      X-MG-RequestId: rrt-9159922092966987834-b-gce-1904555-64533812-1
+      X-MG-SessionId: ''
+      x-amz-apigw-id: B0CvtFCfCYcFp3A=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Content-Length: '24125'
+      x-amzn-Remapped-Date: Mon, 25 Nov 2024 17:19:20 GMT
+      x-amzn-Remapped-Server: nginx/1.25.3
+      x-amzn-RequestId: 4090f04c-0899-4964-bd3c-3c92013ed26a
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/reference-data/v1/transaction-fields-send?targetAudience=AGENT_FACING&agentPartnerId=AAAAAA&userLanguage=en-US&destinationCountryCode=NGA&serviceOptionCode=BANK_DEPOSIT&serviceOptionRoutingCode=74826841&amount=100&sendCurrencyCode=USD&receiveCurrencyCode=NGN

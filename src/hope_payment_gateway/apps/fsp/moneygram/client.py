@@ -14,7 +14,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.models import Singleton
-from hope_payment_gateway.apps.fsp.utils import get_phone_number
+from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord
 
@@ -124,10 +124,9 @@ class MoneyGramClient(metaclass=Singleton):
             "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
             "userLanguage": "en-US",
             "destinationCountryCode": base_payload["destination_country"],
-            # "destinationCountrySubdivisionCode": "US-NY",
             "receiveCurrencyCode": base_payload["destination_currency"],
-            "serviceOptionCode": base_payload.get("delivery_services_code", "WILL_CALL"),
-            # "serviceOptionRoutingCode": "74261037",  # TODO
+            "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
+            "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
             "autoCommit": "true",
             "sendAmount": {"currencyCode": base_payload["origination_currency"], "value": base_payload["amount"]},
             "sender": self.sender,
@@ -146,6 +145,14 @@ class MoneyGramClient(metaclass=Singleton):
                     # },
                     "mobilePhone": {"number": phone_number, "countryDialCode": country_code},
                 }
+            },
+            "targetAccount": {
+                "accountNumber": get_from_delivery_mechanism(base_payload, "bank_account_number"),
+                "bankName": get_from_delivery_mechanism(base_payload, "bank_name"),
+            },
+            "receipt": {
+                "primaryLanguage": base_payload.get("receipt_primary_language", None),
+                "secondaryLanguage": base_payload.get("receipt_secondary_language", None),
             },
         }
         return transaction_id, payload
@@ -168,7 +175,7 @@ class MoneyGramClient(metaclass=Singleton):
         payload.update(
             {
                 "destinationCountryCode": base_payload["destination_country"],
-                "serviceOptionCode": base_payload.get("delivery_services_code", None),
+                "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code"),
                 "beneficiaryTypeCode": "Consumer",
                 "sendAmount": {"currencyCode": base_payload["origination_currency"], "value": base_payload["amount"]},
             }
@@ -185,8 +192,30 @@ class MoneyGramClient(metaclass=Singleton):
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
         payload = self.get_basic_payload()
         status_transaction_id = str(uuid.uuid4())
-        resp = self.perform_request(endpoint, status_transaction_id, payload, get=True)
-        return resp
+        return self.perform_request(endpoint, status_transaction_id, payload, get=True)
+
+    def get_required_fields(self, base_payload):
+        endpoint = "/reference-data/v1/transaction-fields-send"
+        payload = self.get_basic_payload()
+        transaction_id = str(uuid.uuid4())
+        payload.update(
+            {
+                "destinationCountryCode": base_payload["destination_country"],
+                "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
+                "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
+                "amount": base_payload["amount"],
+                "sendCurrencyCode": base_payload.get("origin_currency", "USD"),
+                "receiveCurrencyCode": base_payload["destination_currency"],
+            }
+        )
+        return self.perform_request(endpoint, transaction_id, payload, get=True)
+
+    def get_service_options(self, base_payload):
+        endpoint = "/reference-data/v1/service-options"
+        payload = self.get_basic_payload()
+        transaction_id = str(uuid.uuid4())
+        payload["destinationCountryCode"] = base_payload["destination_country"]
+        return self.perform_request(endpoint, transaction_id, payload, get=True)
 
     def perform_request(self, endpoint, transaction_id, payload, get=False):
         response = None
@@ -207,10 +236,9 @@ class MoneyGramClient(metaclass=Singleton):
             except Exception as e:
                 logger.error("Token Expired:", e)
                 self.set_token()
-        if response and response.status_code == 200:
-            parsed_response = response.data
-            logger.error(parsed_response)
-        else:
+        if not response:
+            logger.error("Cannot retrieve response")
+        elif response.status_code != 200:
             logger.error("Request failed with status code {}".format(response.status_code))
         return response
 
@@ -242,17 +270,27 @@ class MoneyGramClient(metaclass=Singleton):
             response = Response({"errors": [{"error": "transition_not_allowed"}]}, status=HTTP_400_BAD_REQUEST)
         return response
 
-    @classmethod
-    def query_status(cls, transaction_id, update):
+    def query_status(self, transaction_id, update):
         """query MoneyGram to get information regarding the transaction status"""
-        client = MoneyGramClient()
-        response = client.status(transaction_id)
+        response = self.status(transaction_id)
         if update:
             pr = PaymentRecord.objects.get(fsp_code=transaction_id)
             update_status(pr, response.data["transactionStatus"])
             pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
             pr.save()
         return response
+
+    def refund(self, transaction_id, base_payload):
+        endpoint = f"/disbursement/refund/v1/transactions/{transaction_id}"
+        payload = self.get_basic_payload()
+        status_transaction_id = str(uuid.uuid4())
+        payload["refundReasonCode"] = base_payload.get("refuse_reason_code")
+        resp = self.perform_request(endpoint, status_transaction_id, payload, get=True)
+        if resp.status_code == 200:
+            pr = PaymentRecord.objects.get(fsp_code=transaction_id)  # todo unique
+            pr.message = "Request per REFUND"
+            pr.save()
+        return resp
 
 
 def update_status(pr, status):
