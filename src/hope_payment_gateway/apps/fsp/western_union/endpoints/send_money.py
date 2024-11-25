@@ -1,13 +1,12 @@
 import logging
 import random
 
-import phonenumbers
 import sentry_sdk
 from constance import config
-from phonenumbers.phonenumberutil import NumberParseException
 from viewflow.fsm import TransitionNotAllowed
 from zeep.helpers import serialize_object
 
+from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.config import MONEY_IN_TIME, WALLET, WMF, web
 from hope_payment_gateway.apps.fsp.western_union.endpoints.helpers import integrate_payload
@@ -15,23 +14,6 @@ from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorrid
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord, PaymentRecordState
-
-
-def get_from_delivery_mechanism(payload, key):
-    delivery_mechanism = payload.get("delivery_mechanism", "")
-    return payload.get(f"{key}__{delivery_mechanism}", None)
-
-
-def get_phone_number(raw_phone_no):
-    try:
-        phone_no = phonenumbers.parse(raw_phone_no, None)
-        phone_number = phone_no.national_number
-        country_code = phone_no.country_code
-    except NumberParseException:
-        phone_number = raw_phone_no
-        country_code = None
-
-    return phone_number, country_code
 
 
 def create_validation_payload(base_payload):
