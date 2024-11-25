@@ -17,8 +17,9 @@ from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
 from jsoneditor.forms import JSONEditor
+from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient, PayloadMissingKey
+from hope_payment_gateway.apps.fsp.moneygram.client import InvalidToken, MoneyGramClient, PayloadMissingKey
 from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
 from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
@@ -98,6 +99,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             payload = create_validation_payload(payload)
             client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
             _, data = client.prepare("sendmoneyValidation", payload)
+
             context["title"] = "Western Union Payload"
             context["content"] = data
             return TemplateResponse(request, "request.html", context)
@@ -157,49 +159,71 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             client = MoneyGramClient()
-            context["title"] = "Moneygram Payload"
+            context["title"] = "MoneyGram Payload"
+            context["format"] = "json"
             context["content"] = client.prepare_transaction(obj.get_payload())
             return TemplateResponse(request, "request.html", context)
 
         except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
+        except InvalidToken as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Create Transaction")
     def mg_create_transaction(self, request, pk) -> TemplateResponse:
+
         obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            client = MoneyGramClient()
+            resp = client.create_transaction(obj.get_payload())
+            return self.handle_mg_response(request, resp, pk, "Create Transaction")
+        except InvalidToken as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
 
-        client = MoneyGramClient()
-        resp = client.create_transaction(obj.get_payload())
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Quote")
+    def mg_quote_transaction(self, request, pk) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            client = MoneyGramClient()
+            resp = client.quote(obj.get_payload())
+            return self.handle_mg_response(request, resp, pk, "Quote Transaction")
+        except InvalidToken as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
 
-        data = resp.json()
-        msgs = []
-        if resp.status_code == 200:
-            loglevel = messages.SUCCESS
-        elif 400 <= resp.status_code < 500:
-            loglevel = messages.WARNING
-            if "errors" in resp.json():
-                for error in data["errors"]:
-                    msgs.append(f"{error['message']} ({error['code']})")
-            elif "error" in resp.json():
-                msgs.append(resp.json()["error"]["message"])
-            else:
-                msgs = [
-                    "Error",
-                ]
-        else:
-            loglevel = messages.ERROR
-            for error in data["errors"]:
-                msgs.append(f"{error['message']} ({error['code']})")
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Status")
+    def mg_status(self, request, pk) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            resp = MoneyGramClient.query_status(obj.fsp_code, update=False)
+            return self.handle_mg_response(request, resp, pk, "Status")
+        except InvalidToken as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
 
-        for msg in msgs:
-            messages.add_message(request, loglevel, msg)
+    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Status Update")
+    def mg_status_update(self, request, pk) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            resp = MoneyGramClient.query_status(obj.fsp_code, update=True)
+            return self.handle_mg_response(request, resp, pk, "Status + Update")
+        except InvalidToken as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
+        except TransitionNotAllowed as e:
+            self.message_user(request, str(e), messages.ERROR)
 
     @choice(change_list=False)
     def moneygram(self, button):
         button.choices = [
             self.mg_prepare_payload,
             self.mg_create_transaction,
+            self.mg_quote_transaction,
+            self.mg_status,
+            self.mg_status_update,
         ]
         return button
 
@@ -212,6 +236,44 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         else:
             button.visible = False
         return None
+
+    def handle_mg_response(self, request, resp, pk, title):
+        if resp:
+            data = resp.data
+            msgs = []
+            if resp.status_code == 200:
+                context = self.get_common_context(request, pk)
+                context["title"] = title
+                context["format"] = "json"
+                context["content"] = data
+                return TemplateResponse(request, "request.html", context)
+
+            elif 400 <= resp.status_code < 500:
+                loglevel = messages.WARNING
+                if "errors" in data:
+                    for error in data["errors"]:
+                        msgs.append(f"{error['message']} ({error['code']})")
+                        if "offendingFields" in error:
+                            for field in error["offendingFields"]:
+                                msgs.append(f"Field: {field['field']}")
+                elif "error" in data:
+                    msgs.append(data["error"]["message"])
+                else:
+                    msgs = [
+                        "Error",
+                    ]
+            else:
+                loglevel = messages.ERROR
+                if "errors" in data:
+                    for error in data["errors"]:
+                        msgs.append(f"{error['message']} ({error['code']})")
+                elif "error" in data:
+                    msgs.append(data["error"]["message"])
+                    msgs.append(data["error"]["code"])
+            for msg in msgs:
+                messages.add_message(request, loglevel, msg)
+        else:
+            messages.add_message(request, messages.ERROR, "Connection Error")
 
 
 @admin.register(PaymentInstruction)

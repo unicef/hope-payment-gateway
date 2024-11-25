@@ -1,0 +1,33 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"transactions":[{"transactionId":"f3ba1025-6247-4ae6-90b4-1bdfc2da527d","serviceOptionCode":"WILL_CALL","serviceOptionName":"10
+      Minute Service","estimatedDelivery":"A Few Minutes","sendAmount":{"amount":{"value":100.00,"currencyCode":"USD"},"fees":{"value":3.00,"currencyCode":"USD"},"taxes":{"value":0.00,"currencyCode":"USD"},"total":{"value":103.00,"currencyCode":"USD"}},"receiveAmount":{"amount":{"value":1638.00,"currencyCode":"MXN"},"fees":{"value":0.00,"currencyCode":"MXN"},"taxes":{"value":0.00,"currencyCode":"MXN"},"total":{"value":1638.00,"currencyCode":"MXN"},"fxRate":16.37874000000,"fxRateEstimated":false}}]}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Server-Timing: intid;desc=e949ea3d58774e2b
+      Set-Cookie: visid_incap_2947185=6wi/N+eeTq67L8ir9T6Ff5hkP2cAAAAAQUIPAAAAAAAeXwzKi8lZ5YjN1Q7Z8Tcx;
+        expires=Thu, 20 Nov 2025 23:03:08 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=lzbQRbfTjA4uhskedIbzIAAAAADbJc0AZD3f2Wbl+X2Fxk1P; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_250_2947185=PV23MpV9kRtFY8hT5y14A5hkP2cAAAAAQDUXb8GByIAb3ZT30zBbfw==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 60-220166464-220166488 NNYY CT(124 253 0) RT(1732207767961 43) q(0
+        0 0 -1) r(6 6) U6
+      X-MG-ClientRequestId: test-code
+      X-MG-RequestId: rrt-1144738916416151430-b-gce-2785876-55101961-1
+      X-MG-SessionId: ''
+      x-amz-apigw-id: Bmyn5HhMiYcFksA=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Date: Thu, 21 Nov 2024 16:49:28 GMT
+      x-amzn-Remapped-Server: nginx/1.25.3
+      x-amzn-RequestId: 9c452c11-d05b-4a61-b275-c64422147a00
+    method: POST
+    status: 200
+    url: https://sandboxapi.moneygram.com/disbursement/v1/transactions/quote

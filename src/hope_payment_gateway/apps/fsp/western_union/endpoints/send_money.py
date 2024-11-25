@@ -214,14 +214,14 @@ def send_money(base_payload):
 
     response = send_money_store(payload)
     pr.refresh_from_db()
+    flow = PaymentRecordFlow(pr)
     if response["code"] == 200:
         pr.message, pr.success = "Send Money Store: Success", True
         pr.marked_for_payment = False
-        flow = PaymentRecordFlow(pr)
         flow.store()
     else:
         pr.message, pr.success = f'Send Money Store: {response["error"]}', False
-        pr.fail()
+        flow.fail()
     pr.extra_data.update(log_data)
     pr.save()
     return pr

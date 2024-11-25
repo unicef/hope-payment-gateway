@@ -1,41 +1,70 @@
 import base64
 import json
 import logging
+import uuid
+from urllib.parse import urlencode
 
 from django.conf import settings
 
-import phonenumbers
 import requests
-from phonenumbers import NumberParseException
-from urllib3.exceptions import PoolError
+from constance import config
+from requests.exceptions import ConnectionError
+from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
+from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.models import Singleton
+from hope_payment_gateway.apps.fsp.utils import get_phone_number
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord
 
 logger = logging.getLogger(__name__)
 
 
 MONEYGRAM_DM_MAPPING = {
     "WILL_CALL": "WILL_CALL",
-    "DIRECT_TO_ACCT": "DIRECT_TO_ACCT",
-    "BANK_DEPOSIT": "DIRECT_TO_ACCT",
+    "DIRECT_TO_ACCT": "DIRECT_TO_ACCT",  # wallet / mobile money
+    "BANK_DEPOSIT": "DIRECT_TO_ACCT",  # bank account
+    "WILLCALL_TO": "WILLCALL_TO",
+    "2_HOUR": "2_HOUR",
+    "OVERNIGHT": "OVERNIGHT",
+    "OVERNIGHT2ANY": "OVERNIGHT2ANY",
+    "24_HOUR": "24_HOUR",
+    "CARD_DEPOSIT": "CARD_DEPOSIT",
+    "HOME_DELIVERY": "HOME_DELIVERY",
 }
+
+UNFUNDED = "UNFUNDED"
+SENT = "SENT"
+AVAILABLE = "AVAILABLE"
+IN_TRANSIT = "IN TRANSIT"
+RECEIVED = "RECEIVED"
+DELIVERED = "DELIVERED"
+PROCESSING = "PROCESSING"
+REJECTED = "REJECTED"
+REFUNDED = "REFUNDED"
+CLOSED = "CLOSED"
 
 
 class PayloadMissingKey(Exception):
     pass
 
 
+class InvalidToken(Exception):
+    pass
+
+
 class MoneyGramClient(metaclass=Singleton):
-    token = ""
+    token = None
     expires_in = None
-    token_response = None
+    sender = None
 
     def __init__(self):
-        self.get_token()
+        self.set_token()
+        self.sender = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER).configuration
 
-    def get_token(self):
+    def set_token(self):
+        """setup the token to perform MoneyGram API calls"""
         url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
         credentials = f"{settings.MONEYGRAM_CLIENT_ID}:{settings.MONEYGRAM_CLIENT_SECRET}"
         encoded_credentials = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
@@ -43,29 +72,41 @@ class MoneyGramClient(metaclass=Singleton):
 
         try:
             response = requests.get(url, headers=headers)
-        except PoolError:
+            parsed_response = json.loads(response.text)
+        except ConnectionError:
             self.token = None
-            self.token_response = None
         else:
             if response.status_code == 200:
-                parsed_response = json.loads(response.text)
                 self.token = parsed_response["access_token"]
                 self.expires_in = parsed_response["expires_in"]
             else:
                 logger.warning("Invalid token")
                 self.token = None
-                self.token_response = response
+                error = parsed_response["error"]
+                raise InvalidToken(f"{error['category']}: {error['message']}  [{error['code']}]")
 
-    def prepare_transaction(self, payload):
+    def get_headers(self, request_id):
+        headers = {
+            "Content-Type": "application/json",
+            "X-MG-ClientRequestId": request_id,
+            "content-type": "application/json",
+        }
+        if self.token:
+            headers["Authorization"] = "Bearer " + self.token
+        return headers
 
-        raw_phone_no = payload.get("phone_no", "N/A")
-        try:
-            phone_no = phonenumbers.parse(raw_phone_no, None)
-            phone_number = phone_no.national_number
-            country_code = phone_no.country_code
-        except NumberParseException:
-            phone_number = raw_phone_no
-            country_code = None
+    @staticmethod
+    def get_basic_payload():
+        return {
+            "targetAudience": "AGENT_FACING",
+            "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
+            "userLanguage": "en-US",
+        }
+
+    def prepare_transaction(self, base_payload):
+        """prepare the payload to create transactions"""
+        raw_phone_no = base_payload.get("phone_no", "N/A")
+        phone_number, country_code = get_phone_number(raw_phone_no)
 
         for key in [
             "first_name",
@@ -75,107 +116,163 @@ class MoneyGramClient(metaclass=Singleton):
             "destination_currency",
             "payment_record_code",
         ]:
-            if not (key in payload.keys() and payload[key]):
+            if not (key in base_payload.keys() and base_payload[key]):
                 raise PayloadMissingKey("InvalidPayload: {} is missing in the payload".format(key))
-
-        return {
+        transaction_id = base_payload["payment_record_code"]
+        payload = {
             "targetAudience": "AGENT_FACING",
             "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
             "userLanguage": "en-US",
-            "destinationCountryCode": payload["destination_country"],
+            "destinationCountryCode": base_payload["destination_country"],
             # "destinationCountrySubdivisionCode": "US-NY",
-            "receiveCurrencyCode": payload["destination_currency"],
-            "serviceOptionCode": payload.get("delivery_services_code", "WILL_CALL"),
+            "receiveCurrencyCode": base_payload["destination_currency"],
+            "serviceOptionCode": base_payload.get("delivery_services_code", "WILL_CALL"),
             # "serviceOptionRoutingCode": "74261037",  # TODO
             "autoCommit": "true",
-            "sendAmount": {"currencyCode": payload["origination_currency"], "value": payload["amount"]},
-            "sender": {
-                "business": {
-                    "businessName": "UNICEF",
-                    "legalEntityName": "UNICEF",
-                    "businessType": "ACCOMMODATION_HOTELS",
-                    "businessRegistrationNumber": settings.MONEYGRAM_REGISTRATION_NUMBER,
-                    "businessIssueDate": "2024-04-29",
-                    "businessCountryOfRegistration": "USA",
-                    "address": {
-                        "line1": "3 United Nations Plaza",
-                        "city": "NEW YORK",
-                        "countrySubdivisionCode": "US-NY",
-                        "countryCode": "USA",
-                        "postalCode": 10017,
-                    },
-                    "contactDetails": {"phone": {"number": 2123267000, "countryDialCode": 1}},
-                }
-            },
+            "sendAmount": {"currencyCode": base_payload["origination_currency"], "value": base_payload["amount"]},
+            "sender": self.sender,
             "beneficiary": {
                 "consumer": {
                     "name": {
-                        "firstName": payload["first_name"],
-                        "middleName": payload.get("middle_name", ""),
-                        "lastName": payload["last_name"],
+                        "firstName": base_payload["first_name"],
+                        "middleName": base_payload.get("middle_name", ""),
+                        "lastName": base_payload["last_name"],
                     },
-                    "address": {
-                        "line1": payload.get("address", "Via di Acilia"),
-                        "city": payload.get("city", "Roma"),
-                        "countryCode": payload["destination_country"],
-                        "postalCode": 55442,
-                    },
+                    # "address": {
+                    #     "line1": base_payload["address"],
+                    #     "city": base_payload["city"],
+                    #     "countryCode": base_payload["destination_country"],
+                    #     "postalCode": 55442,
+                    # },
                     "mobilePhone": {"number": phone_number, "countryDialCode": country_code},
                 }
             },
         }
+        return transaction_id, payload
 
-    def create_transaction(self, payload):
+    def create_transaction(self, base_payload, update=True):
+        """create a transaction to MoneyGram"""
+        endpoint = "/disbursement/v1/transactions"
+        transaction_id, payload = self.prepare_transaction(base_payload)
+        response = self.perform_request(endpoint, transaction_id, payload)
 
-        if self.token:
-
-            url = settings.MONEYGRAM_HOST + "/disbursement/v1/transactions"
-            enriched_payload = self.prepare_transaction(payload)
-            headers = {
-                "Content-Type": "application/json",
-                "X-MG-ClientRequestId": enriched_payload["payment_record_code"],
-                "Authorization": "Bearer " + self.token,
-            }
-
-            response = self.perform_request(url, headers, payload)
-            self.transaction_callback(enriched_payload, response.json())
-            return response
-
-        else:
-            return self.token_response
-
-    def perform_request(self, url, headers, payload=None):
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-
-            if response.status_code == 200:
-                parsed_response = json.dumps(json.loads(response.text), indent=2)
-                print(parsed_response)
-            else:
-                print("Request failed with status code:", response.status_code)
-                print(json.dumps(json.loads(response.text), indent=2))
-
-        except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
-            print("An error occurred:", e)
-            response = dict
+        if update and response.status_code == 200:
+            self.post_transaction(response, base_payload)
 
         return response
 
-    def transaction_callback(self, payload, response):
-        record_code = payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(record_code=record_code)
-        pr.fsp_code = response["referenceNumber"]
-        pr.success = True
-        pr.payout_amount = response["receiveAmount"]["amount"]["value"]
-        pr.extra_data.update(
+    def prepare_quote(self, base_payload: dict):
+
+        transaction_id = base_payload["payment_record_code"]
+        payload = self.get_basic_payload()
+        payload.update(
             {
-                "fee": response["receiveAmount"]["fees"]["value"],
-                "fee_currency": response["receiveAmount"]["fees"]["currencyCode"],
-                "taxes": response["receiveAmount"]["taxes"]["value"],
-                "taxes_currency": response["receiveAmount"]["taxes"]["currencyCode"],
-                "expectedPayoutDate": response["expectedPayoutDate"],
-                "transactionId": response["transactionId"],
+                "destinationCountryCode": base_payload["destination_country"],
+                "serviceOptionCode": base_payload.get("delivery_services_code", None),
+                "beneficiaryTypeCode": "Consumer",
+                "sendAmount": {"currencyCode": base_payload["origination_currency"], "value": base_payload["amount"]},
             }
         )
+        return transaction_id, payload
+
+    def quote(self, base_payload):
+        """create a quote request to MoneyGram"""
+        endpoint = "/disbursement/v1/transactions/quote"
+        transaction_id, payload = self.prepare_quote(base_payload)
+        return self.perform_request(endpoint, transaction_id, payload)
+
+    def status(self, transaction_id):
+        endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
+        payload = self.get_basic_payload()
+        status_transaction_id = str(uuid.uuid4())
+        resp = self.perform_request(endpoint, status_transaction_id, payload, get=True)
+        return resp
+
+    def perform_request(self, endpoint, transaction_id, payload, get=False):
+        response = None
+        url = settings.MONEYGRAM_HOST + endpoint
+        headers = self.get_headers(transaction_id)
+        for _ in range(2):
+            try:
+                if get:
+                    url = url + "?" + urlencode(payload)
+                    response = requests.get(url, headers=headers)
+                else:
+                    response = requests.post(url, json=payload, headers=headers)
+                response = Response(response.json(), response.status_code)
+                break
+            except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
+                logger.error("An error occurred:", e)
+                break
+            except Exception as e:
+                logger.error("Token Expired:", e)
+                self.set_token()
+        if response and response.status_code == 200:
+            parsed_response = response.data
+            logger.error(parsed_response)
+        else:
+            logger.error("Request failed with status code {}".format(response.status_code))
+        return response
+
+    def post_transaction(self, response, payload):
+        """update record in the database"""
+        body = response.data
+        record_code = payload["payment_record_code"]
+        pr = PaymentRecord.objects.get(record_code=record_code)
+        if "errors" in body:
+            return Response(body, status=HTTP_400_BAD_REQUEST)
+        pr.auth_code = body["referenceNumber"]
+        pr.fsp_code = body["transactionId"]
+        pr.success = True
+
+        pr.extra_data.update(
+            {
+                "fee": body["receiveAmount"]["fees"]["value"],
+                "fee_currency": body["receiveAmount"]["fees"]["currencyCode"],
+                "taxes": body["receiveAmount"]["taxes"]["value"],
+                "taxes_currency": body["receiveAmount"]["taxes"]["currencyCode"],
+                "expectedPayoutDate": body["expectedPayoutDate"],
+                "transactionId": body["transactionId"],
+            }
+        )
+        try:
+            flow = PaymentRecordFlow(pr)
+            flow.store()
+        except TransitionNotAllowed:
+            response = Response({"errors": [{"error": "transition_not_allowed"}]}, status=HTTP_400_BAD_REQUEST)
+        return response
+
+    @classmethod
+    def query_status(cls, transaction_id, update):
+        """query MoneyGram to get information regarding the transaction status"""
+        client = MoneyGramClient()
+        response = client.status(transaction_id)
+        if update:
+            pr = PaymentRecord.objects.get(fsp_code=transaction_id)
+            update_status(pr, response.data["transactionStatus"])
+            pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
+            pr.save()
+        return response
+
+
+def update_status(pr, status):
+    if pr.status != status:
         flow = PaymentRecordFlow(pr)
-        flow.store()
+        pr.success = False
+        if status in [UNFUNDED, AVAILABLE]:
+            pass
+        elif status in [SENT, IN_TRANSIT]:
+            flow.store()
+            pr.success = True
+        elif status in [RECEIVED, DELIVERED]:
+            pr.success = True
+            flow.confirm()
+        elif status in [REJECTED]:
+            flow.purge()
+        elif status in [REFUNDED]:
+            flow.refund()
+        elif status in [CLOSED]:
+            flow.fail()
+        else:
+            flow.fail()
+        pr.save()
