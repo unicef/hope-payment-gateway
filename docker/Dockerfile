@@ -9,32 +9,39 @@ RUN apt update \
         --system --uid 82 \
         --disabled-password --home /home/hpg \
         --shell /sbin.nologin --group hpg --gecos hpg \
-    && mkdir -p /code /tmp /data /static \
-    && chown -R hpg:hpg /code /tmp /data /static
+    && mkdir -p /app /tmp /data /static \
+    && chown -R hpg:hpg /app /tmp /data /static
 
 ENV PACKAGES_DIR=/packages
-ENV PYPACKAGES=$PACKAGES_DIR/__pypackages__/3.12
-ENV LIB_DIR=$PYPACKAGES/lib
-ENV PYTHONPATH=$PYTHONPATH:$LIB_DIR:/code/src
+ENV PYTHONPATH=$PYTHONPATH:$LIB_DIR:/app/src
 ENV PATH=$PATH:$PYPACKAGES/bin
 
-WORKDIR /code
+WORKDIR /app
 
 FROM base as builder
 
 WORKDIR $PACKAGES_DIR
-RUN pip install pdm uwsgi
-COPY ../pyproject.toml ./
-COPY ../pdm.lock ./
-RUN pdm config python.use_venv false
-RUN pdm config venv.in_project true
-RUN pdm sync --prod --no-editable --no-self
+COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
+RUN pip install uv
+
+RUN --mount=type=cache,target=/root/.uv-cache \
+    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
+    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
+    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
+    uv sync --cache-dir=/root/.uv-cache --no-dev --no-editable --frozen --extra distribution
 
 FROM builder AS dev
 
-RUN pdm sync --no-editable --no-self
+RUN --mount=type=cache,target=/root/.uv-cache \
+    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
+    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
+    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
+    uv sync --cache-dir=/root/.uv-cache --no-editable --frozen --extra distribution \
 
-WORKDIR /code
+
+WORKDIR /app
 COPY .. ./
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
@@ -43,7 +50,8 @@ ENTRYPOINT ["entrypoint.sh"]
 
 FROM base AS prd
 
-ENV PATH=$PATH:/code/.venv/bin/
+ENV PATH=$PATH:/app/.venv/bin/
+RUN pip install uv uwsgi
 
 COPY --chown=hpg:hpg .. ./
 COPY --chown=hpg:hpg --from=builder $PACKAGES_DIR $PACKAGES_DIR

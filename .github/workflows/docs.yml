@@ -33,9 +33,9 @@ jobs:
       - name: Install mkDocs
         run: |
           sudo apt-get install libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev
-          pip install pdm
-          pdm install          
-          pdm run mkdocs build -d ./docs-output
+          pip install uv
+          uv sync          
+          uv run mkdocs build -d ./docs-output
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
