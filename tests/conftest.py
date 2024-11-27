@@ -28,12 +28,14 @@ def pytest_configure(config):
     os.environ["SESSION_COOKIE_SECURE"] = "0"
     os.environ["DEFAULT_FROM_EMAIL"] = "test@email.org"
 
+    from django.conf import settings
 
 @pytest.fixture(autouse=True)
 def use_override_settings(settings):
-    settings.MONEYGRAM_PARTNER_ID = "AAAAAA"
     settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
+    settings.MONEYGRAM_PARTNER_ID = "AAAAAA"
     settings.MONEYGRAM_HOST = "https://sandboxapi.moneygram.com"
+    settings.SECRET_KEY = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
 
 
 @pytest.fixture()
