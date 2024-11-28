@@ -1,61 +1,170 @@
-FROM python:3.12-slim-bookworm as base
-
-RUN apt update \
-    && apt install --no-install-recommends -y \
-        gcc curl libgdal-dev \
-    && apt clean && rm -rf /var/lib/apt/lists/* \
-    && addgroup --system --gid 82 hpg \
-    && adduser \
-        --system --uid 82 \
-        --disabled-password --home /home/hpg \
-        --shell /sbin.nologin --group hpg --gecos hpg \
-    && mkdir -p /app /tmp /data /static \
-    && chown -R hpg:hpg /app /tmp /data /static
-
-ENV PACKAGES_DIR=/packages
-ENV PYTHONPATH=$PYTHONPATH:$LIB_DIR:/app/src
-ENV PATH=$PATH:$PYPACKAGES/bin
-
-WORKDIR /app
-
-FROM base as builder
-
-WORKDIR $PACKAGES_DIR
-COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
-RUN pip install uv
-
-RUN --mount=type=cache,target=/root/.uv-cache \
-    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
-    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
-    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
-    uv sync --cache-dir=/root/.uv-cache --no-dev --no-editable --frozen --extra distribution
-
-FROM builder AS dev
-
-RUN --mount=type=cache,target=/root/.uv-cache \
-    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
-    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
-    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
-    uv sync --cache-dir=/root/.uv-cache --no-editable --frozen --extra distribution \
+FROM python:3.12-slim-bookworm AS base_os
+ARG GOSU_VERSION=1.17
+ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
 
 
-WORKDIR /app
-COPY .. ./
+RUN set -x \
+  && runtimeDeps=" \
+    libmagic1 \
+    libxml2 \
+  " \
+  && buildDeps=" \
+wget \
+" \
+  && apt-get update && apt-get install -y --no-install-recommends ${buildDeps} ${runtimeDeps} \
+  && rm -rf /var/lib/apt/lists/* \
+  && wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
+  && echo "$GOSU_SHA256 /usr/local/bin/gosu" | sha256sum --check --status \
+  && chmod +x /usr/local/bin/gosu \
+  && apt-get purge -y --auto-remove $buildDeps
 
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+RUN groupadd --gid 1024 unicef \
+    && adduser --disabled-login --disabled-password --no-create-home --ingroup unicef -q hope
 
 
-FROM base AS prd
+# ------- builder -------
+FROM base_os AS builder
+RUN set -x \
+    && buildDeps="build-essential \
+cmake \
+curl \
+gcc \
+git \
+libfontconfig1 \
+libgconf-2-4 \
+libglib2.0-0 \
+libnss3 \
+libssl-dev \
+libxml2-dev  \
+python3-dev \
+zlib1g-dev  \
+" \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends $buildDeps \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV PATH=$PATH:/app/.venv/bin/
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gnupg wget curl unzip && \
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends google-chrome-stable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+    CHROME_VERSION=$(google-chrome --product-version) && \
+    wget -q --continue -P /chromedriver "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip" && \
+    unzip /chromedriver/chromedriver* -d /usr/local/bin/ && \
+    rm -rf /chromedriver
+
 RUN pip install uv uwsgi
 
-COPY --chown=hpg:hpg .. ./
-COPY --chown=hpg:hpg --from=builder $PACKAGES_DIR $PACKAGES_DIR
-USER hpg
+# ------- tests -------
+FROM builder AS tests
+ARG BUILD_DATE
+ARG VERSION
 
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+LABEL distro="tests"
+LABEL org.opencontainers.image.created="$BUILD_DATE"
+LABEL org.opencontainers.image.version="$VERSION"
+
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
+    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=""\
+    UWSGI_PROCESSES=4
+WORKDIR /app
+COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
+COPY src /app/src/
+
+RUN --mount=type=cache,target=/root/.uv-cache \
+    uv sync --cache-dir=/root/.uv-cache \
+        --python=/usr/local/bin/python \
+        --python-preference=system \
+        --frozen
+
+
+
+# ------- production only deps-------
+FROM builder AS production
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
+    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=""\
+    UWSGI_PROCESSES=4
+WORKDIR /app
+COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
+COPY src /app/src/
+
+RUN --mount=type=cache,target=/root/.uv-cache \
+    uv sync --cache-dir=/root/.uv-cache \
+        --python=/usr/local/bin/python \
+        --python-preference=system \
+        --no-dev --no-editable --frozen --extra distribution
+
+
+
+# ------- dist -------
+FROM base_os AS dist
+ARG BUILD_DATE
+ARG VERSION
+ARG GIT_SHA
+ARG BRANCH
+
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
+    BUILD_DATE=$BUILD_DATE \
+    GIT_SHA=$GIT_SHA \
+    VERSION=$VERSION \
+    BRANCH=$BRANCH \
+    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    STATIC_URL="/static/" \
+    PYTHONPATH=""\
+    PGSSLCERT="/tmp/postgresql.crt" \
+    UWSGI_PROCESSES=4
+
+RUN <<EOF cat> /RELEASE
+{"version": "$VERSION",
+ "commit": "$GIT_SHA",
+ "date": "$BUILD_DATE",
+}
+EOF
+WORKDIR /app
+COPY docker/conf /conf/
+COPY docker/bin/* /usr/local/bin/
+COPY LICENSE.md README.md /
+COPY src /app/src/
+RUN rm -fr /app/src/
+
+
+COPY --chown=hope:unicef --from=production /app/.venv /app/.venv
+COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
+RUN --mount=type=cache,target=/root/.uv-cache \
+    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
+    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
+    --mount=type=bind,source=README.md,target=/app/README.md \
+    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
+    uv --cache-dir=/root/.uv-cache pip install --no-deps .
+
+
+EXPOSE 8000
+ENTRYPOINT exec docker-entrypoint.sh "$0" "$@"
+CMD ["run"]
+
+
+LABEL maintainer="hope@unicef.org"
+LABEL org.opencontainers.image.authors="hope@unicef.org"
+LABEL org.opencontainers.image.description="Hope Country Workspace"
+LABEL org.opencontainers.image.documentation="https://github.com/unicef/hope-payment-gateway/"
+LABEL org.opencontainers.image.title="Hope Country Workspace"
+LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GIT_SHA:-master}/LICENSE"
+LABEL org.opencontainers.image.revision=$GIT_SHA
+LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GIT_SHA:-master}/"
+LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/unicef/hope-payment-gateway/tags/"
+LABEL org.opencontainers.image.vendor="UNICEF"
+LABEL org.opencontainers.image.created="$BUILD_DATE"
+LABEL org.opencontainers.image.version="$VERSION"
