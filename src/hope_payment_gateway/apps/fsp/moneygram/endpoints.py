@@ -1,6 +1,15 @@
+import base64
+import binascii
+import logging
+
 from django.conf import settings
 
+import cryptography.exceptions
 import sentry_sdk
+from constance import config
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
@@ -9,6 +18,8 @@ from viewflow.fsm import TransitionNotAllowed
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.apps.fsp.moneygram.client import update_status
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
+
+logger = logging.getLogger(__name__)
 
 
 class MoneyGramApi(APIView):
@@ -22,11 +33,43 @@ class MoneyGramWebhook(MoneyGramApi):
         return super().dispatch(request, *args, **kwargs)
 
     def verify(self, request):
-        return settings.MONEYGRAM_PUBLIC_KEY
+
+        header_dict = {
+            header.split("=", 1)[0]: header.split("=", 1)[1]
+            for header in request.headers.get("Signature", "").split(",")
+        }
+
+        destination_host = "f-p-sandbox.snssdk.com"
+        public_key = """-----BEGIN PUBLIC KEY-----
+        {}
+        -----END PUBLIC KEY-----""".format(
+            settings.MONEYGRAM_PUBLIC_KEY
+        )
+        # public_key = settings.MONEYGRAM_PUBLIC_KEY
+        pub_key = serialization.load_pem_public_key(public_key.encode("utf-8"), backend=default_backend())
+
+        unix_time_in_seconds = header_dict.get("t", None)
+
+        signature_header = header_dict.get("s", "")
+        signature = base64.b64decode(signature_header)
+
+        body = request.body
+        data = f"{unix_time_in_seconds}.{destination_host}.{body}".encode("utf-8")
+
+        pub_key.verify(signature, data, padding.PKCS1v15(), hashes.SHA256())
 
     def post(self, request):
+        try:
+            self.verify(request)
+        except (IndexError, cryptography.exceptions.InvalidSignature, binascii.Error):
+            if config.MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED:
+                return Response(
+                    {"cannot_decrypt_signature": "Signature is invalid or expired"},
+                    status=HTTP_400_BAD_REQUEST,
+                )
+            else:
+                logger.warning("Moneygram signature verification invalid")
         payload = request.data
-        # self.verify()
         try:
             record_key = payload["eventPayload"]["transactionId"]
         except KeyError:

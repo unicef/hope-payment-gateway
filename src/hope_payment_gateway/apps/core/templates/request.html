@@ -3,17 +3,13 @@
 
 {% block content %}
 
-    <i>{% autoescape on %}
-        {{ msg | linebreaksbr }}
-    {% endautoescape %}
-    </i>
+<i>{% autoescape on %}
+    {{ msg | linebreaksbr }}
+{% endautoescape %}
+</i>
 
-    <pre>
-        {% if format == "json" %}
-            {{ content | pprint }}
-        {% else %}
-            {{ content }}
-        {% endif %}
-    </pre>
+<pre>
+{% if format == "json" %}{{ content | pprint }}{% else %}{{ content }}{% endif %}
+</pre>
 
 {% endblock %}

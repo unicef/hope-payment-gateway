@@ -4,12 +4,14 @@ from pathlib import Path
 from django.urls import reverse
 
 import responses
+from constance.test import override_config
 from factories import PaymentRecordFactory
 
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 
 @responses.activate
+@override_config(MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED=False)
 def test_webhook_notification_ok(api_client, admin_user):
     with open(Path(__file__).parent / "responses" / "push_notification.json") as f:
         data = json.load(f)
@@ -23,6 +25,7 @@ def test_webhook_notification_ok(api_client, admin_user):
 
 
 @responses.activate
+@override_config(MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED=False)
 def test_webhook_notification_ko_no_record(api_client, admin_user):
     with open(Path(__file__).parent / "responses" / "push_notification.json") as f:
         data = json.load(f)
@@ -36,6 +39,7 @@ def test_webhook_notification_ko_no_record(api_client, admin_user):
 
 
 @responses.activate
+@override_config(MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED=False)
 def test_webhook_notification_ko_transition_not_allowed(api_client, admin_user):
     with open(Path(__file__).parent / "responses" / "push_notification.json") as f:
         data = json.load(f)
@@ -49,6 +53,7 @@ def test_webhook_notification_ko_transition_not_allowed(api_client, admin_user):
 
 
 @responses.activate
+@override_config(MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED=False)
 def test_webhook_notification_ko_invalid_payload(api_client, admin_user):
     with open(Path(__file__).parent / "responses" / "push_notification_ko.json") as f:
         data = json.load(f)

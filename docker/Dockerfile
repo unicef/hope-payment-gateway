@@ -23,7 +23,7 @@ WORKDIR /code
 FROM base as builder
 
 WORKDIR $PACKAGES_DIR
-RUN pip install pdm uwsgi
+RUN pip install pdm
 COPY ../pyproject.toml ./
 COPY ../pdm.lock ./
 RUN pdm config python.use_venv false
@@ -33,6 +33,7 @@ RUN pdm sync --prod --no-editable --no-self
 FROM builder AS dev
 
 RUN pdm sync --no-editable --no-self
+RUN pip install uwsgi
 
 WORKDIR /code
 COPY .. ./
@@ -44,6 +45,7 @@ ENTRYPOINT ["entrypoint.sh"]
 FROM base AS prd
 
 ENV PATH=$PATH:/code/.venv/bin/
+RUN pip install uwsgi
 
 COPY --chown=hpg:hpg .. ./
 COPY --chown=hpg:hpg --from=builder $PACKAGES_DIR $PACKAGES_DIR
