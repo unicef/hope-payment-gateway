@@ -161,7 +161,7 @@ class MoneyGramClient(metaclass=Singleton):
         """create a transaction to MoneyGram"""
         endpoint = "/disbursement/v1/transactions"
         transaction_id, payload = self.prepare_transaction(base_payload)
-        response = self.perform_request(endpoint, transaction_id, payload)
+        response = self.perform_request(endpoint, transaction_id, payload, "post")
 
         if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
@@ -186,13 +186,13 @@ class MoneyGramClient(metaclass=Singleton):
         """create a quote request to MoneyGram"""
         endpoint = "/disbursement/v1/transactions/quote"
         transaction_id, payload = self.prepare_quote(base_payload)
-        return self.perform_request(endpoint, transaction_id, payload)
+        return self.perform_request(endpoint, transaction_id, payload, "post")
 
     def status(self, transaction_id):
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
         payload = self.get_basic_payload()
         status_transaction_id = str(uuid.uuid4())
-        return self.perform_request(endpoint, status_transaction_id, payload, get=True)
+        return self.perform_request(endpoint, status_transaction_id, payload)
 
     def get_required_fields(self, base_payload):
         endpoint = "/reference-data/v1/transaction-fields-send"
@@ -208,26 +208,27 @@ class MoneyGramClient(metaclass=Singleton):
                 "receiveCurrencyCode": base_payload["destination_currency"],
             }
         )
-        return self.perform_request(endpoint, transaction_id, payload, get=True)
+        return self.perform_request(endpoint, transaction_id, payload)
 
     def get_service_options(self, base_payload):
         endpoint = "/reference-data/v1/service-options"
         payload = self.get_basic_payload()
         transaction_id = str(uuid.uuid4())
         payload["destinationCountryCode"] = base_payload["destination_country"]
-        return self.perform_request(endpoint, transaction_id, payload, get=True)
+        return self.perform_request(endpoint, transaction_id, payload)
 
-    def perform_request(self, endpoint, transaction_id, payload, get=False):
+    def perform_request(self, endpoint, transaction_id, payload, method="get"):
         response = None
         url = settings.MONEYGRAM_HOST + endpoint
         headers = self.get_headers(transaction_id)
         for _ in range(2):
             try:
-                if get:
+                if method == "get":
                     url = url + "?" + urlencode(payload)
                     response = requests.get(url, headers=headers)
                 else:
-                    response = requests.post(url, json=payload, headers=headers)
+                    request_method = getattr(requests, method)
+                    response = request_method(url, json=payload, headers=headers)
                 response = Response(response.json(), response.status_code)
                 break
             except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
@@ -285,11 +286,15 @@ class MoneyGramClient(metaclass=Singleton):
         payload = self.get_basic_payload()
         status_transaction_id = str(uuid.uuid4())
         payload["refundReasonCode"] = base_payload.get("refuse_reason_code")
-        resp = self.perform_request(endpoint, status_transaction_id, payload, get=True)
+        resp = self.perform_request(endpoint, status_transaction_id, payload)
         if resp.status_code == 200:
             pr = PaymentRecord.objects.get(fsp_code=transaction_id)  # todo unique
             pr.message = "Request per REFUND"
             pr.save()
+
+            # endpoint = f"/disbursement/refund/v1/transactions/{transaction_id}/commit"
+            # response = requests.put(url, json=payload, headers=headers)
+
         return resp
 
 

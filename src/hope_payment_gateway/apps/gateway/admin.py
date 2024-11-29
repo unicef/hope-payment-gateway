@@ -159,9 +159,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             client = MoneyGramClient()
-            context["title"] = "MoneyGram Payload"
+            title, content = client.prepare_transaction(obj.get_payload())
+            context["title"] = f"MoneyGram Payload: {title}"
             context["format"] = "json"
-            context["content"] = client.prepare_transaction(obj.get_payload())
+            context["content"] = content
             return TemplateResponse(request, "request.html", context)
 
         except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
