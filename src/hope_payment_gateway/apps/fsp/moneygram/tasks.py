@@ -5,7 +5,6 @@ from constance import config
 
 from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.gateway.models import (
-    FinancialServiceProvider,
     PaymentInstruction,
     PaymentInstructionState,
     PaymentRecord,
@@ -19,11 +18,12 @@ def moneygram_send_money(tag=None, threshold=10000):
     """Task to trigger MoneyGram payments"""
     logging.info("MoneyGram Task started")
     threshold = threshold or config.MONEYGRAM_THREASHOLD
-    fsp = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER)
 
     records_count = 0
 
-    qs = PaymentInstruction.objects.filter(status=PaymentInstructionState.READY, fsp=fsp)
+    qs = PaymentInstruction.objects.filter(
+        status=PaymentInstructionState.READY, fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+    )
     if tag:
         qs = qs.filter(tag=tag)
 
@@ -45,6 +45,20 @@ def moneygram_send_money(tag=None, threshold=10000):
 
 @app.task
 def moneygram_notify(to_process_ids: List[PaymentRecord]) -> None:
-    PaymentRecord.objects.filter(id__in=to_process_ids).update(marked_for_payment=True)
-    for record in PaymentRecord.objects.filter(id__in=to_process_ids):
-        MoneyGramClient().create_transaction(record.get_payload())
+    client = MoneyGramClient()
+    PaymentRecord.objects.filter(id__in=to_process_ids).update(
+        marked_for_payment=True,
+    )
+    for record in PaymentRecord.objects.select_related("parent__fsp").filter(id__in=to_process_ids):
+        client.create_transaction(record.get_payload())
+
+
+@app.task
+def moneygram_update() -> None:
+    client = MoneyGramClient()
+    for record in PaymentRecord.objects.select_related("parent__fsp").filter(
+        parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+        parent__status=PaymentInstructionState.PROCESSED,
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+    ):
+        client.query_status(record.fsp_code, True)

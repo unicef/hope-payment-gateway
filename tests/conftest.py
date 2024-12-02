@@ -31,8 +31,8 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True)
 def use_override_settings(settings):
-    settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
     settings.MONEYGRAM_PARTNER_ID = "AAAAAA"
+    settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
     settings.MONEYGRAM_HOST = "https://sandboxapi.moneygram.com"
 
 
