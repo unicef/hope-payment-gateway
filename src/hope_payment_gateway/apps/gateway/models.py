@@ -71,6 +71,7 @@ class PaymentInstructionState(models.TextChoices):
     CLOSED = ("CLOSED", "Closed")
     READY = ("READY", "Ready")
     PROCESSED = ("PROCESSED", "Processed")
+    FINALIZED = ("FINALIZED", "Finalized")
     ABORTED = ("ABORTED", "Aborted")
 
 

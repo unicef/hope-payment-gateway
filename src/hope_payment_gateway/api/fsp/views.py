@@ -147,7 +147,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
             export = ExportTemplate.objects.get(
                 fsp=obj.fsp, config_key=obj.extra.get("config_key", None), delivery_mechanism=dm
             )
-            queryset = PaymentRecord.objects.filter(parent=obj).select_related("parent__fsp")
+            queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
 
             return export_as_template_impl(
                 queryset,
