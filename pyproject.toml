@@ -29,12 +29,9 @@ skip = ["migrations", "snapshots", ".venv"]
 django_settings_module = "hope_payment_gateway.config.settings"
 
 
-[tool.pdm.build]
-includes = []
-
-
-[tool.pdm.dev-dependencies]
-dev = [
+[tool.uv]
+package = true
+dev-dependencies = [
     "argh",
     "black",
     "cairosvg",
