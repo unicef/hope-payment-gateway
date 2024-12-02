@@ -18,8 +18,8 @@ fi
 case "$1" in
     dev)
         ./docker/wait-for-it.sh db:5432
-        python3 manage.py upgrade
-        python3 manage.py runserver 0.0.0.0:8000
+        django-admin upgrade
+        django-admin runserver 0.0.0.0:8000
     ;;
     tests)
         ./docker/wait-for-it.sh db:5432
