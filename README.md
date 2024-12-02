@@ -1,45 +1,10 @@
-ABOUT HOPE Payment Gateway
-==========================
+# hope-hope-payment-gateway
+
+[![Test](https://github.com/unicef/hope-payment-gateway/actions/workflows/test.yml/badge.svg)](https://github.com/unicef/hope-payment-gateway/actions/workflows/test.yml)
+[![Lint](https://github.com/unicef/hope-payment-gateway/actions/workflows/lint.yml/badge.svg)](https://github.com/unicef/hope-payment-gateway/actions/workflows/lint.yml)
+[![codecov](https://codecov.io/github/unicef/hope-payment-gateway/graph/badge.svg?token=FBUB7HML5S)](https://codecov.io/github/unicef/hope-payment-gateway)
+[![Documentation](https://github.com/unicef/hope-payment-gateway/actions/workflows/docs.yml/badge.svg)](https://unicef.github.io/hope-payment-gateway/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/unicef/hope-payment-gateway)](https://hub.docker.com/repository/docker/unicef/hope-payment-gateway/tags)
 
 
-## Contributing
-
-
-### System Requirements
-
-- python 3.12
-- [direnv](https://direnv.net/) - not mandatory but strongly recommended
-- [pdm](https://pdm.fming.dev/2.9/)
-
-
-
-
-**WARNING**  
-> Hope Payment Gateway implements **security first** policy. It means that configuration default values are "almost" production compliant.
-> 
-> Es. `DEBUG=False` or `SECURE_SSL_REDIRECT=True`. 
-> 
-> Be sure to run `./manage.py env --check` and  `./manage.py env -g all` to check and display your configuration
- 
-
-
-### 1. Clone repo and install requirements
-    git clone https://github.com/unicef/hope-payment-gateway 
-    pdm venv create 3.12
-    pdm install
-    pdm venv activate in-project
-    pre-commit install
-
-### 2. configure your environment
-
-Uses `./manage.py env` to check required (and optional) variables to put 
-
-    ./manage.py env --check
-
-
-### 3. Run upgrade to run migrations and initial setup
-
-    ./manage.py upgrade
-
-# Troubleshoot
-> Exception are logged in Sentry: https://sentry.io/unicef-jk/
+Documentation: https://unicef.github.io/hope-payment-gateway/
