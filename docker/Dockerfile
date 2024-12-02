@@ -63,7 +63,8 @@ ENV PATH=$PATH:/app/.venv/bin/ \
     BUILD_DATE=$BUILD_DATE \
     GIT_SHA=$GIT_SHA \
     VERSION=$VERSION \
-    BRANCH=$BRANCH
+    BRANCH=$BRANCH \
+    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings
 
 RUN pip install uv uwsgi
 
