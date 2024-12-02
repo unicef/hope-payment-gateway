@@ -299,12 +299,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
                     ]
             else:
                 loglevel = messages.ERROR
+                errors = dict()
                 if "errors" in data:
-                    for error in data["errors"]:
+                    errors = data["errors"]
+                if "error" in data:
+                    errors = data["error"]
+                if isinstance(errors, list):
+                    for error in errors:
                         msgs.append(f"{error['message']} ({error['code']})")
-                elif "error" in data:
-                    msgs.append(data["error"]["message"])
-                    msgs.append(data["error"]["code"])
+                else:
+                    msgs.append(f"{errors['message']} ({errors['code']})")
             for msg in msgs:
                 messages.add_message(request, loglevel, msg)
         else:
@@ -324,7 +328,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     @button()
     def export(self, request, pk) -> TemplateResponse:
         obj = self.get_object(request, str(pk))
-        queryset = PaymentRecord.objects.filter(parent=obj).select_related("parent__fsp")
+        queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
 
         # hack to use the action
         post_dict = request.POST.copy()

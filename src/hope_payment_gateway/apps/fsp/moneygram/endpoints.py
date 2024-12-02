@@ -45,7 +45,6 @@ class MoneyGramWebhook(MoneyGramApi):
         -----END PUBLIC KEY-----""".format(
             settings.MONEYGRAM_PUBLIC_KEY
         )
-        # public_key = settings.MONEYGRAM_PUBLIC_KEY
         pub_key = serialization.load_pem_public_key(public_key.encode("utf-8"), backend=default_backend())
 
         unix_time_in_seconds = header_dict.get("t", None)
@@ -78,7 +77,9 @@ class MoneyGramWebhook(MoneyGramApi):
                 status=HTTP_400_BAD_REQUEST,
             )
         try:
-            pr = PaymentRecord.objects.get(fsp_code=record_key)
+            pr = PaymentRecord.objects.get(
+                fsp_code=record_key, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+            )
         except PaymentRecord.DoesNotExist:
             return Response(
                 {"cannot_find_transaction": f"Cannot find payment with provided reference {record_key}"},

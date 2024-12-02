@@ -4,7 +4,15 @@ from constance.test import override_config
 from factories import PaymentRecordFactory
 from responses import _recorder  # noqa
 
-from hope_payment_gateway.apps.fsp.moneygram.client import RECEIVED, SENT, InvalidToken, MoneyGramClient, update_status
+from hope_payment_gateway.apps.fsp.moneygram.client import (
+    DELIVERED,
+    RECEIVED,
+    SENT,
+    InvalidToken,
+    MoneyGramClient,
+    update_status,
+)
+from hope_payment_gateway.apps.fsp.western_union.endpoints.nis import REFUND
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 # @_recorder.record(file_path="tests/moneygram/responses/token.yaml")
@@ -63,7 +71,7 @@ def test_get_basic_payload():
 def test_prepare_transactions(mg):
     client = MoneyGramClient()
     pr_code = "test-code"
-    pr = PaymentRecordFactory(record_code=pr_code)
+    pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
     pr.payload = {
         "first_name": "Alen",
         "last_name": "Smith",
@@ -126,7 +134,7 @@ def test_prepare_transactions(mg):
 def test_prepare_quote(mg):
     client = MoneyGramClient()
     pr_code = "test-code"
-    pr = PaymentRecordFactory(record_code=pr_code)
+    pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
     pr.payload = {
         "first_name": "Alen",
         "last_name": "Smith",
@@ -158,7 +166,7 @@ def test_quote(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/quote.yaml")
     client = MoneyGramClient()
     pr_code = "test-code"
-    pr = PaymentRecordFactory(record_code=pr_code)
+    pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
     pr.payload = {
         "first_name": "Alen",
         "last_name": "Smith",
@@ -202,7 +210,7 @@ def test_status_missing(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/status_missing.yaml")
     client = MoneyGramClient()
     transaction_id = "transaction_id"
-    PaymentRecordFactory(fsp_code=transaction_id)
+    PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
     assert client.status(transaction_id).status_code == 400
     assert client.status(transaction_id).data == {
         "errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]
@@ -217,7 +225,7 @@ def test_status_ok(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
-    PaymentRecordFactory(fsp_code=transaction_id)
+    PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
     assert client.status(transaction_id).status_code == 200
     assert client.status(transaction_id).data == {
         "transactionId": "64c228ba-8013-43f6-9baf-a0c87b91a261",
@@ -263,7 +271,7 @@ def test_query_status(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
-    pr = PaymentRecordFactory(fsp_code=transaction_id)
+    pr = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
     client.query_status(transaction_id, True)
     pr.refresh_from_db()
     assert pr.payout_amount == 300
@@ -276,7 +284,7 @@ def test_query_status(mg):
 def test_create_transaction(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/transaction.yaml")
     client = MoneyGramClient()
-    pr = PaymentRecordFactory(record_code="code-123")
+    pr = PaymentRecordFactory(record_code="code-123", parent__fsp=mg)
     payload = {
         "first_name": "Alice",
         "last_name": "Foo",
@@ -318,18 +326,24 @@ def test_create_transaction(mg):
 
 
 # @_recorder.record(file_path="tests/moneygram/responses/refund.yaml")
-# @responses.activate
+@responses.activate
 @pytest.mark.django_db
-@pytest.mark.xfail
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_refund(mg):
-    # responses._add_from_file(file_path="tests/moneygram/responses/refund.yaml")
+    responses._add_from_file(file_path="tests/moneygram/responses/refund.yaml")
     client = MoneyGramClient()
-    transaction_id = "5569d0bb-c18f-4618-9aea-4ea92e5f27fb"
-    pr = PaymentRecordFactory(fsp_code=transaction_id, payload={"refuse_reason_code": "DUP_TRAN"})
-    client.refund(transaction_id, pr.payload)
+    transaction_id = "a0ea837d-af5b-4cdd-8ac1-560477bf0978"
+    pr = PaymentRecordFactory(
+        fsp_code=transaction_id,
+        payload={"refuse_reason_code": "DUP_TRAN"},
+        parent__fsp=mg,
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+    )
+    resp = client.refund(transaction_id, pr.payload)
     pr.refresh_from_db()
-    assert pr.message == "Request per REFUND"
+    assert pr.message == "Refunded"
+    assert pr.status == PaymentRecordState.REFUND
+    assert resp.status_code == 200
 
 
 @responses.activate
@@ -347,7 +361,7 @@ def test_get_required_fields(mg):
         "destination_country": "NGA",
         "destination_currency": "NGN",
     }
-    pr = PaymentRecordFactory(payload=payload)
+    pr = PaymentRecordFactory(payload=payload, parent__fsp=mg)
     response = client.get_required_fields(payload)
     pr.refresh_from_db()
     assert response.status_code == 200
@@ -1319,7 +1333,13 @@ def test_get_service_options(mg):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "from_status,to_status", [(PaymentRecordState.PENDING, SENT), (PaymentRecordState.TRANSFERRED_TO_FSP, RECEIVED)]
+    "from_status,to_status",
+    [
+        (PaymentRecordState.PENDING, SENT),
+        (PaymentRecordState.TRANSFERRED_TO_FSP, RECEIVED),
+        (PaymentRecordState.TRANSFERRED_TO_FSP, REFUND),
+        (PaymentRecordState.TRANSFERRED_TO_FSP, DELIVERED),
+    ],
 )
 def test_update_status_ok(from_status, to_status):
     pr = PaymentRecordFactory(status=from_status)

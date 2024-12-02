@@ -147,7 +147,11 @@ def send_money_store(payload):
 def send_money(base_payload):
     record_code = base_payload["payment_record_code"]
     try:
-        pr = PaymentRecord.objects.get(record_code=record_code, status=PaymentRecordState.PENDING)
+        pr = PaymentRecord.objects.get(
+            record_code=record_code,
+            status=PaymentRecordState.PENDING,
+            parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
+        )
     except PaymentRecord.DoesNotExist:
         return None
     try:
