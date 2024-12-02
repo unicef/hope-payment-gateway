@@ -1,0 +1,100 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"refresh_token_expires_in\" : \"0\",\n  \"api_product_list\" : \"\
+      [DisbursementStatus-Ext, DisbursementRefund-Ext, DisbursementProfiles-Ext, Disbursement-Ext,\
+      \ FxRate-Ext, ReferenceData-Ext]\",\n  \"api_product_list_json\" : [ \"DisbursementStatus-Ext\"\
+      , \"DisbursementRefund-Ext\", \"DisbursementProfiles-Ext\", \"Disbursement-Ext\"\
+      , \"FxRate-Ext\", \"ReferenceData-Ext\" ],\n  \"organization_name\" : \"moneygram\"\
+      ,\n  \"developer.email\" : \"developer@moneygram.com\",\n  \"token_type\" :\
+      \ \"BearerToken\",\n  \"issued_at\" : \"1733148531403\",\n  \"client_id\" :\
+      \ \"0Ycqw5V5RycdkwPFryGTy5fcbHnvXjkW\",\n  \"access_token\" : \"9WvADHNYJ9q6AUbX4UkNjEmD89v6\"\
+      ,\n  \"application_name\" : \"6547622b-725c-4bb9-a035-8b32a8e25d5a\",\n  \"\
+      scope\" : \"\",\n  \"expires_in\" : \"3599\",\n  \"refresh_count\" : \"0\",\n\
+      \  \"status\" : \"approved\"\n}"
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, POST
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Set-Cookie: visid_incap_2947185=8Dfd6PrDQmm8AXiBF4v61XK/TWcAAAAAQUIPAAAAAAA2qV/JyB7lye/Q0byRZuxv;
+        expires=Mon, 01 Dec 2025 23:00:34 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=Z6yEZOLbX36xIRbAdIbzIAAAAADTGs3DmAqORIDEn2EKZTxy; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_255_2947185=dQCEba++Rx9O8bA0V/GJA3K/TWcAAAAAnqF7o0qRxD4Pwa1/mUuKsQ==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 51-79383186-79383199 NNYY CT(125 256 0) RT(1733148530573 46) q(0 0
+        0 -1) r(1 1) U16
+      X-MG-ClientRequestId: ''
+      X-MG-RequestId: rrt-6643765332815956029-f-gce-927852-79854874-1
+      X-MG-SessionId: ''
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials
+- response:
+    auto_calculate_content_length: false
+    body: '{"transactionId":"a0ea837d-af5b-4cdd-8ac1-560477bf0978","refundId":"752486511E17331485318524413326","referenceNumber":"63719517","transactionStatus":"AVAILABLE","availableForRefund":true,"originatingCountryCode":"USA","destinationCountryCode":"NGA","serviceOptionCode":"WILL_CALL","serviceOptionName":"10
+      Minute Service","sendAmount":{"amount":{"value":500.00,"currencyCode":"USD"},"fees":{"value":15.00,"currencyCode":"USD"},"taxes":{"value":0.00,"currencyCode":"USD"},"total":{"value":515.00,"currencyCode":"USD"}},"refundAmount":{"amount":{"value":500.00,"currencyCode":"USD"},"fees":{"value":15.00,"currencyCode":"USD"},"taxes":{"value":0.00,"currencyCode":"USD"},"total":{"value":515.00,"currencyCode":"USD"}},"sender":{"businessInfo":{"businessName":"UNICEF","businessRegistrationNumber":"13-1760110","businessCountryOfRegistration":"USA"},"businessProfileId":"bp-m16htk7c-91582138"},"beneficiary":{"consumer":{"firstName":"Lana","lastName":"Macioce"}}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Server-Timing: intid;desc=676fcb87c8bbd10d
+      Set-Cookie: visid_incap_2947185=E6JzHre2Rk66IU96Fw8mDXO/TWcAAAAAQUIPAAAAAADCd5GRItnYtjhfhwpIYF3O;
+        expires=Mon, 01 Dec 2025 23:00:36 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=C7lffX7UzAs8xsrXdIbzIAAAAACc422StHH6pNmPctRt1meV; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_255_2947185=zwr0Ei6s/ymP9rA0V/GJA3O/TWcAAAAAW50l32P/bk1iGXE2DiyxVQ==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 49-65338302-65334265 PNYN RT(1733148530837 48) q(0 0 0 -1) r(6 6) U16
+      X-MG-ClientRequestId: 0bce4e46-06b1-4941-afa2-ae9577fd3aac
+      X-MG-RequestId: rrt-2841028476080502065-b-gce-1915794-79817762-2
+      X-MG-SessionId: 752486511E17331485318524413326
+      X-transGUID: a469ea75-7a84-4b53-9412-b0d7dd88bf85
+      accept-charset: utf-8
+      x-amz-apigw-id: CKraJHT4CYcFf0w=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Date: Mon, 02 Dec 2024 14:08:52 GMT
+      x-amzn-Remapped-Server: nginx/1.25.3
+      x-amzn-RequestId: e972b9a4-ed00-4708-a766-9aab75589f4a
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/disbursement/refund/v1/transactions/a0ea837d-af5b-4cdd-8ac1-560477bf0978?targetAudience=AGENT_FACING&agentPartnerId=AAAAAA&userLanguage=en-US&refundReasonCode=DUP_TRAN
+- response:
+    auto_calculate_content_length: false
+    body: '{"referenceNumber":"63719517","expectedPayoutDate":"2024-12-02","settlement":{}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Server-Timing: intid;desc=13bccf5a52e75747
+      Set-Cookie: visid_incap_2947185=v/X8zouwSmK2BKBTclQg1XO/TWcAAAAAQUIPAAAAAABJfsXmmbOQKApWlUdZeeNu;
+        expires=Mon, 01 Dec 2025 23:00:35 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=A1LEAjCp0Dd/e/NidIbzIAAAAADr/Nvt/qgnI4ecyhe0sTxO; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_255_2947185=7HWAJX1yrgeI+bA0V/GJA3O/TWcAAAAA71tua6/5WJ5eftqybBw+gA==;
+        path=/; Domain=.moneygram.com
+      X-CDN: Imperva
+      X-Iinfo: 36-13700570-13700571 NNNY CT(124 254 0) RT(1733148531584 42) q(0 0
+        0 -1) r(3 3) U6
+      X-MG-ClientRequestId: e4c47ad6-b3e6-4d65-9021-00ab59bed26e
+      X-MG-RequestId: rrt-7402282266963752204-c-gce-2205624-80007611-1
+      X-MG-SessionId: AAAAAA1E17331485318524413326
+      accept-charset: utf-8
+      x-amz-apigw-id: CKraQF-SCYcFjBQ=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Date: Mon, 02 Dec 2024 14:08:52 GMT
+      x-amzn-Remapped-Server: nginx/1.25.3
+      x-amzn-RequestId: 27bcbd6c-67be-44b6-99e5-fc185b17b1e2
+    method: PUT
+    status: 200
+    url: https://sandboxapi.moneygram.com/disbursement/refund/v1/transactions/a0ea837d-af5b-4cdd-8ac1-560477bf0978/commit

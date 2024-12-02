@@ -27,7 +27,7 @@ def western_union_send_task(tag=None, threshold=10000):
     threshold = threshold or config.WESTERN_UNION_THREASHOLD
     fsp = FinancialServiceProvider.objects.get(vendor_number=vendor_number)
     records_count = 0
-    qs = PaymentInstruction.objects.filter(status=PaymentInstructionState.READY, fsp=fsp)
+    qs = PaymentInstruction.objects.select_related("fsp").filter(status=PaymentInstructionState.READY, fsp=fsp)
     if tag:
         qs = qs.filter(tag=tag)
 

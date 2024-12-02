@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 
 import sentry_sdk
+from constance import config
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
@@ -80,7 +81,9 @@ class NisNotificationView(WesternUnionApi):
             return Response({"validation_error": str(exp)}, status=HTTP_400_BAD_REQUEST)
 
         try:
-            pr = PaymentRecord.objects.get(fsp_code=fsp_code)
+            pr = PaymentRecord.objects.get(
+                fsp_code=fsp_code, parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+            )
             flow = PaymentRecordFlow(pr)
         except PaymentRecord.DoesNotExist:
             return Response(

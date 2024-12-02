@@ -247,7 +247,9 @@ class MoneyGramClient(metaclass=Singleton):
         """update record in the database"""
         body = response.data
         record_code = payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(record_code=record_code)
+        pr = PaymentRecord.objects.get(
+            record_code=record_code, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+        )
         if "errors" in body:
             return Response(body, status=HTTP_400_BAD_REQUEST)
         pr.auth_code = body["referenceNumber"]
@@ -275,7 +277,9 @@ class MoneyGramClient(metaclass=Singleton):
         """query MoneyGram to get information regarding the transaction status"""
         response = self.status(transaction_id)
         if update:
-            pr = PaymentRecord.objects.get(fsp_code=transaction_id)
+            pr = PaymentRecord.objects.get(
+                fsp_code=transaction_id, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+            )
             update_status(pr, response.data["transactionStatus"])
             pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
             pr.save()
@@ -288,13 +292,22 @@ class MoneyGramClient(metaclass=Singleton):
         payload["refundReasonCode"] = base_payload.get("refuse_reason_code")
         resp = self.perform_request(endpoint, status_transaction_id, payload)
         if resp.status_code == 200:
-            pr = PaymentRecord.objects.get(fsp_code=transaction_id)  # todo unique
+            pr = PaymentRecord.objects.get(
+                fsp_code=transaction_id, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+            )
             pr.message = "Request per REFUND"
             pr.save()
+            payload = self.get_basic_payload()
+            payload["refundId"] = resp.data["refundId"]
 
-            # endpoint = f"/disbursement/refund/v1/transactions/{transaction_id}/commit"
-            # response = requests.put(url, json=payload, headers=headers)
-
+            endpoint = f"/disbursement/refund/v1/transactions/{transaction_id}/commit"
+            status_transaction_id = str(uuid.uuid4())
+            resp = self.perform_request(endpoint, status_transaction_id, payload, "put")
+            if resp.status_code == 200:
+                pr.message = "Refunded"
+                pr.extra_data.update({"refund_reference": payload["refundId"]})
+                update_status(pr, REFUNDED)
+                pr.save()
         return resp
 
 

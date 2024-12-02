@@ -85,7 +85,7 @@ def test_send_complete(django_app, admin_user, wu):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    pr = PaymentRecordFactory(record_code=record_code)
+    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
     send_money(payload)
     pr.refresh_from_db()
     assert pr.success
@@ -130,7 +130,7 @@ def test_send_complete_corridor(django_app, admin_user, wu):
         destination_currency="EUR",
         template=corridor_template,
     )
-    pr = PaymentRecordFactory(record_code=record_code)
+    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
     send_money(payload)
     pr.refresh_from_db()
     assert pr.success
@@ -162,7 +162,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
         "delivery_services_code": "800",
         "reason_for_sending": "P012",
     }
-    pr = PaymentRecordFactory(record_code=record_code)
+    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
     send_money(payload)
     pr.refresh_from_db()
     assert not pr.success
@@ -228,7 +228,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         destination_currency="EUR",
         template=corridor_template,
     )
-    pr = PaymentRecordFactory(record_code=record_code)
+    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
     send_money(payload)
     pr.refresh_from_db()
     assert not pr.success

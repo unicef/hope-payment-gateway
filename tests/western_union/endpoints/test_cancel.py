@@ -29,6 +29,7 @@ def test_search_request(django_app, admin_user, wu):
             "mtcn": mtcn,
             "foreign_remote_system": frm,
         },
+        parent__fsp=wu,
     )
     resp = search_request(frm, mtcn)
     assert (resp["title"], resp["code"]) == ("Search", 200)
@@ -54,6 +55,7 @@ def test_cancel(django_app, admin_user, wu):
             "foreign_remote_system": frm,
         },
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
+        parent__fsp=wu,
     )
     cancel(pl.pk)
     pl.refresh_from_db()
@@ -65,7 +67,7 @@ def test_cancel(django_app, admin_user, wu):
 def test_search_ko(django_app, admin_user, wu):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_ko.yaml")
-    pl = PaymentRecordFactory()
+    pl = PaymentRecordFactory(parent__fsp=wu)
     cancel(pl.pk)
     pl.refresh_from_db()
     assert pl.message == "Search Error: No Money Transfer Key"
