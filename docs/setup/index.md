@@ -5,7 +5,7 @@
 
 - python 3.12
 - [direnv](https://direnv.net/) - not mandatory but strongly recommended
-- [pdm](https://pdm.fming.dev/2.9/)
+- [uv](https://docs.astral.sh/uv/)
 
 
 **WARNING**  
@@ -19,9 +19,9 @@
 
 ### 1. Clone repo and install requirements
     git clone https://github.com/unicef/hope-payment-gateway 
-    pdm venv create 3.12
-    pdm install
-    pdm venv activate in-project
+    uv venv .venv --python 3.12
+    source .venv/bin/activate
+    uv sync
     pre-commit install
 
 ### 2. configure your environment
