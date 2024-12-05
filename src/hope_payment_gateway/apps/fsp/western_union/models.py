@@ -13,6 +13,7 @@ class Corridor(models.Model):  # delivery mechanism
 
     class Meta:
         unique_together = ("destination_country", "destination_currency")
+        permissions = (("can_view_ftp_files", "Can views Western Union FTP files"),)
 
 
 class ServiceProviderCode(models.Model):
