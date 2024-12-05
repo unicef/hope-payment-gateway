@@ -31,7 +31,6 @@ class CorridorViewSet(ProtectedMixin, ModelViewSet):
 class ServiceProviderCodeViewSet(ProtectedMixin, ModelViewSet):
     serializer_class = ServiceProviderCodeSerializer
     queryset = ServiceProviderCode.objects.all()
-    permission_classes = (IsAdminUser,)
 
     filterset_class = ServiceProviderCodeFilter
     search_fields = ["description", "code"]
