@@ -55,6 +55,19 @@ class PaymentInstructionFlow:
         pass
 
     @state.transition(
+        source=[
+            PaymentInstructionState.OPEN,
+            PaymentInstructionState.CLOSED,
+            PaymentInstructionState.READY,
+            PaymentInstructionState.PROCESSED,
+        ],
+        target=PaymentInstructionState.FINALIZED,
+        permission="western_union.change_paymentinstruction",
+    )
+    def finalize(self):
+        pass
+
+    @state.transition(
         source=State.ANY, target=PaymentInstructionState.ABORTED, permission="western_union.change_paymentinstruction"
     )
     def abort(self):

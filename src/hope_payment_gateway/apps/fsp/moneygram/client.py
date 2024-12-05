@@ -54,6 +54,10 @@ class InvalidToken(Exception):
     pass
 
 
+class ExpiredToken(Exception):
+    pass
+
+
 class MoneyGramClient(metaclass=Singleton):
     token = None
     expires_in = None
@@ -219,21 +223,24 @@ class MoneyGramClient(metaclass=Singleton):
 
     def perform_request(self, endpoint, transaction_id, payload, method="get"):
         response = None
-        url = settings.MONEYGRAM_HOST + endpoint
-        headers = self.get_headers(transaction_id)
+        base_url = settings.MONEYGRAM_HOST + endpoint
         for _ in range(2):
             try:
+                headers = self.get_headers(transaction_id)
                 if method == "get":
-                    url = url + "?" + urlencode(payload)
+                    url = base_url + "?" + urlencode(payload)
                     response = requests.get(url, headers=headers)
                 else:
                     request_method = getattr(requests, method)
-                    response = request_method(url, json=payload, headers=headers)
+                    response = request_method(base_url, json=payload, headers=headers)
                 response = Response(response.json(), response.status_code)
-                break
+                if response.status_code == 200:
+                    break
+                else:
+                    self.set_token()
             except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
                 logger.error("An error occurred:", e)
-                break
+                self.set_token()
             except Exception as e:
                 logger.error("Token Expired:", e)
                 self.set_token()

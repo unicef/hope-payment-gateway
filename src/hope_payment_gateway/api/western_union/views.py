@@ -1,5 +1,7 @@
 from django.http import FileResponse
 
+from rest_framework import status
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
@@ -38,7 +40,8 @@ class FileViewset(ViewSet):
     serializer_class = FileSerializer
     filter_backends = list()
     lookup_field = "filename"
-    lookup_value_regex = r"[\w.;_@]+"
+    lookup_value_regex = r".*\..*"
+    permission_classes = (IsAdminUser,)
 
     def get_queryset(self):
         return FTPClient().ls()
@@ -48,6 +51,9 @@ class FileViewset(ViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, filename=None):
-        response = FileResponse(FTPClient().download(filename))
+        try:
+            response = FileResponse(FTPClient().download(filename))
+        except FileNotFoundError:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         response["Content-Disposition"] = 'attachment; filename="%s"' % filename
         return response
