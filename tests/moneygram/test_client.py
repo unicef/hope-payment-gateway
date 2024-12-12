@@ -4,15 +4,8 @@ from constance.test import override_config
 from factories import PaymentRecordFactory
 from responses import _recorder  # noqa
 
-from hope_payment_gateway.apps.fsp.moneygram.client import (
-    DELIVERED,
-    RECEIVED,
-    SENT,
-    InvalidToken,
-    MoneyGramClient,
-    update_status,
-)
-from hope_payment_gateway.apps.fsp.western_union.endpoints.nis import REFUND
+from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED, REFUNDED, SENT
+from hope_payment_gateway.apps.fsp.moneygram.client import InvalidToken, MoneyGramClient, update_status
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 # @_recorder.record(file_path="tests/moneygram/responses/token.yaml")
@@ -1337,7 +1330,7 @@ def test_get_service_options(mg):
     [
         (PaymentRecordState.PENDING, SENT),
         (PaymentRecordState.TRANSFERRED_TO_FSP, RECEIVED),
-        (PaymentRecordState.TRANSFERRED_TO_FSP, REFUND),
+        (PaymentRecordState.TRANSFERRED_TO_FSP, REFUNDED),
         (PaymentRecordState.TRANSFERRED_TO_FSP, DELIVERED),
     ],
 )

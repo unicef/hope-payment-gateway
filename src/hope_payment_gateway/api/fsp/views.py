@@ -24,7 +24,7 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentRecordSerializer,
 )
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.actions import export_as_template_impl
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
@@ -173,7 +173,7 @@ class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
     def cancel(self, request):
         record = self.get_object()
         try:
-            cancel(record.pk)
+            WesternUnionClient().refund(record.pk, dict)
             return Response({"message": "cancel triggered"})
         except TransitionNotAllowed as exc:
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
