@@ -1,10 +1,10 @@
 import logging
 import random
-import xml.dom.minidom
 from pathlib import Path
 
 import sentry_sdk
 from constance import config
+from defusedxml.minidom import parseString
 from requests import Session
 from requests.exceptions import ConnectTimeout
 from viewflow.fsm import TransitionNotAllowed
@@ -110,7 +110,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
     def prepare(client, service_name, payload):
         node = client.create_message(client.service, service_name, **payload)
         data = etree_to_string(node)
-        dom = xml.dom.minidom.parseString(data)
+        dom = parseString(data)
         return node, dom.toprettyxml()
 
     @staticmethod
