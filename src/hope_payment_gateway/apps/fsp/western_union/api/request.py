@@ -10,7 +10,7 @@ class WUClient:
         self.cert = cert, key
 
     def request(self, body):
-        return requests.post(self.BASE_URL, cert=self.cert, headers=self.headers, data=body)
+        return requests.post(self.BASE_URL, cert=self.cert, headers=self.headers, data=body, timeout=30)
 
 
 def requests_request():

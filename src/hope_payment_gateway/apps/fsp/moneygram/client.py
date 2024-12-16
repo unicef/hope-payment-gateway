@@ -55,14 +55,14 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         self.sender = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER).configuration
 
     def set_token(self):
-        """setup the token to perform MoneyGram API calls"""
+        """Set up the token to perform MoneyGram API calls"""
         url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
         credentials = f"{settings.MONEYGRAM_CLIENT_ID}:{settings.MONEYGRAM_CLIENT_SECRET}"
         encoded_credentials = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
         headers = {"Content-Type": "application/json", "Authorization": "Basic " + encoded_credentials}
 
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, timeout=30)
             parsed_response = json.loads(response.text)
         except ConnectionError:
             self.token = None
@@ -228,10 +228,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 headers = self.get_headers(transaction_id)
                 if method == "get":
                     url = base_url + "?" + urlencode(payload)
-                    response = requests.get(url, headers=headers)
+                    response = requests.get(url, headers=headers, timeout=30)
                 else:
                     request_method = getattr(requests, method)
-                    response = request_method(base_url, json=payload, headers=headers)
+                    response = request_method(base_url, json=payload, headers=headers, timeout=30)
                 response = Response(response.json(), response.status_code)
                 if response.status_code == 200:
                     break
