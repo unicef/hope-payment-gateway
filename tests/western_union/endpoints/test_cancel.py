@@ -2,7 +2,7 @@ import responses
 from constance.test import override_config
 from factories import PaymentRecordFactory
 
-from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 
@@ -31,7 +31,8 @@ def test_search_request(django_app, admin_user, wu):
         },
         parent__fsp=wu,
     )
-    resp = search_request(frm, mtcn)
+
+    resp = WesternUnionClient().search_request(frm, mtcn)
     assert (resp["title"], resp["code"]) == ("Search", 200)
 
 
@@ -57,7 +58,7 @@ def test_cancel(django_app, admin_user, wu):
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
         parent__fsp=wu,
     )
-    cancel(pl.pk)
+    WesternUnionClient().refund(pl.fsp_code, pl.payload)
     pl.refresh_from_db()
     assert pl.message, pl.success == ("Cancelled", True)
 
@@ -68,7 +69,7 @@ def test_search_ko(django_app, admin_user, wu):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/search_ko.yaml")
     pl = PaymentRecordFactory(parent__fsp=wu)
-    cancel(pl.pk)
+    WesternUnionClient().refund(pl.fsp_code, pl.payload)
     pl.refresh_from_db()
     assert pl.message == "Search Error: No Money Transfer Key"
     assert not pl.success

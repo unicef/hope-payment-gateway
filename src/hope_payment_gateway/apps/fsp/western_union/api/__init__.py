@@ -12,8 +12,10 @@ MONEY_IN_TIME = "000"  # Cash over the counter: collect money kiosk
 WALLET = "800"
 
 
-def iso_code(country_code, currency_code):
-    return {
-        "country_code": country_code,
-        "currency_code": currency_code,
-    }
+# push notifications codes
+SUCCESS = "BIS003"
+CANCEL = "BIS005"
+REFUND = "BIS006"
+PURGED = "BIS016"
+REJECT_APN = "BIS011"
+SUCCESS_APN = "BIS012"

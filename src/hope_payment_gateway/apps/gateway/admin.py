@@ -20,13 +20,7 @@ from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.fsp.moneygram.client import InvalidToken, MoneyGramClient, PayloadMissingKey
-from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
-from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
-    create_validation_payload,
-    send_money,
-    send_money_validation,
-)
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
@@ -96,9 +90,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
         try:
-            payload = create_validation_payload(payload)
-            client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
-            _, data = client.prepare("sendmoneyValidation", payload)
+            payload = WesternUnionClient.create_validation_payload(payload)
+            client = WesternUnionClient()
+            _, data = client.prepare(client.quote_client, "sendmoneyValidation", payload)
 
             context["title"] = "Western Union Payload"
             context["content"] = data
@@ -115,8 +109,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         payload = obj.get_payload()
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
         try:
-            payload = create_validation_payload(payload)
-            context.update(send_money_validation(payload))
+            payload = WesternUnionClient.create_validation_payload(payload)
+            context.update(WesternUnionClient().send_money_validation(payload))
             return TemplateResponse(request, "request.html", context)
         except (PayloadException, InvalidCorridor) as e:
             messages.add_message(request, messages.ERROR, str(e))
@@ -125,7 +119,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Send Money")
     def wu_send_money(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
-        log = send_money(obj.get_payload())
+        client = WesternUnionClient()
+        log = client.create_transaction(obj.get_payload())
         if log is None:
             messages.add_message(request, messages.ERROR, "Invalid record: Invalid status")
         else:
@@ -139,7 +134,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
             frm = obj.extra_data.get("foreign_remote_system", None)
-            context.update(search_request(frm, mtcn))
+            context.update(WesternUnionClient().search_request(frm, mtcn))
             return TemplateResponse(request, "request.html", context)
         messages.warning(request, "Missing MTCN")
 
@@ -149,7 +144,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-        log = cancel(obj.pk)
+        log = WesternUnionClient().refund(obj.fsp_code, obj.extra_data)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 

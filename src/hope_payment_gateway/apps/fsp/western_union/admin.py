@@ -7,15 +7,8 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from constance import config
 from jsoneditor.forms import JSONEditor
 
-from hope_payment_gateway.apps.fsp.western_union.endpoints.das import (
-    das_countries_currencies,
-    das_delivery_option_template,
-    das_delivery_services,
-    das_destination_countries,
-    das_destination_currencies,
-    das_origination_currencies,
-)
-from hope_payment_gateway.apps.fsp.western_union.endpoints.request import requests_request
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
+from hope_payment_gateway.apps.fsp.western_union.api.request import requests_request
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 
 
@@ -56,7 +49,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
-        context.update(das_countries_currencies(identifier, counter_id))
+        context.update(WesternUnionClient().das_countries_currencies(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
     @view()
@@ -69,7 +62,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
-        context.update(das_origination_currencies(identifier, counter_id))
+        context.update(WesternUnionClient().das_origination_currencies(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
     @view()
@@ -85,7 +78,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
-        context.update(das_destination_currencies(destination_country, identifier, counter_id))
+        context.update(WesternUnionClient().das_destination_currencies(destination_country, identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
     @view()
@@ -100,7 +93,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
-        context.update(das_destination_countries(identifier, counter_id))
+        context.update(WesternUnionClient().das_destination_countries(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
     @view()
@@ -118,7 +111,11 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
-        context.update(das_delivery_services(destination_country, destination_currency, identifier, counter_id))
+        context.update(
+            WesternUnionClient().das_delivery_services(
+                destination_country, destination_currency, identifier, counter_id
+            )
+        )
         return TemplateResponse(request, "request.html", context)
 
     @choice()
@@ -147,7 +144,11 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
-        context.update(das_delivery_services(destination_country, destination_currency, identifier, counter_id))
+        context.update(
+            WesternUnionClient().das_delivery_services(
+                destination_country, destination_currency, identifier, counter_id
+            )
+        )
         return TemplateResponse(request, "request.html", context)
 
     @view()
@@ -167,7 +168,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: counter_id -> {counter_id}"
         )
         context.update(
-            das_delivery_option_template(
+            WesternUnionClient().das_delivery_option_template(
                 destination_country, destination_currency, identifier, counter_id, template_code
             )
         )
@@ -189,8 +190,9 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             f"PARAM: destination_currency -> {destination_currency}\n"
             f"PARAM: template_code -> {template_code}"
         )
+        client = WesternUnionClient()
         context.update(
-            das_delivery_option_template(
+            client.das_delivery_option_template(
                 destination_country, destination_currency, identifier, counter_id, template_code
             )
         )
