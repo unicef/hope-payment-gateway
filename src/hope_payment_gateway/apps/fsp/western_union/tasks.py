@@ -3,11 +3,7 @@ from typing import List
 
 from constance import config
 
-from hope_payment_gateway.apps.fsp.western_union.endpoints.das import (
-    das_countries_currencies,
-    das_delivery_option_template,
-)
-from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import send_money
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
@@ -51,17 +47,18 @@ def western_union_send_task(tag=None, threshold=10000):
 def western_union_notify(to_process_ids: List[PaymentRecord]) -> None:
     PaymentRecord.objects.filter(id__in=to_process_ids).update(marked_for_payment=True)
     for record in PaymentRecord.objects.filter(id__in=to_process_ids):
-        send_money(record.get_payload())
+        WesternUnionClient.create_transaction(record.get_payload())
 
 
 @app.task
 def update_corridors():
-    das_countries_currencies(create_corridors=True)
+    WesternUnionClient().das_countries_currencies(create_corridors=True)
 
 
 @app.task
 def update_templates():
+    client = WesternUnionClient()
     for corridor in Corridor.objects.all():
-        das_delivery_option_template(
+        client.das_delivery_option_template(
             corridor.destination_country, corridor.destination_currency, corridor.template_code
         )

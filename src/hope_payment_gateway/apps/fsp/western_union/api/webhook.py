@@ -11,17 +11,11 @@ from viewflow.fsm import TransitionNotAllowed
 from zeep.exceptions import ValidationError
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
-from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.endpoints.exceptions import InvalidRequest
+from hope_payment_gateway.apps.fsp.western_union.api import CANCEL, PURGED, REFUND, REJECT_APN, SUCCESS, SUCCESS_APN
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
+from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidRequest
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
-
-SUCCESS = "BIS003"
-CANCEL = "BIS005"
-REFUND = "BIS006"
-PURGED = "BIS016"
-REJECT_APN = "BIS011"
-SUCCESS_APN = "BIS012"
 
 
 class WesternUnionApi(APIView):
@@ -143,6 +137,6 @@ class NisNotificationXMLView(XMLViewMixin, NisNotificationView):
 
     @staticmethod
     def prepare_response(payload):
-        client = WesternUnionClient("NisNotification.wsdl")
-        _, data = client.prepare("NotifServiceReply", payload)
+        client = WesternUnionClient()
+        _, data = client.prepare(client.notification_client, "NotifServiceReply", payload)
         return data

@@ -2,22 +2,20 @@ import pytest
 import responses
 from constance.test import override_config
 
-from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import create_validation_payload
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 
 
 def test_client_no_service():
-    client = WesternUnionClient("Search_Service_H2HServiceService.wsdl")
-    resp = client.response_context("WrongOne", dict)
-
+    client = WesternUnionClient()
+    resp = client.response_context(client.search_client, "WrongOne", dict)
     assert resp["title"] == "Service has no operation 'WrongOne'"
     assert resp["code"] == 500
 
 
 def test_client_invalid():
     payload = {"i am": "invalid"}
-    client = WesternUnionClient("Search_Service_H2HServiceService.wsdl")
-    resp = client.response_context("Search", payload)
+    client = WesternUnionClient()
+    resp = client.response_context(client.search_client, "Search", payload)
 
     assert resp["title"] == "Invalid Payload"
     assert resp["code"] == 400
@@ -43,9 +41,9 @@ def test_client_error(wu):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = create_validation_payload(payload)
-    client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
-    resp = client.response_context("sendmoneyValidation", payload)
+    payload = WesternUnionClient.create_validation_payload(payload)
+    client = WesternUnionClient()
+    resp = client.response_context(client.quote_client, "sendmoneyValidation", payload)
 
     assert resp["title"] == "business exception [xrsi:error-reply]"
     assert resp["code"] == 400
@@ -72,10 +70,9 @@ def test_client_non_std_error(wu):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = create_validation_payload(payload)
-    client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
-    resp = client.response_context("sendmoneyValidation", payload)
-
+    payload = WesternUnionClient.create_validation_payload(payload)
+    client = WesternUnionClient()
+    resp = client.response_context(client.quote_client, "sendmoneyValidation", payload)
     assert resp["title"] == "business exception [xrsi:error-reply]"
     assert resp["code"] == 400
     assert resp["error"] == "generic error"

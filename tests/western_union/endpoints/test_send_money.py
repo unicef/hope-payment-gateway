@@ -3,11 +3,7 @@ import responses
 from constance.test import override_config
 from factories import CorridorFactory, PaymentRecordFactory
 
-from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
-    create_validation_payload,
-    send_money,
-    send_money_validation,
-)
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 
@@ -32,8 +28,9 @@ def test_send_money_validation(django_app, admin_user, wu):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = create_validation_payload(payload)
-    resp = send_money_validation(payload)
+    payload = WesternUnionClient.create_validation_payload(payload)
+    client = WesternUnionClient()
+    resp = client.send_money_validation(payload)
     assert (resp["title"], resp["code"]) == ("sendmoneyValidation", 200)
 
 
@@ -57,8 +54,9 @@ def test_send_money_validation_ko(django_app, admin_user, wu):
         "amount": 1200,
         "delivery_services_code": "000",
     }
-    payload = create_validation_payload(payload)
-    resp = send_money_validation(payload)
+    payload = WesternUnionClient.create_validation_payload(payload)
+    client = WesternUnionClient()
+    resp = client.send_money_validation(payload)
     assert (resp["title"], resp["code"]) == ("business exception [xrsi:error-reply]", 400)
 
 
@@ -86,7 +84,7 @@ def test_send_complete(django_app, admin_user, wu):
         "delivery_services_code": "000",
     }
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    send_money(payload)
+    WesternUnionClient().create_transaction(payload)
     pr.refresh_from_db()
     assert pr.success
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
@@ -131,7 +129,7 @@ def test_send_complete_corridor(django_app, admin_user, wu):
         template=corridor_template,
     )
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    send_money(payload)
+    WesternUnionClient().create_transaction(payload)
     pr.refresh_from_db()
     assert pr.success
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
@@ -140,9 +138,6 @@ def test_send_complete_corridor(django_app, admin_user, wu):
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
-    # responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
-    # responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
-    # responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
     record_code = "Y3snz233UkGt1Gw1"
     payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
@@ -163,7 +158,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
         "reason_for_sending": "P012",
     }
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    send_money(payload)
+    WesternUnionClient().create_transaction(payload)
     pr.refresh_from_db()
     assert not pr.success
     assert pr.status == PaymentRecordState.ERROR
@@ -229,7 +224,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         template=corridor_template,
     )
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    send_money(payload)
+    WesternUnionClient().create_transaction(payload)
     pr.refresh_from_db()
     assert not pr.success
     assert pr.status == PaymentRecordState.ERROR

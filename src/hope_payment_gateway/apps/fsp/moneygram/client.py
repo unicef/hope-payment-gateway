@@ -14,36 +14,23 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.models import Singleton
+from hope_payment_gateway.apps.fsp.client import FSPClient
+from hope_payment_gateway.apps.fsp.moneygram import (
+    AVAILABLE,
+    CLOSED,
+    DELIVERED,
+    IN_TRANSIT,
+    RECEIVED,
+    REFUNDED,
+    REJECTED,
+    SENT,
+    UNFUNDED,
+)
 from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord
 
 logger = logging.getLogger(__name__)
-
-
-MONEYGRAM_DM_MAPPING = {
-    "WILL_CALL": "WILL_CALL",
-    "DIRECT_TO_ACCT": "DIRECT_TO_ACCT",  # wallet / mobile money
-    "BANK_DEPOSIT": "DIRECT_TO_ACCT",  # bank account
-    "WILLCALL_TO": "WILLCALL_TO",
-    "2_HOUR": "2_HOUR",
-    "OVERNIGHT": "OVERNIGHT",
-    "OVERNIGHT2ANY": "OVERNIGHT2ANY",
-    "24_HOUR": "24_HOUR",
-    "CARD_DEPOSIT": "CARD_DEPOSIT",
-    "HOME_DELIVERY": "HOME_DELIVERY",
-}
-
-UNFUNDED = "UNFUNDED"
-SENT = "SENT"
-AVAILABLE = "AVAILABLE"
-IN_TRANSIT = "IN TRANSIT"
-RECEIVED = "RECEIVED"
-DELIVERED = "DELIVERED"
-PROCESSING = "PROCESSING"
-REJECTED = "REJECTED"
-REFUNDED = "REFUNDED"
-CLOSED = "CLOSED"
 
 
 class PayloadMissingKey(Exception):
@@ -58,7 +45,7 @@ class ExpiredToken(Exception):
     pass
 
 
-class MoneyGramClient(metaclass=Singleton):
+class MoneyGramClient(FSPClient, metaclass=Singleton):
     token = None
     expires_in = None
     sender = None
@@ -198,6 +185,18 @@ class MoneyGramClient(metaclass=Singleton):
         status_transaction_id = str(uuid.uuid4())
         return self.perform_request(endpoint, status_transaction_id, payload)
 
+    def query_status(self, transaction_id, update):
+        """query MoneyGram to get information regarding the transaction status"""
+        response = self.status(transaction_id)
+        if update:
+            pr = PaymentRecord.objects.get(
+                fsp_code=transaction_id, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+            )
+            update_status(pr, response.data["transactionStatus"])
+            pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
+            pr.save()
+        return response
+
     def get_required_fields(self, base_payload):
         endpoint = "/reference-data/v1/transaction-fields-send"
         payload = self.get_basic_payload()
@@ -278,18 +277,6 @@ class MoneyGramClient(metaclass=Singleton):
             flow.store()
         except TransitionNotAllowed:
             response = Response({"errors": [{"error": "transition_not_allowed"}]}, status=HTTP_400_BAD_REQUEST)
-        return response
-
-    def query_status(self, transaction_id, update):
-        """query MoneyGram to get information regarding the transaction status"""
-        response = self.status(transaction_id)
-        if update:
-            pr = PaymentRecord.objects.get(
-                fsp_code=transaction_id, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
-            )
-            update_status(pr, response.data["transactionStatus"])
-            pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
-            pr.save()
         return response
 
     def refund(self, transaction_id, base_payload):

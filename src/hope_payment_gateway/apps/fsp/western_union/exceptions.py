@@ -6,6 +6,10 @@ class PayloadException(BaseException):
     pass
 
 
+class InvalidRequest(BaseException):
+    pass
+
+
 class PayloadMissingKey(PayloadException):
     pass
 
