@@ -43,7 +43,7 @@ RUN --mount=type=cache,target=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
         --frozen
-RUN pip install uwsgi
+RUN uv pip install . uwsgi
 
 WORKDIR /app
 COPY .. ./
@@ -69,11 +69,13 @@ ENV PATH=$PATH:/app/.venv/bin/ \
 RUN pip install uv uwsgi
 
 RUN --mount=type=cache,target=/root/.uv-cache \
+    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
+    --mount=type=bind,source=./src/hope_api_auth,target=/app/src/hope_api_auth \
     uv sync --cache-dir=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
-        --frozen
-RUN pip install uwsgi
+        --frozen \
+    uv pip install .
 
 COPY --chown=hpg:hpg .. ./
 COPY --chown=hpg:hpg --from=builder /app /app

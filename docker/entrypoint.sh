@@ -1,44 +1,45 @@
 #!/bin/bash
 
-set -eou pipefail
 
-production() {
-    uwsgi \
-        --http :8000 \
-        --master \
-        --module=hope_payment_gateway.config.wsgi \
-        --processes=2 \
-        --buffer-size=8192
-}
-
-if [ $# -eq 0 ]; then
-    production
-fi
+export MEDIA_ROOT="${MEDIA_ROOT:-/var/run/app/media}"
+export STATIC_ROOT="${STATIC_ROOT:-/var/run/app/static}"
+export UWSGI_PROCESSES="${UWSGI_PROCESSES:-"4"}"
+export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-hope_payment_gateway.config.settings}"
 
 case "$1" in
-    dev)
-        ./docker/wait-for-it.sh db:5432
-        django-admin upgrade
-        django-admin runserver 0.0.0.0:8000
-    ;;
-    tests)
-        ./docker/wait-for-it.sh db:5432
-        pytest --create-db
-    ;;
-    prd)
-        production
-    ;;
-    celery_worker)
-        export C_FORCE_ROOT=1
-        celery -A hope_payment_gateway.celery worker -l info
-    ;;
-    celery_beat)
-        celery -A hope_payment_gateway.celery beat -l info
-    ;;
-    celery_flower)
-        celery flower -A hope_payment_gateway.celery --address=0.0.0.0 --broker=$CELERY_BROKER_URL
-    ;;
-    *)
-        exec "$@"
-    ;;
+    run)
+      django-admin upgrade --with-check
+	    set -- tini -- "$@"
+	    MAPPING=""
+	    if [ "${STATIC_URL}" = "/static/" ]; then
+	      MAPPING="--static-map ${STATIC_URL}=${STATIC_ROOT}"
+	    fi
+      set -- tini -- "$@"
+	    set -- uwsgi --http :8000 \
+	          --module hope_payment_gateway.config.wsgi \
+	          --mimefile=/conf/mime.types \
+	          --uid hope \
+	          --gid unicef \
+            --buffer-size 8192 \
+            --http-buffer-size 8192 \
+	          $MAPPING
+	    ;;
+    upgrade)
+      django-admin upgrade --with-check
+      ;;
+    worker)
+      set -- tini -- "$@"
+      set -- gosu user:app celery -A hope_payment_gateway.config.celery worker -E --loglevel=ERROR --concurrency=4
+      ;;
+    beat)
+      set -- tini -- "$@"
+      set -- gosu user:app celery -A hope_payment_gateway.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      ;;
+    flower)
+      export DATABASE_URL="sqlite://:memory:"
+      set -- tini -- "$@"
+      set -- gosu user:app celery -A hope_payment_gateway.config.celery flower
+      ;;
 esac
+
+exec "$@"
