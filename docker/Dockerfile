@@ -1,16 +1,72 @@
-FROM python:3.12-slim-bookworm as base
+FROM python:3.12-slim-bookworm AS base_os
+ARG GOSU_VERSION=1.17
+ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
 
-RUN apt update \
-    && apt install --no-install-recommends -y \
-        gcc curl libgdal-dev \
-    && apt clean && rm -rf /var/lib/apt/lists/* \
-    && addgroup --system --gid 82 hpg \
-    && adduser \
-        --system --uid 82 \
-        --disabled-password --home /home/hpg \
-        --shell /sbin.nologin --group hpg --gecos hpg \
-    && mkdir -p /app /tmp /data /static \
-    && chown -R hpg:hpg /app /tmp /data /static
+
+RUN set -x \
+  && runtimeDeps=" \
+    libmagic1 \
+    libxml2 \
+  " \
+  && buildDeps=" \
+wget \
+" \
+  && apt-get update && apt-get install -y --no-install-recommends ${buildDeps} ${runtimeDeps} \
+  && rm -rf /var/lib/apt/lists/* \
+  && wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
+  && echo "$GOSU_SHA256 /usr/local/bin/gosu" | sha256sum --check --status \
+  && chmod +x /usr/local/bin/gosu \
+  && apt-get purge -y --auto-remove $buildDeps
+
+RUN groupadd --gid 1024 unicef \
+    && adduser --disabled-login --disabled-password --no-create-home --ingroup unicef -q hope
+
+
+# ------- builder -------
+FROM base_os AS builder
+RUN set -x \
+    && buildDeps="build-essential \
+cmake \
+curl \
+gcc \
+git \
+libfontconfig1 \
+libgconf-2-4 \
+libglib2.0-0 \
+libnss3 \
+libssl-dev \
+libxml2-dev  \
+python3-dev \
+zlib1g-dev  \
+" \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends $buildDeps \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gnupg wget curl unzip && \
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends google-chrome-stable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
+    CHROME_VERSION=$(google-chrome --product-version) && \
+    wget -q --continue -P /chromedriver "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip" && \
+    unzip /chromedriver/chromedriver* -d /usr/local/bin/ && \
+    rm -rf /chromedriver
+
+RUN pip install uv uwsgi
+
+# ------- tests -------
+FROM builder AS tests
+ARG BUILD_DATE
+ARG VERSION
+
+LABEL distro="tests"
+LABEL org.opencontainers.image.created="$BUILD_DATE"
+LABEL org.opencontainers.image.version="$VERSION"
 
 ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
     DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
@@ -18,69 +74,87 @@ ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=""\
     UWSGI_PROCESSES=4
-
 WORKDIR /app
 COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
 COPY src /app/src/
 
-
-FROM base as builder
-
-WORKDIR /app
-RUN pip install uv
-COPY ../uv.lock ../README.md ../MANIFEST.in ../pyproject.toml ./
-
 RUN --mount=type=cache,target=/root/.uv-cache \
     uv sync --cache-dir=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
         --frozen
 
-FROM builder AS dev
+
+
+# ------- production only deps-------
+FROM builder AS production
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
+    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=""\
+    UWSGI_PROCESSES=4
+WORKDIR /app
+COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
+COPY src /app/src/
 
 RUN --mount=type=cache,target=/root/.uv-cache \
     uv sync --cache-dir=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
-        --frozen
-RUN pip install uwsgi
-
-WORKDIR /app
-COPY .. ./
-
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+        --no-dev --no-editable --frozen --extra distribution
 
 
-FROM base AS prd
 
+# ------- dist -------
+FROM base_os AS dist
 ARG BUILD_DATE
 ARG VERSION
 ARG GIT_SHA
 ARG BRANCH
 
-ENV PATH=$PATH:/app/.venv/bin/ \
+ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
     BUILD_DATE=$BUILD_DATE \
     GIT_SHA=$GIT_SHA \
     VERSION=$VERSION \
     BRANCH=$BRANCH \
-    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings
+    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    STATIC_URL="/static/" \
+    PYTHONPATH=""\
+    PGSSLCERT="/tmp/postgresql.crt" \
+    UWSGI_PROCESSES=4
 
-RUN pip install uv uwsgi
+RUN <<EOF cat> /RELEASE
+{"version": "$VERSION",
+ "commit": "$GIT_SHA",
+ "date": "$BUILD_DATE",
+}
+EOF
+WORKDIR /app
+COPY docker/conf /conf/
+COPY docker/bin/* /usr/local/bin/
+COPY LICENSE.md README.md /
+COPY src /app/src/
+RUN rm -fr /app/src/
 
+
+COPY --chown=hope:unicef --from=production /app/.venv /app/.venv
+COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
 RUN --mount=type=cache,target=/root/.uv-cache \
-    uv sync --cache-dir=/root/.uv-cache \
-        --python=/usr/local/bin/python \
-        --python-preference=system \
-        --frozen
-RUN pip install uwsgi
+    --mount=type=bind,source=uv.lock,target=/app/uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
+    --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
+    --mount=type=bind,source=README.md,target=/app/README.md \
+    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
+    uv --cache-dir=/root/.uv-cache pip install --no-deps .
 
-COPY --chown=hpg:hpg .. ./
-COPY --chown=hpg:hpg --from=builder /app /app
-USER hpg
 
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 8000
+ENTRYPOINT exec docker-entrypoint.sh "$0" "$@"
+CMD ["run"]
+
 
 LABEL maintainer="hope@unicef.org"
 LABEL org.opencontainers.image.authors="hope@unicef.org"
