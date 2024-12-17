@@ -3,7 +3,7 @@ version: '3.8'
 services:
   backend:
     image: ${backend_image}
-    command: tests
+    command: pytest tests
     environment:
       - SECRET_KEY=secret-key
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
