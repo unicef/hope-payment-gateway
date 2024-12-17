@@ -1,38 +1,37 @@
-from io import StringIO
-
 import mkdocs_gen_files
-import requests
 
-MASK = """
-### {name}
+from hope_payment_gateway.config import env
 
-*Type:* `{type}`
-
-*Default:* `{default}`
-
------------
+MD_HEADER = """# Setttings
 
 """
-DEFAULTS = {}
-TABLE = []
-TABLE.append("# Settings")
-TABLE.append("")
-TERMS = {}
+MD_LINE = """
+### {key}
+_Default_: `{default_value}`
 
-index = "guide-adm/hope/settings.md"
+{help}
 
-FILE = "https://raw.githubusercontent.com/unicef/hope/develop/backend/hct_mis_api/config/env.py"
-res = requests.get(FILE)
-buf = StringIO(res.text)
-execCode = compile(res.text, "mulstring", "exec")
-exec(execCode)
-for k, v in DEFAULTS.items():
-    TERMS[k] = MASK.format(name=k, type=v[0], default=v[1])
+"""
+DEV_LINE = """
+__Suggested value for development__: `{develop_value}`
+"""
 
-for term in sorted(TERMS.keys()):
-    TABLE.append(TERMS[term])
-
-
-with mkdocs_gen_files.open(index, "w") as f:
-    f.writelines("\n".join(TABLE))
-mkdocs_gen_files.set_edit_path(index, "build_glossary.py")
+OUTFILE = "settings.md"
+with mkdocs_gen_files.open(OUTFILE, "w") as f:
+    f.write(MD_HEADER)
+    for entry, cfg in sorted(env.config.items()):
+        f.write(
+            MD_LINE.format(
+                key=entry, default_value=cfg["default"], develop_value=env.get_develop_value(entry), help=cfg["help"]
+            )
+        )
+        if env.get_develop_value(entry):
+            f.write(
+                DEV_LINE.format(
+                    key=entry,
+                    default_value=cfg["default"],
+                    develop_value=env.get_develop_value(entry),
+                    help=cfg["help"],
+                )
+            )
+mkdocs_gen_files.set_edit_path(OUTFILE, "get_settings.py")
