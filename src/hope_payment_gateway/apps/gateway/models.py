@@ -1,9 +1,13 @@
 import csv
 
+from django.apps import apps
 from django.db import models
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
+import sentry_sdk
 from adminactions.api import delimiters, quotes
+from django_celery_boost.models import CeleryTaskModel
 from model_utils.models import TimeStampedModel
 from strategy_field.fields import StrategyField
 
@@ -189,3 +193,62 @@ class ExportTemplate(models.Model):
 
     class Meta:
         unique_together = ("fsp", "config_key")
+
+
+class AsyncJob(CeleryTaskModel, models.Model):
+    class JobType(models.TextChoices):
+        STANDARD_TASK = "FQN", "Operation"
+        ADMIN_ACTION = "ACTION", "Action"
+        JOB_TASK = "TASK", "Task"
+
+    type = models.CharField(max_length=50, choices=JobType.choices)
+    instruction = models.ForeignKey(PaymentInstruction, related_name="jobs", on_delete=models.CASCADE)
+    config = models.JSONField(default=dict, blank=True)
+    action = models.CharField(max_length=500, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    sentry_id = models.CharField(max_length=255, blank=True, null=True)
+
+    celery_task_name = "hope_payment_gateway.apps.gateway.tasks.sync_job_task"
+
+    def __str__(self):
+        return self.description or f"Background Job #{self.pk}"
+
+    class Meta:
+        permissions = (("debug_job", "Can debug background jobs"),)
+
+    @property
+    def queue_position(self) -> int:
+        try:
+            return super().queue_position
+        except Exception:
+            return 0
+
+    @property
+    def started(self) -> str:
+        try:
+            return self.task_info["started_at"]
+        except Exception:
+            return "="
+
+    def execute(self):
+        sid = None
+        try:
+            func = import_string(self.action)
+            match self.type:
+                case AsyncJob.JobType.FQN:
+                    return func(**self.config)
+                case AsyncJob.JobType.ACTION:
+                    model = apps.get_model(self.config["model_name"])
+                    qs = model.objects.all()
+                    if self.config["pks"] != "__all__":
+                        qs = qs.filter(pk__in=self.config["pks"])
+                    return func(qs, **self.config.get("kwargs", {}))
+                case AsyncJob.JobType.TASK:
+                    return func(self)
+        except Exception as e:
+            sid = sentry_sdk.capture_exception(e)
+            raise e
+        finally:
+            if sid:
+                self.sentry_id = sid
+                self.save(update_fields=["sentry_id"])

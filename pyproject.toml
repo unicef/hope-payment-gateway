@@ -136,6 +136,7 @@ dependencies = [
     "paramiko",
     "phonenumbers",
     "psycopg[binary]",
+    "python-redis-lock[django]",
     "sentry-sdk",
     "social-auth-app-django",
     "social-auth-core",

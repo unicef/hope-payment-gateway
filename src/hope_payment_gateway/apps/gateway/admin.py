@@ -16,6 +16,7 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
+from django_celery_boost.admin import CeleryTaskModelAdmin
 from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
@@ -24,6 +25,7 @@ from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionC
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException
 from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
+    AsyncJob,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
@@ -430,3 +432,19 @@ class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("fsp", "config_key", "delivery_mechanism")
     search_fields = ("config_key", "delivery_mechanism__name")
+
+
+@admin.register(AsyncJob)
+class AsyncJobAdmin(AdminFiltersMixin, CeleryTaskModelAdmin, admin.ModelAdmin):
+    list_display = ("type", "verbose_status", "owner")
+    autocomplete_fields = ("owner", "content_type")
+    list_filter = (
+        ("owner", AutoCompleteFilter),
+        "type",
+        # FailedFilter,
+    )
+
+    def get_readonly_fields(self, request: "HttpRequest", obj: "Optional[AsyncJob]" = None):
+        if obj:
+            return ("owner", "local_status", "type", "action", "sentry_id")
+        return super().get_readonly_fields(request, obj)
