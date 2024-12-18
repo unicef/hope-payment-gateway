@@ -79,6 +79,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.wu_prepare_payload,
             self.wu_send_money_validation,
             self.wu_send_money,
+            self.wu_status,
+            self.wu_status_update,
             self.wu_search_request,
             self.wu_cancel,
         ]
@@ -126,6 +128,26 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         else:
             loglevel = messages.SUCCESS if log.success else messages.ERROR
             messages.add_message(request, loglevel, log.message)
+
+    @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Check Status")
+    def wu_status(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        obj = PaymentRecord.objects.get(pk=pk)
+        if mtcn := obj.extra_data.get("mtcn", None):
+            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+            context.update(WesternUnionClient().query_status(obj.fsp_code, False))
+            return TemplateResponse(request, "request.html", context)
+        messages.warning(request, "Missing MTCN")
+
+    @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Status Update")
+    def wu_status_update(self, request, pk) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        obj = PaymentRecord.objects.get(pk=pk)
+        if mtcn := obj.extra_data.get("mtcn", None):
+            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+            context.update(WesternUnionClient().query_status(obj.fsp_code, True))
+            return TemplateResponse(request, "request.html", context)
+        messages.warning(request, "Missing MTCN")
 
     @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Search Request")
     def wu_search_request(self, request, pk) -> TemplateResponse:
