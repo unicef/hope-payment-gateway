@@ -1,20 +1,21 @@
 FROM python:3.12-slim-bookworm AS base_os
-ARG GOSU_VERSION=1.17
-ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
+#ARG GOSU_VERSION=1.17
+#ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
 
 
 RUN set -x \
   && runtimeDeps=" \
     libmagic1 \
     libxml2 \
+    golang-1.21-go \
   " \
   && buildDeps=" \
 wget \
 " \
   && apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends ${buildDeps} ${runtimeDeps} \
   && rm -rf /var/lib/apt/lists/* \
-  && wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
-  && echo "$GOSU_SHA256 /usr/local/bin/gosu" | sha256sum --check --status \
+#  && wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
+#  && echo "$GOSU_SHA256 /usr/local/bin/gosu" | sha256sum --check --status \
   && chmod +x /usr/local/bin/gosu \
   && apt-get purge -y --auto-remove $buildDeps
 
