@@ -1,0 +1,25 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '<?xml version="1.0" encoding="UTF-8"?>
+
+      <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"><soapenv:Body><xrsi:pay-status-inquiry-reply
+      xmlns:xrsi="http://www.westernunion.com/schema/xrsi"><payment_transactions><payment_transaction><sender><name
+      name_type="C"><business_name>UNICEF</business_name></name></sender><receiver><name
+      name_type="D"><first_name>CONTE</first_name><last_name>ALBERTO</last_name></name></receiver><financials><originators_principal_amount>100000</originators_principal_amount></financials><payment_details><originating_country_currency><iso_code><country_code>SD</country_code><currency_code>SDG</currency_code></iso_code></originating_country_currency></payment_details><filing_date>12/18/24
+      </filing_date><filing_time>04:41:18</filing_time><money_transfer_key>1048645159</money_transfer_key><pay_status_description>PAID</pay_status_description></payment_transaction></payment_transactions><foreign_remote_system><identifier>IDENTIFIER</identifier><reference_no>REFNO</reference_no><counter_id>COUNTER</counter_id></foreign_remote_system><number_matches>1</number_matches><current_page_number>1</current_page_number><last_page_number>1</last_page_number></xrsi:pay-status-inquiry-reply></soapenv:Body></soapenv:Envelope>'
+    content_type: text/plain
+    headers:
+      Content-Security-Policy: 'frame-ancestors *;script-src ''self'' ''unsafe-inline''
+        ''unsafe-eval'' ; style-src ''self'' ''unsafe-inline'' ; img-src ''self''
+        data: ; connect-src ''self'' wss:;'
+      Transfer-Encoding: chunked
+      X-Backside-Transport: OK OK
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      X-Global-Transaction-ID: 4bc148eb6762b637012641b4
+      X-XSS-Protection: 1; mode=block
+    method: POST
+    status: 200
+    url: https://wugateway2pi.westernunion.com/PayStatus_Service_H2H

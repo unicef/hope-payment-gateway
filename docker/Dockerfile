@@ -148,6 +148,7 @@ RUN --mount=type=cache,target=/root/.uv-cache \
     --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
     --mount=type=bind,source=README.md,target=/app/README.md \
     --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
+    --mount=type=bind,source=./src/hope_api_auth,target=/app/src/hope_api_auth \
     uv --cache-dir=/root/.uv-cache pip install --no-deps .
 
 

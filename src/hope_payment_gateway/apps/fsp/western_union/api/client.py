@@ -52,6 +52,10 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         self.quote_client = Client(quote_wsdl, transport=transport, settings=settings)
         self.quote_client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
+        status_wsdl = str(Path(__file__).parent / "wsdl" / "PayStatus_Service_H2HService.wsdl")
+        self.status_client = Client(status_wsdl, transport=transport, settings=settings)
+        self.status_client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
+
         transaction_wsdl = str(Path(__file__).parent / "wsdl" / "SendMoneyStore_Service_H2HService.wsdl")
         self.transaction_client = Client(transaction_wsdl, transport=transport, settings=settings)
         self.transaction_client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
@@ -314,8 +318,30 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         return pr
 
     def query_status(self, transaction_id, update):
-        # western union does not have an API to address this
-        pass
+        pr = PaymentRecord.objects.get(
+            fsp_code=transaction_id, parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+        )
+        wu_env = config.WESTERN_UNION_WHITELISTED_ENV
+        frm = pr.extra_data.get("foreign_remote_system", None)
+        mtcn = pr.extra_data.get("mtcn", None)
+        payload = {
+            "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
+            "mtcn": mtcn,
+            "foreign_remote_system": frm,
+        }
+        response = self.response_context(self.status_client, "PayStatus", payload, f"SOAP_HTTP_Port_{wu_env}")
+        if update:
+            wu_status = response["content"]["payment_transactions"]["payment_transaction"][0]["pay_status_description"]
+            flow = PaymentRecordFlow(pr)
+            status = {"PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY}.get(wu_status, None)
+            if pr.status != status:
+                if status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
+                    pr.message = "Payment Record update by manual sync"
+                    pr.success = True
+                    flow.confirm()
+                pr.save()
+
+        return response
 
     def search_request(self, frm, mtcn):
         payload = FinancialServiceProvider.objects.get(
