@@ -24,3 +24,4 @@ src/hope_payment_gateway/static
 .cache
 
 /__pypackages__
+/docker/Makefile
