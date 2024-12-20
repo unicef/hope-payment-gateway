@@ -118,7 +118,7 @@ ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     STATIC_URL="/static/" \
-    PYTHONPATH="/app/.venv/lib/python3.12/site-packages/"\
+    PYTHONPATH="/app/extra_path/"\
     PGSSLCERT="/tmp/postgresql.crt" \
     DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
     UWSGI_PROCESSES=4
@@ -134,6 +134,7 @@ COPY docker/conf /conf/
 COPY docker/bin/* /usr/local/bin/
 COPY LICENSE.md README.md /
 COPY src /app/src/
+COPY src/hope_api_auth /app/extra_path/hope_api_auth/
 
 
 COPY --chown=hope:unicef --from=production /app/.venv /app/.venv
@@ -142,11 +143,11 @@ RUN --mount=type=cache,target=/root/.uv-cache \
     --mount=type=bind,source=uv.lock,target=/app/uv.lock \
     --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
     --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
-    --mount=type=bind,source=README.md,target=/app/README.md
+    --mount=type=bind,source=README.md,target=/app/README.md \
 #    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
 #    --mount=type=bind,source=./src/hope_api_auth,target=/app/src/hope_api_auth \
-#    uv --cache-dir=/root/.uv-cache pip install --no-deps .
-
+    uv --cache-dir=/root/.uv-cache pip install --no-deps . \
+    && rm -rf /app/src
 
 EXPOSE 8000
 ENTRYPOINT exec docker-entrypoint.sh "$0" "$@"

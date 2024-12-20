@@ -17,6 +17,7 @@ case "$1" in
       set -- tini -- "$@"
 	    set -- uwsgi --http :8000 \
 	          --module hope_payment_gateway.config.wsgi \
+	          -H /app/.venv \
 	          --mimefile=/conf/mime.types \
 	          --uid hope \
 	          --gid unicef \
