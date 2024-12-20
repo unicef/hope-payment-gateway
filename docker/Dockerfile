@@ -118,8 +118,9 @@ ENV PATH=/app/.venv/bin:/usr/local/bin/:/usr/bin:/bin \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     STATIC_URL="/static/" \
-    PYTHONPATH=""\
+    PYTHONPATH="/app/.venv/lib/python3.12/site-packages/"\
     PGSSLCERT="/tmp/postgresql.crt" \
+    DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
     UWSGI_PROCESSES=4
 
 RUN <<EOF cat> /RELEASE
@@ -141,10 +142,10 @@ RUN --mount=type=cache,target=/root/.uv-cache \
     --mount=type=bind,source=uv.lock,target=/app/uv.lock \
     --mount=type=bind,source=pyproject.toml,target=/app/pyproject.toml \
     --mount=type=bind,source=MANIFEST.in,target=/app/MANIFEST.in \
-    --mount=type=bind,source=README.md,target=/app/README.md \
-    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
-    --mount=type=bind,source=./src/hope_api_auth,target=/app/src/hope_api_auth \
-    uv --cache-dir=/root/.uv-cache  pip install --link-mode=copy --no-deps .
+    --mount=type=bind,source=README.md,target=/app/README.md
+#    --mount=type=bind,source=./src/hope_payment_gateway,target=/app/src/hope_payment_gateway \
+#    --mount=type=bind,source=./src/hope_api_auth,target=/app/src/hope_api_auth \
+#    uv --cache-dir=/root/.uv-cache pip install --no-deps .
 
 
 EXPOSE 8000
@@ -154,9 +155,9 @@ CMD ["run"]
 
 LABEL maintainer="hope@unicef.org"
 LABEL org.opencontainers.image.authors="hope@unicef.org"
-LABEL org.opencontainers.image.description="Hope Country Workspace"
-LABEL org.opencontainers.image.documentation="https://github.com/unicef/hope-country-workspace/"
-LABEL org.opencontainers.image.title="Hope Country Workspace"
+LABEL org.opencontainers.image.description="Hope Payment Gateway"
+LABEL org.opencontainers.image.documentation="https://github.com/unicef/hope-payment-gateway/"
+LABEL org.opencontainers.image.title="Hope Payment Gateway"
 LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GIT_SHA:-master}/LICENSE"
 LABEL org.opencontainers.image.revision=$GIT_SHA
 LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GIT_SHA:-master}/"
