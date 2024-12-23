@@ -1,6 +1,6 @@
 copyright: Copyright &copy; 2020-2025 UNICEF
 dev_addr: 127.0.0.1:8001
-docs_dir: docs
+docs_dir: docs/src/
 edit_uri: 'blob/main/docs/'
 repo_url: https://github.com/unicef/hope-payment-gateway
 site_author: HOPE Team
@@ -163,6 +163,9 @@ plugins:
       tags_file: tags.md
   - panzoom:
       full_screen: true
+
+watch:
+  - src/
 
 hooks:
   - docs/_hooks/hooks.py
