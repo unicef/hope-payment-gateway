@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     "adminactions",
     "adminfilters",
     "adminfilters.depot",
+    "smart_env",
     "smart_admin.apps.SmartTemplateConfig",
     "import_export",
     "constance",
