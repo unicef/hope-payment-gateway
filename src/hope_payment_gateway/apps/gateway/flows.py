@@ -1,14 +1,17 @@
 from viewflow import fsm
 from viewflow.fsm import State
 
-from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, PaymentRecordState
+from hope_payment_gateway.apps.gateway.models import (
+    PaymentInstructionState,
+    PaymentRecordState,
+)
 
 
 class PaymentInstructionFlow:
     state = fsm.State(PaymentInstructionState, default=PaymentInstructionState.DRAFT)
 
-    def __init__(self, object):
-        self.object = object
+    def __init__(self, obj):
+        self.object = obj
 
     @state.setter()
     def _set_object_status(self, value):
@@ -68,7 +71,9 @@ class PaymentInstructionFlow:
         pass
 
     @state.transition(
-        source=State.ANY, target=PaymentInstructionState.ABORTED, permission="western_union.change_paymentinstruction"
+        source=State.ANY,
+        target=PaymentInstructionState.ABORTED,
+        permission="western_union.change_paymentinstruction",
     )
     def abort(self):
         pass
@@ -77,8 +82,8 @@ class PaymentInstructionFlow:
 class PaymentRecordFlow:
     state = fsm.State(PaymentRecordState, default=PaymentRecordState.PENDING)
 
-    def __init__(self, object):
-        self.object = object
+    def __init__(self, obj):
+        self.object = obj
 
     @state.setter()
     def _set_object_status(self, value):
@@ -125,13 +130,17 @@ class PaymentRecordFlow:
         pass
 
     @state.transition(
-        source=State.ANY, target=PaymentRecordState.CANCELLED, permission="western_union.change_paymentrecordlog"
+        source=State.ANY,
+        target=PaymentRecordState.CANCELLED,
+        permission="western_union.change_paymentrecordlog",
     )
     def cancel(self):
         pass
 
     @state.transition(
-        source=State.ANY, target=PaymentRecordState.ERROR, permission="western_union.change_paymentrecordlog"
+        source=State.ANY,
+        target=PaymentRecordState.ERROR,
+        permission="western_union.change_paymentrecordlog",
     )
     def fail(self):
         pass

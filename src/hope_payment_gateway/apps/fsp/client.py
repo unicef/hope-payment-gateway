@@ -1,5 +1,4 @@
 class FSPClient:
-
     def create_transaction(self, base_payload, update):
         raise NotImplementedError
 

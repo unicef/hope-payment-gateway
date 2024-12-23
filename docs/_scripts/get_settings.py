@@ -22,7 +22,10 @@ with mkdocs_gen_files.open(OUTFILE, "w") as f:
     for entry, cfg in sorted(env.config.items()):
         f.write(
             MD_LINE.format(
-                key=entry, default_value=cfg["default"], develop_value=env.get_develop_value(entry), help=cfg["help"]
+                key=entry,
+                default_value=cfg["default"],
+                develop_value=env.get_develop_value(entry),
+                help=cfg["help"],
             )
         )
         if env.get_develop_value(entry):

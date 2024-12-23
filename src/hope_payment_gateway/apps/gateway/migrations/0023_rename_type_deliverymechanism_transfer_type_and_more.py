@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0022_deliverymechanism_required_fields_and_more"),
     ]
@@ -24,7 +23,9 @@ class Migration(migrations.Migration):
             model_name="deliverymechanism",
             name="requirements",
             field=models.JSONField(
-                blank=True, default=hope_payment_gateway.apps.gateway.models.default_requirements, null=True
+                blank=True,
+                default=hope_payment_gateway.apps.gateway.models.default_requirements,
+                null=True,
             ),
         ),
     ]

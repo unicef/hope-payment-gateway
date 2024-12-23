@@ -38,7 +38,6 @@ class PayloadMixin:
 
 
 class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
-
     class Meta:
         model = DeliveryMechanism
         fields = ("id", "code", "name", "transfer_type", "requirements")

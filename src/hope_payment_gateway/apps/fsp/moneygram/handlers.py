@@ -1,11 +1,13 @@
 from constance import config as constance_config
 
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, FinancialServiceProviderConfig
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    FinancialServiceProviderConfig,
+)
 from hope_payment_gateway.apps.gateway.registry import FSPProcessor
 
 
 class MoneyGramHandler(FSPProcessor):
-
     @staticmethod
     def get_configuration(config_key, delivery_mechanism):
         vendor_number = constance_config.MONEYGRAM_VENDOR_NUMBER

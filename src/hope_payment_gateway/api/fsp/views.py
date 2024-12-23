@@ -76,7 +76,6 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["external_code", "remote_id"]
 
     def perform_create(self, serializer):
-
         try:
             owner = get_user_model().objects.get(apitoken=self.request.auth)
             system = System.objects.get(owner=owner)
@@ -121,7 +120,11 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         obj = self.get_object()
         if obj.status != PaymentInstructionState.OPEN:
             return Response(
-                {"message": "Cannot add records to a not Open Plan", "status": obj.status}, status=HTTP_400_BAD_REQUEST
+                {
+                    "message": "Cannot add records to a not Open Plan",
+                    "status": obj.status,
+                },
+                status=HTTP_400_BAD_REQUEST,
             )
         data = request.data.copy()
         for record in data:
@@ -130,22 +133,29 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         if serializer.is_valid():
             totals = serializer.save()
             return Response(
-                {"remote_id": obj.remote_id, "records": {item.record_code: item.remote_id for item in totals}},
+                {
+                    "remote_id": obj.remote_id,
+                    "records": {item.record_code: item.remote_id for item in totals},
+                },
                 status=HTTP_201_CREATED,
             )
         error_dict = {
             index: serializer.errors[index] for index in range(len(serializer.errors)) if serializer.errors[index]
         }
-        return Response({"remote_id": obj.remote_id, "errors": error_dict}, status=HTTP_400_BAD_REQUEST)
+        return Response(
+            {"remote_id": obj.remote_id, "errors": error_dict},
+            status=HTTP_400_BAD_REQUEST,
+        )
 
     @action(detail=True)  # , methods=["post"])
     def download(self, request, remote_id=None):
-
         obj = self.get_object()
         try:
             dm = DeliveryMechanism.objects.get(code=obj.extra.get("delivery_mechanism", None))
             export = ExportTemplate.objects.get(
-                fsp=obj.fsp, config_key=obj.extra.get("config_key", None), delivery_mechanism=dm
+                fsp=obj.fsp,
+                config_key=obj.extra.get("config_key", None),
+                delivery_mechanism=dm,
             )
             queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
 

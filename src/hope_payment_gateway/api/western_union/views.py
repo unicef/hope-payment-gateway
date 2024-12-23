@@ -5,13 +5,19 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from hope_payment_gateway.api.western_union.filters import CorridorFilter, ServiceProviderCodeFilter
+from hope_payment_gateway.api.western_union.filters import (
+    CorridorFilter,
+    ServiceProviderCodeFilter,
+)
 from hope_payment_gateway.api.western_union.serializers import (
     CorridorSerializer,
     FileSerializer,
     ServiceProviderCodeSerializer,
 )
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.fsp.western_union.models import (
+    Corridor,
+    ServiceProviderCode,
+)
 from hope_payment_gateway.libs.ftp import FTPClient
 
 
@@ -38,7 +44,7 @@ class ServiceProviderCodeViewSet(ProtectedMixin, ModelViewSet):
 
 class FileViewset(ViewSet):
     serializer_class = FileSerializer
-    filter_backends = list()
+    filter_backends = list
     lookup_field = "filename"
     lookup_value_regex = r".*\..*"
     permission_classes = (IsAdminUser,)

@@ -106,7 +106,7 @@ class Command(BaseCommand):
         self.stdout.write("Unable to start...", style_func=self.style.ERROR)
         sys.exit(1)
 
-    def handle(self, *args: Any, **options: Any) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:  #noqa
         from hope_payment_gateway.apps.core.models import User
 
         self.get_options(options)

@@ -1,7 +1,7 @@
 import binascii
 import os
 from enum import Enum, auto, unique
-from typing import Any, List, Tuple
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -15,7 +15,7 @@ from .fields import ChoiceArrayField
 
 @unique
 class Grant(Enum):
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> Any:
+    def _generate_next_value_(name: str, start: int, count: int, last_values: list[Any]) -> Any:
         return name
 
     API_READ_ONLY = auto()
@@ -23,7 +23,7 @@ class Grant(Enum):
     API_PLAN_MANAGE = auto()
 
     @classmethod
-    def choices(cls) -> Tuple[Tuple[Any, Any], ...]:
+    def choices(cls) -> tuple[tuple[Any, Any], ...]:
         return tuple((i.value, i.value) for i in cls)
 
 
@@ -35,9 +35,10 @@ class AbstractAPIToken(models.Model):
     valid_from = models.DateField(default=timezone.now)
     valid_to = models.DateField(blank=True, null=True)
 
-    grants = ChoiceArrayField(
-        models.CharField(choices=Grant.choices(), max_length=255),  # permessions
-    )
+    grants = ChoiceArrayField(models.CharField(choices=Grant.choices(), max_length=255))
+
+    class Meta:
+        abstract = True
 
     def __str__(self) -> str:
         return f"Token #{self.pk}"
@@ -50,9 +51,6 @@ class AbstractAPIToken(models.Model):
     @classmethod
     def generate_key(cls) -> str:
         return binascii.hexlify(os.urandom(20)).decode()
-
-    class Meta:
-        abstract = True
 
 
 class APIToken(AbstractAPIToken):

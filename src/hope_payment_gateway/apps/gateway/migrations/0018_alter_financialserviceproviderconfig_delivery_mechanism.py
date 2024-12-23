@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0017_alter_paymentrecord_payout_amount"),
     ]
@@ -15,7 +14,9 @@ class Migration(migrations.Migration):
             model_name="financialserviceproviderconfig",
             name="delivery_mechanism",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, related_name="fsp", to="gateway.deliverymechanism"
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="fsp",
+                to="gateway.deliverymechanism",
             ),
         ),
     ]

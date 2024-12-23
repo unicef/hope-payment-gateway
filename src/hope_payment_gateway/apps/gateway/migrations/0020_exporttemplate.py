@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0019_alter_financialserviceproviderconfig_key"),
     ]
@@ -15,20 +14,51 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="ExportTemplate",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("query", models.TextField()),
                 ("config_key", models.CharField(max_length=32)),
                 ("strategy", strategy_field.fields.StrategyField()),
                 ("header", models.BooleanField(default=True)),
-                ("delimiter", models.CharField(choices=[(",", ","), (";", ";"), ("|", "|"), (":", ":")], default=",")),
-                ("quotechar", models.CharField(choices=[("'", "'"), ('"', '"'), ("`", "`")], default="'")),
+                (
+                    "delimiter",
+                    models.CharField(
+                        choices=[(",", ","), (";", ";"), ("|", "|"), (":", ":")],
+                        default=",",
+                    ),
+                ),
+                (
+                    "quotechar",
+                    models.CharField(choices=[("'", "'"), ('"', '"'), ("`", "`")], default="'"),
+                ),
                 (
                     "quoting",
                     models.IntegerField(
-                        choices=[(1, "All"), (0, "Minimal"), (3, "None"), (2, "Non Numeric")], default=1
+                        choices=[
+                            (1, "All"),
+                            (0, "Minimal"),
+                            (3, "None"),
+                            (2, "Non Numeric"),
+                        ],
+                        default=1,
                     ),
                 ),
-                ("escapechar", models.CharField(blank=True, choices=[("", ""), ("\\", "\\")], default="", null=True)),
+                (
+                    "escapechar",
+                    models.CharField(
+                        blank=True,
+                        choices=[("", ""), ("\\", "\\")],
+                        default="",
+                        null=True,
+                    ),
+                ),
                 (
                     "delivery_mechanism",
                     models.ForeignKey(
@@ -40,7 +70,8 @@ class Migration(migrations.Migration):
                 (
                     "fsp",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="gateway.financialserviceprovider"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="gateway.financialserviceprovider",
                     ),
                 ),
             ],

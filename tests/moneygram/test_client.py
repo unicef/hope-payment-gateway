@@ -5,7 +5,11 @@ from factories import PaymentRecordFactory
 from responses import _recorder  # noqa
 
 from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED, REFUNDED, SENT
-from hope_payment_gateway.apps.fsp.moneygram.client import InvalidToken, MoneyGramClient, update_status
+from hope_payment_gateway.apps.fsp.moneygram.client import (
+    InvalidToken,
+    MoneyGramClient,
+    update_status,
+)
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 # @_recorder.record(file_path="tests/moneygram/responses/token.yaml")
@@ -15,7 +19,6 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_token_ko(mg):
-    # responses.get("https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials")
     responses._add_from_file(file_path="tests/moneygram/responses/token_ko.yaml")
     with pytest.raises(InvalidToken):
         MoneyGramClient()
@@ -25,7 +28,6 @@ def test_get_token_ko(mg):
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_token(mg):
-    # responses.get("https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials")
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
     assert client.token == "HMfWVGb6AYGmx3B07JSXsfIZQw6Z"
@@ -106,7 +108,11 @@ def test_prepare_transactions(mg):
             },
             "beneficiary": {
                 "consumer": {
-                    "name": {"firstName": "Alen", "middleName": "", "lastName": "Smith"},
+                    "name": {
+                        "firstName": "Alen",
+                        "middleName": "",
+                        "lastName": "Smith",
+                    },
                     "mobilePhone": {"number": "N/A", "countryDialCode": None},
                 }
             },
@@ -493,7 +499,9 @@ def test_get_required_fields(mg):
                 "fieldMin": "0",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z0-9 \\u00C0-\\u017F\\#\\/\\.\\\"\\'\\,\\(\\)\\-])*$",
-                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. Minimum 5 characters with at least one alpha character. No repeated special characters ( #### or ////). PO Box not allowed",
+                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. "
+                                "Minimum 5 characters with at least one alpha character. "
+                                "No repeated special characters ( #### or ////). PO Box not allowed",
             },
             {
                 "field": "receiver.address.line2",
@@ -544,7 +552,8 @@ def test_get_required_fields(mg):
                 "displayOrder": "18",
                 "fieldMin": "5",
                 "fieldMax": "14",
-                "helpTextLong": "Only numeric characters are allowed. Cannot contain a string of repeating numeric characters (example 8888888)",
+                "helpTextLong": "Only numeric characters are allowed. "
+                                "Cannot contain a string of repeating numeric characters (example 8888888)",
             },
             {
                 "field": "receiver.name.firstName",
@@ -555,7 +564,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "receiver.name.lastName",
@@ -566,7 +576,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "receiver.name.middleName",
@@ -577,7 +588,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "0",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "receiver.name.secondLastName",
@@ -588,7 +600,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {"field": "receiverSameAsSender", "dataType": "boolean", "required": False},
             {
@@ -655,7 +668,9 @@ def test_get_required_fields(mg):
                 "fieldMin": "0",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z0-9 \\u00C0-\\u017F\\#\\/\\.\\\"\\'\\,\\(\\)\\-])*$",
-                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. Minimum 5 characters with at least one alpha character. No repeated special characters ( #### or ////). PO Box not allowed",
+                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. "
+                                "Minimum 5 characters with at least one alpha character. "
+                                "No repeated special characters ( #### or ////). PO Box not allowed",
             },
             {
                 "field": "sender.address.line2",
@@ -695,9 +710,14 @@ def test_get_required_fields(mg):
                 "fieldLabel": "Email",
                 "displayOrder": "20",
                 "fieldMax": "255",
-                "regEx": "^(([\\\\.a-zA-Z0-9_\\\\-])+@([a-zA-Z0-9_\\\\-])+([a-zA-Z0-9_\\\\-])+[\\\\.]{1}([a-zA-Z0-9_\\\\-])+[\\\\.]?([a-zA-Z0-9_\\\\-])+)*$",
+                "regEx": "^(([\\\\.a-zA-Z0-9_\\\\-])+@([a-zA-Z0-9_\\\\-])+([a-zA-Z0-9_\\\\-])+"
+                         "[\\\\.]{1}([a-zA-Z0-9_\\\\-])+[\\\\.]?([a-zA-Z0-9_\\\\-])+)*$",
             },
-            {"field": "sender.enrolInRewards", "dataType": "boolean", "required": False},
+            {
+                "field": "sender.enrolInRewards",
+                "dataType": "boolean",
+                "required": False,
+            },
             {
                 "field": "sender.mobilePhone.countryDialCode",
                 "dataType": "string",
@@ -715,7 +735,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "6",
                 "fieldMax": "14",
                 "regEx": "^([0-9\\.\\-])*$",
-                "helpTextLong": "Only numeric characters are allowed. Cannot contain a string of repeating numeric characters (example 8888888)",
+                "helpTextLong": "Only numeric characters are allowed."
+                                " Cannot contain a string of repeating numeric characters (example 8888888)",
             },
             {
                 "field": "sender.name.firstName",
@@ -726,7 +747,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.name.lastName",
@@ -737,7 +759,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.name.middleName",
@@ -747,7 +770,8 @@ def test_get_required_fields(mg):
                 "displayOrder": "2",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.name.secondLastName",
@@ -758,7 +782,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.notificationLanguagePreference",
@@ -1124,7 +1149,10 @@ def test_get_required_fields(mg):
                     {"value": "000009", "description": "CITI BANK"},
                     {"value": "000010", "description": "ECOBANK"},
                     {"value": "100001", "description": "ENTERPRISE BANK"},
-                    {"value": "100006", "description": "FAIRMONEY MICROFINANCE BANK LTD"},
+                    {
+                        "value": "100006",
+                        "description": "FAIRMONEY MICROFINANCE BANK LTD",
+                    },
                     {"value": "000003", "description": "FCMB"},
                     {"value": "000007", "description": "FIDELITY BANK"},
                     {"value": "100010", "description": "FINA TRUST MICROFINANCE BANK"},
@@ -1139,7 +1167,10 @@ def test_get_required_fields(mg):
                     {"value": "100007", "description": "LAPO MICROFINANCE BANK"},
                     {"value": "000029", "description": "LOTUS BANK"},
                     {"value": "100013", "description": "LOVONUS MICROFINANCE BANK"},
-                    {"value": "100009", "description": "MUTUAL TRUST MICROFINANCE BANK"},
+                    {
+                        "value": "100009",
+                        "description": "MUTUAL TRUST MICROFINANCE BANK",
+                    },
                     {"value": "000036", "description": "OPTIMUS BANK"},
                     {"value": "000030", "description": "PARALLEX BANK"},
                     {"value": "000008", "description": "POLARIS BANK LTD"},
@@ -1147,7 +1178,10 @@ def test_get_required_fields(mg):
                     {"value": "000023", "description": "PROVIDUS BANK"},
                     {"value": "100012", "description": "SPARKLE MICRO-FINANCE BANK"},
                     {"value": "000012", "description": "STANBIC IBTC BANK"},
-                    {"value": "000021", "description": "STANDARD CHARTERED BANK NIGERIA LTD"},
+                    {
+                        "value": "000021",
+                        "description": "STANDARD CHARTERED BANK NIGERIA LTD",
+                    },
                     {"value": "000001", "description": "STERLING BANK"},
                     {"value": "000022", "description": "SUNTRUST BANK NIGERIA LIMITED"},
                     {"value": "100002", "description": "TAJ BANK"},
@@ -1179,7 +1213,10 @@ def test_get_required_fields(mg):
                 "enumerationItem": [
                     {"value": "BUSINESS_RELATED", "description": "Business-Related"},
                     {"value": "CHARITY_SUPPORT", "description": "Charity Support"},
-                    {"value": "FAMILY_FRIENDS_SUPPORT", "description": "Family/Friend Support"},
+                    {
+                        "value": "FAMILY_FRIENDS_SUPPORT",
+                        "description": "Family/Friend Support",
+                    },
                     {"value": "THIRD_PARTY", "description": "Third Party"},
                 ],
             },
@@ -1192,7 +1229,10 @@ def test_get_required_fields(mg):
                 "fieldMax": "30",
                 "enumerationItem": [
                     {"value": "ACT_OF_ATTORNEY", "description": "Act of Attorney"},
-                    {"value": "BANK_STATEMENT", "description": "Bank account statement/withdrawl slip"},
+                    {
+                        "value": "BANK_STATEMENT",
+                        "description": "Bank account statement/withdrawl slip",
+                    },
                     {"value": "NATIONAL_LOTTERY", "description": "Copy of Check"},
                     {"value": "PAYROLL_SLIP", "description": "Payroll slip"},
                     {"value": "SALE_CERTIFICATE", "description": "Sales certificate"},
@@ -1218,7 +1258,10 @@ def test_get_required_fields(mg):
                     {"value": "BILLS", "description": "Bills"},
                     {"value": "FOOD", "description": "Food"},
                     {"value": "MEDICAL", "description": "Medical Expenses"},
-                    {"value": "PURCHASE_GOODS", "description": "Payment for Goods/Services"},
+                    {
+                        "value": "PURCHASE_GOODS",
+                        "description": "Payment for Goods/Services",
+                    },
                     {"value": "PERSONAL_USE", "description": "Personal Need/Expense"},
                     {"value": "SALARY", "description": "Salary"},
                 ],

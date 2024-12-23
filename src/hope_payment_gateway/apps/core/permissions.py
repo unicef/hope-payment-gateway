@@ -12,9 +12,7 @@ def get_client_ip(request):
 
 
 class WhitelistPermission(permissions.BasePermission):
-    """
-    Global permission check for whitelisted IPs.
-    """
+    """Global permission check for whitelisted IPs."""
 
     def has_permission(self, request, view):
         if config.WHITELIST_ENABLED:

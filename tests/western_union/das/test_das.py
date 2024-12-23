@@ -4,9 +4,6 @@ import pytest
 import responses
 from constance.test import override_config
 
-# from responses import _recorder
-# @_recorder.record(file_path="tests/western_union/das/das_countries_currencies.yaml")
-
 
 @pytest.mark.parametrize(
     "endpoint",

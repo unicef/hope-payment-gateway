@@ -9,7 +9,10 @@ from jsoneditor.forms import JSONEditor
 
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.api.request import requests_request
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.fsp.western_union.models import (
+    Corridor,
+    ServiceProviderCode,
+)
 
 
 @admin.register(Corridor)
@@ -152,7 +155,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return TemplateResponse(request, "request.html", context)
 
     @view()
-    def das_delivery_option_template(self, request) -> TemplateResponse:
+    def das_delivery_option_template(self, request) -> TemplateResponse:  # noqa
         destination_country = request.GET.get("destination_country", "PH")
         destination_currency = request.GET.get("destination_currency", "PHP")
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
@@ -169,7 +172,11 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         )
         context.update(
             WesternUnionClient().das_delivery_option_template(
-                destination_country, destination_currency, identifier, counter_id, template_code
+                destination_country,
+                destination_currency,
+                identifier,
+                counter_id,
+                template_code,
             )
         )
         return TemplateResponse(request, "request.html", context)
@@ -193,7 +200,11 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         client = WesternUnionClient()
         context.update(
             client.das_delivery_option_template(
-                destination_country, destination_currency, identifier, counter_id, template_code
+                destination_country,
+                destination_currency,
+                identifier,
+                counter_id,
+                template_code,
             )
         )
         return TemplateResponse(request, "request.html", context)

@@ -1,6 +1,9 @@
 from django.urls import re_path
 
-from hope_payment_gateway.apps.fsp.western_union.api.webhook import NisNotificationJSONView, NisNotificationXMLView
+from hope_payment_gateway.apps.fsp.western_union.api.webhook import (
+    NisNotificationJSONView,
+    NisNotificationXMLView,
+)
 
 app_name = "western_union"
 

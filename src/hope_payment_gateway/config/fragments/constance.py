@@ -29,7 +29,11 @@ CONSTANCE_CONFIG = {
     "WESTERN_UNION_WHITELISTED_ENV": ("uat", "Western Union Env", str),
     "WESTERN_UNION_VENDOR_NUMBER": ("", "Western Union Vendor Number", str),
     "MONEYGRAM_VENDOR_NUMBER": ("", "MoneyGram Vendor Number", str),
-    "MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED": (True, "MoneyGram: Signature Verification Enabled", bool),
+    "MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED": (
+        True,
+        "MoneyGram: Signature Verification Enabled",
+        bool,
+    ),
     "WHITELISTED_IPS": ("127.0.0.1", "IPs", str),
     "WHITELIST_ENABLED": (True, "Whitelist Enabled", bool),
 }
