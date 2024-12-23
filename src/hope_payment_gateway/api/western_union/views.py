@@ -44,7 +44,6 @@ class ServiceProviderCodeViewSet(ProtectedMixin, ModelViewSet):
 
 class FileViewset(ViewSet):
     serializer_class = FileSerializer
-    filter_backends = list
     lookup_field = "filename"
     lookup_value_regex = r".*\..*"
     permission_classes = (IsAdminUser,)
