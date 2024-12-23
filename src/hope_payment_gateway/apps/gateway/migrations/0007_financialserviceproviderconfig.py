@@ -13,13 +13,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="FinancialServiceProviderConfig",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("key", models.CharField(db_index=True, max_length=16)),
-                ("configuration", models.JSONField(blank=True, default=dict, null=True)),
+                (
+                    "configuration",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
                 (
                     "fsp",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="gateway.financialserviceprovider"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="gateway.financialserviceprovider",
                     ),
                 ),
             ],

@@ -57,7 +57,10 @@ def test_send_money_validation_ko(django_app, admin_user, wu):
     payload = WesternUnionClient.create_validation_payload(payload)
     client = WesternUnionClient()
     resp = client.send_money_validation(payload)
-    assert (resp["title"], resp["code"]) == ("business exception [xrsi:error-reply]", 400)
+    assert (resp["title"], resp["code"]) == (
+        "business exception [xrsi:error-reply]",
+        400,
+    )
 
 
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_complete.yaml")
@@ -101,7 +104,16 @@ def test_send_complete_corridor(django_app, admin_user, wu):
     corridor_template = {
         "receiver": {
             "mobile_phone": {"phone_number": {"country_code": 229, "national_number": None}},
-            "reason_for_sending": ["P012", "P014", "P015", "P016", "P017", "P018", "P019", "P020"],
+            "reason_for_sending": [
+                "P012",
+                "P014",
+                "P015",
+                "P016",
+                "P017",
+                "P018",
+                "P019",
+                "P020",
+            ],
         },
         "wallet_details": {"service_provider_code": "22901"},
     }
@@ -133,7 +145,7 @@ def test_send_complete_corridor(django_app, admin_user, wu):
     pr.refresh_from_db()
     assert pr.success
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
-    assert "mtcn" in pr.extra_data.keys()
+    assert "mtcn" in pr.extra_data
 
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
@@ -172,7 +184,16 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
             {
                 "receiver": {
                     "mobile_phone": {"phone_number": {"country_code": 229, "national_number": None}},
-                    "reason_for_sending": ["P012", "P014", "P015", "P016", "P017", "P018", "P019", "P020"],
+                    "reason_for_sending": [
+                        "P012",
+                        "P014",
+                        "P015",
+                        "P016",
+                        "P017",
+                        "P018",
+                        "P019",
+                        "P020",
+                    ],
                 },
                 "wallet_details": {"service_provider_code": 22901},
             },
@@ -187,14 +208,6 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
             },
             "Wrong structure: missing_value should not be a leaf",
         ),
-        # (
-        #     {
-        #         "receiver": {
-        #             "mobile_phone": {"phone_number": {"country_code": None}},
-        #         },
-        #     },
-        #     "Missing Value in Corridor country_code",
-        # ),
     ],
 )
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")

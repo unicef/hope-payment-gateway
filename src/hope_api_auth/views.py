@@ -38,14 +38,17 @@ class LoggingAPIView(APIView):
 
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
         ret = super().dispatch(request, *args, **kwargs)
-        if request.method.upper() in self.log_http_methods and (ret.status_code < 300 or ret.status_code > 400):
-            if request.auth:
-                APILogEntry.objects.create(
-                    token=request.auth,
-                    url=request.path,
-                    method=request.method.upper(),
-                    status_code=ret.status_code,
-                )
+        if (
+            request.method.upper() in self.log_http_methods
+            and (ret.status_code < 300 or ret.status_code > 400)
+            and request.auth
+        ):
+            APILogEntry.objects.create(
+                token=request.auth,
+                url=request.path,
+                method=request.method.upper(),
+                status_code=ret.status_code,
+            )
 
         return ret
 

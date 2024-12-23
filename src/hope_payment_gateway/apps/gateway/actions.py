@@ -2,6 +2,7 @@ import collections
 import csv
 import datetime
 import itertools
+from typing import Iterable
 
 from django import forms
 from django.conf import settings
@@ -42,7 +43,7 @@ class TemplateExportForm(CSVConfigForm):
         return cleaned_data
 
 
-def export_as_template_impl(  # noqa: max-complexity: 20
+def export_as_template_impl(  # noqa
     queryset,
     fields=None,
     header=None,
@@ -50,9 +51,8 @@ def export_as_template_impl(  # noqa: max-complexity: 20
     options=None,
     out=None,
     modeladmin=None,
-):  # noqa
-    """
-        Exports a queryset as csv from a queryset with the given fields.
+):
+    """Export a queryset as csv from a queryset with the given fields.
 
     :param queryset: queryset to export
     :param fields: list of fields names to export. None for all fields
@@ -78,18 +78,11 @@ def export_as_template_impl(  # noqa: max-complexity: 20
     else:
         response = out
 
-    if options is None:
-        config = csv_options_default
-    else:
-        config = csv_options_default.copy()
-        config.update(options)
+    config = csv_options_default if options is None else csv_options_default.copy().update(options)
 
     templates = [Template(template) for template in fields]
 
-    if streaming_enabled:
-        buffer_object = Echo()
-    else:
-        buffer_object = response
+    buffer_object = Echo() if streaming_enabled else response
 
     dialect = config.get("dialect", None)
     if dialect is not None:
@@ -107,7 +100,7 @@ def export_as_template_impl(  # noqa: max-complexity: 20
 
     def yield_header():
         if bool(header):
-            if isinstance(header, (list, tuple)):
+            if isinstance(header, Iterable):
                 yield writer.writerow([clean_value(hd) for hd in header])
             else:
                 yield writer.writerow([clean_value(fd) for fd in fields])

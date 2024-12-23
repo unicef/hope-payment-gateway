@@ -55,7 +55,6 @@ def test_api_payment_instructions(request, django_app, p_instruction):
     return reverse("api:payment-instruction-list")
 
 
-#
 @pytest.mark.django_db
 @contract(LastModifiedRecorder)
 def test_payment_records(request, django_app, p_record):

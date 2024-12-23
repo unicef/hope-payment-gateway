@@ -5,7 +5,11 @@ from pathlib import Path
 from factory.django import DjangoModelFactory
 from pytest_factoryboy import register
 
-from .base import AutoRegisterModelFactory, TAutoRegisterModelFactory, factories_registry
+from .base import (
+    AutoRegisterModelFactory,
+    TAutoRegisterModelFactory,
+    factories_registry,
+)
 from .payment import *  # noqa
 from .social import SocialAuthUserFactory  # noqa
 from .user import GroupFactory, SuperUserFactory, SystemFactory, User, UserFactory  # noqa

@@ -4,7 +4,12 @@ import requests
 
 
 class WUClient:
-    def __init__(self, base_url=None, cert=settings.WESTERN_UNION_CERT, key=settings.WESTERN_UNION_KEY):
+    def __init__(
+        self,
+        base_url=None,
+        cert=settings.WESTERN_UNION_CERT,
+        key=settings.WESTERN_UNION_KEY,
+    ):
         self.headers = {"Content-Type": "application/xml"}
         self.BASE_URL = base_url or settings.WESTERN_UNION_BASE_URL
         self.cert = cert, key

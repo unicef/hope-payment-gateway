@@ -1,6 +1,6 @@
 import csv
 import logging
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Union
 
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
@@ -19,10 +19,21 @@ from adminfilters.mixin import AdminFiltersMixin
 from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.fsp.moneygram.client import InvalidToken, MoneyGramClient, PayloadMissingKey
+from hope_payment_gateway.apps.fsp.moneygram.client import (
+    InvalidToken,
+    MoneyGramClient,
+    PayloadMissingKey,
+)
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException
-from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
+from hope_payment_gateway.apps.fsp.western_union.exceptions import (
+    InvalidCorridor,
+    PayloadException,
+)
+from hope_payment_gateway.apps.gateway.actions import (
+    TemplateExportForm,
+    export_as_template,
+    export_as_template_impl,
+)
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
     ExportTemplate,
@@ -33,7 +44,11 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest, HttpResponsePermanentRedirect, HttpResponseRedirect
+    from django.http import (
+        HttpRequest,
+        HttpResponsePermanentRedirect,
+        HttpResponseRedirect,
+    )
 
 
 logger = logging.getLogger(__name__)
@@ -86,7 +101,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         ]
         return button
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Prepare Payload")
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Prepare Payload",
+    )
     def wu_prepare_payload(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
@@ -104,7 +122,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Send Money Validation")
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Send Money Validation",
+    )
     def wu_send_money_validation(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
@@ -139,7 +160,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             return TemplateResponse(request, "request.html", context)
         messages.warning(request, "Missing MTCN")
 
-    @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Status Update")
+    @view(
+        html_attrs={"style": "background-color:yellow;color:blue"},
+        label="Status Update",
+    )
     def wu_status_update(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
@@ -149,7 +173,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             return TemplateResponse(request, "request.html", context)
         messages.warning(request, "Missing MTCN")
 
-    @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Search Request")
+    @view(
+        html_attrs={"style": "background-color:yellow;color:blue"},
+        label="Search Request",
+    )
     def wu_search_request(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
@@ -170,7 +197,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Prepare Payload")
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Prepare Payload",
+    )
     def mg_prepare_payload(self, request, pk) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
@@ -189,9 +219,11 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Create Transaction")
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Create Transaction",
+    )
     def mg_create_transaction(self, request, pk) -> TemplateResponse:
-
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             client = MoneyGramClient()
@@ -221,7 +253,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Status Update")
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Status Update",
+    )
     def mg_status_update(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
@@ -233,7 +268,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         except TransitionNotAllowed as e:
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Required Fields")
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Required Fields",
+    )
     def mg_get_required_fields(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
@@ -243,7 +281,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Service Options")
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Service Options",
+    )
     def mg_get_service_options(self, request, pk) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
@@ -278,7 +319,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         return button
 
     @link()
-    def instruction(self, button: button) -> Optional[str]:
+    def instruction(self, button: button) -> str | None:
         if "original" in button.context:
             obj = button.context["original"]
             button.href = reverse("admin:gateway_paymentinstruction_change", args=[obj.parent.pk])
@@ -289,47 +330,51 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
     def handle_mg_response(self, request, resp, pk, title):
         if resp:
-            data = resp.data
-            msgs = []
-            if resp.status_code == 200:
+            if resp.status_code < 300:
                 context = self.get_common_context(request, pk)
                 context["title"] = title
                 context["format"] = "json"
-                context["content"] = data
+                context["content"] = resp.data
                 return TemplateResponse(request, "request.html", context)
 
-            elif 400 <= resp.status_code < 500:
-                loglevel = messages.WARNING
-                if "errors" in data:
-                    for error in data["errors"]:
-                        msgs.append(f"{error['message']} ({error['code']})")
-                        if "offendingFields" in error:
-                            for field in error["offendingFields"]:
-                                if "field" in field:
-                                    msgs.append(f"Field: {field['field']}")
-                elif "error" in data:
-                    message = data.get("message", data["error"])
-                    msgs.append(message)
-                else:
-                    msgs = [
-                        "Error",
-                    ]
-            else:
-                loglevel = messages.ERROR
-                errors = dict()
-                if "errors" in data:
-                    errors = data["errors"]
-                if "error" in data:
-                    errors = data["error"]
-                if isinstance(errors, list):
-                    for error in errors:
-                        msgs.append(f"{error['message']} ({error['code']})")
-                else:
-                    msgs.append(f"{errors['message']} ({errors['code']})")
+            loglevel, msgs = self.handle_error(resp)
+
             for msg in msgs:
                 messages.add_message(request, loglevel, msg)
         else:
             messages.add_message(request, messages.ERROR, "Connection Error")
+
+    def handle_error(self, resp):
+        msgs = []
+        data = resp.data
+        if 400 <= resp.status_code < 500:
+            loglevel = messages.WARNING
+            if "errors" in data:
+                for error in data["errors"]:
+                    msgs.append(f"{error['message']} ({error['code']})")
+                    if "offendingFields" in error:
+                        msgs.extend(
+                            [f"Field: {field['field']}" for field in error["offendingFields"] if "field" in field]
+                        )
+            elif "error" in data:
+                message = data.get("message", data["error"])
+                msgs.append(message)
+            else:
+                msgs = ["Error"]
+        else:
+            loglevel = messages.ERROR
+            errors = dict
+            if "errors" in data:
+                errors = data["errors"]
+            if "error" in data:
+                errors = data["error"]
+            if isinstance(errors, list):
+                for error in errors:
+                    msgs.append(f"{error['message']} ({error['code']})")
+            else:
+                msgs.append(f"{errors['message']} ({errors['code']})")
+
+        return loglevel, msgs
 
 
 @admin.register(PaymentInstruction)
@@ -340,7 +385,6 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
-    # readonly_fields = ("extra",)
 
     @button()
     def export(self, request, pk) -> TemplateResponse:
@@ -350,7 +394,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         # hack to use the action
         post_dict = request.POST.copy()
         post_dict["action"] = 0
-        post_dict["_selected_action"] = list()
+        post_dict["_selected_action"] = list
         post_dict["select_across"] = "0"
 
         request.POST = post_dict
@@ -387,10 +431,20 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                         payload = {
                             key: row[key]
                             for key, value in row.items()
-                            if key in ["first_name", "last_name", "amount", "phone_no", "service_provider_code"]
+                            if key
+                            in [
+                                "first_name",
+                                "last_name",
+                                "amount",
+                                "phone_no",
+                                "service_provider_code",
+                            ]
                         }
                         PaymentRecord.objects.create(
-                            record_code=row["record_code"], remote_id=row["record_code"], parent=parent, payload=payload
+                            record_code=row["record_code"],
+                            remote_id=row["record_code"],
+                            parent=parent,
+                            payload=payload,
                         )
                         n += 1
 
@@ -400,16 +454,13 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                 except IntegrityError as e:
                     logger.error(e)
                     self.message_user(request, str(e), messages.ERROR)
-                except Exception as e:
-                    logger.error(e)
-                    self.message_user(request, "Unable to parse the file, please check the format", messages.ERROR)
         else:
             form = ImportCSVForm()
         context["form"] = form
         return TemplateResponse(request, "admin/gateway/import_records_csv.html", context)
 
     @link()
-    def records(self, button: button) -> Optional[str]:
+    def records(self, button: button) -> str | None:
         if "original" in button.context:
             obj = button.context["original"]
             url = reverse("admin:gateway_paymentrecord_changelist")

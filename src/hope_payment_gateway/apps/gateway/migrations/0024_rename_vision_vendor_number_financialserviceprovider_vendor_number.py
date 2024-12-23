@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0023_rename_type_deliverymechanism_transfer_type_and_more"),
     ]

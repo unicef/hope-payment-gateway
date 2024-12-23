@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0021_paymentrecord_marked_for_payment"),
     ]
@@ -19,7 +18,11 @@ class Migration(migrations.Migration):
             model_name="deliverymechanism",
             name="type",
             field=models.CharField(
-                choices=[("IN_CASH", "In Cash"), ("VOUCHER", "Voucher"), ("DIGITAL", "Digital Asset")],
+                choices=[
+                    ("IN_CASH", "In Cash"),
+                    ("VOUCHER", "Voucher"),
+                    ("DIGITAL", "Digital Asset"),
+                ],
                 default="IN_CASH",
                 max_length=32,
             ),

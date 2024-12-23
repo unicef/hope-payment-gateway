@@ -27,33 +27,29 @@ class MoneyGramApi(APIView):
 
 
 class MoneyGramWebhook(MoneyGramApi):
-
     def dispatch(self, request, *args, **kwargs):
         sentry_sdk.capture_message("MoneyGram: Webhook Notification")
         return super().dispatch(request, *args, **kwargs)
 
     def verify(self, request):
-
         header_dict = {
             header.split("=", 1)[0]: header.split("=", 1)[1]
             for header in request.headers.get("Signature", "").split(",")
         }
 
         destination_host = "f-p-sandbox.snssdk.com"
-        public_key = """-----BEGIN PUBLIC KEY-----
-        {}
-        -----END PUBLIC KEY-----""".format(
-            settings.MONEYGRAM_PUBLIC_KEY
-        )
+        public_key = f"""-----BEGIN PUBLIC KEY-----
+        {settings.MONEYGRAM_PUBLIC_KEY}
+        -----END PUBLIC KEY-----"""
         pub_key = serialization.load_pem_public_key(public_key.encode("utf-8"), backend=default_backend())
 
-        unix_time_in_seconds = header_dict.get("t", None)
+        unix_time_in_seconds = header_dict.get("t")
 
         signature_header = header_dict.get("s", "")
         signature = base64.b64decode(signature_header)
 
         body = request.body
-        data = f"{unix_time_in_seconds}.{destination_host}.{body}".encode("utf-8")
+        data = f"{unix_time_in_seconds}.{destination_host}.{body}".encode()
 
         pub_key.verify(signature, data, padding.PKCS1v15(), hashes.SHA256())
 
@@ -78,7 +74,8 @@ class MoneyGramWebhook(MoneyGramApi):
             )
         try:
             pr = PaymentRecord.objects.get(
-                fsp_code=record_key, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+                fsp_code=record_key,
+                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
             )
         except PaymentRecord.DoesNotExist:
             return Response(

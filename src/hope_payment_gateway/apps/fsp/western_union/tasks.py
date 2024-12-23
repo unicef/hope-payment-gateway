@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from constance import config
 
@@ -17,7 +16,7 @@ from hope_payment_gateway.config.celery import app
 
 @app.task()  # queue="executors"
 def western_union_send_task(tag=None, threshold=10000):
-    """Task to trigger Western Union payments"""
+    """Task to trigger Western Union payments."""
     logging.info("Western Union Task started")
     vendor_number = config.WESTERN_UNION_VENDOR_NUMBER
     threshold = threshold or config.WESTERN_UNION_THREASHOLD
@@ -44,7 +43,7 @@ def western_union_send_task(tag=None, threshold=10000):
 
 
 @app.task
-def western_union_notify(to_process_ids: List[PaymentRecord]) -> None:
+def western_union_notify(to_process_ids: list[PaymentRecord]) -> None:
     PaymentRecord.objects.filter(id__in=to_process_ids).update(marked_for_payment=True)
     for record in PaymentRecord.objects.filter(id__in=to_process_ids):
         WesternUnionClient.create_transaction(record.get_payload())
@@ -60,5 +59,7 @@ def update_templates():
     client = WesternUnionClient()
     for corridor in Corridor.objects.all():
         client.das_delivery_option_template(
-            corridor.destination_country, corridor.destination_currency, corridor.template_code
+            corridor.destination_country,
+            corridor.destination_currency,
+            corridor.template_code,
         )

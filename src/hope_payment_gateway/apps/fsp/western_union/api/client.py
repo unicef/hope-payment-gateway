@@ -16,13 +16,34 @@ from zeep.wsdl.utils import etree_to_string
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
-from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
-from hope_payment_gateway.apps.fsp.western_union.api import MONEY_IN_TIME, WALLET, WIC, WMF, agent, web
+from hope_payment_gateway.apps.fsp.utils import (
+    get_from_delivery_mechanism,
+    get_phone_number,
+)
+from hope_payment_gateway.apps.fsp.western_union.api import (
+    MONEY_IN_TIME,
+    WALLET,
+    WIC,
+    WMF,
+    agent,
+    web,
+)
 from hope_payment_gateway.apps.fsp.western_union.api.utils import integrate_payload
-from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException, PayloadMissingKey
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.fsp.western_union.exceptions import (
+    InvalidCorridor,
+    PayloadException,
+    PayloadMissingKey,
+)
+from hope_payment_gateway.apps.fsp.western_union.models import (
+    Corridor,
+    ServiceProviderCode,
+)
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord, PaymentRecordState
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    PaymentRecord,
+    PaymentRecordState,
+)
 from hope_payment_gateway.config.settings import WESTERN_UNION_CERT, WESTERN_UNION_KEY
 
 logger = logging.getLogger(__name__)
@@ -66,9 +87,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     @staticmethod
     def response_context(client, service_name, payload, wsdl_name=None, port=None):
-        response = dict()
+        response = dict
         error = ""
-        format = "string"
+        display_format = "string"
         try:
             if wsdl_name and port:
                 binded_client = client.bind(wsdl_name, port)
@@ -82,7 +103,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         try:
             response = service(**payload)
             title = service_name
-            format = "json"
+            display_format = "json"
             code = 200
         except (TransportError, ConnectTimeout) as exc:
             title = f"{exc.message} [{exc.status_code}]"
@@ -98,7 +119,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             response = etree_to_string(exc.detail)
             try:
                 error = exc.detail.xpath("//error/text()")[0]
-            except BaseException:  # noqa: B036
+            except IndexError:
                 error = "generic error"
             code = 400
             logger.exception(exc)
@@ -108,7 +129,13 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             error = str(exc)
             logger.exception(exc)
 
-        return {"title": title, "content": response, "format": format, "code": code, "error": error}
+        return {
+            "title": title,
+            "content": response,
+            "format": display_format,
+            "code": code,
+            "error": error,
+        }
 
     @staticmethod
     def prepare(client, service_name, payload):
@@ -119,12 +146,18 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     @staticmethod
     def create_validation_payload(base_payload):
-        for key in ["first_name", "last_name", "amount", "destination_country", "destination_currency"]:
-            if not (key in base_payload.keys() and base_payload[key]):
-                raise PayloadMissingKey("InvalidPayload: {} is missing in the payload".format(key))
+        for key in [
+            "first_name",
+            "last_name",
+            "amount",
+            "destination_country",
+            "destination_currency",
+        ]:
+            if not (key in base_payload and base_payload[key]):
+                raise PayloadMissingKey(f"InvalidPayload: {key} is missing in the payload")
 
         counter_ids = base_payload.get("counter_id", "N/A")
-        counter_id = random.choice(counter_ids) if isinstance(counter_ids, list) else counter_ids
+        counter_id = random.choice(counter_ids) if isinstance(counter_ids, list) else counter_ids  # noqa
         transaction_type = base_payload.get("transaction_type", WMF)
         frm = {
             "identifier": base_payload.get("identifier", "N/A"),
@@ -140,8 +173,6 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             "name": {
                 "first_name": base_payload["first_name"],
                 "last_name": base_payload["last_name"],
-                # "first_name": str(base_payload["first_name"].encode("utf-8"))[2:-1],
-                # "last_name": str(base_payload["last_name"].encode("utf-8"))[2:-1],
                 "name_type": "D",
             },
             "contact_phone": contact_no,
@@ -179,11 +210,6 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             "transaction_type": transaction_type,
             "payment_type": "Cash",
             "duplicate_detection_flag": base_payload.get("duplication_enabled", "D"),
-            # needed for US and MEX
-            # "expected_payout_location": {
-            #     "state_code": "NY",
-            #     "city": "New York"
-            # }
         }
 
         delivery_services = {"code": base_payload.get("delivery_services_code", MONEY_IN_TIME)}
@@ -226,7 +252,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
     def send_money_validation(self, payload):
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
         sentry_sdk.capture_message("Western Union: Send Money Validation")
-        ref_no = payload.get("foreign_remote_system", dict()).get("reference_no", "N/A")
+        ref_no = payload.get("foreign_remote_system", dict).get("reference_no", "N/A")
         logging.info(f"VALIDATION {ref_no}")
         return self.response_context(
             self.quote_client,
@@ -291,7 +317,13 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
         extra_data = {
             key: smv_payload[key]
-            for key in ["foreign_remote_system", "instant_notification", "mtcn", "new_mtcn", "financials"]
+            for key in [
+                "foreign_remote_system",
+                "instant_notification",
+                "mtcn",
+                "new_mtcn",
+                "financials",
+            ]
         }
         log_data = extra_data.copy()
         log_data["record_code"] = base_payload["payment_record_code"]
@@ -319,7 +351,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     def query_status(self, transaction_id, update):
         pr = PaymentRecord.objects.get(
-            fsp_code=transaction_id, parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+            fsp_code=transaction_id,
+            parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
         frm = pr.extra_data.get("foreign_remote_system", None)
@@ -333,7 +366,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         if update:
             wu_status = response["content"]["payment_transactions"]["payment_transaction"][0]["pay_status_description"]
             flow = PaymentRecordFlow(pr)
-            status = {"PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY}.get(wu_status, None)
+            status = {"PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY}.get(wu_status)
             if pr.status != status:
                 if status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
                     pr.message = "Payment Record update by manual sync"
@@ -384,13 +417,14 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
 
-        ref_no = payload.get("foreign_remote_system", dict()).get("reference_no", "N/A")
+        ref_no = payload.get("foreign_remote_system", dict).get("reference_no", "N/A")
         logging.info(f"CANCEL {ref_no}")
         return self.response_context(self.cancel_client, "CancelSend", payload, f"SOAP_HTTP_Port_{wu_env}")
 
     def refund(self, transaction_id, base_payload):
         pr = PaymentRecord.objects.get(
-            fsp_code=transaction_id, parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+            fsp_code=transaction_id,
+            parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
         mtcn = pr.extra_data.get("mtcn", None)
         frm = pr.extra_data.get("foreign_remote_system", None)
@@ -461,7 +495,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                         qf4 = country_currency["CURRENCY_NAME"]
 
                         self.das_delivery_services(
-                            country, currency, identifier, counter_id, create_corridors=create_corridors
+                            country,
+                            currency,
+                            identifier,
+                            counter_id,
+                            create_corridors=create_corridors,
                         )
                 else:
                     more_data = False  # skip we want only 1st page
@@ -478,7 +516,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         payload.update(
             {
                 "name": "GetOriginationCurrencies",
-                "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
+                "foreign_remote_system": {
+                    "identifier": identifier,
+                    "counter_id": counter_id,
+                    "reference_no": "N/A",
+                },
                 "filters": {
                     "queryfilter1": "en",
                 },
@@ -495,7 +537,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         payload.update(
             {
                 "name": "GetDestinationCountries",
-                "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
+                "foreign_remote_system": {
+                    "identifier": identifier,
+                    "counter_id": counter_id,
+                    "reference_no": "N/A",
+                },
                 "filters": {"queryfilter1": "en", "queryfilter2": "US USD"},
             }
         )
@@ -510,7 +556,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         payload.update(
             {
                 "name": "GetDestinationCurrencies",
-                "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
+                "foreign_remote_system": {
+                    "identifier": identifier,
+                    "counter_id": counter_id,
+                    "reference_no": "N/A",
+                },
                 "filters": {
                     "queryfilter1": "en",
                     "queryfilter2": "US USD",  # origination country
@@ -521,7 +571,12 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         return self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
 
     def das_delivery_services(
-        self, destination_country, destination_currency, identifier, counter_id, create_corridors=False
+        self,
+        destination_country,
+        destination_currency,
+        identifier,
+        counter_id,
+        create_corridors=False,
     ):
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
         payload = FinancialServiceProvider.objects.get(
@@ -531,7 +586,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         payload.update(
             {
                 "name": "GetDeliveryServices",
-                "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
+                "foreign_remote_system": {
+                    "identifier": identifier,
+                    "counter_id": counter_id,
+                    "reference_no": "N/A",
+                },
                 "filters": {
                     "queryfilter1": "en",
                     "queryfilter2": "US USD",  # origination country, currency
@@ -557,10 +616,14 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                         )
         return response
 
-    def das_delivery_option_template(
-        self, destination_country, destination_currency, identifier, counter_id, template_code
+    def das_delivery_option_template(  # noqa
+        self,
+        destination_country,
+        destination_currency,
+        identifier,
+        counter_id,
+        template_code,
     ):
-
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
         payload = FinancialServiceProvider.objects.get(
             vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
@@ -569,7 +632,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         payload.update(
             {
                 "name": "GetDeliveryOptionTemplate",
-                "foreign_remote_system": {"identifier": identifier, "counter_id": counter_id, "reference_no": "N/A"},
+                "foreign_remote_system": {
+                    "identifier": identifier,
+                    "counter_id": counter_id,
+                    "reference_no": "N/A",
+                },
                 "filters": {
                     "queryfilter1": "en",
                     "queryfilter2": f"{destination_country} {destination_currency}",  # destination
@@ -587,7 +654,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             if rows:
                 try:
                     obj = Corridor.objects.get(
-                        destination_country=destination_country, destination_currency=destination_currency
+                        destination_country=destination_country,
+                        destination_currency=destination_currency,
                     )
                 except Corridor.DoesNotExist:
                     obj = None

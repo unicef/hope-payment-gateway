@@ -13,7 +13,10 @@ class FTPClient:
 
     def __init__(self):
         transport = paramiko.Transport((settings.FTP_WESTERN_UNION_SERVER, settings.FTP_WESTERN_UNION_PORT))
-        transport.connect(username=settings.FTP_WESTERN_UNION_USERNAME, password=settings.FTP_WESTERN_UNION_PASSWORD)
+        transport.connect(
+            username=settings.FTP_WESTERN_UNION_USERNAME,
+            password=settings.FTP_WESTERN_UNION_PASSWORD,
+        )
         self.client = paramiko.SFTPClient.from_transport(transport)
 
     def disconnect(self):

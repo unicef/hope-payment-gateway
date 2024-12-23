@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0015_rename_confirmation_code_paymentrecord_auth_code"),
     ]

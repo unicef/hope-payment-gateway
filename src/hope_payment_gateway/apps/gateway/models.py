@@ -55,14 +55,14 @@ class FinancialServiceProviderConfig(models.Model):
     delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
+    class Meta:
+        unique_together = ("key", "fsp", "delivery_mechanism")
+
     def __str__(self):
         if self.delivery_mechanism:
             return f"{self.fsp}/{self.delivery_mechanism} [{self.label}]"
         else:
             return f"{self.fsp} [{self.label}]"
-
-    class Meta:
-        unique_together = ("key", "fsp", "delivery_mechanism")
 
 
 class PaymentInstructionState(models.TextChoices):
@@ -76,11 +76,13 @@ class PaymentInstructionState(models.TextChoices):
 
 
 class PaymentInstruction(TimeStampedModel):
-
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     external_code = models.CharField(max_length=255, db_index=True)
     status = models.CharField(
-        max_length=50, default=PaymentInstructionState.DRAFT, choices=PaymentInstructionState.choices, db_index=True
+        max_length=50,
+        default=PaymentInstructionState.DRAFT,
+        choices=PaymentInstructionState.choices,
+        db_index=True,
     )
 
     payload = models.JSONField(default=dict, null=True, blank=True)
@@ -100,7 +102,8 @@ class PaymentInstruction(TimeStampedModel):
         payload = self.payload.copy()
         if "config_key" in self.extra:
             config_payload = self.fsp.strategy.get_configuration(
-                self.extra["config_key"], self.extra.get("delivery_mechanism", "cash_over_the_counter")  # temp fix
+                self.extra["config_key"],
+                self.extra.get("delivery_mechanism", "cash_over_the_counter"),  # temp fix
             )
             payload.update(config_payload)
         return payload
@@ -109,7 +112,10 @@ class PaymentInstruction(TimeStampedModel):
 class PaymentRecordState(models.TextChoices):
     PENDING = ("PENDING", "Pending")
     TRANSFERRED_TO_FSP = ("TRANSFERRED_TO_FSP", "Transferred to FSP")
-    TRANSFERRED_TO_BENEFICIARY = ("TRANSFERRED_TO_BENEFICIARY", "Transferred to Beneficiary")
+    TRANSFERRED_TO_BENEFICIARY = (
+        "TRANSFERRED_TO_BENEFICIARY",
+        "Transferred to Beneficiary",
+    )
     CANCELLED = ("CANCELLED", "Cancelled")
     REFUND = ("REFUND", "Refund")
     PURGED = ("PURGED", "Purged")
@@ -117,7 +123,6 @@ class PaymentRecordState(models.TextChoices):
 
 
 class PaymentRecord(TimeStampedModel):
-
     remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
@@ -142,7 +147,10 @@ class PaymentRecord(TimeStampedModel):
 
     success = models.BooleanField(null=True, blank=True)
     status = models.CharField(
-        max_length=50, default=PaymentRecordState.PENDING, choices=PaymentRecordState.choices, db_index=True
+        max_length=50,
+        default=PaymentRecordState.PENDING,
+        choices=PaymentRecordState.choices,
+        db_index=True,
     )
     message = models.CharField(max_length=4096, null=True, blank=True)
     payload = models.JSONField(default=dict, null=True, blank=True)
@@ -171,8 +179,8 @@ class ExportTemplate(models.Model):
     strategy = StrategyField(registry=export_registry)
 
     header = models.BooleanField(default=True)
-    delimiter = models.CharField(choices=list(zip(delimiters, delimiters)), default=",")
-    quotechar = models.CharField(choices=list(zip(quotes, quotes)), default="'")
+    delimiter = models.CharField(choices=list(zip(delimiters, delimiters, strict=True)), default=",")
+    quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'")
     quoting = models.IntegerField(
         choices=(
             (csv.QUOTE_ALL, _("All")),
@@ -184,8 +192,8 @@ class ExportTemplate(models.Model):
     )
     escapechar = models.CharField(choices=(("", ""), ("\\", "\\")), default="", null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.fsp} / {self.config_key}"
-
     class Meta:
         unique_together = ("fsp", "config_key")
+
+    def __str__(self):
+        return f"{self.fsp} / {self.config_key}"

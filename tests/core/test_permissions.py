@@ -2,7 +2,10 @@ from django.test import RequestFactory, override_settings
 
 import pytest
 
-from hope_payment_gateway.apps.core.permissions import WhitelistPermission, get_client_ip
+from hope_payment_gateway.apps.core.permissions import (
+    WhitelistPermission,
+    get_client_ip,
+)
 
 
 @pytest.fixture

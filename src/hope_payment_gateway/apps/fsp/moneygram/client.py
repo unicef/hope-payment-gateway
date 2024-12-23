@@ -8,7 +8,6 @@ from django.conf import settings
 
 import requests
 from constance import config
-from requests.exceptions import ConnectionError
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
@@ -26,9 +25,15 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
+from hope_payment_gateway.apps.fsp.utils import (
+    get_from_delivery_mechanism,
+    get_phone_number,
+)
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    PaymentRecord,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +60,14 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         self.sender = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER).configuration
 
     def set_token(self):
-        """Set up the token to perform MoneyGram API calls"""
+        """Set up the token to perform MoneyGram API calls."""
         url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
         credentials = f"{settings.MONEYGRAM_CLIENT_ID}:{settings.MONEYGRAM_CLIENT_SECRET}"
         encoded_credentials = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
-        headers = {"Content-Type": "application/json", "Authorization": "Basic " + encoded_credentials}
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Basic " + encoded_credentials,
+        }
 
         try:
             response = requests.get(url, headers=headers, timeout=30)
@@ -95,7 +103,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         }
 
     def prepare_transaction(self, base_payload):
-        """prepare the payload to create transactions"""
+        """Prepare the payload to create transactions."""
         raw_phone_no = base_payload.get("phone_no", "N/A")
         phone_number, country_code = get_phone_number(raw_phone_no)
 
@@ -107,8 +115,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             "destination_currency",
             "payment_record_code",
         ]:
-            if not (key in base_payload.keys() and base_payload[key]):
-                raise PayloadMissingKey("InvalidPayload: {} is missing in the payload".format(key))
+            if not (key in base_payload and base_payload[key]):
+                raise PayloadMissingKey(f"InvalidPayload: {key} is missing in the payload")
         transaction_id = base_payload["payment_record_code"]
         payload = {
             "targetAudience": "AGENT_FACING",
@@ -119,7 +127,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
             "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
             "autoCommit": "true",
-            "sendAmount": {"currencyCode": base_payload["origination_currency"], "value": base_payload["amount"]},
+            "sendAmount": {
+                "currencyCode": base_payload["origination_currency"],
+                "value": base_payload["amount"],
+            },
             "sender": self.sender,
             "beneficiary": {
                 "consumer": {
@@ -128,13 +139,16 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                         "middleName": base_payload.get("middle_name", ""),
                         "lastName": base_payload["last_name"],
                     },
-                    # "address": {
-                    #     "line1": base_payload["address"],
-                    #     "city": base_payload["city"],
-                    #     "countryCode": base_payload["destination_country"],
-                    #     "postalCode": 55442,
-                    # },
-                    "mobilePhone": {"number": phone_number, "countryDialCode": country_code},
+                    "address": {
+                        "line1": base_payload.get("address"),
+                        "city": base_payload.get("city"),
+                        "countryCode": base_payload["destination_country"],
+                        "postalCode": base_payload.get("zip"),
+                    },
+                    "mobilePhone": {
+                        "number": phone_number,
+                        "countryDialCode": country_code,
+                    },
                 }
             },
             "targetAccount": {
@@ -149,7 +163,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         return transaction_id, payload
 
     def create_transaction(self, base_payload, update=True):
-        """create a transaction to MoneyGram"""
+        """Create a transaction to MoneyGram."""
         endpoint = "/disbursement/v1/transactions"
         transaction_id, payload = self.prepare_transaction(base_payload)
         response = self.perform_request(endpoint, transaction_id, payload, "post")
@@ -160,7 +174,6 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         return response
 
     def prepare_quote(self, base_payload: dict):
-
         transaction_id = base_payload["payment_record_code"]
         payload = self.get_basic_payload()
         payload.update(
@@ -168,13 +181,16 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "destinationCountryCode": base_payload["destination_country"],
                 "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code"),
                 "beneficiaryTypeCode": "Consumer",
-                "sendAmount": {"currencyCode": base_payload["origination_currency"], "value": base_payload["amount"]},
+                "sendAmount": {
+                    "currencyCode": base_payload["origination_currency"],
+                    "value": base_payload["amount"],
+                },
             }
         )
         return transaction_id, payload
 
     def quote(self, base_payload):
-        """create a quote request to MoneyGram"""
+        """Create a quote request to MoneyGram."""
         endpoint = "/disbursement/v1/transactions/quote"
         transaction_id, payload = self.prepare_quote(base_payload)
         return self.perform_request(endpoint, transaction_id, payload, "post")
@@ -186,11 +202,12 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         return self.perform_request(endpoint, status_transaction_id, payload)
 
     def query_status(self, transaction_id, update):
-        """query MoneyGram to get information regarding the transaction status"""
+        """Query MoneyGram to get information regarding the transaction status."""
         response = self.status(transaction_id)
         if update:
             pr = PaymentRecord.objects.get(
-                fsp_code=transaction_id, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+                fsp_code=transaction_id,
+                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
             )
             update_status(pr, response.data["transactionStatus"])
             pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
@@ -237,24 +254,25 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                     break
                 else:
                     self.set_token()
-            except (requests.exceptions.RequestException, requests.exceptions.MissingSchema) as e:
-                logger.error("An error occurred:", e)
-                self.set_token()
-            except Exception as e:
-                logger.error("Token Expired:", e)
+            except (
+                requests.exceptions.RequestException,
+                requests.exceptions.MissingSchema,
+            ):
+                logger.error("An error occurred")
                 self.set_token()
         if not response:
             logger.error("Cannot retrieve response")
         elif response.status_code != 200:
-            logger.error("Request failed with status code {}".format(response.status_code))
+            logger.error(f"Request failed with status code {response.status_code}")
         return response
 
     def post_transaction(self, response, payload):
-        """update record in the database"""
+        """Update record in the database."""
         body = response.data
         record_code = payload["payment_record_code"]
         pr = PaymentRecord.objects.get(
-            record_code=record_code, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+            record_code=record_code,
+            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
         if "errors" in body:
             return Response(body, status=HTTP_400_BAD_REQUEST)
@@ -276,7 +294,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             flow = PaymentRecordFlow(pr)
             flow.store()
         except TransitionNotAllowed:
-            response = Response({"errors": [{"error": "transition_not_allowed"}]}, status=HTTP_400_BAD_REQUEST)
+            response = Response(
+                {"errors": [{"error": "transition_not_allowed"}]},
+                status=HTTP_400_BAD_REQUEST,
+            )
         return response
 
     def refund(self, transaction_id, base_payload):
@@ -287,7 +308,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         resp = self.perform_request(endpoint, status_transaction_id, payload)
         if resp.status_code == 200:
             pr = PaymentRecord.objects.get(
-                fsp_code=transaction_id, parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+                fsp_code=transaction_id,
+                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
             )
             pr.message = "Request per REFUND"
             pr.save()

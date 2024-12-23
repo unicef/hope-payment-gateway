@@ -43,13 +43,16 @@ def test_cancel(django_app, admin_user, wu):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2HServiceService")
     responses.patch("https://wugateway2pi.westernunion.com/CancelSend_Service_H2HService")
     responses._add_from_file(file_path="tests/western_union/endpoints/cancel.yaml")
-    mtcn, frm = "0352466394", {
-        "identifier": "IDENTIFIER",
-        "reference_no": "REFNO",
-        "counter_id": "COUNTER",
-        "operator_id": None,
-        "partnership_indicator": None,
-    }
+    mtcn, frm = (
+        "0352466394",
+        {
+            "identifier": "IDENTIFIER",
+            "reference_no": "REFNO",
+            "counter_id": "COUNTER",
+            "operator_id": None,
+            "partnership_indicator": None,
+        },
+    )
     pl = PaymentRecordFactory(
         extra_data={
             "mtcn": mtcn,

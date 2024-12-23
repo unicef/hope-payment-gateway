@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from constance import config
 
@@ -15,14 +14,15 @@ from hope_payment_gateway.config.celery import app
 
 @app.task()  # queue="executors"
 def moneygram_send_money(tag=None, threshold=10000):
-    """Task to trigger MoneyGram payments"""
+    """Task to trigger MoneyGram payments."""
     logging.info("MoneyGram Task started")
     threshold = threshold or config.MONEYGRAM_THREASHOLD
 
     records_count = 0
 
     qs = PaymentInstruction.objects.filter(
-        status=PaymentInstructionState.READY, fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER
+        status=PaymentInstructionState.READY,
+        fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
     )
     if tag:
         qs = qs.filter(tag=tag)
@@ -44,7 +44,7 @@ def moneygram_send_money(tag=None, threshold=10000):
 
 
 @app.task
-def moneygram_notify(to_process_ids: List[PaymentRecord]) -> None:
+def moneygram_notify(to_process_ids: list[PaymentRecord]) -> None:
     client = MoneyGramClient()
     PaymentRecord.objects.filter(id__in=to_process_ids).update(
         marked_for_payment=True,

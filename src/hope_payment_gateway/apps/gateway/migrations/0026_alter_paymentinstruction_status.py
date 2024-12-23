@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0025_rename_unicef_id_paymentinstruction_external_code"),
     ]

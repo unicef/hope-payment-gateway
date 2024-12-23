@@ -1,4 +1,4 @@
-from typing import Any, Tuple
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -19,7 +19,7 @@ class LoggingTokenAuthentication(TokenAuthentication):
     keyword = "Token"
     model = APIToken
 
-    def authenticate_credentials(self, key: str) -> Tuple[User, APIToken]:
+    def authenticate_credentials(self, key: str) -> tuple[User, APIToken]:
         try:
             token = (
                 APIToken.objects.select_related("user")
@@ -39,9 +39,7 @@ class LoggingTokenAuthentication(TokenAuthentication):
 class GrantedPermission(IsAuthenticated):
     def has_permission(self, request: Request, view: Any) -> bool:
         if bool(request.auth):
-            if view.permission == "any":
-                return True
-            elif request.user and request.user.is_authenticated and request.user.is_superuser:
+            if view.permission == "any" or request.user and request.user.is_authenticated and request.user.is_superuser:
                 return True
             elif view.permission:
                 return view.permission.name in request.auth.grants

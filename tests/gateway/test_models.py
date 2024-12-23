@@ -1,9 +1,19 @@
 import pytest
-from factories import FinancialServiceProviderFactory, PaymentInstructionFactory, PaymentRecordFactory
+from factories import (
+    FinancialServiceProviderFactory,
+    PaymentInstructionFactory,
+    PaymentRecordFactory,
+)
 from viewflow.fsm.base import TransitionNotAllowed
 
-from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow, PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, PaymentRecordState
+from hope_payment_gateway.apps.gateway.flows import (
+    PaymentInstructionFlow,
+    PaymentRecordFlow,
+)
+from hope_payment_gateway.apps.gateway.models import (
+    PaymentInstructionState,
+    PaymentRecordState,
+)
 
 
 @pytest.mark.django_db

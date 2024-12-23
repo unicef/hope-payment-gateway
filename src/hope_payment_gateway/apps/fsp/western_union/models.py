@@ -8,12 +8,12 @@ class Corridor(models.Model):  # delivery mechanism
     template_code = models.CharField(max_length=4)
     template = models.JSONField(default=dict, null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.description} / {self.template_code}"
-
     class Meta:
         unique_together = ("destination_country", "destination_currency")
         permissions = (("can_view_ftp_files", "Can views Western Union FTP files"),)
+
+    def __str__(self):
+        return f"{self.description} / {self.template_code}"
 
 
 class ServiceProviderCode(models.Model):

@@ -74,10 +74,18 @@ def test_instructions_add_records_ok(api_client, token_user):
     pr = PaymentRecordFactory(parent__status=PaymentInstructionState.OPEN)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     payload = [
-        {"record_code": "adalberto", "remote_id": "adalberto", "payload": {"key": "value"}},
+        {
+            "record_code": "adalberto",
+            "remote_id": "adalberto",
+            "payload": {"key": "value"},
+        },
     ]
     view = api_client.post(
-        url, json.dumps(payload), content_type="application/json", user=user, HTTP_AUTHORIZATION=token
+        url,
+        json.dumps(payload),
+        content_type="application/json",
+        user=user,
+        HTTP_AUTHORIZATION=token,
     )
     assert view.status_code == 201
     assert view.json()["remote_id"] == pr.parent.remote_id

@@ -11,7 +11,14 @@ from viewflow.fsm import TransitionNotAllowed
 from zeep.exceptions import ValidationError
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
-from hope_payment_gateway.apps.fsp.western_union.api import CANCEL, PURGED, REFUND, REJECT_APN, SUCCESS, SUCCESS_APN
+from hope_payment_gateway.apps.fsp.western_union.api import (
+    CANCEL,
+    PURGED,
+    REFUND,
+    REJECT_APN,
+    SUCCESS,
+    SUCCESS_APN,
+)
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidRequest
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
@@ -67,7 +74,12 @@ class NisNotificationView(WesternUnionApi):
         payout_amount = payload["payment_details"]["destination"]["expected_payout_amount"]
 
         try:
-            for tag_name in ["message_code", "message_text", "reason_code", "reason_desc"]:
+            for tag_name in [
+                "message_code",
+                "message_text",
+                "reason_code",
+                "reason_desc",
+            ]:
                 payload.pop(tag_name, None)
             payload["ack_message"] = "Acknowledged"
             resp = self.prepare_response(payload)
@@ -76,7 +88,8 @@ class NisNotificationView(WesternUnionApi):
 
         try:
             pr = PaymentRecord.objects.get(
-                fsp_code=fsp_code, parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+                fsp_code=fsp_code,
+                parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
             )
             flow = PaymentRecordFlow(pr)
         except PaymentRecord.DoesNotExist:
@@ -118,7 +131,6 @@ class NisNotificationJSONView(NisNotificationView):
 
 
 class NisNotificationXMLView(XMLViewMixin, NisNotificationView):
-
     @staticmethod
     def get_payload(request):
         header = "{http://schemas.xmlsoap.org/soap/envelope/}Body"

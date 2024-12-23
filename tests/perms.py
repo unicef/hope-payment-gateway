@@ -18,7 +18,7 @@ faker = Faker()
 
 
 def text(length, choices=ascii_letters):
-    """returns a random (fixed length) string
+    """returns a random (fixed length) string.
 
     :param length: string length
     :param choices: string containing all the chars can be used to build the string

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0012_alter_financialserviceproviderconfig_fsp"),
     ]
@@ -16,17 +15,29 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="DeliveryMechanism",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "created",
                     model_utils.fields.AutoCreatedField(
-                        default=django.utils.timezone.now, editable=False, verbose_name="created"
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     model_utils.fields.AutoLastModifiedField(
-                        default=django.utils.timezone.now, editable=False, verbose_name="modified"
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
                     ),
                 ),
                 ("code", models.CharField(max_length=32, unique=True)),
@@ -40,14 +51,18 @@ class Migration(migrations.Migration):
             model_name="financialserviceprovider",
             name="created",
             field=model_utils.fields.AutoCreatedField(
-                default=django.utils.timezone.now, editable=False, verbose_name="created"
+                default=django.utils.timezone.now,
+                editable=False,
+                verbose_name="created",
             ),
         ),
         migrations.AddField(
             model_name="financialserviceprovider",
             name="modified",
             field=model_utils.fields.AutoLastModifiedField(
-                default=django.utils.timezone.now, editable=False, verbose_name="modified"
+                default=django.utils.timezone.now,
+                editable=False,
+                verbose_name="modified",
             ),
         ),
         migrations.AlterUniqueTogether(

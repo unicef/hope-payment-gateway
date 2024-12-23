@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from django import forms
 from django.contrib import admin, messages
@@ -29,7 +29,7 @@ Expires: {expire}
 Regards
 
 The HOPE Team
-"""
+"""  # noqa
 
 TOKEN_CREATED_EMAIL = """
 Dear {friendly_name},
@@ -44,7 +44,7 @@ Expires: {expire}
 Regards
 
 The HOPE Team
-"""
+"""  # noqa
 
 TOKEN_UPDATED_EMAIL = """
 Dear {friendly_name},
@@ -58,13 +58,13 @@ Expires: {expire}
 Regards
 
 The HOPE Team
-"""
+"""  # noqa
 
 
 class APITokenForm(forms.ModelForm):
     class Meta:
         model = APIToken
-        exclude = ("key",)
+        fields = ("user", "allowed_ips", "valid_from", "valid_to", "grants")
 
 
 @admin.register(APIToken)
@@ -82,17 +82,17 @@ class APITokenAdmin(SmartModelAdmin):
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         return super().get_queryset(request).select_related("user")
 
-    def get_fields(self, request: HttpRequest, obj: Optional[Any] = None) -> Tuple[str, ...]:
+    def get_fields(self, request: HttpRequest, obj: Any | None = None) -> tuple[str, ...]:
         if obj:
             return super().get_fields(request, obj)
         return "user", "grants", "valid_to"
 
-    def get_readonly_fields(self, request: HttpRequest, obj: Optional[Any] = None) -> Tuple[str, ...]:
+    def get_readonly_fields(self, request: HttpRequest, obj: Any | None = None) -> tuple[str, ...]:
         if obj:
             return "user", "valid_from"
-        return tuple()
+        return ()
 
-    def _get_email_context(self, request: HttpRequest, obj: Any) -> Dict[str, Any]:
+    def _get_email_context(self, request: HttpRequest, obj: Any) -> dict[str, Any]:
         return {
             "obj": obj,
             "friendly_name": obj.user.first_name or obj.user.username,
@@ -109,15 +109,19 @@ class APITokenAdmin(SmartModelAdmin):
             )
             self.message_user(request, f"Email sent to {obj.user.email}", messages.SUCCESS)
         except OSError:
-            self.message_user(request, f"Unable to send notification email to {obj.user.email}", messages.ERROR)
+            self.message_user(
+                request,
+                f"Unable to send notification email to {obj.user.email}",
+                messages.ERROR,
+            )
 
     @button()
     def resend_email(self, request: HttpRequest, pk) -> None:
         obj = self.get_object(request, str(pk))
         self._send_token_email(request, obj, TOKEN_INFO_EMAIL)
 
-    def log_addition(self, request: HttpRequest, object: Any, message: str) -> LogEntry:
-        return super().log_addition(request, object, message)
+    def log_addition(self, request: HttpRequest, obj: Any, message: str) -> LogEntry:
+        return super().log_addition(request, obj, message)
 
     @atomic()
     def save_model(self, request: HttpRequest, obj: Any, form: Form, change: bool) -> None:
@@ -137,5 +141,5 @@ class APILogEntryAdmin(SmartModelAdmin):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
 
-    def has_change_permission(self, request: HttpRequest, obj: Optional[Any] = None) -> bool:
+    def has_change_permission(self, request: HttpRequest, obj: Any | None = None) -> bool:
         return False

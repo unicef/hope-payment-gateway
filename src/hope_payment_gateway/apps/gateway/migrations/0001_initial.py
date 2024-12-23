@@ -19,30 +19,56 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="FinancialServiceProvider",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("name", models.CharField(max_length=64, unique=True)),
                 ("vision_vendor_number", models.CharField(max_length=100, unique=True)),
                 ("strategy", strategy_field.fields.StrategyField()),
-                ("configuration", models.JSONField(blank=True, default=dict, null=True)),
+                (
+                    "configuration",
+                    models.JSONField(blank=True, default=dict, null=True),
+                ),
             ],
         ),
         migrations.CreateModel(
             name="PaymentInstruction",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "created",
                     model_utils.fields.AutoCreatedField(
-                        default=django.utils.timezone.now, editable=False, verbose_name="created"
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     model_utils.fields.AutoLastModifiedField(
-                        default=django.utils.timezone.now, editable=False, verbose_name="modified"
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
                     ),
                 ),
-                ("uuid", models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
+                (
+                    "uuid",
+                    models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True),
+                ),
                 ("unicef_id", models.CharField(db_index=True, max_length=255)),
                 (
                     "status",
@@ -64,10 +90,14 @@ class Migration(migrations.Migration):
                 (
                     "fsp",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="gateway.financialserviceprovider"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="gateway.financialserviceprovider",
                     ),
                 ),
-                ("system", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="core.system")),
+                (
+                    "system",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="core.system"),
+                ),
             ],
             options={
                 "abstract": False,
@@ -76,20 +106,35 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="PaymentRecord",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "created",
                     model_utils.fields.AutoCreatedField(
-                        default=django.utils.timezone.now, editable=False, verbose_name="created"
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="created",
                     ),
                 ),
                 (
                     "modified",
                     model_utils.fields.AutoLastModifiedField(
-                        default=django.utils.timezone.now, editable=False, verbose_name="modified"
+                        default=django.utils.timezone.now,
+                        editable=False,
+                        verbose_name="modified",
                     ),
                 ),
-                ("uuid", models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
+                (
+                    "uuid",
+                    models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True),
+                ),
                 ("record_code", models.CharField(max_length=64)),
                 ("success", models.BooleanField(blank=True, null=True)),
                 (
@@ -98,7 +143,10 @@ class Migration(migrations.Migration):
                         choices=[
                             ("PENDING", "Pending"),
                             ("TRANSFERRED_TO_FSP", "Transferred to FSP"),
-                            ("TRANSFERRED_TO_BENEFICIARY", "Transferred to Beneficiary"),
+                            (
+                                "TRANSFERRED_TO_BENEFICIARY",
+                                "Transferred to Beneficiary",
+                            ),
                             ("CANCELLED", "Cancelled"),
                             ("ERROR", "Error"),
                         ],
@@ -112,7 +160,10 @@ class Migration(migrations.Migration):
                 ("extra_data", models.JSONField(blank=True, default=dict, null=True)),
                 (
                     "parent",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="gateway.paymentinstruction"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="gateway.paymentinstruction",
+                    ),
                 ),
             ],
             options={

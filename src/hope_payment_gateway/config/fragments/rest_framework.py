@@ -34,9 +34,6 @@ JWT_AUTH = {
     "JWT_AUTH_HEADER_PREFIX": "JWT",
     "JWT_SECRET_KEY": SECRET_KEY,
     "JWT_DECODE_HANDLER": "rest_framework_jwt.utils.jwt_decode_handler",
-    # Keys will be set in core.apps.Config.ready()
     "JWT_PUBLIC_KEY": "?",
-    # 'JWT_PRIVATE_KEY': wallet.get_private(),
-    # 'JWT_PRIVATE_KEY': None,
     "JWT_ALGORITHM": "RS256",
 }

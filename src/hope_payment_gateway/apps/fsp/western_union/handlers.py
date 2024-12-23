@@ -1,11 +1,13 @@
 from constance import config as constance_config
 
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, FinancialServiceProviderConfig
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    FinancialServiceProviderConfig,
+)
 from hope_payment_gateway.apps.gateway.registry import FSPProcessor
 
 
 class WesternUnionHandler(FSPProcessor):
-
     @staticmethod
     def get_configuration(config_key, delivery_mechanism):
         vendor_number = constance_config.WESTERN_UNION_VENDOR_NUMBER
@@ -24,6 +26,5 @@ class WesternUnionHandler(FSPProcessor):
 
 
 class CSVExportStrategy(FSPProcessor):
-
     def export(self):
         pass

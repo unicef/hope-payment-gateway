@@ -92,19 +92,12 @@ STORAGES = {
 }
 
 SECRET_KEY = env("SECRET_KEY")
-ALLOWED_HOSTS = (
-    # env("ALLOWED_HOST", default="localhost"),
-    # "0.0.0.0",
-    # TODO
-    "*",
-)
+ALLOWED_HOSTS = ("*",)
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_URL = "/accounts/logout"
 LOGOUT_REDIRECT_URL = "/"
-
-# TIME_ZONE = env('TIME_ZONE')
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -182,7 +175,6 @@ HOST = env("HOST")
 
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-# EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend" # TODO: when ready, add djcelery_email
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = env(
     "EMAIL_HOST",
