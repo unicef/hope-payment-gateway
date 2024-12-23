@@ -10,7 +10,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentRecord,
     PaymentRecordState,
 )
-from hope_payment_gateway.celery import app
+from hope_payment_gateway.config.celery import app
 
 
 @app.task()  # queue="executors"

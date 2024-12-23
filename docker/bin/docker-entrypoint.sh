@@ -30,16 +30,16 @@ case "$1" in
       ;;
     worker)
       set -- tini -- "$@"
-      set -- gosu user:app celery -A hope_payment_gateway.config.celery worker -E --loglevel=ERROR --concurrency=4
+      set -- gosu hope:unicef celery -A hope_payment_gateway.config.celery worker -E --loglevel=ERROR --concurrency=4
       ;;
     beat)
       set -- tini -- "$@"
-      set -- gosu user:app celery -A hope_payment_gateway.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      set -- gosu hope:unicef celery -A hope_payment_gateway.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
       ;;
     flower)
       export DATABASE_URL="sqlite://:memory:"
       set -- tini -- "$@"
-      set -- gosu user:app celery -A hope_payment_gateway.config.celery flower
+      set -- gosu hope:unicef celery -A hope_payment_gateway.config.celery flower
       ;;
 esac
 
