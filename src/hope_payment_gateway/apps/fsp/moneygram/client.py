@@ -25,15 +25,9 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import (
-    get_from_delivery_mechanism,
-    get_phone_number,
-)
+from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import (
-    FinancialServiceProvider,
-    PaymentRecord,
-)
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord
 
 logger = logging.getLogger(__name__)
 

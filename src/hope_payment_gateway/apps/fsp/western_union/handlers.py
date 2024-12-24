@@ -1,9 +1,6 @@
 from constance import config as constance_config
 
-from hope_payment_gateway.apps.gateway.models import (
-    FinancialServiceProvider,
-    FinancialServiceProviderConfig,
-)
+from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, FinancialServiceProviderConfig
 from hope_payment_gateway.apps.gateway.registry import FSPProcessor
 
 

@@ -19,21 +19,10 @@ from adminfilters.mixin import AdminFiltersMixin
 from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.fsp.moneygram.client import (
-    InvalidTokenError,
-    MoneyGramClient,
-    PayloadMissingKeyError,
-)
+from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, PayloadMissingKeyError
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.exceptions import (
-    InvalidCorridorError,
-    PayloadException,
-)
-from hope_payment_gateway.apps.gateway.actions import (
-    TemplateExportForm,
-    export_as_template,
-    export_as_template_impl,
-)
+from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridorError, PayloadException
+from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
     ExportTemplate,
@@ -44,11 +33,7 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 if TYPE_CHECKING:
-    from django.http import (
-        HttpRequest,
-        HttpResponsePermanentRedirect,
-        HttpResponseRedirect,
-    )
+    from django.http import HttpRequest, HttpResponsePermanentRedirect, HttpResponseRedirect
 
 
 logger = logging.getLogger(__name__)

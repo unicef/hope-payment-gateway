@@ -55,7 +55,7 @@ ignore = [
     "D106",  # Missing docstring in public nested class
     "D107",  # Missing docstring in `__init__`
     "D203", # one-blank-line-before-class
-    "D212", # multi-line-summary-first-line
+#    "D212", # multi-line-summary-first-line
     "D213", # multi-line-summary-second-line
     "E731",  # lambda-assignment: lambdas are substential in maintenance of py2/3 codebase
     "ISC001",  # conflicts with ruff format command
