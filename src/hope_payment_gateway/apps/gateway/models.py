@@ -11,7 +11,7 @@ from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.registry import export_registry, registry
 
 
-def default_requirements():
+def default_requirements() -> dict:
     return {
         "required_fields": [],
         "optional_fields": [],
@@ -97,7 +97,7 @@ class PaymentInstruction(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.external_code} - {self.status}"
 
-    def get_payload(self):
+    def get_payload(self) -> dict:
         payload = self.payload.copy()
         if "config_key" in self.extra:
             config_payload = self.fsp.strategy.get_configuration(
@@ -162,7 +162,7 @@ class PaymentRecord(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.record_code} / {self.status}"
 
-    def get_payload(self):
+    def get_payload(self) -> dict:
         payload = self.parent.get_payload()
         payload.update(self.payload)
         payload["payment_record_code"] = self.record_code

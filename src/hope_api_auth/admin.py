@@ -116,7 +116,7 @@ class APITokenAdmin(SmartModelAdmin):
             )
 
     @button()
-    def resend_email(self, request: HttpRequest, pk) -> None:
+    def resend_email(self, request: HttpRequest, pk: int) -> None:
         obj = self.get_object(request, str(pk))
         self._send_token_email(request, obj, TOKEN_INFO_EMAIL)
 

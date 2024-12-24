@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING, Union
 
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
-from django.db.models import JSONField
+from django.db.models import JSONField, QuerySet
 from django.db.utils import IntegrityError
 from django.forms import FileField, FileInput, Form
+from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -18,7 +19,6 @@ from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
 from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
-
 from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, PayloadMissingKeyError
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridorError, PayloadException
@@ -33,7 +33,7 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest, HttpResponsePermanentRedirect, HttpResponseRedirect
+    from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
 
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
     actions = [export_as_template]
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
         return super().get_queryset(request).select_related("parent__fsp")
 
     @choice(change_list=False)
@@ -90,7 +90,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Prepare Payload",
     )
-    def wu_prepare_payload(self, request, pk) -> TemplateResponse:
+    def wu_prepare_payload(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
@@ -111,7 +111,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Send Money Validation",
     )
-    def wu_send_money_validation(self, request, pk) -> TemplateResponse:
+    def wu_send_money_validation(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
@@ -125,7 +125,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             return obj
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Send Money")
-    def wu_send_money(self, request, pk) -> TemplateResponse:
+    def wu_send_money(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         client = WesternUnionClient()
         log = client.create_transaction(obj.get_payload())
@@ -136,7 +136,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             messages.add_message(request, loglevel, log.message)
 
     @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Check Status")
-    def wu_status(self, request, pk) -> TemplateResponse:
+    def wu_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
@@ -149,7 +149,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:yellow;color:blue"},
         label="Status Update",
     )
-    def wu_status_update(self, request, pk) -> TemplateResponse:
+    def wu_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
@@ -162,7 +162,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:yellow;color:blue"},
         label="Search Request",
     )
-    def wu_search_request(self, request, pk) -> TemplateResponse:
+    def wu_search_request(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
@@ -173,7 +173,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         return TemplateResponse(request, "request.html", context)
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Cancel")
-    def wu_cancel(self, request, pk) -> TemplateResponse:
+    def wu_cancel(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
@@ -186,7 +186,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Prepare Payload",
     )
-    def mg_prepare_payload(self, request, pk) -> TemplateResponse:
+    def mg_prepare_payload(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         try:
@@ -208,7 +208,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Create Transaction",
     )
-    def mg_create_transaction(self, request, pk) -> TemplateResponse:
+    def mg_create_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             client = MoneyGramClient()
@@ -219,7 +219,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.message_user(request, str(e), messages.ERROR)
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Quote")
-    def mg_quote_transaction(self, request, pk) -> TemplateResponse:
+    def mg_quote_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             resp = MoneyGramClient().quote(obj.get_payload())
@@ -229,7 +229,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.message_user(request, str(e), messages.ERROR)
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Status")
-    def mg_status(self, request, pk) -> TemplateResponse:
+    def mg_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             resp = MoneyGramClient().query_status(obj.fsp_code, update=False)
@@ -242,7 +242,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Status Update",
     )
-    def mg_status_update(self, request, pk) -> TemplateResponse:
+    def mg_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             resp = MoneyGramClient().query_status(obj.fsp_code, update=True)
@@ -257,7 +257,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Required Fields",
     )
-    def mg_get_required_fields(self, request, pk) -> TemplateResponse:
+    def mg_get_required_fields(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             resp = MoneyGramClient().get_required_fields(obj.get_payload())
@@ -270,7 +270,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Service Options",
     )
-    def mg_get_service_options(self, request, pk) -> TemplateResponse:
+    def mg_get_service_options(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             resp = MoneyGramClient().get_service_options(obj.get_payload())
@@ -280,7 +280,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.message_user(request, str(e), messages.ERROR)
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Refund")
-    def mg_refund(self, request, pk) -> TemplateResponse:
+    def mg_refund(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
@@ -313,7 +313,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             button.visible = False
         return None
 
-    def handle_mg_response(self, request, resp, pk, title) -> None:
+    def handle_mg_response(self, request: HttpRequest, resp, pk: int, title: str) -> None:
         context = self.get_common_context(request, pk)
         if resp:
             if resp.status_code < 300:
@@ -373,7 +373,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     }
 
     @button()
-    def export(self, request, pk) -> TemplateResponse:
+    def export(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.get_object(request, str(pk))
         queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
 

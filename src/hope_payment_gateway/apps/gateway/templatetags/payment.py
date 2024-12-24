@@ -4,7 +4,7 @@ register = template.Library()
 
 
 @register.filter
-def clean_value(value):
+def clean_value(value: str) -> str:
     return (
         value.replace(".", " ")
         .replace("_", " ")

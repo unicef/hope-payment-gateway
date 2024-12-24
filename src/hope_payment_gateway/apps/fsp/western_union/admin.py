@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db.models import JSONField
+from django.http import HttpRequest
 from django.template.response import TemplateResponse
 
 from admin_extra_buttons.decorators import button, choice, view
@@ -130,7 +131,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return button
 
     @button()
-    def delivery_services(self, request, pk) -> TemplateResponse:
+    def delivery_services(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.model.objects.get(pk=pk)
         destination_country = obj.destination_country
         destination_currency = obj.destination_currency
@@ -179,7 +180,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return TemplateResponse(request, "request.html", context)
 
     @button()
-    def delivery_option_template(self, request, pk) -> TemplateResponse:
+    def delivery_option_template(self, request: HttpRequest, pk: int) -> TemplateResponse:
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
         obj = self.model.objects.get(pk=pk)

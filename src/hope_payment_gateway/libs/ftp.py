@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class FTPClient:
     client = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         transport = paramiko.Transport((settings.FTP_WESTERN_UNION_SERVER, settings.FTP_WESTERN_UNION_PORT))
         transport.connect(
             username=settings.FTP_WESTERN_UNION_USERNAME,
@@ -19,20 +19,20 @@ class FTPClient:
         )
         self.client = paramiko.SFTPClient.from_transport(transport)
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         self.client.close()
 
-    def ls(self):
+    def ls(self) -> list:
         return self.client.listdir()
 
-    def get(self, filename, local_folder="/"):
+    def get(self, filename: str, local_folder: str = "/") -> None:
         local_file_path = f"{local_folder}/{filename}"
         try:
             self.client.get(filename, local_file_path)
         except FileNotFoundError:
             logger.info(f"File: {filename} was not found on the source server")
 
-    def download(self, filename):
+    def download(self, filename: str) -> io.BytesIO:
         fl = io.BytesIO()
         self.client.getfo(filename, fl)
         fl.seek(0)

@@ -1,17 +1,22 @@
 from viewflow import fsm
 from viewflow.fsm import State
 
-from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, PaymentRecordState
+from hope_payment_gateway.apps.gateway.models import (
+    PaymentInstructionState,
+    PaymentRecordState,
+    PaymentRecord,
+    PaymentInstruction,
+)
 
 
 class PaymentInstructionFlow:
     state = fsm.State(PaymentInstructionState, default=PaymentInstructionState.DRAFT)
 
-    def __init__(self, obj) -> None:
+    def __init__(self, obj: PaymentInstruction) -> None:
         self.object = obj
 
     @state.setter()
-    def _set_object_status(self, value) -> None:
+    def _set_object_status(self, value: str) -> None:
         self.object.status = value
 
     @state.getter()
@@ -19,7 +24,7 @@ class PaymentInstructionFlow:
         return self.object.status
 
     @state.on_success()
-    def _on_transition_success(self, description, source, target) -> None:
+    def _on_transition_success(self, description: str, source: str, target: str) -> None:
         self.object.save()
 
     @state.transition(
@@ -79,11 +84,11 @@ class PaymentInstructionFlow:
 class PaymentRecordFlow:
     state = fsm.State(PaymentRecordState, default=PaymentRecordState.PENDING)
 
-    def __init__(self, obj) -> None:
+    def __init__(self, obj: PaymentRecord) -> None:
         self.object = obj
 
     @state.setter()
-    def _set_object_status(self, value) -> None:
+    def _set_object_status(self, value: str) -> None:
         self.object.status = value
 
     @state.getter()
@@ -91,7 +96,7 @@ class PaymentRecordFlow:
         return self.object.status
 
     @state.on_success()
-    def _on_transition_success(self, description, source, target) -> None:
+    def _on_transition_success(self, description: str, source: str, target: str) -> None:
         self.object.save()
 
     @state.transition(
