@@ -30,7 +30,7 @@ case "$1" in
       ;;
     worker)
       set -- tini -- "$@"
-      set -- gosu hope:unicef celery -A hope_payment_gateway.config.celery worker --concurrency=4 -E --loglevel=ERROR
+      set -- gosu hope:unicef celery -A hope_payment_gateway.config.celery worker --statedb worker --concurrency=4 -E --loglevel=ERROR
       ;;
     beat)
       set -- tini -- "$@"
