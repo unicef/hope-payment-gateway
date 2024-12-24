@@ -127,8 +127,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
 
         if instance:
             return super().update(instance, validated_data)
-        else:
-            return super().create(validated_data)
+        return super().create(validated_data)
 
 
 class PaymentRecordLightSerializer(serializers.ModelSerializer):

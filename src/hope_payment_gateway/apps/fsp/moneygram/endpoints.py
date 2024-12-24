@@ -62,8 +62,7 @@ class MoneyGramWebhook(MoneyGramApi):
                     {"cannot_decrypt_signature": "Signature is invalid or expired"},
                     status=HTTP_400_BAD_REQUEST,
                 )
-            else:
-                logger.warning("Moneygram signature verification invalid")
+            logger.warning("Moneygram signature verification invalid")
         payload = request.data
         try:
             record_key = payload["eventPayload"]["transactionId"]

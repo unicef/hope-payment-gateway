@@ -6,7 +6,7 @@ from responses import _recorder  # noqa
 
 from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED, REFUNDED, SENT
 from hope_payment_gateway.apps.fsp.moneygram.client import (
-    InvalidToken,
+    InvalidTokenError,
     MoneyGramClient,
     update_status,
 )
@@ -20,7 +20,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_token_ko(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/token_ko.yaml")
-    with pytest.raises(InvalidToken):
+    with pytest.raises(InvalidTokenError):
         MoneyGramClient()
 
 
@@ -1375,7 +1375,7 @@ def test_get_service_options(mg):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "from_status,to_status",
+    ("from_status", "to_status"),
     [
         (PaymentRecordState.PENDING, SENT),
         (PaymentRecordState.TRANSFERRED_TO_FSP, RECEIVED),

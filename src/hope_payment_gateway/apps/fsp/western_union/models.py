@@ -12,7 +12,7 @@ class Corridor(models.Model):  # delivery mechanism
         unique_together = ("destination_country", "destination_currency")
         permissions = (("can_view_ftp_files", "Can views Western Union FTP files"),)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.description} / {self.template_code}"
 
 
@@ -22,5 +22,5 @@ class ServiceProviderCode(models.Model):
     country = models.CharField(max_length=2)
     currency = models.CharField(max_length=3)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.description}"

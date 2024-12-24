@@ -10,7 +10,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "action,detail,status",
+    ("action", "detail", "status"),
     [
         ("list", False, 200),
         ("detail", True, 200),
@@ -29,7 +29,7 @@ def test_payment_instruction(api_client, action, detail, status, token_user):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "action,detail,status",
+    ("action", "detail", "status"),
     [
         ("open", True, 200),
         ("ready", True, 400),
@@ -51,7 +51,7 @@ def test_payment_instruction_actions(api_client, action, detail, status, token_u
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "action,detail,status",
+    ("action", "detail", "status"),
     [
         ("list", False, 200),
         ("detail", True, 200),

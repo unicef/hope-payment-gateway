@@ -2,13 +2,13 @@ from strategy_field.registry import Registry
 
 
 class FSPProcessor:
-    def __init__(self, fsp):
+    def __init__(self, fsp) -> None:
         self.fsp = fsp
 
     def label(self) -> str:
         return self.__class__.__name__
 
-    def notify(self):
+    def notify(self) -> None:
         pass
 
 

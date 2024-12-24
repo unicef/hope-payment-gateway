@@ -42,7 +42,7 @@ def test_payment_record_payload():
 
 
 @pytest.mark.parametrize(
-    "transaction_name,source,destination",
+    ("transaction_name", "source", "destination"),
     [
         ("open", "DRAFT", "OPEN"),
         ("close", "OPEN", "CLOSED"),
@@ -62,26 +62,25 @@ def test_payment_instruction_transactions_ok(transaction_name, source, destinati
 
 
 @pytest.mark.parametrize(
-    "transaction_name,source,destination",
+    ("transaction_name", "source"),
     [
-        ("open", "DRAFT", "CANCELLED"),
-        ("ready", "OPEN", "DRAFT"),
-        ("close", "DRAFT", "CLOSED"),
-        ("abort", "DRAFT", "CLOSED"),
+        ("open", "OPEN"),
+        ("ready", "OPEN"),
+        ("close", "DRAFT"),
     ],
 )
 @pytest.mark.django_db
-def test_payment_instruction_transactions_ko(transaction_name, source, destination):
+def test_payment_instruction_transactions_ko(transaction_name, source):
     instruction = PaymentInstructionFactory(status=getattr(PaymentInstructionState, source))
     flow = PaymentInstructionFlow(instruction)
     transaction = getattr(flow, transaction_name)
     with pytest.raises((TransitionNotAllowed, AssertionError)):
         transaction()
-        assert instruction.status == destination
+    assert instruction.status == source
 
 
 @pytest.mark.parametrize(
-    "transaction_name,source,destination",
+    ("transaction_name", "source", "destination"),
     [
         ("store", "PENDING", "TRANSFERRED_TO_FSP"),
         ("confirm", "TRANSFERRED_TO_FSP", "TRANSFERRED_TO_BENEFICIARY"),
@@ -100,21 +99,14 @@ def test_payment_record_transactions_ok(transaction_name, source, destination):
 
 
 @pytest.mark.parametrize(
-    "transaction_name,source,destination",
-    [
-        ("store", "TRANSFERRED_TO_BENEFICIARY", "PENDING"),
-        ("confirm", "PENDING", "TRANSFERRED_TO_BENEFICIARY"),
-        ("cancel", "PENDING", "ERROR"),
-        ("fail", "PENDING", "CANCELLED"),
-        ("cancel", "TRANSFERRED_TO_BENEFICIARY", "ERROR"),
-        ("fail", "TRANSFERRED_TO_BENEFICIARY", "CANCELLED"),
-    ],
+    ("transaction_name", "source"),
+    [("store", "TRANSFERRED_TO_BENEFICIARY"), ("confirm", "PENDING"), ("refund", "PENDING")],
 )
 @pytest.mark.django_db
-def test_payment_record_transactions_ko(transaction_name, source, destination):
+def test_payment_record_transactions_ko(transaction_name, source):
     instruction = PaymentRecordFactory(status=getattr(PaymentRecordState, source))
     flow = PaymentRecordFlow(instruction)
     transaction = getattr(flow, transaction_name)
     with pytest.raises((TransitionNotAllowed, AssertionError)):
         transaction()
-        assert instruction.status == destination
+    assert instruction.status == source

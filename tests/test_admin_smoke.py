@@ -2,8 +2,9 @@ from unittest.mock import Mock
 
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.db.models.options import Options
+
 from django.urls import reverse
+from typing import TYPE_CHECKING
 
 import pytest
 from admin_extra_buttons.handlers import ChoiceHandler
@@ -12,6 +13,10 @@ from django_regex.utils import RegexList as _RegexList
 from factories import SuperUserFactory
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
+
+
+if TYPE_CHECKING:
+    from django.db.models.options import Options
 
 
 class RegexList(_RegexList):
@@ -94,7 +99,7 @@ def pytest_generate_tests(metafunc):  # noqa
         metafunc.parametrize("modeladmin", m, ids=ids)
 
 
-@pytest.fixture()
+@pytest.fixture
 def record(db, request):
     from factories import get_factory_for_model
 
@@ -110,7 +115,7 @@ def record(db, request):
     return instance
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory, mocked_responses):
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")

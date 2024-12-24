@@ -17,7 +17,7 @@ from hope_payment_gateway.apps.gateway.models import (
 
 
 @pytest.mark.parametrize(
-    "rec_a,rec_b,total",
+    ("rec_a", "rec_b", "total"),
     [
         (5, 4, 9),
         (5, 8, 5),
@@ -55,7 +55,7 @@ def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
 
 
 @pytest.mark.parametrize(
-    "rec_a,rec_b,total",
+    ("rec_a", "rec_b", "total"),
     [
         (5, 4, 9),
         (5, 8, 13),

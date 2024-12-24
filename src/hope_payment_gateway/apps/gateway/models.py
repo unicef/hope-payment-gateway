@@ -33,7 +33,7 @@ class DeliveryMechanism(TimeStampedModel):
     transfer_type = models.CharField(choices=DELIVERY_MECHANISM_TYPE, max_length=32)
     requirements = models.JSONField(default=default_requirements, null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} [{self.code}]"
 
 
@@ -44,7 +44,7 @@ class FinancialServiceProvider(TimeStampedModel):
     strategy = StrategyField(registry=registry)
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} [{self.vendor_number}]"
 
 
@@ -58,11 +58,10 @@ class FinancialServiceProviderConfig(models.Model):
     class Meta:
         unique_together = ("key", "fsp", "delivery_mechanism")
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.delivery_mechanism:
             return f"{self.fsp}/{self.delivery_mechanism} [{self.label}]"
-        else:
-            return f"{self.fsp} [{self.label}]"
+        return f"{self.fsp} [{self.label}]"
 
 
 class PaymentInstructionState(models.TextChoices):
@@ -95,7 +94,7 @@ class PaymentInstruction(TimeStampedModel):
     class Meta:
         unique_together = ("system", "remote_id")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.external_code} - {self.status}"
 
     def get_payload(self):
@@ -160,7 +159,7 @@ class PaymentRecord(TimeStampedModel):
 
     marked_for_payment = models.BooleanField(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.record_code} / {self.status}"
 
     def get_payload(self):
@@ -195,5 +194,5 @@ class ExportTemplate(models.Model):
     class Meta:
         unique_together = ("fsp", "config_key")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.fsp} / {self.config_key}"

@@ -38,39 +38,39 @@ def use_override_settings(settings):
     settings.SECRET_KEY = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocked_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         yield rsps
 
 
-@pytest.fixture()
+@pytest.fixture
 def user(request, db):
     return UserFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def logged_user(client, user):
     client.force_authenticate(user)
     return user
 
 
-@pytest.fixture()
+@pytest.fixture
 def corridor():
     return CorridorFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def pi():
     return PaymentInstructionFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def prl():
     return PaymentRecordFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def wu():
     return FinancialServiceProviderFactory(
         name="Western Union",
@@ -113,7 +113,7 @@ def wu():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def mg():
     return FinancialServiceProviderFactory(
         name="MoneyGram",
@@ -140,7 +140,7 @@ def mg():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def token_user():
     user = UserFactory()
     user_permissions = [

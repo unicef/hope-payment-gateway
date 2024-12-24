@@ -20,13 +20,13 @@ from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.fsp.moneygram.client import (
-    InvalidToken,
+    InvalidTokenError,
     MoneyGramClient,
-    PayloadMissingKey,
+    PayloadMissingKeyError,
 )
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
-    InvalidCorridor,
+    InvalidCorridorError,
     PayloadException,
 )
 from hope_payment_gateway.apps.gateway.actions import (
@@ -118,7 +118,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             context["content"] = data
             return TemplateResponse(request, "request.html", context)
 
-        except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
+        except (PayloadException, InvalidCorridorError, PayloadMissingKeyError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
@@ -135,7 +135,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             payload = WesternUnionClient.create_validation_payload(payload)
             context.update(WesternUnionClient().send_money_validation(payload))
             return TemplateResponse(request, "request.html", context)
-        except (PayloadException, InvalidCorridor) as e:
+        except (PayloadException, InvalidCorridorError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
@@ -157,8 +157,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
             context.update(WesternUnionClient().query_status(obj.fsp_code, False))
-            return TemplateResponse(request, "request.html", context)
         messages.warning(request, "Missing MTCN")
+        return TemplateResponse(request, "request.html", context)
 
     @view(
         html_attrs={"style": "background-color:yellow;color:blue"},
@@ -170,8 +170,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
             context.update(WesternUnionClient().query_status(obj.fsp_code, True))
-            return TemplateResponse(request, "request.html", context)
         messages.warning(request, "Missing MTCN")
+        return TemplateResponse(request, "request.html", context)
 
     @view(
         html_attrs={"style": "background-color:yellow;color:blue"},
@@ -184,8 +184,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
             frm = obj.extra_data.get("foreign_remote_system", None)
             context.update(WesternUnionClient().search_request(frm, mtcn))
-            return TemplateResponse(request, "request.html", context)
         messages.warning(request, "Missing MTCN")
+        return TemplateResponse(request, "request.html", context)
 
     @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Cancel")
     def wu_cancel(self, request, pk) -> TemplateResponse:
@@ -212,10 +212,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             context["content"] = content
             return TemplateResponse(request, "request.html", context)
 
-        except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
+        except (PayloadException, InvalidCorridorError, PayloadMissingKeyError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -229,7 +229,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             client = MoneyGramClient()
             resp = client.create_transaction(obj.get_payload())
             return self.handle_mg_response(request, resp, pk, "Create Transaction")
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -239,7 +239,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             resp = MoneyGramClient().quote(obj.get_payload())
             return self.handle_mg_response(request, resp, pk, "Quote Transaction")
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -249,7 +249,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             resp = MoneyGramClient().query_status(obj.fsp_code, update=False)
             return self.handle_mg_response(request, resp, pk, "Status")
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -262,7 +262,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             resp = MoneyGramClient().query_status(obj.fsp_code, update=True)
             return self.handle_mg_response(request, resp, pk, "Status + Update")
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
         except TransitionNotAllowed as e:
@@ -277,7 +277,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             resp = MoneyGramClient().get_required_fields(obj.get_payload())
             return self.handle_mg_response(request, resp, pk, "Required Fields")
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -290,7 +290,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             resp = MoneyGramClient().get_service_options(obj.get_payload())
             return self.handle_mg_response(request, resp, pk, "Service Options")
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -300,7 +300,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
             return self.handle_mg_response(request, resp, pk, "Refund")
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -328,10 +328,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             button.visible = False
         return None
 
-    def handle_mg_response(self, request, resp, pk, title):
+    def handle_mg_response(self, request, resp, pk, title) -> None:
+        context = self.get_common_context(request, pk)
         if resp:
             if resp.status_code < 300:
-                context = self.get_common_context(request, pk)
                 context["title"] = title
                 context["format"] = "json"
                 context["content"] = resp.data
@@ -343,8 +343,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
                 messages.add_message(request, loglevel, msg)
         else:
             messages.add_message(request, messages.ERROR, "Connection Error")
+        return TemplateResponse(request, "request.html", context)
 
-    def handle_error(self, resp):
+    def handle_error(self, resp) -> tuple:
         msgs = []
         data = resp.data
         if 400 <= resp.status_code < 500:

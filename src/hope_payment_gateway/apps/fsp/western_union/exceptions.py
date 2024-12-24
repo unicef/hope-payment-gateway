@@ -1,4 +1,4 @@
-class InvalidCorridor(BaseException):
+class InvalidCorridorError(BaseException):
     pass
 
 
@@ -10,7 +10,7 @@ class InvalidRequest(BaseException):
     pass
 
 
-class PayloadMissingKey(PayloadException):
+class PayloadMissingKeyError(PayloadException):
     pass
 
 

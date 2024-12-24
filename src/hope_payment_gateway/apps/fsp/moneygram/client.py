@@ -38,15 +38,15 @@ from hope_payment_gateway.apps.gateway.models import (
 logger = logging.getLogger(__name__)
 
 
-class PayloadMissingKey(Exception):
+class PayloadMissingKeyError(Exception):
     pass
 
 
-class InvalidToken(Exception):
+class InvalidTokenError(Exception):
     pass
 
 
-class ExpiredToken(Exception):
+class ExpiredTokenError(Exception):
     pass
 
 
@@ -82,7 +82,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 logger.warning("Invalid token")
                 self.token = None
                 error = parsed_response["error"]
-                raise InvalidToken(f"{error['category']}: {error['message']}  [{error['code']}]")
+                raise InvalidTokenError(f"{error['category']}: {error['message']}  [{error['code']}]")
 
     def get_headers(self, request_id):
         headers = {
@@ -116,7 +116,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             "payment_record_code",
         ]:
             if not (key in base_payload and base_payload[key]):
-                raise PayloadMissingKey(f"InvalidPayload: {key} is missing in the payload")
+                raise PayloadMissingKeyError(f"InvalidPayload: {key} is missing in the payload")
         transaction_id = base_payload["payment_record_code"]
         payload = {
             "targetAudience": "AGENT_FACING",
@@ -252,8 +252,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 response = Response(response.json(), response.status_code)
                 if response.status_code == 200:
                     break
-                else:
-                    self.set_token()
+                self.set_token()
             except (
                 requests.exceptions.RequestException,
                 requests.exceptions.MissingSchema,

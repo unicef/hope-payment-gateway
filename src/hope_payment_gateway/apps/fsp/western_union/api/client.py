@@ -30,9 +30,9 @@ from hope_payment_gateway.apps.fsp.western_union.api import (
 )
 from hope_payment_gateway.apps.fsp.western_union.api.utils import integrate_payload
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
-    InvalidCorridor,
+    InvalidCorridorError,
     PayloadException,
-    PayloadMissingKey,
+    PayloadMissingKeyError,
 )
 from hope_payment_gateway.apps.fsp.western_union.models import (
     Corridor,
@@ -154,7 +154,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             "destination_currency",
         ]:
             if not (key in base_payload and base_payload[key]):
-                raise PayloadMissingKey(f"InvalidPayload: {key} is missing in the payload")
+                raise PayloadMissingKeyError(f"InvalidPayload: {key} is missing in the payload")
 
         counter_ids = base_payload.get("counter_id", "N/A")
         counter_id = random.choice(counter_ids) if isinstance(counter_ids, list) else counter_ids  # noqa
@@ -243,7 +243,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 ).template
 
             except Corridor.DoesNotExist:
-                raise InvalidCorridor(f"Invalid corridor for {country}/{currency}")
+                raise InvalidCorridorError(f"Invalid corridor for {country}/{currency}")
 
             payload = integrate_payload(payload, template)
 
@@ -298,7 +298,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.auth_code = smv_payload["mtcn"]
             pr.fsp_code = smv_payload["new_mtcn"]
             pr.save()
-        except (InvalidCorridor, PayloadException, TransitionNotAllowed) as exc:
+        except (InvalidCorridorError, PayloadException, TransitionNotAllowed) as exc:
             pr.message = str(exc)
             pr.status = PaymentRecordState.ERROR
             pr.success = False

@@ -15,8 +15,8 @@ from .fields import ChoiceArrayField
 
 @unique
 class Grant(Enum):
-    def _generate_next_value_(name: str, start: int, count: int, last_values: list[Any]) -> Any:
-        return name
+    def _generate_next_value_(self, start: int, count: int, last_values: list[Any]) -> Any:
+        return self
 
     API_READ_ONLY = auto()
     API_PLAN_UPLOAD = auto()
@@ -65,5 +65,5 @@ class APILogEntry(models.Model):
     method = models.CharField(max_length=10)
     status_code = models.IntegerField()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.token} {self.method} {self.timestamp}"

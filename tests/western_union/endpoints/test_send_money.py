@@ -178,7 +178,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
 
 
 @pytest.mark.parametrize(
-    "corridor_template,message",
+    ("corridor_template", "message"),
     [
         (
             {

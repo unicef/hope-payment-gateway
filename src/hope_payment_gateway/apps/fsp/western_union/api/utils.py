@@ -5,7 +5,7 @@ from hope_payment_gateway.apps.fsp.western_union.exceptions import (
 )
 
 
-def analyze_node(nodes, partial=None):
+def analyze_node(nodes, partial=None) -> list:
     if partial is None:
         partial = []
     for item in nodes:
@@ -24,9 +24,8 @@ def analyze_node(nodes, partial=None):
                 else:
                     news.append(biz)
             return news
-        else:
-            partial.append(item)
-            return partial
+        partial.append(item)
+    return partial
 
 
 def integrate_payload(payload, template):

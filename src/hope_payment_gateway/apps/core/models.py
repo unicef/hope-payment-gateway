@@ -25,5 +25,5 @@ class System(models.Model):
     class Meta:
         app_label = "core"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name

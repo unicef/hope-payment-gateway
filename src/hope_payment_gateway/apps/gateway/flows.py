@@ -10,19 +10,19 @@ from hope_payment_gateway.apps.gateway.models import (
 class PaymentInstructionFlow:
     state = fsm.State(PaymentInstructionState, default=PaymentInstructionState.DRAFT)
 
-    def __init__(self, obj):
+    def __init__(self, obj) -> None:
         self.object = obj
 
     @state.setter()
-    def _set_object_status(self, value):
+    def _set_object_status(self, value) -> None:
         self.object.status = value
 
     @state.getter()
-    def _get_object_status(self):
+    def _get_object_status(self) -> str:
         return self.object.status
 
     @state.on_success()
-    def _on_transition_success(self, description, source, target):
+    def _on_transition_success(self, description, source, target) -> None:
         self.object.save()
 
     @state.transition(
@@ -30,7 +30,7 @@ class PaymentInstructionFlow:
         target=PaymentInstructionState.OPEN,
         permission="western_union.change_paymentinstruction",
     )
-    def open(self):
+    def open(self) -> None:
         pass
 
     @state.transition(
@@ -38,7 +38,7 @@ class PaymentInstructionFlow:
         target=PaymentInstructionState.CLOSED,
         permission="western_union.change_paymentinstruction",
     )
-    def close(self):
+    def close(self) -> None:
         pass
 
     @state.transition(
@@ -46,7 +46,7 @@ class PaymentInstructionFlow:
         target=PaymentInstructionState.READY,
         permission="western_union.change_paymentinstruction",
     )
-    def ready(self):
+    def ready(self) -> None:
         pass
 
     @state.transition(
@@ -54,7 +54,7 @@ class PaymentInstructionFlow:
         target=PaymentInstructionState.PROCESSED,
         permission="western_union.change_paymentinstruction",
     )
-    def process(self):
+    def process(self) -> None:
         pass
 
     @state.transition(
@@ -67,7 +67,7 @@ class PaymentInstructionFlow:
         target=PaymentInstructionState.FINALIZED,
         permission="western_union.change_paymentinstruction",
     )
-    def finalize(self):
+    def finalize(self) -> None:
         pass
 
     @state.transition(
@@ -75,26 +75,26 @@ class PaymentInstructionFlow:
         target=PaymentInstructionState.ABORTED,
         permission="western_union.change_paymentinstruction",
     )
-    def abort(self):
+    def abort(self) -> None:
         pass
 
 
 class PaymentRecordFlow:
     state = fsm.State(PaymentRecordState, default=PaymentRecordState.PENDING)
 
-    def __init__(self, obj):
+    def __init__(self, obj) -> None:
         self.object = obj
 
     @state.setter()
-    def _set_object_status(self, value):
+    def _set_object_status(self, value) -> None:
         self.object.status = value
 
     @state.getter()
-    def _get_object_status(self):
+    def _get_object_status(self) -> str:
         return self.object.status
 
     @state.on_success()
-    def _on_transition_success(self, description, source, target):
+    def _on_transition_success(self, description, source, target) -> None:
         self.object.save()
 
     @state.transition(
@@ -102,7 +102,7 @@ class PaymentRecordFlow:
         target=PaymentRecordState.TRANSFERRED_TO_FSP,
         permission="western_union.change_paymentrecordlog",
     )
-    def store(self):
+    def store(self) -> None:
         pass
 
     @state.transition(
@@ -110,7 +110,7 @@ class PaymentRecordFlow:
         target=PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
         permission="western_union.change_paymentrecordlog",
     )
-    def confirm(self):
+    def confirm(self) -> None:
         pass
 
     @state.transition(
@@ -118,7 +118,7 @@ class PaymentRecordFlow:
         target=PaymentRecordState.PURGED,
         permission="western_union.change_paymentrecordlog",
     )
-    def purge(self):
+    def purge(self) -> None:
         pass
 
     @state.transition(
@@ -126,7 +126,7 @@ class PaymentRecordFlow:
         target=PaymentRecordState.REFUND,
         permission="western_union.change_paymentrecordlog",
     )
-    def refund(self):
+    def refund(self) -> None:
         pass
 
     @state.transition(
@@ -134,7 +134,7 @@ class PaymentRecordFlow:
         target=PaymentRecordState.CANCELLED,
         permission="western_union.change_paymentrecordlog",
     )
-    def cancel(self):
+    def cancel(self) -> None:
         pass
 
     @state.transition(
@@ -142,5 +142,5 @@ class PaymentRecordFlow:
         target=PaymentRecordState.ERROR,
         permission="western_union.change_paymentrecordlog",
     )
-    def fail(self):
+    def fail(self) -> None:
         pass

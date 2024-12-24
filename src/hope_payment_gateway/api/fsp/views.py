@@ -75,13 +75,9 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     filterset_class = PaymentInstructionFilter
     search_fields = ["external_code", "remote_id"]
 
-    def perform_create(self, serializer):
-        try:
-            owner = get_user_model().objects.get(apitoken=self.request.auth)
-            system = System.objects.get(owner=owner)
-        except System.DoesNotExist as exc:
-            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
-
+    def perform_create(self, serializer) -> None:
+        owner = get_user_model().objects.get(apitoken=self.request.auth)
+        system = System.objects.get(owner=owner)
         serializer.save(system=system)
 
     def _change_status(self, status):
