@@ -122,7 +122,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
             "autoCommit": "true",
             "sendAmount": {
-                "currencyCode": base_payload["origination_currency"],
+                "currencyCode": base_payload.get("origination_currency", "USD"),
                 "value": base_payload["amount"],
             },
             "sender": self.sender,
@@ -134,8 +134,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                         "lastName": base_payload["last_name"],
                     },
                     "address": {
-                        "line1": base_payload.get("address"),
-                        "city": base_payload.get("city"),
+                        # "line1": base_payload.get("address"), noqa
+                        # "city": base_payload.get("city"), noqa
                         "countryCode": base_payload["destination_country"],
                         "postalCode": base_payload.get("zip"),
                     },
@@ -176,7 +176,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code"),
                 "beneficiaryTypeCode": "Consumer",
                 "sendAmount": {
-                    "currencyCode": base_payload["origination_currency"],
+                    "currencyCode": base_payload.get("origination_currency", "USD"),
                     "value": base_payload["amount"],
                 },
             }
