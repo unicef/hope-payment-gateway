@@ -115,8 +115,6 @@ def test_prepare_transactions(mg):
                     },
                     "mobilePhone": {"number": "N/A", "countryDialCode": None},
                     "address": {
-                        "line1": None,
-                        "city": None,
                         "countryCode": "IT",
                         "postalCode": None,
                     },
