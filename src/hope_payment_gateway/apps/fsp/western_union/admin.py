@@ -10,7 +10,10 @@ from jsoneditor.forms import JSONEditor
 
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.api.request import requests_request
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.fsp.western_union.models import (
+    Corridor,
+    ServiceProviderCode,
+)
 
 
 @admin.register(Corridor)

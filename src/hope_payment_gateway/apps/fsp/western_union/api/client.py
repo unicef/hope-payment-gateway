@@ -16,17 +16,34 @@ from zeep.wsdl.utils import etree_to_string
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
-from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
-from hope_payment_gateway.apps.fsp.western_union.api import MONEY_IN_TIME, WALLET, WIC, WMF, agent, web
+from hope_payment_gateway.apps.fsp.utils import (
+    get_from_delivery_mechanism,
+    get_phone_number,
+)
+from hope_payment_gateway.apps.fsp.western_union.api import (
+    MONEY_IN_TIME,
+    WALLET,
+    WIC,
+    WMF,
+    agent,
+    web,
+)
 from hope_payment_gateway.apps.fsp.western_union.api.utils import integrate_payload
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
     InvalidCorridorError,
     PayloadException,
     PayloadMissingKeyError,
 )
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.fsp.western_union.models import (
+    Corridor,
+    ServiceProviderCode,
+)
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord, PaymentRecordState
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    PaymentRecord,
+    PaymentRecordState,
+)
 from hope_payment_gateway.config.settings import WESTERN_UNION_CERT, WESTERN_UNION_KEY
 
 logger = logging.getLogger(__name__)
@@ -678,7 +695,10 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                                         if field not in base:
                                             base[field] = {}
                                         base = base[field]
-                                if first_value == ["wallet_details", "service_provider_code"]:
+                                if first_value == [
+                                    "wallet_details",
+                                    "service_provider_code",
+                                ]:
                                     service_provider_code = True
                                 else:
                                     service_provider_code = False

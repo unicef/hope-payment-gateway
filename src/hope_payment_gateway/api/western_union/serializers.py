@@ -3,7 +3,10 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.fsp.western_union.models import (
+    Corridor,
+    ServiceProviderCode,
+)
 
 
 class CorridorSerializer(serializers.ModelSerializer):
