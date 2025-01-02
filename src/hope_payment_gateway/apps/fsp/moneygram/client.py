@@ -133,12 +133,6 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                         "middleName": base_payload.get("middle_name", ""),
                         "lastName": base_payload["last_name"],
                     },
-                    "address": {
-                        # "line1": base_payload.get("address"), noqa
-                        # "city": base_payload.get("city"), noqa
-                        "countryCode": base_payload["destination_country"],
-                        "postalCode": base_payload.get("zip"),
-                    },
                     "mobilePhone": {
                         "number": phone_number,
                         "countryDialCode": country_code,

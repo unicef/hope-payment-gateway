@@ -114,10 +114,6 @@ def test_prepare_transactions(mg):
                         "lastName": "Smith",
                     },
                     "mobilePhone": {"number": "N/A", "countryDialCode": None},
-                    "address": {
-                        "countryCode": "IT",
-                        "postalCode": None,
-                    },
                 }
             },
             "targetAccount": {
