@@ -54,11 +54,14 @@ def moneygram_notify(to_process_ids: list[PaymentRecord]) -> None:
 
 
 @app.task
-def moneygram_update() -> None:
-    client = MoneyGramClient()
-    for record in PaymentRecord.objects.select_related("parent__fsp").filter(
+def moneygram_update(ids=None) -> None:
+    qs = PaymentRecord.objects.select_related("parent__fsp").filter(
         parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         parent__status=PaymentInstructionState.PROCESSED,
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
-    ):
+    )
+    client = MoneyGramClient()
+    if ids:
+        qs = qs.filter(id__in=ids)
+    for record in qs:
         client.query_status(record.fsp_code, True)

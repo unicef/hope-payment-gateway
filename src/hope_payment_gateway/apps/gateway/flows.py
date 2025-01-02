@@ -2,10 +2,10 @@ from viewflow import fsm
 from viewflow.fsm import State
 
 from hope_payment_gateway.apps.gateway.models import (
-    PaymentInstructionState,
-    PaymentRecordState,
-    PaymentRecord,
     PaymentInstruction,
+    PaymentInstructionState,
+    PaymentRecord,
+    PaymentRecordState,
 )
 
 

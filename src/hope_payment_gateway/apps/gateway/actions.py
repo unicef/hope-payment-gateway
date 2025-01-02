@@ -6,16 +6,20 @@ from typing import Iterable
 
 from django import forms
 from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponse, StreamingHttpResponse
 from django.template import Context, Template
 from django.utils import dateformat
 from django.utils.encoding import smart_str
 from django.utils.timezone import get_default_timezone
+from django.utils.translation import gettext_lazy as _
 
 from adminactions.api import Echo, csv_options_default
 from adminactions.export import base_export
 from adminactions.forms import CSVConfigForm
+from constance import config
 
+from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
 
 
@@ -160,3 +164,12 @@ def export_as_template(modeladmin, request, queryset):
 
 
 export_as_template.short_description = "Export as Template"
+
+
+def moneygram_update_status(modeladmin, request, queryset):
+    qs = queryset.filter(parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER)
+    messages.info(request, _(f"Updating {qs.count()}"))
+    moneygram_update(qs.values_list("id", flat=True))
+
+
+moneygram_update_status.short_description = "MoneyGram: update status"
