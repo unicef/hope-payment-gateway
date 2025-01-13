@@ -12,4 +12,4 @@ def test_webhook_notification_ko_invalid_payload(mg):
     code = "code"
     dm = DeliveryMechanismFactory(code=code)
     FinancialServiceProviderConfigFactory(fsp=mg, delivery_mechanism=dm)
-    MoneyGramHandler.get_configuration(config_key, code)
+    MoneyGramHandler(mg).get_configuration(config_key, code)
