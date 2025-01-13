@@ -104,6 +104,7 @@ class PaymentInstruction(TimeStampedModel):
                 self.extra["config_key"],
                 self.extra.get("delivery_mechanism", "cash_over_the_counter"),  # temp fix
             )
+            payload.update(self.extra)
             payload.update(config_payload)
         return payload
 
