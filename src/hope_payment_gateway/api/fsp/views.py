@@ -104,6 +104,10 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         return self._change_status("close")
 
     @action(detail=True, methods=["post"])
+    def finalize(self, request, remote_id=None):
+        return self._change_status("finalize")
+
+    @action(detail=True, methods=["post"])
     def process(self, request, remote_id=None):
         return self._change_status("process")
 

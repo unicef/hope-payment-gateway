@@ -82,10 +82,11 @@ def export_as_template_impl(  # noqa
     else:
         response = out
 
-    config = csv_options_default if options is None else csv_options_default.copy().update(options)
+    config = csv_options_default.copy()
+    if options:
+        config.update(options)
 
     templates = [Template(template) for template in fields]
-
     buffer_object = Echo() if streaming_enabled else response
 
     dialect = config.get("dialect", None)
