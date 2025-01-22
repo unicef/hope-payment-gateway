@@ -291,7 +291,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.refresh_from_db()
             if response["code"] != 200:
                 pr.message = f"Validation failed: {response['error']}"
-                pr.success = False
+                pr.status, pr.success = PaymentRecordState.ERROR, False
                 pr.save()
                 return pr
             smv_payload = serialize_object(response["content"])
