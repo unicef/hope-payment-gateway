@@ -105,6 +105,7 @@ class NisNotificationView(WesternUnionApi):
                 pr.success = True
                 pr.message = "Transferred to Beneficiary by Push Notification"
                 pr.payout_amount = payout_amount / 100
+                pr.payout_date = payload["money_transfer_control"]["date"]
                 pr.extra_data.update(
                     {
                         "mtcn": mtcn,

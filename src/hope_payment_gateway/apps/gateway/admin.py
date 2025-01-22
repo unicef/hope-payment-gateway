@@ -67,6 +67,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         "success",
         "remote_id",
         "payout_amount",
+        "payout_date",
         "fsp_code",
         "auth_code",
         "marked_for_payment",

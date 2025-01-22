@@ -2,21 +2,23 @@
     "p_record": {
         "master": {
             "model": "gateway.paymentrecord",
-            "pk": 14,
+            "pk": 748,
             "fields": {
-                "created": "2024-05-14T08:02:49.283Z",
-                "modified": "2024-05-14T08:02:49.283Z",
-                "remote_id": "dRKhMsfMpJBH",
+                "created": "2025-01-22T15:48:46.492Z",
+                "modified": "2025-01-22T15:48:46.492Z",
                 "parent": 750,
-                "record_code": "EwuAweALlmDP",
-                "fsp_code": null,
-                "success": null,
+                "remote_id": "gvdoTeyvNklW",
+                "record_code": "OpvvDpkFGVtX",
                 "status": "PENDING",
+                "success": null,
                 "message": null,
+                "auth_code": null,
+                "fsp_code": null,
                 "payload": {},
                 "extra_data": {},
-                "auth_code": null,
-                "payout_amount": null
+                "payout_amount": null,
+                "payout_date": null,
+                "marked_for_payment": false
             }
         },
         "deps": [
@@ -26,13 +28,13 @@
                 "fields": {
                     "created": "2024-04-30T13:26:18.564Z",
                     "modified": "2024-04-30T13:26:18.564Z",
-                    "remote_id": "sQMWBLWUnMnJ",
-                    "external_code": "",
-                    "status": "DRAFT",
-                    "payload": {},
                     "fsp": 717,
                     "system": 758,
+                    "external_code": "",
+                    "remote_id": "sQMWBLWUnMnJ",
+                    "status": "DRAFT",
                     "tag": null,
+                    "payload": {},
                     "extra": {}
                 }
             },
