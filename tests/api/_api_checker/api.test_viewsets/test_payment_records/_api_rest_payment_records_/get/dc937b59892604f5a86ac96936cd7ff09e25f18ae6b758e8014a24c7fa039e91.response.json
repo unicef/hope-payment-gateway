@@ -5,24 +5,25 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "270",
+        "Content-Length": "290",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
     },
     "data": [
         {
-            "id": 14,
-            "remote_id": "dRKhMsfMpJBH",
-            "created": "2024-05-14T03:02:49.283000-05:00",
-            "modified": "2024-05-14T03:02:49.283000-05:00",
-            "record_code": "EwuAweALlmDP",
+            "id": 748,
+            "remote_id": "gvdoTeyvNklW",
+            "created": "2025-01-22T09:48:46.492000-06:00",
+            "modified": "2025-01-22T09:48:46.492000-06:00",
+            "record_code": "OpvvDpkFGVtX",
             "fsp_code": null,
             "auth_code": null,
             "parent": "sQMWBLWUnMnJ",
             "status": "PENDING",
             "message": null,
-            "payout_amount": null
+            "payout_amount": null,
+            "payout_date": null
         }
     ],
     "content_type": "application/json"

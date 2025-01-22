@@ -155,6 +155,7 @@ class PaymentRecord(TimeStampedModel):
     extra_data = models.JSONField(default=dict, null=True, blank=True)
 
     payout_amount = models.DecimalField(decimal_places=2, max_digits=12, null=True, blank=True)
+    payout_date = models.DateField(null=True, blank=True)
 
     marked_for_payment = models.BooleanField(default=False)
 

@@ -147,6 +147,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "status",
             "message",
             "payout_amount",
+            "payout_date",
         )
 
 
