@@ -369,7 +369,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             status = {"PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY}.get(wu_status)
             if pr.status != status:
                 if status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
-                    pr.message = "Payment Record update by manual sync"
+                    pr.message = "Transferred to Beneficiary by manual sync"
                     pr.success = True
                     flow.confirm()
                 pr.save()

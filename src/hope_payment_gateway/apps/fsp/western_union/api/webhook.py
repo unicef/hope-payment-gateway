@@ -103,6 +103,7 @@ class NisNotificationView(WesternUnionApi):
             if notification_type in [SUCCESS, SUCCESS_APN]:
                 flow.confirm()
                 pr.success = True
+                pr.message = "Transferred to Beneficiary by Push Notification"
                 pr.payout_amount = payout_amount / 100
                 pr.extra_data.update(
                     {
@@ -112,11 +113,15 @@ class NisNotificationView(WesternUnionApi):
                 )
             elif notification_type in [CANCEL, REJECT_APN]:
                 flow.cancel()
+                pr.message = "Cancelled by Push Notification"
             elif notification_type == PURGED:
                 flow.purge()
+                pr.message = "Purged by Push Notification"
             elif notification_type == REFUND:
+                pr.message = "Refund by Push Notification"
                 flow.refund()
             else:
+                pr.message = "Error in Push Notification"
                 flow.fail()
         except TransitionNotAllowed:
             return Response({"error": "transition_not_allowed"}, status=HTTP_400_BAD_REQUEST)
