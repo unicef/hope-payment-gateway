@@ -16,3 +16,4 @@ class UserAdminPlus(UserAdminPlus):
 class SystemAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_display = ("name", "owner")
+    raw_id_fields = ("owner",)

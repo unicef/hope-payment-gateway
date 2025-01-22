@@ -32,6 +32,8 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     search_fields = (
         "description",
         "template_code",
+        "destination_country",
+        "destination_currency",
     )
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
@@ -62,9 +64,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
         context = self.get_common_context(request)
         context["msg"] = (
-            "Countries with related iso codes \n "
-            f"PARAM: identifier -> {identifier} \n"
-            f"PARAM: counter_id -> {counter_id}"
+            f"Countries with related iso codes \n PARAM: identifier -> {identifier} \nPARAM: counter_id -> {counter_id}"
         )
         context.update(WesternUnionClient().das_origination_currencies(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
@@ -93,9 +93,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
         context["msg"] = (
-            f"List of destination countries \n"
-            f"PARAM: identifier -> {identifier} \n"
-            f"PARAM: counter_id -> {counter_id}"
+            f"List of destination countries \nPARAM: identifier -> {identifier} \nPARAM: counter_id -> {counter_id}"
         )
         context.update(WesternUnionClient().das_destination_countries(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)

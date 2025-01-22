@@ -75,8 +75,10 @@ class PaymentInstructionState(models.TextChoices):
 
 
 class PaymentInstruction(TimeStampedModel):
-    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
+    system = models.ForeignKey(System, on_delete=models.CASCADE)
     external_code = models.CharField(max_length=255, db_index=True)
+    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     status = models.CharField(
         max_length=50,
         default=PaymentInstructionState.DRAFT,
@@ -84,11 +86,9 @@ class PaymentInstruction(TimeStampedModel):
         db_index=True,
     )
 
+    tag = models.CharField(null=True, blank=True)
     payload = models.JSONField(default=dict, null=True, blank=True)
 
-    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
-    system = models.ForeignKey(System, on_delete=models.CASCADE)
-    tag = models.CharField(null=True, blank=True)
     extra = models.JSONField(default=dict, null=True, blank=True)
 
     class Meta:
@@ -123,9 +123,18 @@ class PaymentRecordState(models.TextChoices):
 
 
 class PaymentRecord(TimeStampedModel):
-    remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
+    remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
     record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
+
+    status = models.CharField(
+        max_length=50,
+        default=PaymentRecordState.PENDING,
+        choices=PaymentRecordState.choices,
+        db_index=True,
+    )
+    success = models.BooleanField(null=True, blank=True)
+    message = models.CharField(max_length=4096, null=True, blank=True)
 
     auth_code = models.CharField(
         max_length=64,
@@ -134,8 +143,6 @@ class PaymentRecord(TimeStampedModel):
         blank=True,
         help_text="MTCN for western union, reference number for MoneyGram",
     )
-    # Western Union MTCN
-    # MoneyGram reference_number
 
     fsp_code = models.CharField(
         max_length=64,
@@ -144,15 +151,6 @@ class PaymentRecord(TimeStampedModel):
         blank=True,
         help_text="new MTCN for western union, transaction id for MoneyGram",
     )
-
-    success = models.BooleanField(null=True, blank=True)
-    status = models.CharField(
-        max_length=50,
-        default=PaymentRecordState.PENDING,
-        choices=PaymentRecordState.choices,
-        db_index=True,
-    )
-    message = models.CharField(max_length=4096, null=True, blank=True)
     payload = models.JSONField(default=dict, null=True, blank=True)
     extra_data = models.JSONField(default=dict, null=True, blank=True)
 
@@ -172,11 +170,11 @@ class PaymentRecord(TimeStampedModel):
 
 
 class ExportTemplate(models.Model):
-    query = models.TextField()
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
-    config_key = models.CharField(max_length=32)
     delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="template")
+    config_key = models.CharField(max_length=32)
     strategy = StrategyField(registry=export_registry)
+    query = models.TextField()
 
     header = models.BooleanField(default=True)
     delimiter = models.CharField(choices=list(zip(delimiters, delimiters, strict=True)), default=",")
