@@ -61,22 +61,23 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     list_display = (
         "record_code",
         "fsp",
-        "fsp_code",
         "parent",
         "status",
         "message",
         "success",
         "remote_id",
-        "auth_code",
         "payout_amount",
+        "fsp_code",
+        "auth_code",
         "marked_for_payment",
     )
-    list_filter = (("parent", AutoCompleteFilter), "status", "success", "parent__fsp")
-    search_fields = ("record_code", "fsp_code", "auth_code", "message")
+    list_filter = ("parent__fsp", ("parent", AutoCompleteFilter), "status", "success")
+    search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
     readonly_fields = ("extra_data",)
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
+    raw_id_fields = ("parent",)
 
     actions = [export_as_template, moneygram_update_status]
 
@@ -153,7 +154,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
-            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+            context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
             context.update(WesternUnionClient().query_status(obj.fsp_code, False))
         messages.warning(request, "Missing MTCN")
         return TemplateResponse(request, "request.html", context)
@@ -166,7 +167,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
-            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+            context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
             context.update(WesternUnionClient().query_status(obj.fsp_code, True))
         messages.warning(request, "Missing MTCN")
         return TemplateResponse(request, "request.html", context)
@@ -179,7 +180,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
-            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+            context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
             frm = obj.extra_data.get("foreign_remote_system", None)
             context.update(WesternUnionClient().search_request(frm, mtcn))
         messages.warning(request, "Missing MTCN")
@@ -190,7 +191,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
-            context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
+            context["obj"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
         log = WesternUnionClient().refund(obj.fsp_code, obj.extra_data)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
@@ -378,12 +379,13 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("external_code", "status", "remote_id")
-    list_filter = ("status",)
-    search_fields = ("external_code",)
+    list_display = ("external_code", "remote_id", "fsp", "status", "tag")
+    list_filter = ("fsp", "status")
+    search_fields = ("external_code", "remote_id", "fsp__name", "tag")
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
+    raw_id_fields = ("fsp", "system")
 
     @button()
     def export(self, request: HttpRequest, pk: int) -> TemplateResponse:
@@ -496,9 +498,11 @@ class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
+    list_filter = ("transfer_type",)
 
 
 @admin.register(ExportTemplate)
 class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("fsp", "config_key", "delivery_mechanism")
-    search_fields = ("config_key", "delivery_mechanism__name")
+    list_display = ("fsp", "delivery_mechanism", "config_key")
+    search_fields = ("config_key", "delivery_mechanism__name", "fsp__name")
+    raw_id_fields = ("fsp", "delivery_mechanism")

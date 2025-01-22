@@ -306,7 +306,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             return pr
 
         if response["code"] != 200:
-            pr.message = f'Send Money Validation: {response["error"]}'
+            pr.message = f"Send Money Validation: {response['error']}"
             pr.success = False
             pr.auth_code = smv_payload["mtcn"]
             pr.fsp_code = smv_payload["new_mtcn"]
@@ -343,7 +343,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.marked_for_payment = False
             flow.store()
         else:
-            pr.message, pr.success = f'Send Money Store: {response["error"]}', False
+            pr.message, pr.success = f"Send Money Store: {response['error']}", False
             flow.fail()
         pr.extra_data.update(log_data)
         pr.save()
