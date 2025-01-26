@@ -12,6 +12,7 @@ from django.http import HttpRequest
 from admin_extra_buttons.decorators import button
 from adminfilters.autocomplete import AutoCompleteFilter
 from smart_admin.modeladmin import SmartModelAdmin
+from unicef_security.admin import is_superuser
 
 from .fields import ChoiceArrayField
 from .models import APILogEntry, APIToken
@@ -115,7 +116,7 @@ class APITokenAdmin(SmartModelAdmin):
                 messages.ERROR,
             )
 
-    @button()
+    @button(permission=is_superuser)
     def resend_email(self, request: HttpRequest, pk: int) -> None:
         obj = self.get_object(request, str(pk))
         self._send_token_email(request, obj, TOKEN_INFO_EMAIL)
