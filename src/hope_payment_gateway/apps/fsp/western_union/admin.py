@@ -7,6 +7,7 @@ from admin_extra_buttons.decorators import button, choice, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from constance import config
 from jsoneditor.forms import JSONEditor
+from unicef_security.admin import is_superuser
 
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.api.request import requests_request
@@ -39,13 +40,13 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         JSONField: {"widget": JSONEditor},
     }
 
-    @button()
+    @button(permissions=is_superuser)
     def request(self, request) -> TemplateResponse:
         context = self.get_common_context(request)
         context.update(requests_request())
         return TemplateResponse(request, "request.html", context)
 
-    @view()
+    @view(permission="western_union.das_countries_currencies")
     def das_countries_currencies(self, request) -> TemplateResponse:
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
@@ -58,7 +59,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         context.update(WesternUnionClient().das_countries_currencies(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
-    @view()
+    @view(permission="western_union.das_origination_currencies")
     def das_origination_currencies(self, request) -> TemplateResponse:
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
@@ -69,7 +70,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         context.update(WesternUnionClient().das_origination_currencies(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
-    @view()
+    @view(permission="western_union.das_destination_currencies")
     def das_destination_currencies(self, request) -> TemplateResponse:
         destination_country = request.GET.get("destination_country", "US")
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
@@ -85,7 +86,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         context.update(WesternUnionClient().das_destination_currencies(destination_country, identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
-    @view()
+    @view(permission="western_union.das_destination_countries")
     def das_destination_countries(self, request) -> TemplateResponse:
         context = self.get_common_context(request)
         context["msg"] = "List of destination countries"
@@ -98,7 +99,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         context.update(WesternUnionClient().das_destination_countries(identifier, counter_id))
         return TemplateResponse(request, "request.html", context)
 
-    @view()
+    @view(permission="western_union.das_delivery_services")
     def das_delivery_services(self, request) -> TemplateResponse:
         destination_country = request.GET.get("destination_country", "PH")
         destination_currency = request.GET.get("destination_currency", "PHP")
@@ -131,7 +132,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         ]
         return button
 
-    @button()
+    @button(permission="western_union.das_delivery_services")
     def delivery_services(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.model.objects.get(pk=pk)
         destination_country = obj.destination_country
@@ -153,7 +154,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         )
         return TemplateResponse(request, "request.html", context)
 
-    @view()
+    @view(permission="western_union.das_delivery_option_template")
     def das_delivery_option_template(self, request) -> TemplateResponse:  # noqa
         destination_country = request.GET.get("destination_country", "PH")
         destination_currency = request.GET.get("destination_currency", "PHP")
@@ -180,7 +181,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         )
         return TemplateResponse(request, "request.html", context)
 
-    @button()
+    @button(permission="western_union.das_delivery_option_template")
     def delivery_option_template(self, request: HttpRequest, pk: int) -> TemplateResponse:
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)

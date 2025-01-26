@@ -193,6 +193,10 @@ class ExportTemplate(models.Model):
 
     class Meta:
         unique_together = ("fsp", "config_key")
+        permissions = (
+            ("can_import_records", "Can Import Records"),
+            ("can_export_records", "Can Export Records"),
+        )
 
     def __str__(self) -> str:
         return f"{self.fsp} / {self.config_key}"
