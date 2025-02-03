@@ -95,10 +95,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         return headers
 
     @staticmethod
-    def get_basic_payload():
+    def get_basic_payload(agent_partner):
         return {
             "targetAudience": "AGENT_FACING",
-            "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
+            "agentPartnerId": agent_partner,
             "userLanguage": "en-US",
         }
 
@@ -107,53 +107,46 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         raw_phone_no = base_payload.get("phone_no", "N/A")
         phone_number, country_code = get_phone_number(raw_phone_no)
 
-        for key in [
-            "first_name",
-            "last_name",
-            "amount",
-            "destination_country",
-            "destination_currency",
-            "payment_record_code",
-        ]:
-            if not (key in base_payload and base_payload[key]):
-                raise PayloadMissingKeyError(f"InvalidPayload: {key} is missing in the payload")
-        transaction_id = base_payload["payment_record_code"]
-        payload = {
-            "targetAudience": "AGENT_FACING",
-            "agentPartnerId": settings.MONEYGRAM_PARTNER_ID,
-            "userLanguage": "en-US",
-            "destinationCountryCode": base_payload["destination_country"],
-            "receiveCurrencyCode": base_payload["destination_currency"],
-            "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
-            "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
-            "autoCommit": "true",
-            "sendAmount": {
-                "currencyCode": base_payload.get("origination_currency", "USD"),
-                "value": base_payload["amount"],
-            },
-            "sender": self.sender,
-            "beneficiary": {
-                "consumer": {
-                    "name": {
-                        "firstName": base_payload["first_name"],
-                        "middleName": base_payload.get("middle_name", ""),
-                        "lastName": base_payload["last_name"],
-                    },
-                    "mobilePhone": {
-                        "number": phone_number,
-                        "countryDialCode": country_code,
-                    },
-                }
-            },
-            "targetAccount": {
-                "accountNumber": get_from_delivery_mechanism(base_payload, "bank_account_number"),
-                "bankName": get_from_delivery_mechanism(base_payload, "bank_name"),
-            },
-            "receipt": {
-                "primaryLanguage": base_payload.get("receipt_primary_language", None),
-                "secondaryLanguage": base_payload.get("receipt_secondary_language", None),
-            },
-        }
+        try:
+            transaction_id = base_payload["payment_record_code"]
+            payload = {
+                "targetAudience": "AGENT_FACING",
+                "agentPartnerId": base_payload["agent_partner_id"],
+                "userLanguage": "en-US",
+                "destinationCountryCode": base_payload["destination_country"],
+                "receiveCurrencyCode": base_payload["destination_currency"],
+                "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
+                "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
+                "autoCommit": "true",
+                "sendAmount": {
+                    "currencyCode": base_payload.get("origination_currency", "USD"),
+                    "value": base_payload["amount"],
+                },
+                "sender": self.sender,
+                "beneficiary": {
+                    "consumer": {
+                        "name": {
+                            "firstName": base_payload["first_name"],
+                            "middleName": base_payload.get("middle_name", ""),
+                            "lastName": base_payload["last_name"],
+                        },
+                        "mobilePhone": {
+                            "number": phone_number,
+                            "countryDialCode": country_code,
+                        },
+                    }
+                },
+                "targetAccount": {
+                    "accountNumber": get_from_delivery_mechanism(base_payload, "bank_account_number"),
+                    "bankName": get_from_delivery_mechanism(base_payload, "bank_name"),
+                },
+                "receipt": {
+                    "primaryLanguage": base_payload.get("receipt_primary_language", None),
+                    "secondaryLanguage": base_payload.get("receipt_secondary_language", None),
+                },
+            }
+        except KeyError as e:
+            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload")
         return transaction_id, payload
 
     def create_transaction(self, base_payload, update=True):
@@ -169,7 +162,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
     def prepare_quote(self, base_payload: dict):
         transaction_id = base_payload["payment_record_code"]
-        payload = self.get_basic_payload()
+        payload = self.get_basic_payload(base_payload["agent_partner_id"])
         payload.update(
             {
                 "destinationCountryCode": base_payload["destination_country"],
@@ -189,15 +182,15 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         transaction_id, payload = self.prepare_quote(base_payload)
         return self.perform_request(endpoint, transaction_id, payload, "post")
 
-    def status(self, transaction_id):
+    def status(self, transaction_id, agent_partner):
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
-        payload = self.get_basic_payload()
+        payload = self.get_basic_payload(agent_partner)
         status_transaction_id = str(uuid.uuid4())
         return self.perform_request(endpoint, status_transaction_id, payload)
 
-    def query_status(self, transaction_id, update):
+    def query_status(self, transaction_id, agent_partner, update):
         """Query MoneyGram to get information regarding the transaction status."""
-        response = self.status(transaction_id)
+        response = self.status(transaction_id, agent_partner)
         if update:
             pr = PaymentRecord.objects.get(
                 fsp_code=transaction_id,
@@ -210,7 +203,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
     def get_required_fields(self, base_payload):
         endpoint = "/reference-data/v1/transaction-fields-send"
-        payload = self.get_basic_payload()
+        payload = self.get_basic_payload(base_payload["agent_partner_id"])
         transaction_id = str(uuid.uuid4())
         payload.update(
             {
@@ -226,7 +219,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
     def get_service_options(self, base_payload):
         endpoint = "/reference-data/v1/service-options"
-        payload = self.get_basic_payload()
+        payload = self.get_basic_payload(base_payload["agent_partner_id"])
         transaction_id = str(uuid.uuid4())
         payload["destinationCountryCode"] = base_payload["destination_country"]
         return self.perform_request(endpoint, transaction_id, payload)
@@ -295,7 +288,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
     def refund(self, transaction_id, base_payload):
         endpoint = f"/disbursement/refund/v1/transactions/{transaction_id}"
-        payload = self.get_basic_payload()
+        payload = self.get_basic_payload(base_payload["agent_partner_id"])
         status_transaction_id = str(uuid.uuid4())
         payload["refundReasonCode"] = base_payload.get("refuse_reason_code")
         resp = self.perform_request(endpoint, status_transaction_id, payload)
@@ -306,7 +299,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             )
             pr.message = "Request per REFUND"
             pr.save()
-            payload = self.get_basic_payload()
+            payload = self.get_basic_payload(base_payload["agent_partner_id"])
             payload["refundId"] = resp.data["refundId"]
 
             endpoint = f"/disbursement/refund/v1/transactions/{transaction_id}/commit"
