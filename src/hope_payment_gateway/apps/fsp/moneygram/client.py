@@ -152,8 +152,23 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
     def create_transaction(self, base_payload, update=True):
         """Create a transaction to MoneyGram."""
         endpoint = "/disbursement/v1/transactions"
-        transaction_id, payload = self.prepare_transaction(base_payload)
-        response = self.perform_request(endpoint, transaction_id, payload, "post")
+        try:
+            transaction_id, payload = self.prepare_transaction(base_payload)
+            response = self.perform_request(endpoint, transaction_id, payload, "post")
+        except (PayloadMissingKeyError, ValueError, TypeError) as e:
+            record_code = base_payload["payment_record_code"]
+            pr = PaymentRecord.objects.get(
+                record_code=record_code,
+                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+            )
+            flow = PaymentRecordFlow(pr)
+            flow.fail()
+            pr.message = e.args[0]
+            pr.save()
+            response = Response(
+                {"errors": [{"code": "validation_error", "message": e.args[0]}]},
+                status=HTTP_400_BAD_REQUEST,
+            )
 
         if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
