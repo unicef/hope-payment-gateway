@@ -1,6 +1,8 @@
 import base64
 import binascii
 import logging
+from contextlib import suppress
+from datetime import datetime
 
 from django.conf import settings
 
@@ -91,6 +93,12 @@ class MoneyGramWebhook(MoneyGramApi):
     @staticmethod
     def update_record(pr, payload):
         notification_type = payload["eventPayload"]["transactionStatus"]
+
+        with suppress(KeyError, ValueError):
+            pr.payout_date = datetime.strptime(
+                payload["eventPayload"]["transactionStatusDate"], "%Y-%m-%dT%H:%M:%S.%f"
+            ).date()
+
         update_status(pr, notification_type)
 
         pr.extra_data.update(

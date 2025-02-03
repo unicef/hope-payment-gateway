@@ -167,7 +167,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         if mtcn := obj.extra_data.get("mtcn", None):
             context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
             context.update(WesternUnionClient().query_status(obj.fsp_code, False))
-        messages.warning(request, "Missing MTCN")
+        else:
+            messages.warning(request, "Missing MTCN")
         return TemplateResponse(request, "request.html", context)
 
     @view(
@@ -245,8 +246,11 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             client = MoneyGramClient()
-            resp = client.create_transaction(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Create Transaction")
+            try:
+                resp = client.create_transaction(obj.get_payload())
+                return self.handle_mg_response(request, resp, pk, "Create Transaction")
+            except KeyError as e:
+                self.message_user(request, f"Keyerror: {str(e)}", messages.ERROR)
         except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
@@ -273,7 +277,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, update=False)
+            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_parent_id"], update=False)
             return self.handle_mg_response(request, resp, pk, "Status")
         except InvalidTokenError as e:
             logger.error(e)
@@ -287,7 +291,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, update=True)
+            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_parent_id"], update=True)
             return self.handle_mg_response(request, resp, pk, "Status + Update")
         except InvalidTokenError as e:
             logger.error(e)

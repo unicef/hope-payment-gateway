@@ -146,107 +146,103 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     @staticmethod
     def create_validation_payload(base_payload):
-        for key in [
-            "first_name",
-            "last_name",
-            "amount",
-            "destination_country",
-            "destination_currency",
-        ]:
-            if not (key in base_payload and base_payload[key]):
-                raise PayloadMissingKeyError(f"InvalidPayload: {key} is missing in the payload")
-
-        counter_ids = base_payload.get("counter_id", "N/A")
-        counter_id = random.choice(counter_ids) if isinstance(counter_ids, list) else counter_ids  # noqa
-        transaction_type = base_payload.get("transaction_type", WMF)
-        frm = {
-            "identifier": base_payload.get("identifier", "N/A"),
-            "reference_no": base_payload.get("payment_record_code", "N/A"),
-            "counter_id": counter_id,
-        }
-
-        delivery_phone_number = get_from_delivery_mechanism(base_payload, "delivery_phone_number")
-        phone_number, country_code = get_phone_number(delivery_phone_number)
-        contact_no = base_payload.get("phone_no", "N/A")
-
-        receiver = {
-            "name": {
-                "first_name": base_payload["first_name"],
-                "last_name": base_payload["last_name"],
-                "name_type": "D",
-            },
-            "contact_phone": contact_no,
-            "mobile_phone": {
-                "phone_number": {
-                    "country_code": country_code,
-                    "national_number": phone_number,
-                },
-            },
-            "reason_for_sending": base_payload.get("reason_for_sending", None),
-        }
-        amount_key = "destination_principal_amount" if transaction_type == WMF else "originators_principal_amount"
-        financials = {
-            amount_key: int(float(base_payload["amount"]) * 100),
-        }
-        payment_details = {
-            "recording_country_currency": {  # sending country
-                "iso_code": {
-                    "country_code": base_payload.get("origination_country", "US"),
-                    "currency_code": base_payload.get("origination_currency", "USD"),
-                },
-            },
-            "destination_country_currency": {  # destination
-                "iso_code": {
-                    "country_code": base_payload["destination_country"],
-                    "currency_code": base_payload["destination_currency"],
-                },
-            },
-            "originating_country_currency": {  # sending country
-                "iso_code": {
-                    "country_code": base_payload.get("origination_country", "US"),
-                    "currency_code": base_payload.get("origination_currency", "USD"),
-                },
-            },
-            "transaction_type": transaction_type,
-            "payment_type": "Cash",
-            "duplicate_detection_flag": base_payload.get("duplication_enabled", "D"),
-        }
-
-        delivery_services = {"code": base_payload.get("delivery_services_code", MONEY_IN_TIME)}
-        partner_notification = {"partner_notification": {"notification_requested": "Y"}}
-
-        payload = FinancialServiceProvider.objects.get(
-            vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
-        ).configuration.copy()
-        payload.update(
-            {
-                "device": web,
-                "receiver": receiver,
-                "payment_details": payment_details,
-                "financials": financials,
-                "delivery_services": delivery_services,
-                "foreign_remote_system": frm,
-                "partner_info_buffer": partner_notification,
-                "wallet_details": {
-                    "service_provider_code": get_from_delivery_mechanism(base_payload, "service_provider_code")
-                },
+        try:
+            counter_ids = base_payload.get("counter_id", "N/A")
+            counter_id = (
+                random.choice(counter_ids)  # noqa
+                if isinstance(counter_ids, list)
+                else counter_ids
+            )
+            transaction_type = base_payload.get("transaction_type", WMF)
+            frm = {
+                "identifier": base_payload.get("identifier", "N/A"),
+                "reference_no": base_payload.get("payment_record_code", "N/A"),
+                "counter_id": counter_id,
             }
-        )
 
-        if "delivery_services_code" in base_payload and base_payload["delivery_services_code"] == WALLET:
-            country = base_payload["destination_country"]
-            currency = base_payload["destination_currency"]
-            try:
-                template = Corridor.objects.get(
-                    destination_country=country,
-                    destination_currency=currency,
-                ).template
+            delivery_phone_number = get_from_delivery_mechanism(base_payload, "delivery_phone_number")
+            phone_number, country_code = get_phone_number(delivery_phone_number)
+            contact_no = base_payload.get("phone_no", "N/A")
 
-            except Corridor.DoesNotExist:
-                raise InvalidCorridorError(f"Invalid corridor for {country}/{currency}")
+            receiver = {
+                "name": {
+                    "first_name": base_payload["first_name"],
+                    "last_name": base_payload["last_name"],
+                    "name_type": "D",
+                },
+                "contact_phone": contact_no,
+                "mobile_phone": {
+                    "phone_number": {
+                        "country_code": country_code,
+                        "national_number": phone_number,
+                    },
+                },
+                "reason_for_sending": base_payload.get("reason_for_sending", None),
+            }
+            amount_key = "destination_principal_amount" if transaction_type == WMF else "originators_principal_amount"
+            financials = {
+                amount_key: int(float(base_payload["amount"]) * 100),
+            }
+            payment_details = {
+                "recording_country_currency": {  # sending country
+                    "iso_code": {
+                        "country_code": base_payload.get("origination_country", "US"),
+                        "currency_code": base_payload.get("origination_currency", "USD"),
+                    },
+                },
+                "destination_country_currency": {  # destination
+                    "iso_code": {
+                        "country_code": base_payload["destination_country"],
+                        "currency_code": base_payload["destination_currency"],
+                    },
+                },
+                "originating_country_currency": {  # sending country
+                    "iso_code": {
+                        "country_code": base_payload.get("origination_country", "US"),
+                        "currency_code": base_payload.get("origination_currency", "USD"),
+                    },
+                },
+                "transaction_type": transaction_type,
+                "payment_type": "Cash",
+                "duplicate_detection_flag": base_payload.get("duplication_enabled", "D"),
+            }
 
-            payload = integrate_payload(payload, template)
+            delivery_services = {"code": base_payload.get("delivery_services_code", MONEY_IN_TIME)}
+            partner_notification = {"partner_notification": {"notification_requested": "Y"}}
 
+            payload = FinancialServiceProvider.objects.get(
+                vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+            ).configuration.copy()
+            payload.update(
+                {
+                    "device": web,
+                    "receiver": receiver,
+                    "payment_details": payment_details,
+                    "financials": financials,
+                    "delivery_services": delivery_services,
+                    "foreign_remote_system": frm,
+                    "partner_info_buffer": partner_notification,
+                    "wallet_details": {
+                        "service_provider_code": get_from_delivery_mechanism(base_payload, "service_provider_code")
+                    },
+                }
+            )
+
+            if "delivery_services_code" in base_payload and base_payload["delivery_services_code"] == WALLET:
+                country = base_payload["destination_country"]
+                currency = base_payload["destination_currency"]
+                try:
+                    template = Corridor.objects.get(
+                        destination_country=country,
+                        destination_currency=currency,
+                    ).template
+
+                except Corridor.DoesNotExist:
+                    raise InvalidCorridorError(f"Invalid corridor for {country}/{currency}")
+
+                payload = integrate_payload(payload, template)
+        except KeyError as e:
+            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload")
         return payload
 
     def send_money_validation(self, payload):
@@ -366,10 +362,18 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         if update:
             wu_status = response["content"]["payment_transactions"]["payment_transaction"][0]["pay_status_description"]
             flow = PaymentRecordFlow(pr)
-            status = {"PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY}.get(wu_status)
+            status = {
+                "PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
+                "WCQ": PaymentRecordState.TRANSFERRED_TO_FSP,
+                "CAN": PaymentRecordState.CANCELLED,
+            }.get(wu_status)
             if pr.status != status:
                 if status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
-                    pr.message = "Transferred to Beneficiary by manual sync"
+                    pr.message = "Transferred to Beneficiary*"
+                    pr.success = True
+                    flow.confirm()
+                elif status in [PaymentRecordState.CANCELLED]:
+                    pr.message = "Cancelled*"
                     pr.success = True
                     flow.confirm()
                 pr.save()

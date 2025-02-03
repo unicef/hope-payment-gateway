@@ -114,15 +114,15 @@ class NisNotificationView(WesternUnionApi):
                 )
             elif notification_type in [CANCEL, REJECT_APN]:
                 flow.cancel()
-                pr.message = "Cancelled by Push Notification"
+                pr.message = "Cancelled by FSP"
             elif notification_type == PURGED:
                 flow.purge()
-                pr.message = "Purged by Push Notification"
+                pr.message = "Purged by FSP"
             elif notification_type == REFUND:
-                pr.message = "Refund by Push Notification"
+                pr.message = "Refund by FSP"
                 flow.refund()
             else:
-                pr.message = "Error in Push Notification"
+                pr.message = "Error in Notification"
                 flow.fail()
         except TransitionNotAllowed:
             return Response({"error": "transition_not_allowed"}, status=HTTP_400_BAD_REQUEST)

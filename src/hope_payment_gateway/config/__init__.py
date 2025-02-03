@@ -61,7 +61,6 @@ OPTIONAL = {
     "MONEYGRAM_HOST": (str, ""),
     "MONEYGRAM_CLIENT_ID": (str, ""),
     "MONEYGRAM_CLIENT_SECRET": (str, ""),
-    "MONEYGRAM_PARTNER_ID": (str, ""),
     "MONEYGRAM_REGISTRATION_NUMBER": (str, ""),
     "MONEYGRAM_PUBLIC_KEY": (str, ""),
     "SENTRY_DSN": (str, ""),
