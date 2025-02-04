@@ -35,6 +35,7 @@ from hope_payment_gateway.apps.gateway.actions import (
     export_as_template,
     export_as_template_impl,
     moneygram_update_status,
+    moneygram_refund,
 )
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
@@ -80,7 +81,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     }
     raw_id_fields = ("parent",)
 
-    actions = [export_as_template, moneygram_update_status]
+    actions = [export_as_template, moneygram_update_status, moneygram_refund]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         return super().get_queryset(request).select_related("parent__fsp")
@@ -337,7 +338,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
             return self.handle_mg_response(request, resp, pk, "Refund")
-        except InvalidTokenError as e:
+        except (InvalidTokenError, KeyError) as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 

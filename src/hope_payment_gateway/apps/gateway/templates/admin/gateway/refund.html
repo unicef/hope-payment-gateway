@@ -1,0 +1,12 @@
+{% extends "admin_extra_buttons/action_page.html" %}
+{% block action-content %}
+   <form action="" method="post" id="refund-form">{% csrf_token %}
+        {% csrf_token %}
+        <table>
+            {{ adminform.form }}
+        </table>
+        <input type="submit" name="apply" value="Update">
+        <input type="button" value="Back" onclick="location.href='.'">
+
+    </form>
+{% endblock action-content %}
