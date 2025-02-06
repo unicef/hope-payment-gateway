@@ -1,9 +1,12 @@
 import logging
 
 from constance import config
+from strategy_field.utils import fqn
 
+from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.gateway.models import (
+    AsyncJob,
     PaymentInstruction,
     PaymentInstructionState,
     PaymentRecord,
@@ -36,9 +39,17 @@ def moneygram_send_money(tag=None, threshold=10000):
 
         logging.info(f"Sending {records_count} records {pi} to MoneyGram")
         records_ids = list(records.values_list("id", flat=True))
-        moneygram_notify.delay(records_ids)
-        pi.status = PaymentInstructionState.PROCESSED
-        pi.save()
+        job = AsyncJob.objects.create(
+            description="Send Instruction to MoneyGram",
+            type=AsyncJob.JobType.STANDARD_TASK,
+            action=fqn(moneygram_notify),
+            config={"to_process_ids": records_ids},
+            instruction=pi,
+        )
+        with lock_job(job):
+            job.queue()
+            pi.status = PaymentInstructionState.PROCESSED
+            pi.save()
 
     logging.info("MoneyGram Task completed")
 

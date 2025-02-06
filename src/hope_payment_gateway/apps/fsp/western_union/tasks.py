@@ -1,10 +1,13 @@
 import logging
 
 from constance import config
+from strategy_field.utils import fqn
 
+from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from hope_payment_gateway.apps.gateway.models import (
+    AsyncJob,
     FinancialServiceProvider,
     PaymentInstruction,
     PaymentInstructionState,
@@ -35,9 +38,17 @@ def western_union_send_task(tag=None, threshold=10000):
 
         logging.info(f"Sending {records_count} records {pi} to Western Union")
         records_ids = list(records.values_list("id", flat=True))
-        western_union_notify.delay(records_ids)
-        pi.status = PaymentInstructionState.PROCESSED
-        pi.save()
+        job = AsyncJob.objects.create(
+            description="Send instruction to Western Union",
+            type=AsyncJob.JobType.STANDARD_TASK,
+            action=fqn(western_union_notify),
+            config={"to_process_ids": records_ids},
+            instruction=pi,
+        )
+        with lock_job(job):
+            job.queue()
+            pi.status = PaymentInstructionState.PROCESSED
+            pi.save()
 
     logging.info("Western Union Task completed")
 

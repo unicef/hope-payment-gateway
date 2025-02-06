@@ -12,18 +12,18 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, Pa
 @pytest.mark.parametrize(
     ("rec_a", "rec_b", "total"),
     [
-        (5, 4, 9),
-        (5, 8, 5),
-        (5, 5, 10),
-        (4, 0, 4),
-        (0, 4, 4),
-        (0, 0, 0),
+        (5, 4, 2),
+        (5, 8, 1),
+        (5, 5, 2),
+        (4, 0, 2),
+        (0, 4, 2),
+        (0, 0, 2),
     ],
 )
 @pytest.mark.django_db
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
-@patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.create_transaction")
+@patch("hope_payment_gateway.apps.fsp.moneygram.tasks.AsyncJob.queue")
 def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
     instr_a = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg, tag="tag")
     instr_b = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg, tag="tag")
