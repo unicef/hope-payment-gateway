@@ -31,5 +31,4 @@ router.register(
 
 router.register(r"wu/files", wu_views.FileViewset, basename="wu-files")
 
-
 urlpatterns = router.urls

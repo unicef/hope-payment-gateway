@@ -103,6 +103,7 @@ dependencies = [
     "paramiko",
     "phonenumbers",
     "psycopg[binary]",
+    "python-redis-lock[django]",
     "sentry-sdk",
     "social-auth-app-django",
     "social-auth-core",
@@ -117,3 +118,10 @@ version = "0.1"
 description = "HOPE integration with FSPs"
 readme = "README.md"
 license = {text = "MIT"}
+
+
+[tool.nitpick]
+    style = [
+        "github://unicef/hope-code-conventions@main/django/django.toml"
+    ]
+    cache = "1 day"

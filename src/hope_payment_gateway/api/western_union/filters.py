@@ -1,9 +1,6 @@
 from django_filters import rest_framework as filters
 
-from hope_payment_gateway.apps.fsp.western_union.models import (
-    Corridor,
-    ServiceProviderCode,
-)
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 
 
 class CorridorFilter(filters.FilterSet):

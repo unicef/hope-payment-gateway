@@ -1,7 +1,6 @@
-from django.urls import reverse
-
 import pytest
 from api_checker import LastModifiedRecorder, frozenfixture
+from django.urls import reverse
 from drf_api_checker.pytest import contract
 from factories import (
     CorridorFactory,

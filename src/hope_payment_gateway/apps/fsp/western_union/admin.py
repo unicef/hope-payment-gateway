@@ -1,20 +1,16 @@
+from admin_extra_buttons.decorators import button, choice, view
+from admin_extra_buttons.mixins import ExtraButtonsMixin
+from constance import config
 from django.contrib import admin
 from django.db.models import JSONField
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
-
-from admin_extra_buttons.decorators import button, choice, view
-from admin_extra_buttons.mixins import ExtraButtonsMixin
-from constance import config
 from jsoneditor.forms import JSONEditor
 from unicef_security.admin import is_superuser
 
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.api.request import requests_request
-from hope_payment_gateway.apps.fsp.western_union.models import (
-    Corridor,
-    ServiceProviderCode,
-)
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 
 
 @admin.register(Corridor)

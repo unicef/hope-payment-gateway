@@ -2,6 +2,11 @@ import csv
 import logging
 from typing import TYPE_CHECKING, Union
 
+from admin_extra_buttons.decorators import button, choice, link, view
+from admin_extra_buttons.mixins import ExtraButtonsMixin
+from adminactions.export import base_export
+from adminfilters.autocomplete import AutoCompleteFilter
+from adminfilters.mixin import AdminFiltersMixin
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
 from django.db.models import JSONField, QuerySet
@@ -11,33 +16,22 @@ from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
-
-from admin_extra_buttons.decorators import button, choice, link, view
-from admin_extra_buttons.mixins import ExtraButtonsMixin
-from adminactions.export import base_export
-from adminfilters.autocomplete import AutoCompleteFilter
-from adminfilters.mixin import AdminFiltersMixin
+from django_celery_boost.admin import CeleryTaskModelAdmin
 from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.fsp.moneygram.client import (
-    InvalidTokenError,
-    MoneyGramClient,
-    PayloadMissingKeyError,
-)
+from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, PayloadMissingKeyError
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.exceptions import (
-    InvalidCorridorError,
-    PayloadException,
-)
+from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridorError, PayloadException
 from hope_payment_gateway.apps.gateway.actions import (
     TemplateExportForm,
     export_as_template,
     export_as_template_impl,
-    moneygram_update_status,
     moneygram_refund,
+    moneygram_update_status,
 )
 from hope_payment_gateway.apps.gateway.models import (
+    AsyncJob,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
@@ -71,7 +65,6 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         "payout_date",
         "fsp_code",
         "auth_code",
-        "marked_for_payment",
     )
     list_filter = ("parent__fsp", ("parent", AutoCompleteFilter), "status", "success")
     search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
@@ -545,3 +538,18 @@ class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("fsp", "delivery_mechanism", "config_key")
     search_fields = ("config_key", "delivery_mechanism__name", "fsp__name")
     raw_id_fields = ("fsp", "delivery_mechanism")
+
+
+@admin.register(AsyncJob)
+class AsyncJobAdmin(AdminFiltersMixin, CeleryTaskModelAdmin, admin.ModelAdmin):
+    list_display = ("type", "verbose_status", "owner")
+    autocomplete_fields = ("owner", "content_type")
+    list_filter = (
+        ("owner", AutoCompleteFilter),
+        "type",
+    )
+
+    def get_readonly_fields(self, request: "HttpRequest", obj: AsyncJob | None = None):
+        if obj:
+            return ("owner", "local_status", "type", "action", "sentry_id")
+        return super().get_readonly_fields(request, obj)

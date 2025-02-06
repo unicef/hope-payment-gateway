@@ -1,7 +1,6 @@
-from django.http import HttpResponse
-
 import sentry_sdk
 from constance import config
+from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
@@ -11,14 +10,7 @@ from viewflow.fsm import TransitionNotAllowed
 from zeep.exceptions import ValidationError
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
-from hope_payment_gateway.apps.fsp.western_union.api import (
-    CANCEL,
-    PURGED,
-    REFUND,
-    REJECT_APN,
-    SUCCESS,
-    SUCCESS_APN,
-)
+from hope_payment_gateway.apps.fsp.western_union.api import CANCEL, PURGED, REFUND, REJECT_APN, SUCCESS, SUCCESS_APN
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidRequest
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow

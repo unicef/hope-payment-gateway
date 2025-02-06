@@ -1,16 +1,12 @@
 from unittest.mock import patch
 
-from django.test import override_settings
-
 import pytest
 from constance.test import override_config
+from django.test import override_settings
 from factories import PaymentInstructionFactory, PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.tasks import western_union_send_task
-from hope_payment_gateway.apps.gateway.models import (
-    PaymentInstructionState,
-    PaymentRecordState,
-)
+from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, PaymentRecordState
 
 
 @pytest.mark.parametrize(
@@ -44,7 +40,6 @@ def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
         5,
         parent__status=PaymentRecordState.PENDING,
         status=PaymentRecordState.PENDING,
-        marked_for_payment=True,
     )
 
     western_union_send_task(tag="tag", threshold=10)

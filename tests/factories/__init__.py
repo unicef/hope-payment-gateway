@@ -5,14 +5,10 @@ from pathlib import Path
 from factory.django import DjangoModelFactory
 from pytest_factoryboy import register
 
-from .base import (
-    AutoRegisterModelFactory,
-    TAutoRegisterModelFactory,
-    factories_registry,
-)
+from .base import AutoRegisterModelFactory, TAutoRegisterModelFactory, factories_registry
 from .payment import *  # noqa
 from .social import SocialAuthUserFactory  # noqa
-from .user import GroupFactory, SuperUserFactory, SystemFactory, User, UserFactory  # noqa
+from .user import *  # noqa
 
 for _, name, _ in pkgutil.iter_modules([str(Path(__file__).parent)]):
     importlib.import_module(f".{name}", __package__)

@@ -1,5 +1,7 @@
 from typing import Any
 
+from admin_extra_buttons.decorators import button
+from adminfilters.autocomplete import AutoCompleteFilter
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.models import LogEntry
@@ -8,9 +10,6 @@ from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.forms import Form
 from django.http import HttpRequest
-
-from admin_extra_buttons.decorators import button
-from adminfilters.autocomplete import AutoCompleteFilter
 from smart_admin.modeladmin import SmartModelAdmin
 from unicef_security.admin import is_superuser
 

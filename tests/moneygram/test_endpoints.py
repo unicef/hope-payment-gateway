@@ -1,11 +1,10 @@
 import json
 from pathlib import Path
 
-from django.urls import reverse
-
 import pytest
 import responses
 from constance.test import override_config
+from django.urls import reverse
 from factories import PaymentRecordFactory
 
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState

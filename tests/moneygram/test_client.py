@@ -5,11 +5,7 @@ from factories import PaymentRecordFactory
 from responses import _recorder  # noqa
 
 from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED, REFUNDED, SENT
-from hope_payment_gateway.apps.fsp.moneygram.client import (
-    InvalidTokenError,
-    MoneyGramClient,
-    update_status,
-)
+from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, update_status
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 # @_recorder.record(file_path="tests/moneygram/responses/token.yaml")
