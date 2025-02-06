@@ -3,7 +3,6 @@ from typing import Any
 from django.conf import settings
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
-
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet

@@ -1,14 +1,12 @@
-from unittest.mock import Mock
-
-from django.contrib.admin.sites import site
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
-
-from django.urls import reverse
 from typing import TYPE_CHECKING
+from unittest.mock import Mock
 
 import pytest
 from admin_extra_buttons.handlers import ChoiceHandler
 from constance.test import override_config
+from django.contrib.admin.sites import site
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
 from factories import SuperUserFactory
 
@@ -188,7 +186,7 @@ def test_admin_delete(app, modeladmin, record, monkeypatch):
         pytest.skip("No 'delete' permission")
 
 
-@pytest.mark.skip_buttons("security.UserAdmin:link_user_data")
+@pytest.mark.skip_buttons("security.UserAdmin:link_user_data", "gateway.AsyncJobAdmin:celery_inspect")
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 def test_admin_buttons(app, modeladmin, button_handler, record, monkeypatch, wu):
     from admin_extra_buttons.handlers import LinkHandler

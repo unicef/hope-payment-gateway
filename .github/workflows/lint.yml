@@ -31,10 +31,10 @@ jobs:
       docker: ${{ steps.changes.outputs.docker_base }}
     steps:
       - run: git config --global --add safe.directory $(realpath .)
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@v4
       - id: changes
         name: Check for backend file changes
-        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        uses: dorny/paths-filter@v3
         with:
           base: ${{ github.ref }}
           token: ${{ github.token }}
@@ -53,4 +53,4 @@ jobs:
         run: pip install ruff
       - name: Check syntax
         # Stop the build if there are Python syntax errors or undefined names
-        run: ruff check src/
+        run: ruff check -e

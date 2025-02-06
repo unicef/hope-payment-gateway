@@ -4,14 +4,13 @@ import logging
 from contextlib import suppress
 from datetime import datetime
 
-from django.conf import settings
-
 import cryptography.exceptions
 import sentry_sdk
 from constance import config
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView

@@ -17,8 +17,7 @@
                 "payload": {},
                 "extra_data": {},
                 "payout_amount": null,
-                "payout_date": null,
-                "marked_for_payment": false
+                "payout_date": null
             }
         },
         "deps": [

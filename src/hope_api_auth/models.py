@@ -3,12 +3,11 @@ import os
 from enum import Enum, auto, unique
 from typing import Any
 
+import swapper
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-import swapper
 
 from .fields import ChoiceArrayField
 

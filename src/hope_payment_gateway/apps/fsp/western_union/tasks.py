@@ -28,7 +28,7 @@ def western_union_send_task(tag=None, threshold=10000):
 
     for pi in qs:
         logging.info(f"Processing payment instruction {pi.external_code}")
-        records = pi.paymentrecord_set.filter(status=PaymentRecordState.PENDING, marked_for_payment=False)
+        records = pi.paymentrecord_set.filter(status=PaymentRecordState.PENDING)
         records_count += records.count()
         if records_count > threshold:
             break
@@ -44,7 +44,6 @@ def western_union_send_task(tag=None, threshold=10000):
 
 @app.task
 def western_union_notify(to_process_ids: list[PaymentRecord]) -> None:
-    PaymentRecord.objects.filter(id__in=to_process_ids).update(marked_for_payment=True)
     for record in PaymentRecord.objects.filter(id__in=to_process_ids):
         WesternUnionClient.create_transaction(record.get_payload())
 

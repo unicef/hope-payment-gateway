@@ -29,7 +29,7 @@ def moneygram_send_money(tag=None, threshold=10000):
 
     for pi in qs:
         logging.info(f"Processing payment instruction {pi.external_code}")
-        records = pi.paymentrecord_set.filter(status=PaymentRecordState.PENDING, marked_for_payment=False)
+        records = pi.paymentrecord_set.filter(status=PaymentRecordState.PENDING)
         records_count += records.count()
         if records_count > threshold:
             break
@@ -46,9 +46,6 @@ def moneygram_send_money(tag=None, threshold=10000):
 @app.task
 def moneygram_notify(to_process_ids: list[PaymentRecord]) -> None:
     client = MoneyGramClient()
-    PaymentRecord.objects.filter(id__in=to_process_ids).update(
-        marked_for_payment=True,
-    )
     for record in PaymentRecord.objects.select_related("parent__fsp").filter(id__in=to_process_ids):
         client.create_transaction(record.get_payload())
 

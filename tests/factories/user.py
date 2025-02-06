@@ -1,8 +1,7 @@
+import factory.fuzzy
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import signals
-
-import factory.fuzzy
 
 from hope_payment_gateway.apps.core.models import System, User
 

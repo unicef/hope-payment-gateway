@@ -21,8 +21,8 @@ api_patterns = [
         r"moneygram/",
         include("hope_payment_gateway.apps.fsp.moneygram.urls", namespace="mg"),
     ),
+    path(r"rest/", include("hope_payment_gateway.api.docs", namespace="docs")),
     path(r"rest/", include("hope_payment_gateway.api.urls", namespace="rest")),
-    path(r"schema/", include("hope_payment_gateway.api.docs", namespace="docs")),
     path(r"sentry_debug/", lambda _: 1 / 0),
 ]
 

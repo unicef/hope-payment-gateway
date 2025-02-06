@@ -1,15 +1,11 @@
-from django.utils import timezone
-
 import factory
+from django.utils import timezone
 from factory import fuzzy
 from strategy_field.utils import fqn
 
 from hope_api_auth.models import APILogEntry, APIToken, Grant
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
-from hope_payment_gateway.apps.fsp.western_union.models import (
-    Corridor,
-    ServiceProviderCode,
-)
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 from hope_payment_gateway.apps.gateway.models import (
     DeliveryMechanism,
     ExportTemplate,

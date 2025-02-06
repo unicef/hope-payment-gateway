@@ -1,8 +1,7 @@
-from django.urls import reverse
-
 import pytest
 import responses
 from constance.test import override_config
+from django.urls import reverse
 
 
 @pytest.mark.parametrize(
