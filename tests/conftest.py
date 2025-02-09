@@ -10,6 +10,8 @@ from factories import (
     PaymentInstructionFactory,
     PaymentRecordFactory,
     UserFactory,
+    FinancialServiceProviderConfigFactory,
+    DeliveryMechanismFactory,
 )
 from strategy_field.utils import fqn
 
@@ -114,7 +116,7 @@ def wu():
 
 @pytest.fixture
 def mg():
-    return FinancialServiceProviderFactory(
+    mg = FinancialServiceProviderFactory(
         name="MoneyGram",
         vendor_number="67890",
         strategy=fqn(MoneyGramHandler),
@@ -137,6 +139,12 @@ def mg():
             }
         },
     )
+    dm = DeliveryMechanismFactory(code="money")
+    FinancialServiceProviderConfigFactory(
+        key="mg-key", fsp=mg, delivery_mechanism=dm, configuration={"agent_partner": "agent_partner"}
+    )
+
+    return mg
 
 
 @pytest.fixture

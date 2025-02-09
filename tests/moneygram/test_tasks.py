@@ -58,13 +58,21 @@ def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.query_status")
 def test_send_moneygram_update(mock_class, mg, rec_a, rec_b, total):
-    instr_a = PaymentInstructionFactory(status=PaymentInstructionState.PROCESSED, fsp=mg)
-    instr_b = PaymentInstructionFactory(status=PaymentInstructionState.PROCESSED, fsp=mg)
+    instr_a = PaymentInstructionFactory(
+        status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+    )
+    instr_b = PaymentInstructionFactory(
+        status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+    )
     PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.TRANSFERRED_TO_FSP)
     PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
-    instr_noise = PaymentInstructionFactory(status=PaymentInstructionState.OPEN)
-    instr_noise_no_tag = PaymentInstructionFactory(status=PaymentInstructionState.OPEN)
+    instr_noise = PaymentInstructionFactory(
+        status=PaymentInstructionState.OPEN, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+    )
+    instr_noise_no_tag = PaymentInstructionFactory(
+        status=PaymentInstructionState.OPEN, extra={"config_key": "mg-key", "delivery_mechanism": "voucher"}
+    )
     PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(

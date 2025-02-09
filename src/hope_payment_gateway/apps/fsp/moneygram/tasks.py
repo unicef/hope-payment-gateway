@@ -11,6 +11,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstructionState,
     PaymentRecord,
     PaymentRecordState,
+    FinancialServiceProviderConfig,
 )
 from hope_payment_gateway.config.celery import app
 
@@ -72,4 +73,9 @@ def moneygram_update(ids=None) -> None:
     if ids:
         qs = qs.filter(id__in=ids)
     for record in qs:
-        client.query_status(record.fsp_code, True)
+        agent_partner = FinancialServiceProviderConfig.objects.get(
+            fsp=record.parent.fsp,
+            delivery_mechanism__code=record.parent.get_payload()["delivery_mechanism"],
+            key=record.get_payload()["config_key"],
+        ).configuration["agent_partner"]
+        client.query_status(record.fsp_code, agent_partner, True)
