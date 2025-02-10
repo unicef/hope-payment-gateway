@@ -16,6 +16,12 @@ from hope_payment_gateway.apps.gateway.models import (
 from hope_payment_gateway.config.celery import app
 
 
+def moneygram_notify(to_process_ids: list[PaymentRecord]) -> None:
+    client = MoneyGramClient()
+    for record in PaymentRecord.objects.select_related("parent__fsp").filter(id__in=to_process_ids):
+        client.create_transaction(record.get_payload())
+
+
 @app.task()  # queue="executors"
 def moneygram_send_money(tag=None, threshold=10000):
     """Task to trigger MoneyGram payments."""
@@ -53,13 +59,6 @@ def moneygram_send_money(tag=None, threshold=10000):
             pi.save()
 
     logging.info("MoneyGram Task completed")
-
-
-@app.task
-def moneygram_notify(to_process_ids: list[PaymentRecord]) -> None:
-    client = MoneyGramClient()
-    for record in PaymentRecord.objects.select_related("parent__fsp").filter(id__in=to_process_ids):
-        client.create_transaction(record.get_payload())
 
 
 @app.task

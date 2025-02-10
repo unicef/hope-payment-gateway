@@ -17,6 +17,11 @@ from hope_payment_gateway.apps.gateway.models import (
 from hope_payment_gateway.config.celery import app
 
 
+def western_union_notify(to_process_ids: list[PaymentRecord]) -> None:
+    for record in PaymentRecord.objects.filter(id__in=to_process_ids):
+        WesternUnionClient().create_transaction(record.get_payload())
+
+
 @app.task()  # queue="executors"
 def western_union_send_task(tag=None, threshold=10000):
     """Task to trigger Western Union payments."""
@@ -51,12 +56,6 @@ def western_union_send_task(tag=None, threshold=10000):
             pi.save()
 
     logging.info("Western Union Task completed")
-
-
-@app.task
-def western_union_notify(to_process_ids: list[PaymentRecord]) -> None:
-    for record in PaymentRecord.objects.filter(id__in=to_process_ids):
-        WesternUnionClient.create_transaction(record.get_payload())
 
 
 @app.task
