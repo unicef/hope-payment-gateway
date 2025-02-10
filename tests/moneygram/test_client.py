@@ -50,7 +50,7 @@ def test_get_headers_token():
 def test_get_basic_payload():
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    assert client.get_basic_payload(agent_partner="AAAAAA") == {
+    assert client.get_basic_payload(agent_partner_id="AAAAAA") == {
         "targetAudience": "AGENT_FACING",
         "agentPartnerId": "AAAAAA",
         "userLanguage": "en-US",
@@ -209,8 +209,8 @@ def test_status_missing(mg):
     client = MoneyGramClient()
     transaction_id = "transaction_id"
     PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    assert client.status(transaction_id, agent_partner="AAAAAA").status_code == 400
-    assert client.status(transaction_id, agent_partner="AAAAAA").data == {
+    assert client.status(transaction_id, agent_partner_id="AAAAAA").status_code == 400
+    assert client.status(transaction_id, agent_partner_id="AAAAAA").data == {
         "errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]
     }
 
@@ -224,8 +224,8 @@ def test_status_ok(mg):
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
     PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    assert client.status(transaction_id, agent_partner="AAAAAA").status_code == 200
-    assert client.status(transaction_id, agent_partner="AAAAAA").data == {
+    assert client.status(transaction_id, agent_partner_id="AAAAAA").status_code == 200
+    assert client.status(transaction_id, agent_partner_id="AAAAAA").data == {
         "transactionId": "64c228ba-8013-43f6-9baf-a0c87b91a261",
         "referenceNumber": "27380423",
         "transactionSendDateTime": "2024-11-20T07:04:13.814",
@@ -270,7 +270,7 @@ def test_query_status(mg):
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
     pr = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    client.query_status(transaction_id, agent_partner="AAAAAA", update=True)
+    client.query_status(transaction_id, agent_partner_id="AAAAAA", update=True)
     pr.refresh_from_db()
     assert pr.payout_amount == 300
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP

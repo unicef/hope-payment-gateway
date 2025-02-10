@@ -141,7 +141,7 @@ def mg():
     )
     dm = DeliveryMechanismFactory(code="money")
     FinancialServiceProviderConfigFactory(
-        key="mg-key", fsp=mg, delivery_mechanism=dm, configuration={"agent_partner": "agent_partner"}
+        key="mg-key", fsp=mg, delivery_mechanism=dm, configuration={"agent_partner_id": "agent_partner_id"}
     )
 
     return mg

@@ -88,10 +88,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         return headers
 
     @staticmethod
-    def get_basic_payload(agent_partner):
+    def get_basic_payload(agent_partner_id):
         return {
             "targetAudience": "AGENT_FACING",
-            "agentPartnerId": agent_partner,
+            "agentPartnerId": agent_partner_id,
             "userLanguage": "en-US",
         }
 
@@ -190,15 +190,15 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         transaction_id, payload = self.prepare_quote(base_payload)
         return self.perform_request(endpoint, transaction_id, payload, "post")
 
-    def status(self, transaction_id, agent_partner):
+    def status(self, transaction_id, agent_partner_id):
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
-        payload = self.get_basic_payload(agent_partner)
+        payload = self.get_basic_payload(agent_partner_id)
         status_transaction_id = str(uuid.uuid4())
         return self.perform_request(endpoint, status_transaction_id, payload)
 
-    def query_status(self, transaction_id, agent_partner, update):
+    def query_status(self, transaction_id, agent_partner_id, update):
         """Query MoneyGram to get information regarding the transaction status."""
-        response = self.status(transaction_id, agent_partner)
+        response = self.status(transaction_id, agent_partner_id)
         if update:
             pr = PaymentRecord.objects.get(
                 fsp_code=transaction_id,
