@@ -151,6 +151,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "name": {
                     "first_name": base_payload["first_name"],
                     "last_name": base_payload["last_name"],
+                    "middle_name": base_payload.get("middle_name", ""),
                     "name_type": "D",
                 },
                 "contact_phone": contact_no,
