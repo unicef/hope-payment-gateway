@@ -56,19 +56,3 @@ def test_webhook_notification_ko_transition_not_allowed(mg, api_client, admin_us
     pr.refresh_from_db()
     assert response.status_code == 400
     assert response.data == {"error": "transition_not_allowed"}
-
-
-@responses.activate
-@pytest.mark.django_db
-@override_config(MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED=False)
-@override_config(MONEYGRAM_VENDOR_NUMBER="67890")
-def test_webhook_notification_ko_invalid_payload(mg, api_client, admin_user):
-    with open(Path(__file__).parent / "responses" / "push_notification_ko.json") as f:
-        data = json.load(f)
-
-    pr = PaymentRecordFactory(fsp_code="1234567890", status=PaymentRecordState.REFUND, parent__fsp=mg)
-    url = reverse("moneygram:mg-status-webhook")
-    response = api_client.post(url, data=data, user=admin_user, format="json")
-    pr.refresh_from_db()
-    assert response.status_code == 400
-    assert response.data == {"cannot_retrieve ID": "missing eventPayload > transactionId"}

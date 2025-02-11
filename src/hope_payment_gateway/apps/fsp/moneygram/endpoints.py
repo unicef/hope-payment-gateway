@@ -65,13 +65,8 @@ class MoneyGramWebhook(MoneyGramApi):
                 )
             logger.warning("Moneygram signature verification invalid")
         payload = request.data
-        try:
-            record_key = payload["eventPayload"]["transactionId"]
-        except KeyError:
-            return Response(
-                {"cannot_retrieve ID": "missing eventPayload > transactionId"},
-                status=HTTP_400_BAD_REQUEST,
-            )
+        logger.info(payload)
+        record_key = payload["eventPayload"]["transactionId"]
         try:
             pr = PaymentRecord.objects.get(
                 fsp_code=record_key,
