@@ -49,6 +49,7 @@ def western_union_send_task(tag=None, threshold=10000):
             action=fqn(western_union_notify),
             config={"to_process_ids": records_ids},
             instruction=pi,
+            group_key="wu-send-instruction",
         )
         with lock_job(job):
             job.queue()

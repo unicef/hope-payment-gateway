@@ -104,6 +104,7 @@ dependencies = [
     "phonenumbers",
     "psycopg[binary]",
     "python-redis-lock[django]",
+    "redis",
     "sentry-sdk",
     "social-auth-app-django",
     "social-auth-core",
