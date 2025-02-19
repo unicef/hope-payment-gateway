@@ -37,6 +37,21 @@ class DeliveryMechanism(TimeStampedModel):
         return f"{self.name} [{self.code}]"
 
 
+class Office(TimeStampedModel):
+    remote_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    long_name = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    name = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    code = models.CharField(max_length=100, blank=True, null=True, db_index=True, unique=True)
+    slug = models.SlugField(max_length=100, blank=True, null=True, db_index=True, unique=True)
+    active = models.BooleanField(default=False)
+    supervised = models.BooleanField(default=False, help_text="Flag to enable/disable offices, which need manual check")
+
+    extra_fields = models.JSONField(default=dict, blank=True, null=False)
+
+    def __str__(self) -> str:
+        return str(self.name)
+
+
 class FinancialServiceProvider(TimeStampedModel):
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     name = models.CharField(max_length=64, unique=True)
@@ -85,6 +100,7 @@ class PaymentInstruction(TimeStampedModel):
         choices=PaymentInstructionState.choices,
         db_index=True,
     )
+    office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True)
 
     tag = models.CharField(null=True, blank=True)
     payload = models.JSONField(default=dict, null=True, blank=True)
