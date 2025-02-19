@@ -107,7 +107,6 @@ def test_prepare_transactions(mg):
                 "consumer": {
                     "name": {
                         "firstName": "Alen",
-                        "middleName": "",
                         "lastName": "Smith",
                     },
                     "mobilePhone": {"number": "N/A", "countryDialCode": None},
@@ -356,7 +355,7 @@ def test_get_required_fields(mg):
         "service_provider_code__bank_account": "BANK_DEPOSIT",
         "service_provider_routing_code__bank_account": "74826841",
         "amount": 100,
-        "origin_currency": "USD",
+        "origination_currency": "USD",
         "destination_country": "NGA",
         "destination_currency": "NGN",
         "agent_partner_id": "AAAAAA",

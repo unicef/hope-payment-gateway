@@ -21,6 +21,7 @@ from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, PayloadMissingKeyError
+from hope_payment_gateway.apps.fsp.utils import extrapolate_errors
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridorError, PayloadException
 from hope_payment_gateway.apps.gateway.actions import (
@@ -271,7 +272,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_parent_id"], update=False)
+            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=False)
             return self.handle_mg_response(request, resp, pk, "Status")
         except InvalidTokenError as e:
             logger.error(e)
@@ -285,7 +286,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_parent_id"], update=True)
+            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=True)
             return self.handle_mg_response(request, resp, pk, "Status + Update")
         except InvalidTokenError as e:
             logger.error(e)
@@ -377,35 +378,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         return TemplateResponse(request, "request.html", context)
 
     def handle_error(self, resp) -> tuple:
-        msgs = []
         data = resp.data
-        if 400 <= resp.status_code < 500:
-            loglevel = messages.WARNING
-            if "errors" in data:
-                for error in data["errors"]:
-                    msgs.append(f"{error['message']} ({error['code']})")
-                    if "offendingFields" in error:
-                        msgs.extend(
-                            [f"Field: {field['field']}" for field in error["offendingFields"] if "field" in field]
-                        )
-            elif "error" in data:
-                message = data.get("message", data["error"])
-                msgs.append(message)
-            else:
-                msgs = ["Error"]
-        else:
-            loglevel = messages.ERROR
-            errors = dict
-            if "errors" in data:
-                errors = data["errors"]
-            if "error" in data:
-                errors = data["error"]
-            if isinstance(errors, list):
-                for error in errors:
-                    msgs.append(f"{error['message']} ({error['code']})")
-            else:
-                msgs.append(f"{errors['message']} ({errors['code']})")
-
+        loglevel = messages.WARNING if resp.status_code < 500 else messages.ERROR
+        msgs = extrapolate_errors(data)
         return loglevel, msgs
 
 
