@@ -24,7 +24,7 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
+from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number, extrapolate_errors
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord
 
@@ -102,6 +102,17 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
         try:
             transaction_id = base_payload["payment_record_code"]
+            first_name, rest = base_payload["first_name"][:20], base_payload["first_name"][20:]
+            middle_name = base_payload.get("middle_name", rest)
+            last_name, rr = base_payload["last_name"][:20]
+            second_last_name = base_payload["second_last_name"]
+
+            name = {
+                "firstName": first_name,
+                "middleName": middle_name,
+                "lastName": last_name,
+                "secondLastName": second_last_name,
+            }
             payload = {
                 "targetAudience": "AGENT_FACING",
                 "agentPartnerId": base_payload["agent_partner_id"],
@@ -118,11 +129,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "sender": self.sender,
                 "beneficiary": {
                     "consumer": {
-                        "name": {
-                            "firstName": base_payload["first_name"],
-                            "middleName": base_payload.get("middle_name", ""),
-                            "lastName": base_payload["last_name"],
-                        },
+                        "name": name,
                         "mobilePhone": {
                             "number": phone_number,
                             "countryDialCode": country_code,
@@ -145,23 +152,29 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
     def create_transaction(self, base_payload, update=True):
         """Create a transaction to MoneyGram."""
         endpoint = "/disbursement/v1/transactions"
+        record_code = base_payload["payment_record_code"]
+        pr = PaymentRecord.objects.get(
+            record_code=record_code,
+            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+        )
+        flow = PaymentRecordFlow(pr)
         try:
             transaction_id, payload = self.prepare_transaction(base_payload)
             response = self.perform_request(endpoint, transaction_id, payload, "post")
         except (PayloadMissingKeyError, ValueError, TypeError) as e:
-            record_code = base_payload["payment_record_code"]
-            pr = PaymentRecord.objects.get(
-                record_code=record_code,
-                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
-            )
-            flow = PaymentRecordFlow(pr)
-            flow.fail()
             pr.message = e.args[0]
+            flow.fail()
             pr.save()
             response = Response(
-                {"errors": [{"code": "validation_error", "message": e.args[0]}]},
+                {"context": [{"code": "validation_error", "message": e.args[0]}]},
                 status=HTTP_400_BAD_REQUEST,
             )
+        if response.status_code >= 300:
+            pr.message = ", ".join(extrapolate_errors(response.data))
+            flow.fail()
+            pr.save()
+            pr.message = response.data
+            response = Response(response.data, status=HTTP_400_BAD_REQUEST)
 
         if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
@@ -219,7 +232,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
                 "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
                 "amount": base_payload["amount"],
-                "sendCurrencyCode": base_payload.get("origin_currency", "USD"),
+                "sendCurrencyCode": base_payload.get("origination_currency", "USD"),
                 "receiveCurrencyCode": base_payload["destination_currency"],
             }
         )

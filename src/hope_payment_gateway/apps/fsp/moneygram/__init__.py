@@ -1,7 +1,7 @@
 MONEYGRAM_DM_MAPPING = {
     "WILL_CALL": "WILL_CALL",
     "DIRECT_TO_ACCT": "DIRECT_TO_ACCT",  # wallet / mobile money
-    "BANK_DEPOSIT": "DIRECT_TO_ACCT",  # bank account
+    "BANK_DEPOSIT": "BANK_DEPOSIT",  # bank account
     "WILLCALL_TO": "WILLCALL_TO",
     "2_HOUR": "2_HOUR",
     "OVERNIGHT": "OVERNIGHT",

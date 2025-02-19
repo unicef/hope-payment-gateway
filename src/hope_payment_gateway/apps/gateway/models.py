@@ -37,6 +37,17 @@ class DeliveryMechanism(TimeStampedModel):
         return f"{self.name} [{self.code}]"
 
 
+class Office(TimeStampedModel):
+    remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
+    name = models.CharField(max_length=64, unique=True)
+    vendor_number = models.CharField(max_length=100, unique=True)
+    strategy = StrategyField(registry=registry)
+    configuration = models.JSONField(default=dict, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.name} [{self.vendor_number}]"
+
+
 class FinancialServiceProvider(TimeStampedModel):
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     name = models.CharField(max_length=64, unique=True)
