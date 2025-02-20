@@ -34,6 +34,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstruction,
     PaymentInstructionState,
     PaymentRecord,
+    Office,
 )
 
 
@@ -75,9 +76,16 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["external_code", "remote_id"]
 
     def perform_create(self, serializer) -> None:
-        owner = get_user_model().objects.get(apitoken=self.request.auth)
+        owner = get_user_model().objects.filter(apitoken=self.request.auth).first()
         system = System.objects.get(owner=owner)
-        serializer.save(system=system)
+        obj = serializer.save(system=system)
+        config_key = obj.extra.get("config_key", None)
+        if config_key:
+            office, _ = Office.objects.get_or_create(
+                code=config_key, defaults={"name": config_key, "slug": config_key, "supervised": True}
+            )
+            obj.office = office
+            obj.save()
 
     def _change_status(self, status):
         instruction = self.get_object()
