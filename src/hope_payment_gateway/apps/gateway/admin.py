@@ -39,6 +39,7 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
+    Office,
 )
 
 if TYPE_CHECKING:
@@ -386,13 +387,13 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("external_code", "remote_id", "fsp", "status", "tag")
+    list_display = ("external_code", "office", "remote_id", "fsp", "status", "tag")
     list_filter = ("fsp", "status")
     search_fields = ("external_code", "remote_id", "fsp__name", "tag")
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
-    raw_id_fields = ("fsp", "system")
+    raw_id_fields = ("fsp", "system", "office")
 
     @button(permission="gateway.can_export_records")
     def export_records(self, request: HttpRequest, pk: int) -> TemplateResponse:
@@ -482,6 +483,15 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 class FinancialServiceProviderConfigInline(TabularInline):
     model = FinancialServiceProviderConfig
     extra = 1
+
+
+@admin.register(Office)
+class OfficeAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = ("name", "long_name", "slug", "code", "active")
+    search_fields = ("name", "slug", "code")
+    list_filter = ("active",)
+    readonly_fields = ("remote_id", "slug")
+    ordering = ("name",)
 
 
 @admin.register(FinancialServiceProvider)
