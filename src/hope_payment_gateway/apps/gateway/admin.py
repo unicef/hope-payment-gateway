@@ -264,6 +264,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
+        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
@@ -272,12 +273,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     )
     def mg_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
-        try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=False)
-            return self.handle_mg_response(request, resp, pk, "Status")
-        except InvalidTokenError as e:
-            logger.error(e)
-            self.message_user(request, str(e), messages.ERROR)
+        if obj.fsp_code:
+            try:
+                resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=False)
+                return self.handle_mg_response(request, resp, pk, "Status")
+            except InvalidTokenError as e:
+                logger.error(e)
+                self.message_user(request, str(e), messages.ERROR)
+        else:
+            self.message_user(request, "Missing transaction ID", messages.WARNING)
+        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
@@ -286,14 +291,18 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     )
     def mg_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
-        try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=True)
-            return self.handle_mg_response(request, resp, pk, "Status + Update")
-        except InvalidTokenError as e:
-            logger.error(e)
-            self.message_user(request, str(e), messages.ERROR)
-        except TransitionNotAllowed as e:
-            self.message_user(request, str(e), messages.ERROR)
+        if obj.fsp_code:
+            try:
+                resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=True)
+                return self.handle_mg_response(request, resp, pk, "Status + Update")
+            except InvalidTokenError as e:
+                logger.error(e)
+                self.message_user(request, str(e), messages.ERROR)
+            except TransitionNotAllowed as e:
+                self.message_user(request, str(e), messages.ERROR)
+        else:
+            self.message_user(request, "Missing transaction ID", messages.WARNING)
+        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},

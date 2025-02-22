@@ -215,7 +215,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
     def query_status(self, transaction_id, agent_partner_id, update):
         """Query MoneyGram to get information regarding the transaction status."""
         response = self.status(transaction_id, agent_partner_id)
-        if update:
+        if update and transaction_id:
             pr = PaymentRecord.objects.get(
                 fsp_code=transaction_id,
                 parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
