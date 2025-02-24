@@ -110,6 +110,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "id",
             "remote_id",
             "external_code",
+            "active",
             "status",
             "fsp",
             "system",

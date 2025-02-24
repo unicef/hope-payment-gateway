@@ -43,7 +43,6 @@ class Office(TimeStampedModel):
     name = models.CharField(max_length=100, blank=True, null=True, db_index=True)
     code = models.CharField(max_length=100, blank=True, null=True, db_index=True, unique=True)
     slug = models.SlugField(max_length=100, blank=True, null=True, db_index=True, unique=True)
-    active = models.BooleanField(default=False)
     supervised = models.BooleanField(default=False, help_text="Flag to enable/disable offices, which need manual check")
 
     extra_fields = models.JSONField(default=dict, blank=True, null=False)
@@ -104,7 +103,7 @@ class PaymentInstruction(TimeStampedModel):
 
     tag = models.CharField(null=True, blank=True)
     payload = models.JSONField(default=dict, null=True, blank=True)
-
+    active = models.BooleanField(default=True)
     extra = models.JSONField(default=dict, null=True, blank=True)
 
     class Meta:

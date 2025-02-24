@@ -5,19 +5,20 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "122",
+        "Content-Length": "130",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
     },
     "data": [
         {
-            "id": 750,
-            "remote_id": "sQMWBLWUnMnJ",
+            "id": 1,
+            "remote_id": "eKNgEuzEofbx",
             "external_code": "",
+            "active": true,
             "status": "DRAFT",
-            "fsp": 717,
-            "system": 758,
+            "fsp": 1,
+            "system": 1,
             "payload": {},
             "extra": {}
         }

@@ -396,8 +396,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("external_code", "office", "remote_id", "fsp", "status", "tag")
-    list_filter = ("fsp", "status")
+    list_display = ("external_code", "office", "remote_id", "fsp", "status", "active", "tag")
+    list_filter = ("fsp", "status", "active")
     search_fields = ("external_code", "remote_id", "fsp__name", "tag")
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
@@ -496,9 +496,9 @@ class FinancialServiceProviderConfigInline(TabularInline):
 
 @admin.register(Office)
 class OfficeAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("name", "long_name", "slug", "code", "active")
+    list_display = ("name", "long_name", "slug", "code", "supervised")
     search_fields = ("name", "slug", "code")
-    list_filter = ("active",)
+    list_filter = ("supervised",)
     readonly_fields = ("remote_id", "slug")
     ordering = ("name",)
 

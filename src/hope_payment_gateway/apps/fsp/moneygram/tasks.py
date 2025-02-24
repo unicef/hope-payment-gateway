@@ -31,8 +31,7 @@ def moneygram_send_money(tag=None, threshold=10000):
     records_count = 0
 
     qs = PaymentInstruction.objects.filter(
-        status=PaymentInstructionState.READY,
-        fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+        status=PaymentInstructionState.READY, fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER, active=True
     )
     if tag:
         qs = qs.filter(tag=tag)
