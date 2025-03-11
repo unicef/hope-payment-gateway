@@ -80,11 +80,11 @@ def test_prepare_transactions(mg):
             "agentPartnerId": "AAAAAA",
             "userLanguage": "en-US",
             "destinationCountryCode": "IT",
-            "receiveCurrencyCode": "USD",
+            "sendCurrencyCode": "USD",
             "serviceOptionCode": "WILL_CALL",
             "serviceOptionRoutingCode": None,
             "autoCommit": "true",
-            "sendAmount": {"currencyCode": "USD", "value": 100},
+            "receiveAmount": {"currencyCode": "USD", "value": 100},
             "sender": {
                 "business": {
                     "address": {
@@ -149,7 +149,7 @@ def test_prepare_quote(mg):
             "destinationCountryCode": "US",
             "serviceOptionCode": None,
             "beneficiaryTypeCode": "Consumer",
-            "sendAmount": {"currencyCode": "USD", "value": 100},
+            "receiveAmount": {"currencyCode": "USD", "value": 100},
         },
     )
 
