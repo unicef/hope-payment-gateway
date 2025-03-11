@@ -193,7 +193,7 @@ def moneygram_update_status(modeladmin, request, queryset):
 
 
 def moneygram_refund(modeladmin, request, queryset):
-    qs = queryset.filter(parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER)
+    qs = queryset.filter(parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER, fsp_code__isnull=False)
     moneygram_update(qs.values_list("id", flat=True))
 
     opts = modeladmin.model._meta

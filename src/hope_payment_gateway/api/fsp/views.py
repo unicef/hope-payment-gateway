@@ -82,9 +82,11 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         config_key = obj.extra.get("config_key", None)
         if config_key:
             office, _ = Office.objects.get_or_create(
-                code=config_key, defaults={"name": config_key, "slug": config_key, "supervised": True}
+                code=config_key, defaults={"name": config_key, "slug": config_key, "supervised": False}
             )
             obj.office = office
+            if office.supervised:
+                obj.active = False
             obj.save()
 
     def _change_status(self, status):

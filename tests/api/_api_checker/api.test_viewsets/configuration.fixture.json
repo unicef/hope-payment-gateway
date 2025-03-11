@@ -4,9 +4,9 @@
             "model": "gateway.financialserviceproviderconfig",
             "pk": 1,
             "fields": {
-                "key": "TXRnQzoLvzpq",
-                "label": "HwiWQDrRyDJN",
-                "fsp": 717,
+                "key": "RtjRyHRZPytN",
+                "label": "YAcYWNBZXMhe",
+                "fsp": 1,
                 "delivery_mechanism": 1,
                 "configuration": {}
             }
@@ -14,13 +14,13 @@
         "deps": [
             {
                 "model": "gateway.financialserviceprovider",
-                "pk": 717,
+                "pk": 1,
                 "fields": {
-                    "created": "2024-04-30T13:26:18.440Z",
-                    "modified": "2024-04-30T13:26:18.440Z",
-                    "remote_id": "XPdEDeFmdXeT",
-                    "name": "dXKJxnrciVEJ",
-                    "vendor_number": "ABudUmYEozKU",
+                    "created": "2025-02-24T09:42:27.777Z",
+                    "modified": "2025-02-24T09:42:27.777Z",
+                    "remote_id": "scPaOjxLFkUB",
+                    "name": "QsxiyBTnkWSt",
+                    "vendor_number": "jTBrgmvmqLdx",
                     "strategy": "hope_payment_gateway.apps.gateway.registry.DefaultProcessor",
                     "configuration": {}
                 }
@@ -29,10 +29,10 @@
                 "model": "gateway.deliverymechanism",
                 "pk": 1,
                 "fields": {
-                    "created": "2024-07-18T11:37:51.268Z",
-                    "modified": "2024-07-18T11:37:51.268Z",
-                    "code": "VKUYpArJoJZT",
-                    "name": "BdymYwVLFFSn",
+                    "created": "2025-02-24T09:42:28.369Z",
+                    "modified": "2025-02-24T09:42:28.369Z",
+                    "code": "LZlpphJPVVCj",
+                    "name": "MeIQwlfeUTBX",
                     "transfer_type": "",
                     "requirements": {
                         "unique_fields": [],

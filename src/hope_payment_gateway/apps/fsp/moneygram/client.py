@@ -121,12 +121,12 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "agentPartnerId": base_payload["agent_partner_id"],
                 "userLanguage": "en-US",
                 "destinationCountryCode": base_payload["destination_country"],
-                "receiveCurrencyCode": base_payload["destination_currency"],
+                "sendCurrencyCode": base_payload["origination_currency"],
                 "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
                 "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
                 "autoCommit": "true",
-                "sendAmount": {
-                    "currencyCode": base_payload.get("origination_currency", "USD"),
+                "receiveAmount": {
+                    "currencyCode": base_payload.get("destination_currency", "USD"),
                     "value": base_payload["amount"],
                 },
                 "sender": self.sender,
@@ -192,8 +192,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "destinationCountryCode": base_payload["destination_country"],
                 "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code"),
                 "beneficiaryTypeCode": "Consumer",
-                "sendAmount": {
-                    "currencyCode": base_payload.get("origination_currency", "USD"),
+                "receiveAmount": {
+                    "currencyCode": base_payload.get("destination_currency", "USD"),
                     "value": base_payload["amount"],
                 },
             }
@@ -215,7 +215,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
     def query_status(self, transaction_id, agent_partner_id, update):
         """Query MoneyGram to get information regarding the transaction status."""
         response = self.status(transaction_id, agent_partner_id)
-        if update:
+        if update and transaction_id:
             pr = PaymentRecord.objects.get(
                 fsp_code=transaction_id,
                 parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
