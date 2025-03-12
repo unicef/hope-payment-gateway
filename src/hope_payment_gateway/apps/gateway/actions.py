@@ -20,8 +20,8 @@ from django.utils.encoding import smart_str
 from django.utils.timezone import get_default_timezone
 from django.utils.translation import gettext_lazy as _
 
+from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
 
 
@@ -215,7 +215,7 @@ def moneygram_refund(modeladmin, request, queryset):
             for obj in qs:
                 obj.payload.update({"refuse_reason_code": reason})
                 obj.save()
-                WesternUnionClient().refund(obj.fsp_code, obj.extra_data)
+                MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
             messages.info(request, _(f"Updating {qs.count()}"))
         return redirect("admin:gateway_paymentrecord_changelist")
 

@@ -74,7 +74,7 @@ def moneygram_update(ids=None) -> None:
     for record in qs:
         agent_partner_id = FinancialServiceProviderConfig.objects.get(
             fsp=record.parent.fsp,
-            delivery_mechanism__code=record.parent.get_payload()["delivery_mechanism"],
+            delivery_mechanism__code=record.get_payload()["delivery_mechanism"],
             key=record.get_payload()["config_key"],
         ).configuration["agent_partner_id"]
         client.query_status(record.fsp_code, agent_partner_id, True)

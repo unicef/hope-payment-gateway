@@ -289,17 +289,16 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         pr.auth_code = body["referenceNumber"]
         pr.fsp_code = body["transactionId"]
         pr.success = True
-
         pr.extra_data.update(
             {
-                "fee": body["receiveAmount"]["fees"]["value"],
-                "fee_currency": body["receiveAmount"]["fees"]["currencyCode"],
-                "taxes": body["receiveAmount"]["taxes"]["value"],
-                "taxes_currency": body["receiveAmount"]["taxes"]["currencyCode"],
+                "fee": f"{body['receiveAmount']['fees']['value']} {body['receiveAmount']['fees']['currencyCode']}",
+                "taxes": f"{body['receiveAmount']['taxes']['value']} {body['receiveAmount']['taxes']['currencyCode']}",
+                "fx_rate": f"{body['receiveAmount']['fxRate']} (estimated {body['receiveAmount']['fxRateEstimated']}",
                 "expectedPayoutDate": body["expectedPayoutDate"],
                 "transactionId": body["transactionId"],
             }
         )
+
         try:
             flow = PaymentRecordFlow(pr)
             flow.store()
