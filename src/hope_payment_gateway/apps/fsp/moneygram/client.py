@@ -121,7 +121,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "agentPartnerId": base_payload["agent_partner_id"],
                 "userLanguage": "en-US",
                 "destinationCountryCode": base_payload["destination_country"],
-                "sendCurrencyCode": base_payload["origination_currency"],
+                "sendCurrencyCode": base_payload.get("origination_currency", "USD"),
                 "serviceOptionCode": get_from_delivery_mechanism(base_payload, "service_provider_code", "WILL_CALL"),
                 "serviceOptionRoutingCode": get_from_delivery_mechanism(base_payload, "service_provider_routing_code"),
                 "autoCommit": "true",
