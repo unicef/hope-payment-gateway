@@ -141,7 +141,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 },
                 "targetAccount": {
                     "accountNumber": get_from_delivery_mechanism(base_payload, "bank_account_number"),
-                    "bankName": get_from_delivery_mechanism(base_payload, "bank_name"),
+                    "bankName": get_from_delivery_mechanism(base_payload, "bank_code"),
                 },
                 "receipt": {
                     "primaryLanguage": base_payload.get("receipt_primary_language", None),
@@ -160,6 +160,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
+
         flow = PaymentRecordFlow(pr)
         try:
             transaction_id, payload = self.prepare_transaction(base_payload)
@@ -175,10 +176,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         if response.status_code >= 300:
             pr.message = ", ".join(extrapolate_errors(response.data))
             flow.fail()
-            pr.save()
-            pr.message = response.data
             response = Response(response.data, status=HTTP_400_BAD_REQUEST)
 
+        pr.success = True
+        pr.save()
         if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
 
@@ -339,7 +340,6 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 def update_status(pr, status):
     if pr.status != status:
         flow = PaymentRecordFlow(pr)
-        pr.success = False
         if status in [UNFUNDED, AVAILABLE]:
             pass
         elif status in [SENT, IN_TRANSIT]:
