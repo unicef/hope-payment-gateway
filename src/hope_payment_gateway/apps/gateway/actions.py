@@ -36,8 +36,8 @@ class RefundForm(ActionForm):
         ("TECH_PROB", "Technical Problem"),
         ("DUP_TRAN", "Duplicate Transaction"),
         ("NO_PICKUP", "No Pickup Available"),
-        ("WRONG_CRNCY", "Wrong Country"),
-        ("WRONG_CNTRY", "Wrong Currency"),
+        ("WRONG_CNTRY", "Wrong Country"),
+        ("WRONG_CRNCY", "Wrong Currency"),
     )
     reason = forms.ChoiceField(choices=REFUND_CHOICES)
 
