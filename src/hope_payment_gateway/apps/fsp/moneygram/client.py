@@ -167,8 +167,6 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             response = self.perform_request(endpoint, transaction_id, payload, "post")
         except (PayloadMissingKeyError, ValueError, TypeError) as e:
             pr.message = e.args[0]
-            flow.fail()
-            pr.save()
             response = Response(
                 {"context": [{"code": "validation_error", "message": e.args[0]}]},
                 status=HTTP_400_BAD_REQUEST,
@@ -176,9 +174,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         if response.status_code >= 300:
             pr.message = ", ".join(extrapolate_errors(response.data))
             flow.fail()
+            pr.success = False
             response = Response(response.data, status=HTTP_400_BAD_REQUEST)
-
-        pr.success = True
+        else:
+            pr.success = True
         pr.save()
         if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
