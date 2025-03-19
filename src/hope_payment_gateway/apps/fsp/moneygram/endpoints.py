@@ -17,6 +17,7 @@ from rest_framework.views import APIView
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
+from hope_payment_gateway.apps.fsp.moneygram import RECEIVED, DELIVERED
 from hope_payment_gateway.apps.fsp.moneygram.client import update_status
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
@@ -88,10 +89,11 @@ class MoneyGramWebhook(MoneyGramApi):
     def update_record(pr, payload):
         notification_type = payload["eventPayload"]["transactionStatus"]
 
-        with suppress(KeyError, ValueError):
-            pr.payout_date = datetime.strptime(
-                payload["eventPayload"]["transactionStatusDate"], "%Y-%m-%dT%H:%M:%S.%f"
-            ).date()
+        if notification_type in [RECEIVED, DELIVERED]:
+            with suppress(KeyError, ValueError):
+                pr.payout_date = datetime.strptime(
+                    payload["eventPayload"]["transactionStatusDate"], "%Y-%m-%dT%H:%M:%S.%f"
+                ).date()
 
         update_status(pr, notification_type)
 
