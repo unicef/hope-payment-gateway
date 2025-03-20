@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "293",
+        "Content-Length": "332",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -24,6 +24,8 @@
                 "id": 1,
                 "code": "LZlpphJPVVCj",
                 "name": "MeIQwlfeUTBX",
+                "description": null,
+                "account_type": null,
                 "transfer_type": "",
                 "requirements": {
                     "unique_fields": [],

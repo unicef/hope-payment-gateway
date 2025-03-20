@@ -40,6 +40,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstruction,
     PaymentRecord,
     Office,
+    AccountType,
 )
 
 if TYPE_CHECKING:
@@ -515,6 +516,12 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
+
+
+@admin.register(AccountType)
+class AccountTypeAdmin(admin.ModelAdmin):
+    list_display = ("key", "label")
+    search_fields = ("key", "label")
 
 
 @admin.register(DeliveryMechanism)

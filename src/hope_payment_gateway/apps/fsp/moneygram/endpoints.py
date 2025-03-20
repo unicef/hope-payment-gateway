@@ -11,9 +11,9 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from django.conf import settings
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
-from rest_framework.views import APIView
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
@@ -24,7 +24,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecord
 logger = logging.getLogger(__name__)
 
 
-class MoneyGramApi(APIView):
+class MoneyGramApi(GenericAPIView):
     permission_classes = (WhitelistPermission,)
 
 

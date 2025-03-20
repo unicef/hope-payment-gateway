@@ -9,6 +9,7 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
+    AccountType,
 )
 
 
@@ -37,10 +38,18 @@ class PayloadMixin:
         }
 
 
+class AccountTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccountType
+        fields = ("key", "label", "unique_fields")
+
+
 class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
+    account_type = AccountTypeSerializer(read_only=True)
+
     class Meta:
         model = DeliveryMechanism
-        fields = ("id", "code", "name", "transfer_type", "requirements")
+        fields = ("id", "code", "name", "description", "account_type", "transfer_type", "requirements")
 
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
@@ -58,6 +67,7 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
             "delivery_mechanism_name",
             "delivery_mechanism_transfer_type",
             "delivery_mechanism_code",
+            "required_fields",
         )
 
 
