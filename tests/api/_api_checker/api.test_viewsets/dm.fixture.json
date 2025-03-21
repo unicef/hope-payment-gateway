@@ -1,0 +1,23 @@
+{
+    "dm": {
+        "master": {
+            "model": "gateway.deliverymechanism",
+            "pk": 71,
+            "fields": {
+                "created": "2025-03-21T11:30:59.815Z",
+                "modified": "2025-03-21T11:30:59.815Z",
+                "code": "KYBhoYkOHsZP",
+                "name": "WJZbbLWixbyg",
+                "description": null,
+                "account_type": null,
+                "transfer_type": "",
+                "requirements": {
+                    "unique_fields": [],
+                    "optional_fields": [],
+                    "required_fields": []
+                }
+            }
+        },
+        "deps": []
+    }
+}

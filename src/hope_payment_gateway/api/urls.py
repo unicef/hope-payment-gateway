@@ -10,12 +10,12 @@ router = DefaultRouter()
 router.register(
     r"account_types",
     views.AccountTypeViewSet,
-    basename="account_type",
+    basename="account-type",
 )
 router.register(
     r"delivery_mechanisms",
     views.DeliveryMechanismViewSet,
-    basename="delivery_mechanism",
+    basename="delivery-mechanism",
 )
 router.register(r"fsp", views.FinancialServiceProviderViewSet, basename="fsp")
 router.register(

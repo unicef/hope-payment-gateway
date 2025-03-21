@@ -9,7 +9,19 @@ from factories import (
     PaymentInstructionFactory,
     PaymentRecordFactory,
     ServiceProviderCodeFactory,
+    AccountTypeFactory,
+    DeliveryMechanismFactory,
 )
+
+
+@frozenfixture()
+def acc_type(request, db):
+    return AccountTypeFactory()
+
+
+@frozenfixture()
+def dm(request, db):
+    return DeliveryMechanismFactory()
 
 
 @frozenfixture()
@@ -40,6 +52,18 @@ def service_provider_code(request, db):
 @frozenfixture()
 def configuration(request, db, fsp):
     return FinancialServiceProviderConfigFactory(fsp=fsp)
+
+
+@pytest.mark.django_db
+@contract(LastModifiedRecorder)
+def test_api_account_types(request, django_app, acc_type):
+    return reverse("api:account-type-list")
+
+
+@pytest.mark.django_db
+@contract(LastModifiedRecorder)
+def test_api_delivery_mechanism(request, django_app, dm):
+    return reverse("api:delivery-mechanism-list")
 
 
 @pytest.mark.django_db

@@ -1,0 +1,16 @@
+{
+    "acc_type": {
+        "master": {
+            "model": "gateway.accounttype",
+            "pk": 7,
+            "fields": {
+                "created": "2025-03-21T11:30:59.601Z",
+                "modified": "2025-03-21T11:30:59.601Z",
+                "key": "MPfMEMoraASU",
+                "label": "fWSmkrDnGpBm",
+                "unique_fields": "[]"
+            }
+        },
+        "deps": []
+    }
+}
