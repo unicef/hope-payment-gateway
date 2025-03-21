@@ -8,6 +8,11 @@ app_name = "api"
 router = DefaultRouter()
 
 router.register(
+    r"account_types",
+    views.AccountTypeViewSet,
+    basename="account_type",
+)
+router.register(
     r"delivery_mechanisms",
     views.DeliveryMechanismViewSet,
     basename="delivery_mechanism",

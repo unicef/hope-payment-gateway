@@ -8,7 +8,17 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
+    AccountType,
 )
+
+
+class AccountTypeFilter(filters.FilterSet):
+    class Meta:
+        model = AccountType
+        fields = {
+            "key": ["exact"],
+            "label": ["exact", "contains"],
+        }
 
 
 class DeliveryMechanismFilter(filters.FilterSet):

@@ -1,6 +1,7 @@
 import csv
 
 from adminactions.api import delimiters, quotes
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_celery_boost.models import AsyncJobModel
@@ -19,6 +20,17 @@ def default_requirements() -> dict:
     }
 
 
+class AccountType(TimeStampedModel):
+    key = models.CharField(max_length=255, unique=True)
+    label = models.CharField(max_length=255)
+    unique_fields = ArrayField(
+        default=list, base_field=models.CharField(max_length=255), help_text="comma separated list of unique fields"
+    )
+
+    def __str__(self):
+        return self.label
+
+
 class DeliveryMechanism(TimeStampedModel):
     IN_CASH = "IN_CASH"
     VOUCHER = "VOUCHER"
@@ -30,6 +42,10 @@ class DeliveryMechanism(TimeStampedModel):
     )
     code = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=128)
+    description = models.TextField(null=True, blank=True)
+    account_type = models.ForeignKey(
+        AccountType, on_delete=models.CASCADE, related_name="delivery_mechanisms", null=True, blank=True
+    )  # todo remove
     transfer_type = models.CharField(choices=DELIVERY_MECHANISM_TYPE, max_length=32)
     requirements = models.JSONField(default=default_requirements, null=True, blank=True)
 
@@ -68,6 +84,9 @@ class FinancialServiceProviderConfig(models.Model):
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
     delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
     configuration = models.JSONField(default=dict, null=True, blank=True)
+    required_fields = ArrayField(
+        default=list, base_field=models.CharField(max_length=255), help_text="comma separated list of unique fields"
+    )
 
     class Meta:
         unique_together = ("key", "fsp", "delivery_mechanism")

@@ -12,6 +12,7 @@ from hope_payment_gateway.api.fsp.filters import (
     FinancialServiceProviderFilter,
     PaymentInstructionFilter,
     PaymentRecordFilter,
+    AccountTypeFilter,
 )
 from hope_payment_gateway.api.fsp.serializers import (
     DeliveryMechanismSerializer,
@@ -21,6 +22,7 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentInstructionSerializer,
     PaymentRecordLightSerializer,
     PaymentRecordSerializer,
+    AccountTypeSerializer,
 )
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
@@ -35,6 +37,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstructionState,
     PaymentRecord,
     Office,
+    AccountType,
 )
 
 
@@ -43,9 +46,17 @@ class ProtectedMixin:
         raise NotImplementedError
 
 
+class AccountTypeViewSet(ProtectedMixin, LoggingAPIViewSet):
+    serializer_class = AccountTypeSerializer
+    queryset = AccountType.objects.all()
+
+    filterset_class = AccountTypeFilter
+    search_fields = ["key", "label"]
+
+
 class DeliveryMechanismViewSet(ProtectedMixin, LoggingAPIViewSet):
     serializer_class = DeliveryMechanismSerializer
-    queryset = DeliveryMechanism.objects.all()
+    queryset = DeliveryMechanism.objects.select_related("account_type")
 
     filterset_class = DeliveryMechanismFilter
     search_fields = ["code", "name"]
