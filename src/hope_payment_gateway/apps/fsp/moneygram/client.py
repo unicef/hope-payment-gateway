@@ -182,7 +182,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
 
-        return response
+        return base_payload, response
 
     def prepare_quote(self, base_payload: dict):
         transaction_id = base_payload["payment_record_code"]
@@ -204,17 +204,17 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         """Create a quote request to MoneyGram."""
         endpoint = "/disbursement/v1/transactions/quote"
         transaction_id, payload = self.prepare_quote(base_payload)
-        return self.perform_request(endpoint, transaction_id, payload, "post")
+        return payload, self.perform_request(endpoint, transaction_id, payload, "post")
 
     def status(self, transaction_id, agent_partner_id):
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
         payload = self.get_basic_payload(agent_partner_id)
         status_transaction_id = str(uuid.uuid4())
-        return self.perform_request(endpoint, status_transaction_id, payload)
+        return payload, self.perform_request(endpoint, status_transaction_id, payload)
 
     def query_status(self, transaction_id, agent_partner_id, update):
         """Query MoneyGram to get information regarding the transaction status."""
-        response = self.status(transaction_id, agent_partner_id)
+        payload, response = self.status(transaction_id, agent_partner_id)
         if update and transaction_id:
             pr = PaymentRecord.objects.get(
                 fsp_code=transaction_id,
@@ -223,7 +223,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             update_status(pr, response.data["transactionStatus"])
             pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
             pr.save()
-        return response
+        return payload, response
 
     def get_required_fields(self, base_payload):
         endpoint = "/reference-data/v1/transaction-fields-send"
@@ -239,14 +239,14 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "receiveCurrencyCode": base_payload["destination_currency"],
             }
         )
-        return self.perform_request(endpoint, transaction_id, payload)
+        return payload, self.perform_request(endpoint, transaction_id, payload)
 
     def get_service_options(self, base_payload):
         endpoint = "/reference-data/v1/service-options"
         payload = self.get_basic_payload(base_payload["agent_partner_id"])
         transaction_id = str(uuid.uuid4())
         payload["destinationCountryCode"] = base_payload["destination_country"]
-        return self.perform_request(endpoint, transaction_id, payload)
+        return payload, self.perform_request(endpoint, transaction_id, payload)
 
     def perform_request(self, endpoint, transaction_id, payload, method="get"):
         response = None
@@ -333,7 +333,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 pr.extra_data.update({"refund_reference": payload["refundId"]})
                 update_status(pr, REFUNDED)
                 pr.save()
-        return resp
+        return payload, resp
 
 
 def update_status(pr, status):

@@ -105,8 +105,8 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         context = self.get_common_context(request)
         context["msg"] = (
             f"Delivery Services available to transfer to destination {destination_country} {destination_currency} \n "
-            f"PARAM: destination_country \n"
-            f"PARAM: destination_currency \n"
+            f"PARAM: destination_country -> {destination_country} \n"
+            f"PARAM: destination_currency -> {destination_currency} \n"
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
@@ -131,15 +131,15 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     @button(permission="western_union.das_delivery_services")
     def delivery_services(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.model.objects.get(pk=pk)
-        destination_country = obj.destination_country
-        destination_currency = obj.destination_currency
+        destination_country = request.GET.get("destination_country", obj.destination_country)
+        destination_currency = request.GET.get("destination_currency", obj.destination_currency)
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
         context = self.get_common_context(request)
         context["msg"] = (
             f"Delivery Services available to transfer to destination {destination_country} {destination_currency} \n "
-            f"PARAM: destination_country \n"
-            f"PARAM: destination_currency \n"
+            f"PARAM: destination_country -> {destination_country} \n"
+            f"PARAM: destination_currency -> {destination_currency} \n"
             f"PARAM: identifier -> {identifier} \n"
             f"PARAM: counter_id -> {counter_id}"
         )
@@ -182,8 +182,8 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
         obj = self.model.objects.get(pk=pk)
-        destination_country = obj.destination_country
-        destination_currency = obj.destination_currency
+        destination_country = request.GET.get("destination_country", obj.destination_country)
+        destination_currency = request.GET.get("destination_currency", obj.destination_currency)
         template_code = obj.template_code
 
         context = self.get_common_context(request)
