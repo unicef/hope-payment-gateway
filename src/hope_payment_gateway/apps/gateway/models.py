@@ -24,7 +24,11 @@ class AccountType(TimeStampedModel):
     key = models.CharField(max_length=255, unique=True)
     label = models.CharField(max_length=255)
     unique_fields = ArrayField(
-        default=list, base_field=models.CharField(max_length=255), help_text="comma separated list of unique fields"
+        default=list,
+        base_field=models.CharField(max_length=255),
+        help_text="comma separated list of unique fields",
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
