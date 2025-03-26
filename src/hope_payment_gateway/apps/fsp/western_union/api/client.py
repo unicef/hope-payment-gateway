@@ -99,7 +99,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             logger.exception(exc)
         except Fault as exc:
             title = f"{exc.message} [{exc.code}]"
-            response = etree_to_string(exc.detail)
+            response = etree_to_string(exc.detail).decode()
             try:
                 error = exc.detail.xpath("//error/text()")[0]
             except IndexError:
@@ -114,7 +114,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
         return {
             "title": title,
-            "content": response,
+            "content_request": payload,
+            "content_response": response,
             "format": display_format,
             "code": code,
             "error": error,
@@ -274,7 +275,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 pr.status, pr.success = PaymentRecordState.ERROR, False
                 pr.save()
                 return pr
-            smv_payload = serialize_object(response["content"])
+            smv_payload = serialize_object(response["content_response"])
             pr.auth_code = smv_payload["mtcn"]
             pr.fsp_code = smv_payload["new_mtcn"]
             pr.save()
@@ -343,7 +344,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         }
         response = self.response_context(self.status_client, "PayStatus", payload, f"SOAP_HTTP_Port_{wu_env}")
         if update:
-            wu_status = response["content"]["payment_transactions"]["payment_transaction"][0]["pay_status_description"]
+            wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
+                "pay_status_description"
+            ]
             flow = PaymentRecordFlow(pr)
             status = {
                 "PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
@@ -416,7 +419,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         mtcn = pr.extra_data.get("mtcn", None)
         frm = pr.extra_data.get("foreign_remote_system", None)
         response = self.search_request(frm, mtcn)
-        payload = response["content"]
+        payload = response["content_response"]
         try:
             database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
         except TypeError:
@@ -470,8 +473,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 }
             )
             response = self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
-            if isinstance(response["content"], dict):
-                context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]
+            if isinstance(response["content_response"], dict):
+                context = response["content_response"]["MTML"]["REPLY"]["DATA_CONTEXT"]
                 more_data = context["HEADER"]["DATA_MORE"] == "Y"
 
                 if create_corridors:
@@ -588,8 +591,12 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         )
         response = self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
 
-        if isinstance(response["content"], dict) and "content" in response and "MTML" in response["content"]:
-            context = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
+        if (
+            isinstance(response["content_response"], dict)
+            and "content" in response
+            and "MTML" in response["content_response"]
+        ):
+            context = response["content_response"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
             if create_corridors and context:
                 for ds in context["GETDELIVERYSERVICES"]:
                     if ds["SVC_CODE"] == "800":
@@ -633,8 +640,12 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
         response = self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
-        if isinstance(response["content"], dict) and "content" in response and "MTML" in response["content"]:
-            rows = response["content"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
+        if (
+            isinstance(response["content_response"], dict)
+            and "content" in response
+            and "MTML" in response["content_response"]
+        ):
+            rows = response["content_response"]["MTML"]["REPLY"]["DATA_CONTEXT"]["RECORDSET"]
             template = {}
             structure = []
             service_provider_code = False

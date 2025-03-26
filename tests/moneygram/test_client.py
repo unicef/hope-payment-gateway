@@ -174,7 +174,8 @@ def test_quote(mg):
         "delivery_services_code": "WILL_CALL",
         "agent_partner_id": "AAAAAA",
     }
-    assert client.quote(pr.get_payload()).data == {
+    _, response = client.quote(pr.get_payload())
+    assert response.data == {
         "transactions": [
             {
                 "transactionId": "f3ba1025-6247-4ae6-90b4-1bdfc2da527d",
@@ -208,10 +209,9 @@ def test_status_missing(mg):
     client = MoneyGramClient()
     transaction_id = "transaction_id"
     PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    assert client.status(transaction_id, agent_partner_id="AAAAAA").status_code == 400
-    assert client.status(transaction_id, agent_partner_id="AAAAAA").data == {
-        "errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]
-    }
+    _, response = client.status(transaction_id, agent_partner_id="AAAAAA")
+    assert response.status_code == 400
+    assert response.data == {"errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]}
 
 
 # @_recorder.record(file_path="tests/moneygram/responses/status_ok.yaml")
@@ -223,8 +223,9 @@ def test_status_ok(mg):
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
     PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    assert client.status(transaction_id, agent_partner_id="AAAAAA").status_code == 200
-    assert client.status(transaction_id, agent_partner_id="AAAAAA").data == {
+    _, response = client.status(transaction_id, agent_partner_id="AAAAAA")
+    assert response.status_code == 200
+    assert response.data == {
         "transactionId": "64c228ba-8013-43f6-9baf-a0c87b91a261",
         "referenceNumber": "27380423",
         "transactionSendDateTime": "2024-11-20T07:04:13.814",
@@ -293,7 +294,7 @@ def test_create_transaction(mg):
         "phone_no": "+393891234567",
         "agent_partner_id": "AAAAAA",
     }
-    response = client.create_transaction(payload)
+    _, response = client.create_transaction(payload)
     assert response.status_code == 200
     assert response.data == {
         "transactionId": "18ba47c4-6376-40d4-a0c9-e52722dc52cf",
@@ -337,7 +338,7 @@ def test_refund(mg):
         parent__fsp=mg,
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
-    resp = client.refund(transaction_id, pr.payload)
+    _, resp = client.refund(transaction_id, pr.payload)
     pr.refresh_from_db()
     assert pr.message == "Refunded"
     assert pr.status == PaymentRecordState.REFUND
@@ -361,7 +362,7 @@ def test_get_required_fields(mg):
         "agent_partner_id": "AAAAAA",
     }
     pr = PaymentRecordFactory(payload=payload, parent__fsp=mg)
-    response = client.get_required_fields(payload)
+    _, response = client.get_required_fields(payload)
     pr.refresh_from_db()
     assert response.status_code == 200
     assert response.data == {
@@ -1318,7 +1319,7 @@ def test_get_required_fields(mg):
 def test_get_service_options(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/service_options.yaml")
     client = MoneyGramClient()
-    response = client.get_service_options({"agent_partner_id": "AAAAAA", "destination_country": "NGA"})
+    _, response = client.get_service_options({"agent_partner_id": "AAAAAA", "destination_country": "NGA"})
     assert response.status_code == 200
     assert response.data == [
         {

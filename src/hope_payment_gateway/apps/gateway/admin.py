@@ -113,7 +113,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             _, data = client.prepare(client.quote_client, "sendmoneyValidation", payload)
 
             context["title"] = "Western Union Payload"
-            context["content"] = data
+            context["content_request"] = payload
+            context["content_response"] = data
             return TemplateResponse(request, "request.html", context)
 
         except (PayloadException, InvalidCorridorError, PayloadMissingKeyError) as e:
@@ -224,7 +225,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             title, content = client.prepare_transaction(obj.get_payload())
             context["title"] = f"MoneyGram Payload: {title}"
             context["format"] = "json"
-            context["content"] = content
+            context["content_response"] = content
             return TemplateResponse(request, "request.html", context)
 
         except (PayloadException, InvalidCorridorError, PayloadMissingKeyError) as e:
@@ -244,8 +245,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         try:
             client = MoneyGramClient()
             try:
-                resp = client.create_transaction(obj.get_payload())
-                return self.handle_mg_response(request, resp, pk, "Create Transaction")
+                payload, resp = client.create_transaction(obj.get_payload())
+                return self.handle_mg_response(request, payload, resp, pk, "Create Transaction")
             except KeyError as e:
                 self.message_user(request, f"Keyerror: {str(e)}", messages.ERROR)
         except InvalidTokenError as e:
@@ -260,8 +261,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_quote_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().quote(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Quote Transaction")
+            payload, resp = MoneyGramClient().quote(obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Quote Transaction")
         except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
@@ -276,8 +277,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         if obj.fsp_code:
             try:
-                resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=False)
-                return self.handle_mg_response(request, resp, pk, "Status")
+                payload, resp = MoneyGramClient().query_status(
+                    obj.fsp_code, obj.get_payload()["agent_partner_id"], update=False
+                )
+                return self.handle_mg_response(request, payload, resp, pk, "Status")
             except InvalidTokenError as e:
                 logger.error(e)
                 self.message_user(request, str(e), messages.ERROR)
@@ -294,8 +297,10 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = PaymentRecord.objects.get(pk=pk)
         if obj.fsp_code:
             try:
-                resp = MoneyGramClient().query_status(obj.fsp_code, obj.get_payload()["agent_partner_id"], update=True)
-                return self.handle_mg_response(request, resp, pk, "Status + Update")
+                payload, resp = MoneyGramClient().query_status(
+                    obj.fsp_code, obj.get_payload()["agent_partner_id"], update=True
+                )
+                return self.handle_mg_response(request, payload, resp, pk, "Status + Update")
             except InvalidTokenError as e:
                 logger.error(e)
                 self.message_user(request, str(e), messages.ERROR)
@@ -313,8 +318,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_get_required_fields(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().get_required_fields(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Required Fields")
+            payload, resp = MoneyGramClient().get_required_fields(obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Required Fields")
         except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
@@ -327,8 +332,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_get_service_options(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().get_service_options(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Service Options")
+            payload, resp = MoneyGramClient().get_service_options(obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Service Options")
         except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
@@ -341,8 +346,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def mg_refund(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Refund")
+            payload, resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Refund")
         except (InvalidTokenError, KeyError) as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
@@ -371,13 +376,16 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             button.visible = False
         return None
 
-    def handle_mg_response(self, request: HttpRequest, resp, pk: int, title: str) -> None:
+    def handle_mg_response(
+        self, request: HttpRequest, payload: dict, resp: HttpRequest, pk: int, title: str
+    ) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         if resp:
             if resp.status_code < 300:
                 context["title"] = title
                 context["format"] = "json"
-                context["content"] = resp.data
+                context["content_request"] = payload
+                context["content_response"] = resp.data
                 return TemplateResponse(request, "request.html", context)
 
             loglevel, msgs = self.handle_error(resp)

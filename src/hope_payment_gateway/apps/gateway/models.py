@@ -85,7 +85,11 @@ class FinancialServiceProviderConfig(models.Model):
     delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
     configuration = models.JSONField(default=dict, null=True, blank=True)
     required_fields = ArrayField(
-        default=list, base_field=models.CharField(max_length=255), help_text="comma separated list of unique fields"
+        default=list,
+        base_field=models.CharField(max_length=255),
+        help_text="comma separated list of unique fields",
+        blank=True,
+        null=True,
     )
 
     class Meta:

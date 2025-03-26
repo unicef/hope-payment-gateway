@@ -9,7 +9,20 @@
 </i>
 
 <pre>
-{% if format == "json" %}{{ content | pprint }}{% else %}{{ content }}{% endif %}
+<h2>Request:</h2>
+{% if format == "json" %}
+{{ content_request | pprint }}{% else %}{{ content_request }}
+{% endif %}
+</pre>
+
+<hr>
+
+<pre>
+
+<h2>Response:</h2>
+{% if format == "json" %}
+{{ content_response | pprint }}{% else %}{{ content_response }}
+{% endif %}
 </pre>
 
 {% endblock %}
