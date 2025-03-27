@@ -21,7 +21,7 @@ def frozenfixture(fixture_name=default_fixture_name, is_fixture=True):
         def _inner(*args, **kwargs):
             if is_fixture and "request" not in kwargs:
                 raise ValueError("frozenfixture must have `request` argument")
-            request = kwargs.get("request", None)
+            request = kwargs.get("request")
             parts = [
                 os.path.dirname(func.__code__.co_filename),
                 BASE_DATADIR,
@@ -62,7 +62,6 @@ def token_user():
 class LastModifiedRecorder(Recorder):
     @property
     def client(self):
-
         user, token = token_user()
         client = APIClient()
         client.force_authenticate(user=user, token=token)

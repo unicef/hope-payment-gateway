@@ -1,45 +1,50 @@
 import csv
 import logging
-from typing import TYPE_CHECKING, Optional, Union
-
-from django.contrib import admin, messages
-from django.contrib.admin.options import TabularInline
-from django.db.models import JSONField
-from django.db.utils import IntegrityError
-from django.forms import FileField, FileInput, Form
-from django.shortcuts import redirect
-from django.template.response import TemplateResponse
-from django.urls import reverse
+from typing import TYPE_CHECKING, Union
 
 from admin_extra_buttons.decorators import button, choice, link, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
+from django.contrib import admin, messages
+from django.contrib.admin.options import TabularInline
+from django.db.models import JSONField, QuerySet
+from django.db.utils import IntegrityError
+from django.forms import FileField, FileInput, Form
+from django.http import HttpRequest
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
+from django.urls import reverse
+from django_celery_boost.admin import CeleryTaskModelAdmin
 from jsoneditor.forms import JSONEditor
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.fsp.moneygram.client import InvalidToken, MoneyGramClient, PayloadMissingKey
-from hope_payment_gateway.apps.fsp.western_union.endpoints.cancel import cancel, search_request
-from hope_payment_gateway.apps.fsp.western_union.endpoints.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.endpoints.send_money import (
-    create_validation_payload,
-    send_money,
-    send_money_validation,
+from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, PayloadMissingKeyError
+from hope_payment_gateway.apps.fsp.utils import extrapolate_errors
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
+from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridorError, PayloadException
+from hope_payment_gateway.apps.gateway.actions import (
+    TemplateExportForm,
+    export_as_template,
+    export_as_template_impl,
+    moneygram_refund,
+    moneygram_update_status,
 )
-from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridor, PayloadException
-from hope_payment_gateway.apps.gateway.actions import TemplateExportForm, export_as_template, export_as_template_impl
 from hope_payment_gateway.apps.gateway.models import (
+    AsyncJob,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
+    Office,
+    AccountType,
 )
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest, HttpResponsePermanentRedirect, HttpResponseRedirect
+    from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
 
 
 logger = logging.getLogger(__name__)
@@ -53,31 +58,32 @@ class ImportCSVForm(Form):
 class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin):
     list_display = (
         "record_code",
-        "fsp_code",
+        "fsp",
         "parent",
         "status",
         "message",
         "success",
         "remote_id",
-        "auth_code",
         "payout_amount",
-        "marked_for_payment",
+        "payout_date",
+        "fsp_code",
+        "auth_code",
     )
-    list_filter = (
-        ("parent", AutoCompleteFilter),
-        "status",
-        "success",
-    )
-    search_fields = ("record_code", "fsp_code", "auth_code", "message")
+    list_filter = ("parent__fsp", ("parent", AutoCompleteFilter), "status", "success")
+    search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
     readonly_fields = ("extra_data",)
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
+    raw_id_fields = ("parent",)
 
-    actions = [export_as_template]
+    actions = [export_as_template, moneygram_update_status, moneygram_refund]
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
         return super().get_queryset(request).select_related("parent__fsp")
+
+    def fsp(self, obj: PaymentRecord) -> str:
+        return obj.parent.fsp.name
 
     @choice(change_list=False)
     def western_union(self, button):
@@ -85,76 +91,133 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.wu_prepare_payload,
             self.wu_send_money_validation,
             self.wu_send_money,
+            self.wu_status,
+            self.wu_status_update,
             self.wu_search_request,
             self.wu_cancel,
         ]
         return button
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Prepare Payload")
-    def wu_prepare_payload(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Prepare Payload",
+        permission="western_union.can_prepare_transaction",
+    )
+    def wu_prepare_payload(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
         try:
-            payload = create_validation_payload(payload)
-            client = WesternUnionClient("SendMoneyValidation_Service_H2HService.wsdl")
-            _, data = client.prepare("sendmoneyValidation", payload)
+            payload = WesternUnionClient.create_validation_payload(payload)
+            client = WesternUnionClient()
+            _, data = client.prepare(client.quote_client, "sendmoneyValidation", payload)
 
             context["title"] = "Western Union Payload"
-            context["content"] = data
+            context["content_request"] = payload
+            context["content_response"] = data
             return TemplateResponse(request, "request.html", context)
 
-        except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
+        except (PayloadException, InvalidCorridorError, PayloadMissingKeyError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Send Money Validation")
-    def wu_send_money_validation(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Send Money Validation",
+        permission="western_union.can_prepare_transaction",
+    )
+    def wu_send_money_validation(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
         try:
-            payload = create_validation_payload(payload)
-            context.update(send_money_validation(payload))
+            payload = WesternUnionClient.create_validation_payload(payload)
+            context.update(WesternUnionClient().send_money_validation(payload))
             return TemplateResponse(request, "request.html", context)
-        except (PayloadException, InvalidCorridor) as e:
+        except (PayloadException, InvalidCorridorError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Send Money")
-    def wu_send_money(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Send Money",
+        permission="western_union.can_create_transaction",
+    )
+    def wu_send_money(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
-        log = send_money(obj.get_payload())
+        client = WesternUnionClient()
+        log = client.create_transaction(obj.get_payload())
         if log is None:
             messages.add_message(request, messages.ERROR, "Invalid record: Invalid status")
         else:
             loglevel = messages.SUCCESS if log.success else messages.ERROR
             messages.add_message(request, loglevel, log.message)
 
-    @view(html_attrs={"style": "background-color:yellow;color:blue"}, label="Search Request")
-    def wu_search_request(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:yellow;color:blue"},
+        label="Check Status",
+        permission="western_union.can_check_status",
+    )
+    def wu_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
-            context["msg"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-            frm = obj.extra_data.get("foreign_remote_system", None)
-            context.update(search_request(frm, mtcn))
-            return TemplateResponse(request, "request.html", context)
-        messages.warning(request, "Missing MTCN")
+            context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
+            context.update(WesternUnionClient().query_status(obj.fsp_code, False))
+        else:
+            messages.warning(request, "Missing MTCN")
+        return TemplateResponse(request, "request.html", context)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Cancel")
-    def wu_cancel(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:yellow;color:blue"},
+        label="Status Update",
+        permission="western_union.can_update_status",
+    )
+    def wu_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.extra_data.get("mtcn", None):
-            context["obj"] = f"Search request through MTCN \n" f"PARAM: mtcn {mtcn}"
-        log = cancel(obj.pk)
+            context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
+            context.update(WesternUnionClient().query_status(obj.fsp_code, True))
+        messages.warning(request, "Missing MTCN")
+        return TemplateResponse(request, "request.html", context)
+
+    @view(
+        html_attrs={"style": "background-color:yellow;color:blue"},
+        label="Search Request",
+        permission="western_union.can_search_request",
+    )
+    def wu_search_request(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        obj = PaymentRecord.objects.get(pk=pk)
+        if mtcn := obj.extra_data.get("mtcn", None):
+            context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
+            frm = obj.extra_data.get("foreign_remote_system", None)
+            context.update(WesternUnionClient().search_request(frm, mtcn))
+        messages.warning(request, "Missing MTCN")
+        return TemplateResponse(request, "request.html", context)
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Cancel",
+        permission="western_union.can_cancel_transaction",
+    )
+    def wu_cancel(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
+        obj = PaymentRecord.objects.get(pk=pk)
+        if mtcn := obj.extra_data.get("mtcn", None):
+            context["obj"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
+        log = WesternUnionClient().refund(obj.fsp_code, obj.extra_data)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Prepare Payload")
-    def mg_prepare_payload(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Prepare Payload",
+        permissions="moneygram.can_prepare_transaction",
+    )
+    def mg_prepare_payload(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         try:
@@ -162,87 +225,130 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             title, content = client.prepare_transaction(obj.get_payload())
             context["title"] = f"MoneyGram Payload: {title}"
             context["format"] = "json"
-            context["content"] = content
+            context["content_response"] = content
             return TemplateResponse(request, "request.html", context)
 
-        except (PayloadException, InvalidCorridor, PayloadMissingKey) as e:
+        except (PayloadException, InvalidCorridorError, PayloadMissingKeyError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return obj
-        except InvalidToken as e:
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Create Transaction")
-    def mg_create_transaction(self, request, pk) -> TemplateResponse:
-
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Create Transaction",
+        permission="moneygram.can_create_transaction",
+    )
+    def mg_create_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             client = MoneyGramClient()
-            resp = client.create_transaction(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Create Transaction")
-        except InvalidToken as e:
+            try:
+                payload, resp = client.create_transaction(obj.get_payload())
+                return self.handle_mg_response(request, payload, resp, pk, "Create Transaction")
+            except KeyError as e:
+                self.message_user(request, f"Keyerror: {str(e)}", messages.ERROR)
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Quote")
-    def mg_quote_transaction(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Quote",
+        permissions="moneygram.can_quote_transaction",
+    )
+    def mg_quote_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().quote(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Quote Transaction")
-        except InvalidToken as e:
+            payload, resp = MoneyGramClient().quote(obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Quote Transaction")
+        except InvalidTokenError as e:
+            logger.error(e)
+            self.message_user(request, str(e), messages.ERROR)
+        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Status",
+        permission="moneygram.can_check_status",
+    )
+    def mg_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        if obj.fsp_code:
+            try:
+                payload, resp = MoneyGramClient().query_status(
+                    obj.fsp_code, obj.get_payload()["agent_partner_id"], update=False
+                )
+                return self.handle_mg_response(request, payload, resp, pk, "Status")
+            except InvalidTokenError as e:
+                logger.error(e)
+                self.message_user(request, str(e), messages.ERROR)
+        else:
+            self.message_user(request, "Missing transaction ID", messages.WARNING)
+        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Status Update",
+        permission="moneygram.can_update_status",
+    )
+    def mg_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        if obj.fsp_code:
+            try:
+                payload, resp = MoneyGramClient().query_status(
+                    obj.fsp_code, obj.get_payload()["agent_partner_id"], update=True
+                )
+                return self.handle_mg_response(request, payload, resp, pk, "Status + Update")
+            except InvalidTokenError as e:
+                logger.error(e)
+                self.message_user(request, str(e), messages.ERROR)
+            except TransitionNotAllowed as e:
+                self.message_user(request, str(e), messages.ERROR)
+        else:
+            self.message_user(request, "Missing transaction ID", messages.WARNING)
+        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Required Fields",
+        permission="moneygram.can_quote_transaction",
+    )
+    def mg_get_required_fields(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        obj = PaymentRecord.objects.get(pk=pk)
+        try:
+            payload, resp = MoneyGramClient().get_required_fields(obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Required Fields")
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Status")
-    def mg_status(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Service Options",
+        permission="moneygram.can_quote_transaction",
+    )
+    def mg_get_service_options(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, update=False)
-            return self.handle_mg_response(request, resp, pk, "Status")
-        except InvalidToken as e:
+            payload, resp = MoneyGramClient().get_service_options(obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Service Options")
+        except InvalidTokenError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Status Update")
-    def mg_status_update(self, request, pk) -> TemplateResponse:
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Refund",
+        permission="moneygram.can_cancel_transaction",
+    )
+    def mg_refund(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            resp = MoneyGramClient().query_status(obj.fsp_code, update=True)
-            return self.handle_mg_response(request, resp, pk, "Status + Update")
-        except InvalidToken as e:
-            logger.error(e)
-            self.message_user(request, str(e), messages.ERROR)
-        except TransitionNotAllowed as e:
-            self.message_user(request, str(e), messages.ERROR)
-
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Required Fields")
-    def mg_get_required_fields(self, request, pk) -> TemplateResponse:
-        obj = PaymentRecord.objects.get(pk=pk)
-        try:
-            resp = MoneyGramClient().get_required_fields(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Required Fields")
-        except InvalidToken as e:
-            logger.error(e)
-            self.message_user(request, str(e), messages.ERROR)
-
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Service Options")
-    def mg_get_service_options(self, request, pk) -> TemplateResponse:
-        obj = PaymentRecord.objects.get(pk=pk)
-        try:
-            resp = MoneyGramClient().get_service_options(obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Service Options")
-        except InvalidToken as e:
-            logger.error(e)
-            self.message_user(request, str(e), messages.ERROR)
-
-    @view(html_attrs={"style": "background-color:#88FF88;color:black"}, label="Refund")
-    def mg_refund(self, request, pk) -> TemplateResponse:
-        obj = PaymentRecord.objects.get(pk=pk)
-        try:
-            resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
-            return self.handle_mg_response(request, resp, pk, "Refund")
-        except InvalidToken as e:
+            payload, resp = MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
+            return self.handle_mg_response(request, payload, resp, pk, "Refund")
+        except (InvalidTokenError, KeyError) as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
@@ -261,7 +367,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         return button
 
     @link()
-    def instruction(self, button: button) -> Optional[str]:
+    def instruction(self, button: button) -> str | None:
         if "original" in button.context:
             obj = button.context["original"]
             button.href = reverse("admin:gateway_paymentinstruction_change", args=[obj.parent.pk])
@@ -270,70 +376,52 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             button.visible = False
         return None
 
-    def handle_mg_response(self, request, resp, pk, title):
+    def handle_mg_response(
+        self, request: HttpRequest, payload: dict, resp: HttpRequest, pk: int, title: str
+    ) -> TemplateResponse:
+        context = self.get_common_context(request, pk)
         if resp:
-            data = resp.data
-            msgs = []
-            if resp.status_code == 200:
-                context = self.get_common_context(request, pk)
+            if resp.status_code < 300:
                 context["title"] = title
                 context["format"] = "json"
-                context["content"] = data
+                context["content_request"] = payload
+                context["content_response"] = resp.data
                 return TemplateResponse(request, "request.html", context)
 
-            elif 400 <= resp.status_code < 500:
-                loglevel = messages.WARNING
-                if "errors" in data:
-                    for error in data["errors"]:
-                        msgs.append(f"{error['message']} ({error['code']})")
-                        if "offendingFields" in error:
-                            for field in error["offendingFields"]:
-                                if "field" in field:
-                                    msgs.append(f"Field: {field['field']}")
-                elif "error" in data:
-                    message = data.get("message", data["error"])
-                    msgs.append(message)
-                else:
-                    msgs = [
-                        "Error",
-                    ]
-            else:
-                loglevel = messages.ERROR
-                errors = dict()
-                if "errors" in data:
-                    errors = data["errors"]
-                if "error" in data:
-                    errors = data["error"]
-                if isinstance(errors, list):
-                    for error in errors:
-                        msgs.append(f"{error['message']} ({error['code']})")
-                else:
-                    msgs.append(f"{errors['message']} ({errors['code']})")
+            loglevel, msgs = self.handle_error(resp)
+
             for msg in msgs:
                 messages.add_message(request, loglevel, msg)
         else:
             messages.add_message(request, messages.ERROR, "Connection Error")
+        return TemplateResponse(request, "request.html", context)
+
+    def handle_error(self, resp) -> tuple:
+        data = resp.data
+        loglevel = messages.WARNING if resp.status_code < 500 else messages.ERROR
+        msgs = extrapolate_errors(data)
+        return loglevel, msgs
 
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("external_code", "status", "remote_id")
-    list_filter = ("status",)
-    search_fields = ("external_code",)
+    list_display = ("external_code", "office", "remote_id", "fsp", "status", "active", "tag")
+    list_filter = ("fsp", "status", "active")
+    search_fields = ("external_code", "remote_id", "fsp__name", "tag")
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
-    # readonly_fields = ("extra",)
+    raw_id_fields = ("fsp", "system", "office")
 
-    @button()
-    def export(self, request, pk) -> TemplateResponse:
+    @button(permission="gateway.can_export_records")
+    def export_records(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.get_object(request, str(pk))
         queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
 
         # hack to use the action
         post_dict = request.POST.copy()
         post_dict["action"] = 0
-        post_dict["_selected_action"] = list()
+        post_dict["_selected_action"] = list
         post_dict["select_across"] = "0"
 
         request.POST = post_dict
@@ -350,7 +438,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             form_class=TemplateExportForm,
         )
 
-    @button()
+    @button(permission="gateway.can_import_records")
     def import_records(
         self, request: "HttpRequest", pk: int
     ) -> Union["HttpResponsePermanentRedirect", "HttpResponseRedirect", TemplateResponse]:
@@ -370,10 +458,20 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                         payload = {
                             key: row[key]
                             for key, value in row.items()
-                            if key in ["first_name", "last_name", "amount", "phone_no", "service_provider_code"]
+                            if key
+                            in [
+                                "first_name",
+                                "last_name",
+                                "amount",
+                                "phone_no",
+                                "service_provider_code",
+                            ]
                         }
                         PaymentRecord.objects.create(
-                            record_code=row["record_code"], remote_id=row["record_code"], parent=parent, payload=payload
+                            record_code=row["record_code"],
+                            remote_id=row["record_code"],
+                            parent=parent,
+                            payload=payload,
                         )
                         n += 1
 
@@ -383,16 +481,13 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                 except IntegrityError as e:
                     logger.error(e)
                     self.message_user(request, str(e), messages.ERROR)
-                except Exception as e:
-                    logger.error(e)
-                    self.message_user(request, "Unable to parse the file, please check the format", messages.ERROR)
         else:
             form = ImportCSVForm()
         context["form"] = form
         return TemplateResponse(request, "admin/gateway/import_records_csv.html", context)
 
     @link()
-    def records(self, button: button) -> Optional[str]:
+    def records(self, button: button) -> str | None:
         if "original" in button.context:
             obj = button.context["original"]
             url = reverse("admin:gateway_paymentrecord_changelist")
@@ -406,6 +501,15 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 class FinancialServiceProviderConfigInline(TabularInline):
     model = FinancialServiceProviderConfig
     extra = 1
+
+
+@admin.register(Office)
+class OfficeAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = ("name", "long_name", "slug", "code", "supervised")
+    search_fields = ("name", "slug", "code")
+    list_filter = ("supervised",)
+    readonly_fields = ("remote_id", "slug")
+    ordering = ("name",)
 
 
 @admin.register(FinancialServiceProvider)
@@ -422,6 +526,12 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     }
 
 
+@admin.register(AccountType)
+class AccountTypeAdmin(admin.ModelAdmin):
+    list_display = ("key", "label")
+    search_fields = ("key", "label")
+
+
 @admin.register(DeliveryMechanism)
 class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("code", "name", "transfer_type")
@@ -429,9 +539,26 @@ class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
+    list_filter = ("transfer_type",)
 
 
 @admin.register(ExportTemplate)
 class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("fsp", "config_key", "delivery_mechanism")
-    search_fields = ("config_key", "delivery_mechanism__name")
+    list_display = ("fsp", "delivery_mechanism", "config_key")
+    search_fields = ("config_key", "delivery_mechanism__name", "fsp__name")
+    raw_id_fields = ("fsp", "delivery_mechanism")
+
+
+@admin.register(AsyncJob)
+class AsyncJobAdmin(AdminFiltersMixin, CeleryTaskModelAdmin, admin.ModelAdmin):
+    list_display = ("type", "verbose_status", "owner")
+    autocomplete_fields = ("owner", "content_type")
+    list_filter = (
+        ("owner", AutoCompleteFilter),
+        "type",
+    )
+
+    def get_readonly_fields(self, request: "HttpRequest", obj: AsyncJob | None = None):
+        if obj:
+            return ("owner", "local_status", "type", "action", "sentry_id")
+        return super().get_readonly_fields(request, obj)

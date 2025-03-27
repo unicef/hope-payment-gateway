@@ -23,7 +23,5 @@ src/hope_payment_gateway/static
 .vscode
 .cache
 
-.pdm-python
-pdm.toml
-
 /__pypackages__
+/docker/Makefile

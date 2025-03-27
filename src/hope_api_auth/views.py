@@ -3,7 +3,6 @@ from typing import Any
 from django.conf import settings
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
-
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -38,15 +37,17 @@ class LoggingAPIView(APIView):
 
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
         ret = super().dispatch(request, *args, **kwargs)
-        if request.method.upper() in self.log_http_methods and (ret.status_code < 300 or ret.status_code > 400):
-            if request.auth:
-                log = APILogEntry.objects.create(
-                    token=request.auth,
-                    url=request.path,
-                    method=request.method.upper(),
-                    status_code=ret.status_code,
-                )
-                assert log.pk
+        if (
+            request.method.upper() in self.log_http_methods
+            and (ret.status_code < 300 or ret.status_code > 400)
+            and request.auth
+        ):
+            APILogEntry.objects.create(
+                token=request.auth,
+                url=request.path,
+                method=request.method.upper(),
+                status_code=ret.status_code,
+            )
 
         return ret
 

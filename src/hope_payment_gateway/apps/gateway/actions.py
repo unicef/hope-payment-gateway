@@ -2,20 +2,44 @@ import collections
 import csv
 import datetime
 import itertools
-
-from django import forms
-from django.conf import settings
-from django.http import HttpResponse, StreamingHttpResponse
-from django.template import Context, Template
-from django.utils import dateformat
-from django.utils.encoding import smart_str
-from django.utils.timezone import get_default_timezone
+from typing import Iterable
 
 from adminactions.api import Echo, csv_options_default
 from adminactions.export import base_export
 from adminactions.forms import CSVConfigForm
+from constance import config
+from django import forms
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.admin import helpers
+from django.http import HttpResponse, StreamingHttpResponse
+from django.shortcuts import redirect, render
+from django.template import Context, Template
+from django.utils import dateformat
+from django.utils.encoding import smart_str
+from django.utils.timezone import get_default_timezone
+from django.utils.translation import gettext_lazy as _
 
+from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
+from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
+
+
+class ActionForm(forms.Form):
+    _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
+    action = forms.CharField(label="", required=True, initial="", widget=forms.HiddenInput())
+
+
+class RefundForm(ActionForm):
+    REFUND_CHOICES = (
+        ("INCORRECT_AMT", "Incorrect Amount"),
+        ("TECH_PROB", "Technical Problem"),
+        ("DUP_TRAN", "Duplicate Transaction"),
+        ("NO_PICKUP", "No Pickup Available"),
+        ("WRONG_CNTRY", "Wrong Country"),
+        ("WRONG_CRNCY", "Wrong Currency"),
+    )
+    reason = forms.ChoiceField(choices=REFUND_CHOICES)
 
 
 class TemplateExportForm(CSVConfigForm):
@@ -42,7 +66,7 @@ class TemplateExportForm(CSVConfigForm):
         return cleaned_data
 
 
-def export_as_template_impl(  # noqa: max-complexity: 20
+def export_as_template_impl(  # noqa
     queryset,
     fields=None,
     header=None,
@@ -50,9 +74,8 @@ def export_as_template_impl(  # noqa: max-complexity: 20
     options=None,
     out=None,
     modeladmin=None,
-):  # noqa
-    """
-        Exports a queryset as csv from a queryset with the given fields.
+):
+    """Export a queryset as csv from a queryset with the given fields.
 
     :param queryset: queryset to export
     :param fields: list of fields names to export. None for all fields
@@ -78,18 +101,12 @@ def export_as_template_impl(  # noqa: max-complexity: 20
     else:
         response = out
 
-    if options is None:
-        config = csv_options_default
-    else:
-        config = csv_options_default.copy()
+    config = csv_options_default.copy()
+    if options:
         config.update(options)
 
     templates = [Template(template) for template in fields]
-
-    if streaming_enabled:
-        buffer_object = Echo()
-    else:
-        buffer_object = response
+    buffer_object = Echo() if streaming_enabled else response
 
     dialect = config.get("dialect", None)
     if dialect is not None:
@@ -107,7 +124,7 @@ def export_as_template_impl(  # noqa: max-complexity: 20
 
     def yield_header():
         if bool(header):
-            if isinstance(header, (list, tuple)):
+            if isinstance(header, Iterable):
                 yield writer.writerow([clean_value(hd) for hd in header])
             else:
                 yield writer.writerow([clean_value(fd) for fd in fields])
@@ -167,3 +184,56 @@ def export_as_template(modeladmin, request, queryset):
 
 
 export_as_template.short_description = "Export as Template"
+
+
+def moneygram_update_status(modeladmin, request, queryset):
+    qs = queryset.filter(parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER)
+    messages.info(request, _(f"Updating {qs.count()}"))
+    moneygram_update(qs.values_list("id", flat=True))
+
+
+def moneygram_refund(modeladmin, request, queryset):
+    qs = queryset.filter(parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER, fsp_code__isnull=False)
+    moneygram_update(qs.values_list("id", flat=True))
+
+    opts = modeladmin.model._meta
+    perm = f"{opts.app_label}.can_cancel_transaction"
+    if not request.user.has_perm(perm):
+        messages.error(request, _("Sorry you do not have rights to execute this action"))
+        return None
+
+    initial = {
+        "_selected_action": request.POST.getlist(helpers.ACTION_CHECKBOX_NAME),
+        "select_across": request.POST.get("select_across") == "1",
+        "action": "moneygram_refund",
+    }
+
+    if "apply" in request.POST:
+        form = RefundForm(request.POST, initial=initial)
+        if form.is_valid():
+            reason = form.cleaned_data["reason"]
+            for obj in qs:
+                obj.payload.update({"refuse_reason_code": reason})
+                obj.save()
+                MoneyGramClient().refund(obj.fsp_code, obj.get_payload())
+            messages.info(request, _(f"Updating {qs.count()}"))
+        return redirect("admin:gateway_paymentrecord_changelist")
+
+    initial.update({"_validate": 1})
+
+    form = RefundForm(initial=initial)
+    admin_form = helpers.AdminForm(form, modeladmin.get_fieldsets(request), {}, [], model_admin=modeladmin)
+    ctx = {
+        "title": "MoneyGram: Refund",
+        "opts": opts,
+        "app_label": modeladmin.model._meta.app_label,
+        "form": form,
+        "selection": queryset,
+        "adminform": admin_form,
+    }
+    ctx.update(modeladmin.admin_site.each_context(request))
+    return render(request, "admin/gateway/refund.html", ctx)
+
+
+moneygram_update_status.short_description = "MoneyGram: update status"
+moneygram_refund.short_description = "MoneyGram: mass refund"

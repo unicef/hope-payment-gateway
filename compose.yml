@@ -21,7 +21,7 @@ services:
     command: |
       sh -c "
         entrypoint.sh ./docker/wait-for-it.sh db:5432
-        python3 manage.py upgrade
+        django-admin upgrade
         entrypoint.sh dev
       "
     environment: *django-env

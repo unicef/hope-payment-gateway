@@ -41,7 +41,10 @@ OPTIONAL = {
     "EMAIL_USE_TLS": (bool, True),
     "FILE_STORAGE_DEFAULT": (str, "django.core.files.storage.FileSystemStorage"),
     "FILE_STORAGE_MEDIA": (str, "django.core.files.storage.FileSystemStorage"),
-    "FILE_STORAGE_STATIC": (str, "django.contrib.staticfiles.storage.StaticFilesStorage"),
+    "FILE_STORAGE_STATIC": (
+        str,
+        "django.contrib.staticfiles.storage.StaticFilesStorage",
+    ),
     "FTP_WESTERN_UNION_PASSWORD": (str, ""),
     "FTP_WESTERN_UNION_PORT": (int, 22),
     "FTP_WESTERN_UNION_SERVER": (str, ""),
@@ -54,11 +57,10 @@ OPTIONAL = {
     "SECURE_HSTS_PRELOAD": (bool, True),
     "SIGNING_BACKEND": (str, "django.core.signing.TimestampSigner"),
     "MEDIA_URL": (str, "/media/"),
-    "MEDIA_ROOT": (str, "/tmp/media/"),
+    "MEDIA_ROOT": (str, "/tmp/media/"),  # noqa
     "MONEYGRAM_HOST": (str, ""),
     "MONEYGRAM_CLIENT_ID": (str, ""),
     "MONEYGRAM_CLIENT_SECRET": (str, ""),
-    "MONEYGRAM_PARTNER_ID": (str, ""),
     "MONEYGRAM_REGISTRATION_NUMBER": (str, ""),
     "MONEYGRAM_PUBLIC_KEY": (str, ""),
     "SENTRY_DSN": (str, ""),
@@ -69,13 +71,16 @@ OPTIONAL = {
     "SESSION_COOKIE_PATH": (str, "/"),
     "SESSION_COOKIE_SECURE": (bool, True),
     "STATIC_URL": (str, "/static/"),
-    "STATIC_ROOT": (str, "/tmp/static/"),
+    "STATIC_ROOT": (str, "/tmp/static/"),  # noqa
     "TIME_ZONE": (str, "UTC"),
     "WESTERN_UNION_BASE_URL": (str, ""),
     "WESTERN_UNION_CERT": (str, ""),
     "WESTERN_UNION_KEY": (str, ""),
     "WP_APPLICATION_SERVER_KEY": (str, ""),
-    "WP_CLAIMS": (str, '{"sub": "mailto: hope@unicef.org","aud": "https://android.googleapis.com"}'),
+    "WP_CLAIMS": (
+        str,
+        '{"sub": "mailto: hope@unicef.org","aud": "https://android.googleapis.com"}',
+    ),
     "WP_PRIVATE_KEY": (str, ""),
 }
 

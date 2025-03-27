@@ -19,9 +19,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="APIToken",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("key", models.CharField(blank=True, max_length=40, unique=True, verbose_name="Key")),
-                ("allowed_ips", models.CharField(blank=True, max_length=200, null=True, verbose_name="IPs")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "key",
+                    models.CharField(blank=True, max_length=40, unique=True, verbose_name="Key"),
+                ),
+                (
+                    "allowed_ips",
+                    models.CharField(blank=True, max_length=200, null=True, verbose_name="IPs"),
+                ),
                 ("valid_from", models.DateField(default=django.utils.timezone.now)),
                 ("valid_to", models.DateField(blank=True, null=True)),
                 (
@@ -38,7 +52,13 @@ class Migration(migrations.Migration):
                         size=None,
                     ),
                 ),
-                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
                 "swappable": "HOPE_API_AUTH_APITOKEN_MODEL",
@@ -47,7 +67,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="APILogEntry",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("timestamp", models.DateTimeField(default=django.utils.timezone.now)),
                 ("url", models.URLField()),
                 ("method", models.CharField(max_length=10)),
@@ -55,7 +83,8 @@ class Migration(migrations.Migration):
                 (
                     "token",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.PROTECT, to=settings.HOPE_API_AUTH_APITOKEN_MODEL
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.HOPE_API_AUTH_APITOKEN_MODEL,
                     ),
                 ),
             ],

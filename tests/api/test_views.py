@@ -1,8 +1,7 @@
 import json
 
-from django.urls import reverse
-
 import pytest
+from django.urls import reverse
 from factories import PaymentRecordFactory
 
 from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
@@ -10,7 +9,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "action,detail,status",
+    ("action", "detail", "status"),
     [
         ("list", False, 200),
         ("detail", True, 200),
@@ -29,7 +28,7 @@ def test_payment_instruction(api_client, action, detail, status, token_user):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "action,detail,status",
+    ("action", "detail", "status"),
     [
         ("open", True, 200),
         ("ready", True, 400),
@@ -51,7 +50,7 @@ def test_payment_instruction_actions(api_client, action, detail, status, token_u
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "action,detail,status",
+    ("action", "detail", "status"),
     [
         ("list", False, 200),
         ("detail", True, 200),
@@ -74,10 +73,18 @@ def test_instructions_add_records_ok(api_client, token_user):
     pr = PaymentRecordFactory(parent__status=PaymentInstructionState.OPEN)
     url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
     payload = [
-        {"record_code": "adalberto", "remote_id": "adalberto", "payload": {"key": "value"}},
+        {
+            "record_code": "adalberto",
+            "remote_id": "adalberto",
+            "payload": {"key": "value"},
+        },
     ]
     view = api_client.post(
-        url, json.dumps(payload), content_type="application/json", user=user, HTTP_AUTHORIZATION=token
+        url,
+        json.dumps(payload),
+        content_type="application/json",
+        user=user,
+        HTTP_AUTHORIZATION=token,
     )
     assert view.status_code == 201
     assert view.json()["remote_id"] == pr.parent.remote_id

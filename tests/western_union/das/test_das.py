@@ -1,11 +1,7 @@
-from django.urls import reverse
-
 import pytest
 import responses
 from constance.test import override_config
-
-# from responses import _recorder
-# @_recorder.record(file_path="tests/western_union/das/das_countries_currencies.yaml")
+from django.urls import reverse
 
 
 @pytest.mark.parametrize(

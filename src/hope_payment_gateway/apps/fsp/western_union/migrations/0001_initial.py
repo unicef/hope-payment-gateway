@@ -12,7 +12,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Corridor",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("description", models.CharField(max_length=1024)),
                 ("destination_country", models.CharField(max_length=2)),
                 ("destination_currency", models.CharField(max_length=3)),

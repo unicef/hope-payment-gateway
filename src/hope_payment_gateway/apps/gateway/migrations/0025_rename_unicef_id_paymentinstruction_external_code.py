@@ -4,9 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("gateway", "0024_rename_vision_vendor_number_financialserviceprovider_vendor_number"),
+        (
+            "gateway",
+            "0024_rename_vision_vendor_number_financialserviceprovider_vendor_number",
+        ),
     ]
 
     operations = [

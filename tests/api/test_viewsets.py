@@ -1,7 +1,6 @@
-from django.urls import reverse
-
 import pytest
 from api_checker import LastModifiedRecorder, frozenfixture
+from django.urls import reverse
 from drf_api_checker.pytest import contract
 from factories import (
     CorridorFactory,
@@ -10,7 +9,19 @@ from factories import (
     PaymentInstructionFactory,
     PaymentRecordFactory,
     ServiceProviderCodeFactory,
+    AccountTypeFactory,
+    DeliveryMechanismFactory,
 )
+
+
+@frozenfixture()
+def acc_type(request, db):
+    return AccountTypeFactory()
+
+
+@frozenfixture()
+def dm(request, db):
+    return DeliveryMechanismFactory()
 
 
 @frozenfixture()
@@ -45,6 +56,18 @@ def configuration(request, db, fsp):
 
 @pytest.mark.django_db
 @contract(LastModifiedRecorder)
+def test_api_account_types(request, django_app, acc_type):
+    return reverse("api:account-type-list")
+
+
+@pytest.mark.django_db
+@contract(LastModifiedRecorder)
+def test_api_delivery_mechanism(request, django_app, dm):
+    return reverse("api:delivery-mechanism-list")
+
+
+@pytest.mark.django_db
+@contract(LastModifiedRecorder)
 def test_api_fsp(request, django_app, fsp):
     return reverse("api:fsp-list")
 
@@ -55,7 +78,6 @@ def test_api_payment_instructions(request, django_app, p_instruction):
     return reverse("api:payment-instruction-list")
 
 
-#
 @pytest.mark.django_db
 @contract(LastModifiedRecorder)
 def test_payment_records(request, django_app, p_record):

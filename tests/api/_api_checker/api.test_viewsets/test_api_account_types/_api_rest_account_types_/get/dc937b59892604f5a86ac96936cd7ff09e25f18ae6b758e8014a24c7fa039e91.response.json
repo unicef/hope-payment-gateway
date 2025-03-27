@@ -1,0 +1,21 @@
+{
+    "status_code": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "Vary": "Accept, origin",
+        "Allow": "GET, POST, HEAD, OPTIONS",
+        "X-Frame-Options": "DENY",
+        "Content-Length": "66",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "same-origin",
+        "Cross-Origin-Opener-Policy": "same-origin"
+    },
+    "data": [
+        {
+            "key": "MPfMEMoraASU",
+            "label": "fWSmkrDnGpBm",
+            "unique_fields": []
+        }
+    ],
+    "content_type": "application/json"
+}

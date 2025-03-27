@@ -1,29 +1,28 @@
 import binascii
 import os
 from enum import Enum, auto, unique
-from typing import Any, List, Tuple
+from typing import Any
 
+import swapper
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-import swapper
 
 from .fields import ChoiceArrayField
 
 
 @unique
 class Grant(Enum):
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> Any:
-        return name
+    def _generate_next_value_(self, start: int, count: int, last_values: list[Any]) -> Any:
+        return self
 
     API_READ_ONLY = auto()
     API_PLAN_UPLOAD = auto()
     API_PLAN_MANAGE = auto()
 
     @classmethod
-    def choices(cls) -> Tuple[Tuple[Any, Any], ...]:
+    def choices(cls) -> tuple[tuple[Any, Any], ...]:
         return tuple((i.value, i.value) for i in cls)
 
 
@@ -35,9 +34,10 @@ class AbstractAPIToken(models.Model):
     valid_from = models.DateField(default=timezone.now)
     valid_to = models.DateField(blank=True, null=True)
 
-    grants = ChoiceArrayField(
-        models.CharField(choices=Grant.choices(), max_length=255),  # permessions
-    )
+    grants = ChoiceArrayField(models.CharField(choices=Grant.choices(), max_length=255))
+
+    class Meta:
+        abstract = True
 
     def __str__(self) -> str:
         return f"Token #{self.pk}"
@@ -50,9 +50,6 @@ class AbstractAPIToken(models.Model):
     @classmethod
     def generate_key(cls) -> str:
         return binascii.hexlify(os.urandom(20)).decode()
-
-    class Meta:
-        abstract = True
 
 
 class APIToken(AbstractAPIToken):
@@ -67,5 +64,5 @@ class APILogEntry(models.Model):
     method = models.CharField(max_length=10)
     status_code = models.IntegerField()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.token} {self.method} {self.timestamp}"

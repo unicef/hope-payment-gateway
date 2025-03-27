@@ -4,15 +4,8 @@ from constance.test import override_config
 from factories import PaymentRecordFactory
 from responses import _recorder  # noqa
 
-from hope_payment_gateway.apps.fsp.moneygram.client import (
-    DELIVERED,
-    RECEIVED,
-    SENT,
-    InvalidToken,
-    MoneyGramClient,
-    update_status,
-)
-from hope_payment_gateway.apps.fsp.western_union.endpoints.nis import REFUND
+from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED, REFUNDED, SENT
+from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, update_status
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 # @_recorder.record(file_path="tests/moneygram/responses/token.yaml")
@@ -22,9 +15,8 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_token_ko(mg):
-    # responses.get("https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials")
     responses._add_from_file(file_path="tests/moneygram/responses/token_ko.yaml")
-    with pytest.raises(InvalidToken):
+    with pytest.raises(InvalidTokenError):
         MoneyGramClient()
 
 
@@ -32,7 +24,6 @@ def test_get_token_ko(mg):
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_token(mg):
-    # responses.get("https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials")
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
     assert client.token == "HMfWVGb6AYGmx3B07JSXsfIZQw6Z"
@@ -59,7 +50,7 @@ def test_get_headers_token():
 def test_get_basic_payload():
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    assert client.get_basic_payload() == {
+    assert client.get_basic_payload(agent_partner_id="AAAAAA") == {
         "targetAudience": "AGENT_FACING",
         "agentPartnerId": "AAAAAA",
         "userLanguage": "en-US",
@@ -80,6 +71,7 @@ def test_prepare_transactions(mg):
         "destination_currency": "USD",
         "origination_country": "US",
         "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
     }
     assert client.prepare_transaction(pr.get_payload()) == (
         pr_code,
@@ -88,11 +80,11 @@ def test_prepare_transactions(mg):
             "agentPartnerId": "AAAAAA",
             "userLanguage": "en-US",
             "destinationCountryCode": "IT",
-            "receiveCurrencyCode": "USD",
+            "sendCurrencyCode": "USD",
             "serviceOptionCode": "WILL_CALL",
             "serviceOptionRoutingCode": None,
             "autoCommit": "true",
-            "sendAmount": {"currencyCode": "USD", "value": 100},
+            "receiveAmount": {"currencyCode": "USD", "value": 100},
             "sender": {
                 "business": {
                     "address": {
@@ -113,7 +105,10 @@ def test_prepare_transactions(mg):
             },
             "beneficiary": {
                 "consumer": {
-                    "name": {"firstName": "Alen", "middleName": "", "lastName": "Smith"},
+                    "name": {
+                        "firstName": "Alen",
+                        "lastName": "Smith",
+                    },
                     "mobilePhone": {"number": "N/A", "countryDialCode": None},
                 }
             },
@@ -143,6 +138,7 @@ def test_prepare_quote(mg):
         "destination_currency": "USD",
         "origination_country": "US",
         "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
     }
     assert client.prepare_quote(pr.get_payload()) == (
         "test-code",
@@ -153,7 +149,7 @@ def test_prepare_quote(mg):
             "destinationCountryCode": "US",
             "serviceOptionCode": None,
             "beneficiaryTypeCode": "Consumer",
-            "sendAmount": {"currencyCode": "USD", "value": 100},
+            "receiveAmount": {"currencyCode": "USD", "value": 100},
         },
     )
 
@@ -176,8 +172,10 @@ def test_quote(mg):
         "origination_country": "US",
         "origination_currency": "USD",
         "delivery_services_code": "WILL_CALL",
+        "agent_partner_id": "AAAAAA",
     }
-    assert client.quote(pr.get_payload()).data == {
+    _, response = client.quote(pr.get_payload())
+    assert response.data == {
         "transactions": [
             {
                 "transactionId": "f3ba1025-6247-4ae6-90b4-1bdfc2da527d",
@@ -211,10 +209,9 @@ def test_status_missing(mg):
     client = MoneyGramClient()
     transaction_id = "transaction_id"
     PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    assert client.status(transaction_id).status_code == 400
-    assert client.status(transaction_id).data == {
-        "errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]
-    }
+    _, response = client.status(transaction_id, agent_partner_id="AAAAAA")
+    assert response.status_code == 400
+    assert response.data == {"errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]}
 
 
 # @_recorder.record(file_path="tests/moneygram/responses/status_ok.yaml")
@@ -226,8 +223,9 @@ def test_status_ok(mg):
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
     PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    assert client.status(transaction_id).status_code == 200
-    assert client.status(transaction_id).data == {
+    _, response = client.status(transaction_id, agent_partner_id="AAAAAA")
+    assert response.status_code == 200
+    assert response.data == {
         "transactionId": "64c228ba-8013-43f6-9baf-a0c87b91a261",
         "referenceNumber": "27380423",
         "transactionSendDateTime": "2024-11-20T07:04:13.814",
@@ -272,7 +270,7 @@ def test_query_status(mg):
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
     pr = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    client.query_status(transaction_id, True)
+    client.query_status(transaction_id, agent_partner_id="AAAAAA", update=True)
     pr.refresh_from_db()
     assert pr.payout_amount == 300
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
@@ -294,8 +292,9 @@ def test_create_transaction(mg):
         "destination_currency": "NGN",
         "payment_record_code": "code-123",
         "phone_no": "+393891234567",
+        "agent_partner_id": "AAAAAA",
     }
-    response = client.create_transaction(payload)
+    _, response = client.create_transaction(payload)
     assert response.status_code == 200
     assert response.data == {
         "transactionId": "18ba47c4-6376-40d4-a0c9-e52722dc52cf",
@@ -335,11 +334,11 @@ def test_refund(mg):
     transaction_id = "a0ea837d-af5b-4cdd-8ac1-560477bf0978"
     pr = PaymentRecordFactory(
         fsp_code=transaction_id,
-        payload={"refuse_reason_code": "DUP_TRAN"},
+        payload={"refuse_reason_code": "DUP_TRAN", "agent_partner_id": "AAAAAA"},
         parent__fsp=mg,
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
-    resp = client.refund(transaction_id, pr.payload)
+    _, resp = client.refund(transaction_id, pr.payload)
     pr.refresh_from_db()
     assert pr.message == "Refunded"
     assert pr.status == PaymentRecordState.REFUND
@@ -357,12 +356,13 @@ def test_get_required_fields(mg):
         "service_provider_code__bank_account": "BANK_DEPOSIT",
         "service_provider_routing_code__bank_account": "74826841",
         "amount": 100,
-        "origin_currency": "USD",
+        "origination_currency": "USD",
         "destination_country": "NGA",
         "destination_currency": "NGN",
+        "agent_partner_id": "AAAAAA",
     }
     pr = PaymentRecordFactory(payload=payload, parent__fsp=mg)
-    response = client.get_required_fields(payload)
+    _, response = client.get_required_fields(payload)
     pr.refresh_from_db()
     assert response.status_code == 200
     assert response.data == {
@@ -500,7 +500,9 @@ def test_get_required_fields(mg):
                 "fieldMin": "0",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z0-9 \\u00C0-\\u017F\\#\\/\\.\\\"\\'\\,\\(\\)\\-])*$",
-                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. Minimum 5 characters with at least one alpha character. No repeated special characters ( #### or ////). PO Box not allowed",
+                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. "
+                "Minimum 5 characters with at least one alpha character. "
+                "No repeated special characters ( #### or ////). PO Box not allowed",
             },
             {
                 "field": "receiver.address.line2",
@@ -551,7 +553,8 @@ def test_get_required_fields(mg):
                 "displayOrder": "18",
                 "fieldMin": "5",
                 "fieldMax": "14",
-                "helpTextLong": "Only numeric characters are allowed. Cannot contain a string of repeating numeric characters (example 8888888)",
+                "helpTextLong": "Only numeric characters are allowed. "
+                "Cannot contain a string of repeating numeric characters (example 8888888)",
             },
             {
                 "field": "receiver.name.firstName",
@@ -562,7 +565,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "receiver.name.lastName",
@@ -573,7 +577,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "receiver.name.middleName",
@@ -584,7 +589,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "0",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "receiver.name.secondLastName",
@@ -595,7 +601,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {"field": "receiverSameAsSender", "dataType": "boolean", "required": False},
             {
@@ -662,7 +669,9 @@ def test_get_required_fields(mg):
                 "fieldMin": "0",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z0-9 \\u00C0-\\u017F\\#\\/\\.\\\"\\'\\,\\(\\)\\-])*$",
-                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. Minimum 5 characters with at least one alpha character. No repeated special characters ( #### or ////). PO Box not allowed",
+                "helpTextLong": "Only alpha, numeric and certain special characters (#./'-,()\") are allowed. "
+                "Minimum 5 characters with at least one alpha character. "
+                "No repeated special characters ( #### or ////). PO Box not allowed",
             },
             {
                 "field": "sender.address.line2",
@@ -702,9 +711,14 @@ def test_get_required_fields(mg):
                 "fieldLabel": "Email",
                 "displayOrder": "20",
                 "fieldMax": "255",
-                "regEx": "^(([\\\\.a-zA-Z0-9_\\\\-])+@([a-zA-Z0-9_\\\\-])+([a-zA-Z0-9_\\\\-])+[\\\\.]{1}([a-zA-Z0-9_\\\\-])+[\\\\.]?([a-zA-Z0-9_\\\\-])+)*$",
+                "regEx": "^(([\\\\.a-zA-Z0-9_\\\\-])+@([a-zA-Z0-9_\\\\-])+([a-zA-Z0-9_\\\\-])+"
+                "[\\\\.]{1}([a-zA-Z0-9_\\\\-])+[\\\\.]?([a-zA-Z0-9_\\\\-])+)*$",
             },
-            {"field": "sender.enrolInRewards", "dataType": "boolean", "required": False},
+            {
+                "field": "sender.enrolInRewards",
+                "dataType": "boolean",
+                "required": False,
+            },
             {
                 "field": "sender.mobilePhone.countryDialCode",
                 "dataType": "string",
@@ -722,7 +736,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "6",
                 "fieldMax": "14",
                 "regEx": "^([0-9\\.\\-])*$",
-                "helpTextLong": "Only numeric characters are allowed. Cannot contain a string of repeating numeric characters (example 8888888)",
+                "helpTextLong": "Only numeric characters are allowed."
+                " Cannot contain a string of repeating numeric characters (example 8888888)",
             },
             {
                 "field": "sender.name.firstName",
@@ -733,7 +748,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.name.lastName",
@@ -744,7 +760,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.name.middleName",
@@ -754,7 +771,8 @@ def test_get_required_fields(mg):
                 "displayOrder": "2",
                 "fieldMax": "20",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.name.secondLastName",
@@ -765,7 +783,8 @@ def test_get_required_fields(mg):
                 "fieldMin": "1",
                 "fieldMax": "30",
                 "regEx": "^([a-zA-Z \\u00C0-\\u017F\\-\\'\\/])*$",
-                "helpTextLong": "Cannot start with special character, cannot contain number. Only alpha characters, dash (-) and apostrophe (') allowed",
+                "helpTextLong": "Cannot start with special character, cannot contain number. "
+                "Only alpha characters, dash (-) and apostrophe (') allowed",
             },
             {
                 "field": "sender.notificationLanguagePreference",
@@ -1131,7 +1150,10 @@ def test_get_required_fields(mg):
                     {"value": "000009", "description": "CITI BANK"},
                     {"value": "000010", "description": "ECOBANK"},
                     {"value": "100001", "description": "ENTERPRISE BANK"},
-                    {"value": "100006", "description": "FAIRMONEY MICROFINANCE BANK LTD"},
+                    {
+                        "value": "100006",
+                        "description": "FAIRMONEY MICROFINANCE BANK LTD",
+                    },
                     {"value": "000003", "description": "FCMB"},
                     {"value": "000007", "description": "FIDELITY BANK"},
                     {"value": "100010", "description": "FINA TRUST MICROFINANCE BANK"},
@@ -1146,7 +1168,10 @@ def test_get_required_fields(mg):
                     {"value": "100007", "description": "LAPO MICROFINANCE BANK"},
                     {"value": "000029", "description": "LOTUS BANK"},
                     {"value": "100013", "description": "LOVONUS MICROFINANCE BANK"},
-                    {"value": "100009", "description": "MUTUAL TRUST MICROFINANCE BANK"},
+                    {
+                        "value": "100009",
+                        "description": "MUTUAL TRUST MICROFINANCE BANK",
+                    },
                     {"value": "000036", "description": "OPTIMUS BANK"},
                     {"value": "000030", "description": "PARALLEX BANK"},
                     {"value": "000008", "description": "POLARIS BANK LTD"},
@@ -1154,7 +1179,10 @@ def test_get_required_fields(mg):
                     {"value": "000023", "description": "PROVIDUS BANK"},
                     {"value": "100012", "description": "SPARKLE MICRO-FINANCE BANK"},
                     {"value": "000012", "description": "STANBIC IBTC BANK"},
-                    {"value": "000021", "description": "STANDARD CHARTERED BANK NIGERIA LTD"},
+                    {
+                        "value": "000021",
+                        "description": "STANDARD CHARTERED BANK NIGERIA LTD",
+                    },
                     {"value": "000001", "description": "STERLING BANK"},
                     {"value": "000022", "description": "SUNTRUST BANK NIGERIA LIMITED"},
                     {"value": "100002", "description": "TAJ BANK"},
@@ -1186,7 +1214,10 @@ def test_get_required_fields(mg):
                 "enumerationItem": [
                     {"value": "BUSINESS_RELATED", "description": "Business-Related"},
                     {"value": "CHARITY_SUPPORT", "description": "Charity Support"},
-                    {"value": "FAMILY_FRIENDS_SUPPORT", "description": "Family/Friend Support"},
+                    {
+                        "value": "FAMILY_FRIENDS_SUPPORT",
+                        "description": "Family/Friend Support",
+                    },
                     {"value": "THIRD_PARTY", "description": "Third Party"},
                 ],
             },
@@ -1199,7 +1230,10 @@ def test_get_required_fields(mg):
                 "fieldMax": "30",
                 "enumerationItem": [
                     {"value": "ACT_OF_ATTORNEY", "description": "Act of Attorney"},
-                    {"value": "BANK_STATEMENT", "description": "Bank account statement/withdrawl slip"},
+                    {
+                        "value": "BANK_STATEMENT",
+                        "description": "Bank account statement/withdrawl slip",
+                    },
                     {"value": "NATIONAL_LOTTERY", "description": "Copy of Check"},
                     {"value": "PAYROLL_SLIP", "description": "Payroll slip"},
                     {"value": "SALE_CERTIFICATE", "description": "Sales certificate"},
@@ -1225,7 +1259,10 @@ def test_get_required_fields(mg):
                     {"value": "BILLS", "description": "Bills"},
                     {"value": "FOOD", "description": "Food"},
                     {"value": "MEDICAL", "description": "Medical Expenses"},
-                    {"value": "PURCHASE_GOODS", "description": "Payment for Goods/Services"},
+                    {
+                        "value": "PURCHASE_GOODS",
+                        "description": "Payment for Goods/Services",
+                    },
                     {"value": "PERSONAL_USE", "description": "Personal Need/Expense"},
                     {"value": "SALARY", "description": "Salary"},
                 ],
@@ -1279,11 +1316,10 @@ def test_get_required_fields(mg):
 # @_recorder.record(file_path="tests/moneygram/responses/service_options.yaml")
 @responses.activate
 @pytest.mark.django_db
-@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_service_options(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/service_options.yaml")
     client = MoneyGramClient()
-    response = client.get_service_options({"destination_country": "NGA"})
+    _, response = client.get_service_options({"agent_partner_id": "AAAAAA", "destination_country": "NGA"})
     assert response.status_code == 200
     assert response.data == [
         {
@@ -1333,11 +1369,11 @@ def test_get_service_options(mg):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "from_status,to_status",
+    ("from_status", "to_status"),
     [
         (PaymentRecordState.PENDING, SENT),
         (PaymentRecordState.TRANSFERRED_TO_FSP, RECEIVED),
-        (PaymentRecordState.TRANSFERRED_TO_FSP, REFUND),
+        (PaymentRecordState.TRANSFERRED_TO_FSP, REFUNDED),
         (PaymentRecordState.TRANSFERRED_TO_FSP, DELIVERED),
     ],
 )

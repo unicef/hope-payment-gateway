@@ -9,6 +9,7 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
+    AccountType,
 )
 
 
@@ -37,11 +38,16 @@ class PayloadMixin:
         }
 
 
-class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
+class AccountTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccountType
+        fields = ("key", "label", "unique_fields")
 
+
+class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
     class Meta:
         model = DeliveryMechanism
-        fields = ("id", "code", "name", "transfer_type", "requirements")
+        fields = ("id", "code", "name", "description", "account_type", "transfer_type", "requirements")
 
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
@@ -59,6 +65,7 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
             "delivery_mechanism_name",
             "delivery_mechanism_transfer_type",
             "delivery_mechanism_code",
+            "required_fields",
         )
 
 
@@ -111,6 +118,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "id",
             "remote_id",
             "external_code",
+            "active",
             "status",
             "fsp",
             "system",
@@ -128,8 +136,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
 
         if instance:
             return super().update(instance, validated_data)
-        else:
-            return super().create(validated_data)
+        return super().create(validated_data)
 
 
 class PaymentRecordLightSerializer(serializers.ModelSerializer):
@@ -149,6 +156,7 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
             "status",
             "message",
             "payout_amount",
+            "payout_date",
         )
 
 

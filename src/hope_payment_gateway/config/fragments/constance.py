@@ -20,7 +20,7 @@ CONSTANCE_CONFIG = {
         "T4840;T4900;T4977;T4989;T4989;T5499;T5500;T5519;T5522;T6216;T6332;T6750;T6791;T8004;T8881;T9103;T9133;T9980;"
         "U0004;U0006;U0007;U0119;U2400;U2402;U2520;U2521;U2535;U2539;U2540;U7777;U8001;U8004;U8010;U8011;U8100;U8101;"
         "U8200;U8201;U9001;U9002;U9010;U9011;U9013;U9015;U9016;U9020;U9021;U9022;U9023;U9024;U9025;U9081;M0006;T6253;"
-        "NONE;E9248;T0371;T8002;T5499;U0051;T5552",
+        "NONE;E9248;T0371;T8002;T5499;U0051;T5552;E9256",
         "Error codes which depend on WU",
         str,
     ),
@@ -29,7 +29,11 @@ CONSTANCE_CONFIG = {
     "WESTERN_UNION_WHITELISTED_ENV": ("uat", "Western Union Env", str),
     "WESTERN_UNION_VENDOR_NUMBER": ("", "Western Union Vendor Number", str),
     "MONEYGRAM_VENDOR_NUMBER": ("", "MoneyGram Vendor Number", str),
-    "MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED": (True, "MoneyGram: Signature Verification Enabled", bool),
+    "MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED": (
+        True,
+        "MoneyGram: Signature Verification Enabled",
+        bool,
+    ),
     "WHITELISTED_IPS": ("127.0.0.1", "IPs", str),
     "WHITELIST_ENABLED": (True, "Whitelist Enabled", bool),
 }

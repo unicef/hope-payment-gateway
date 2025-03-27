@@ -10,6 +10,8 @@ from factories import (
     PaymentInstructionFactory,
     PaymentRecordFactory,
     UserFactory,
+    FinancialServiceProviderConfigFactory,
+    DeliveryMechanismFactory,
 )
 from strategy_field.utils import fqn
 
@@ -27,48 +29,49 @@ def pytest_configure(config):
     os.environ["SESSION_COOKIE_HTTPONLY"] = "0"
     os.environ["SESSION_COOKIE_SECURE"] = "0"
     os.environ["DEFAULT_FROM_EMAIL"] = "test@email.org"
+    os.environ["SECRET_KEY"] = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
 
 
 @pytest.fixture(autouse=True)
 def use_override_settings(settings):
-    settings.MONEYGRAM_PARTNER_ID = "AAAAAA"
     settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
     settings.MONEYGRAM_HOST = "https://sandboxapi.moneygram.com"
+    settings.SECRET_KEY = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocked_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         yield rsps
 
 
-@pytest.fixture()
+@pytest.fixture
 def user(request, db):
     return UserFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def logged_user(client, user):
     client.force_authenticate(user)
     return user
 
 
-@pytest.fixture()
+@pytest.fixture
 def corridor():
     return CorridorFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def pi():
     return PaymentInstructionFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def prl():
     return PaymentRecordFactory()
 
 
-@pytest.fixture()
+@pytest.fixture
 def wu():
     return FinancialServiceProviderFactory(
         name="Western Union",
@@ -111,9 +114,9 @@ def wu():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def mg():
-    return FinancialServiceProviderFactory(
+    mg = FinancialServiceProviderFactory(
         name="MoneyGram",
         vendor_number="67890",
         strategy=fqn(MoneyGramHandler),
@@ -136,9 +139,15 @@ def mg():
             }
         },
     )
+    dm = DeliveryMechanismFactory(code="money")
+    FinancialServiceProviderConfigFactory(
+        key="mg-key", fsp=mg, delivery_mechanism=dm, configuration={"agent_partner_id": "agent_partner_id"}
+    )
+
+    return mg
 
 
-@pytest.fixture()
+@pytest.fixture
 def token_user():
     user = UserFactory()
     user_permissions = [

@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - develop
-      - mastetr
+      - master
   schedule:
     - cron: '37 23 * * 2'
 
@@ -26,16 +26,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           key: ${{ github.ref }}
           path: .cache
       - name: Install mkDocs
         run: |
           sudo apt-get install libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev
-          pip install pdm
-          pdm install          
-          pdm run mkdocs build -d ./docs-output
+          pip install uv
+          uv sync --dev
+          uv run mkdocs build -d ./docs-output
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

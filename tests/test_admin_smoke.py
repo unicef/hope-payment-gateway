@@ -1,17 +1,20 @@
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
-
-from django.contrib.admin.sites import site
-from django.contrib.admin.templatetags.admin_urls import admin_urlname
-from django.db.models.options import Options
-from django.urls import reverse
 
 import pytest
 from admin_extra_buttons.handlers import ChoiceHandler
 from constance.test import override_config
+from django.contrib.admin.sites import site
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
+from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
 from factories import SuperUserFactory
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
+
+
+if TYPE_CHECKING:
+    from django.db.models.options import Options
 
 
 class RegexList(_RegexList):
@@ -52,7 +55,7 @@ def log_submit_error(res):
         return "Submit failed"
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc):  # noqa
     import django
 
     markers = metafunc.definition.own_markers
@@ -71,12 +74,11 @@ def pytest_generate_tests(metafunc):
         for model, admin in site._registry.items():
             if hasattr(admin, "get_changelist_buttons"):
                 name = model._meta.object_name
-                assert admin.urls  # we need to force this call
-                # admin.get_urls()  # we need to force this call
+                assert admin.urls
                 buttons = admin.extra_button_handlers.values()
                 full_name = f"{model._meta.app_label}.{name}"
                 admin_name = f"{model._meta.app_label}.{admin.__class__.__name__}"
-                if not (full_name in excluded_models):
+                if full_name not in excluded_models:
                     for btn in buttons:
                         tid = f"{admin_name}:{btn.name}"
                         if tid not in excluded_buttons:
@@ -89,13 +91,13 @@ def pytest_generate_tests(metafunc):
         for model, admin in site._registry.items():
             name = model._meta.object_name
             full_name = f"{model._meta.app_label}.{name}"
-            if not (full_name in excluded_models):
+            if full_name not in excluded_models:
                 m.append(admin)
                 ids.append(f"{admin.__class__.__name__}:{full_name}")
         metafunc.parametrize("modeladmin", m, ids=ids)
 
 
-@pytest.fixture()
+@pytest.fixture
 def record(db, request):
     from factories import get_factory_for_model
 
@@ -111,9 +113,8 @@ def record(db, request):
     return instance
 
 
-@pytest.fixture()
+@pytest.fixture
 def app(django_app_factory, mocked_responses):
-
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
     django_app.set_user(admin_user)
@@ -144,7 +145,7 @@ def test_admin_changelist(app, modeladmin, record):
 def show_error(res):
     errors = []
     for k, v in dict(res.context["adminform"].form.errors).items():
-        errors.append(f'{k}: {"".join(v)}')
+        errors.append(f"{k}: {''.join(v)}")
     return (f"Form submitting failed: {res.status_code}: {errors}",)
 
 
@@ -185,7 +186,7 @@ def test_admin_delete(app, modeladmin, record, monkeypatch):
         pytest.skip("No 'delete' permission")
 
 
-@pytest.mark.skip_buttons("security.UserAdmin:link_user_data")
+@pytest.mark.skip_buttons("security.UserAdmin:link_user_data", "gateway.AsyncJobAdmin:celery_inspect")
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 def test_admin_buttons(app, modeladmin, button_handler, record, monkeypatch, wu):
     from admin_extra_buttons.handlers import LinkHandler

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0011_financialserviceproviderconfig_label_and_more"),
     ]

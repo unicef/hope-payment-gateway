@@ -1,5 +1,4 @@
 from django.http import FileResponse
-
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -38,7 +37,6 @@ class ServiceProviderCodeViewSet(ProtectedMixin, ModelViewSet):
 
 class FileViewset(ViewSet):
     serializer_class = FileSerializer
-    filter_backends = list()
     lookup_field = "filename"
     lookup_value_regex = r".*\..*"
     permission_classes = (IsAdminUser,)

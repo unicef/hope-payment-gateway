@@ -1,6 +1,5 @@
-from django.utils import timezone
-
 import factory
+from django.utils import timezone
 from factory import fuzzy
 from strategy_field.utils import fqn
 
@@ -14,6 +13,7 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
+    AccountType,
 )
 from hope_payment_gateway.apps.gateway.registry import DefaultProcessor
 
@@ -29,6 +29,14 @@ class CorridorFactory(AutoRegisterModelFactory):
 class ServiceProviderCodeFactory(AutoRegisterModelFactory):
     class Meta:
         model = ServiceProviderCode
+
+
+class AccountTypeFactory(AutoRegisterModelFactory):
+    key = fuzzy.FuzzyText()
+    label = fuzzy.FuzzyText()
+
+    class Meta:
+        model = AccountType
 
 
 class DeliveryMechanismFactory(AutoRegisterModelFactory):

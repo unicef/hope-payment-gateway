@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from unicef_security.admin import UserAdminPlus
 
 from hope_payment_gateway.apps.core.models import System, User
@@ -16,3 +15,4 @@ class UserAdminPlus(UserAdminPlus):
 class SystemAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_display = ("name", "owner")
+    raw_id_fields = ("owner",)

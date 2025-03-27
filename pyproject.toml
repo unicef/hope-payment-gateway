@@ -1,56 +1,20 @@
-[tool.black]
-line-length = 120
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.pytest_cache
-  | \.tox
-  | \.venv
-  | ~build
-  | build
-  | ops
-  | migrations
-)/
-'''
-
-[tool.isort]
-profile = "black"
-line_length = 120
-default_section = "THIRDPARTY"
-known_first_party = []
-known_django = "django"
-sections = ["FUTURE","STDLIB","DJANGO","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
-include_trailing_comma = true
-skip = ["migrations", "snapshots", ".venv"]
-
-
 [tool.django-stubs]
 django_settings_module = "hope_payment_gateway.config.settings"
 
 
-[tool.pdm.build]
-includes = []
-
-
-[tool.pdm.dev-dependencies]
-dev = [
+[tool.uv]
+package = true
+dev-dependencies = [
     "argh",
-    "black",
     "cairosvg",
     "django-regex",
     "django-webtest",
     "drf-api-checker",
     "factory-boy",
     "faker",
-    "flake8",
-    "flake8-bugbear",
-    "flake8-formatter-junit-xml",
-    "flake8-html",
     "freezegun",
     "graphene-stubs",
     "ipdb",
-    "isort",
     "markupsafe",
     "mdx-gh-links",
     "mike",
@@ -99,7 +63,7 @@ authors = [
     {name = "ddinicola"},
     {name = "Domenico DiNicola", email = "dom.dinicola@gmail.com"},
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "Django",
     "celery[redis]",
@@ -139,6 +103,8 @@ dependencies = [
     "paramiko",
     "phonenumbers",
     "psycopg[binary]",
+    "python-redis-lock[django]",
+    "redis",
     "sentry-sdk",
     "social-auth-app-django",
     "social-auth-core",
@@ -153,3 +119,10 @@ version = "0.1"
 description = "HOPE integration with FSPs"
 readme = "README.md"
 license = {text = "MIT"}
+
+
+[tool.nitpick]
+    style = [
+        "github://unicef/hope-code-conventions@main/django/django.toml"
+    ]
+    cache = "1 day"

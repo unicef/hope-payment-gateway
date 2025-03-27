@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("gateway", "0018_alter_financialserviceproviderconfig_delivery_mechanism"),
     ]

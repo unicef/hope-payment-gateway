@@ -1,4 +1,4 @@
-from hope_payment_gateway.apps.fsp.western_union.endpoints.helpers import analyze_node
+from hope_payment_gateway.apps.fsp.western_union.api.utils import analyze_node
 
 
 def test_analyze_node():
@@ -15,22 +15,3 @@ def test_analyze_node():
         ["house", "price", None],
         ["car", "eur", ["1", "2", "3", "4", "5"]],
     ]
-
-
-# def test_integrate_payload_ok():
-#     payload = {
-#         "house": {"zone": "A", "price": 10, "color": "RED"},
-#         "car": {"eur": "1"},
-#     }
-#
-#     template = {
-#         "house": {"zone": ["A", "B", "C"], "price": None, "rooms": 5},
-#         "car": {"eur": ["1", "2", "3", "4", "5"]},
-#     }
-#
-#     new_payload = integrate_payload(payload, template)
-#
-#     assert new_payload == {
-#         "house": {"zone": "A", "price": 10, "color": "RED", "rooms": 5},
-#         "car": {"eur": "1"},
-#     }

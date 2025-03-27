@@ -2,7 +2,6 @@ from contextlib import ContextDecorator
 from random import choice
 
 from django.contrib.auth.models import Permission
-
 from factories import APITokenFactory, GroupFactory
 from faker import Faker
 
@@ -18,7 +17,7 @@ faker = Faker()
 
 
 def text(length, choices=ascii_letters):
-    """returns a random (fixed length) string
+    """returns a random (fixed length) string.
 
     :param length: string length
     :param choices: string containing all the chars can be used to build the string
@@ -80,8 +79,7 @@ class user_grant_permissions(ContextDecorator):  # noqa
 
     def start(self):
         """Activate a patch, returning any created mock."""
-        result = self.__enter__()
-        return result
+        return self.__enter__()
 
     def stop(self):
         """Stop an active patch."""
@@ -117,8 +115,7 @@ class user_token_permission(ContextDecorator):  # noqa
 
     def start(self):
         """Activate a patch, returning any created mock."""
-        result = self.__enter__()
-        return result
+        return self.__enter__()
 
     def stop(self):
         """Stop an active patch."""

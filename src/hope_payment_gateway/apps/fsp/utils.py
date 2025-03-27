@@ -17,3 +17,18 @@ def get_phone_number(raw_phone_no):
 def get_from_delivery_mechanism(payload, key, default=None):
     delivery_mechanism = payload.get("delivery_mechanism", "")
     return payload.get(f"{key}__{delivery_mechanism}", default)
+
+
+def extrapolate_errors(data):
+    msgs = []
+    if "errors" in data:
+        for error in data["errors"]:
+            msgs.append(f"{error['message']} ({error['code']})")
+            if "offendingFields" in error:
+                msgs.extend([f"Field: {field['field']}" for field in error["offendingFields"] if "field" in field])
+    elif "error" in data:
+        message = data.get("message", data["error"])
+        msgs.append(message)
+    else:
+        msgs = ["Error"]
+    return msgs

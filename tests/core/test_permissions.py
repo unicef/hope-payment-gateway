@@ -1,6 +1,5 @@
-from django.test import RequestFactory, override_settings
-
 import pytest
+from django.test import RequestFactory, override_settings
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission, get_client_ip
 
@@ -20,7 +19,7 @@ def test_get_client_ip_without_x_forwarded_for(request_factory):
     assert get_client_ip(request) == request.META.get("REMOTE_ADDR")
 
 
-@pytest.mark.parametrize("ip,expected", [("127.0.0.1", True), ("192.168.1.1", False)])
+@pytest.mark.parametrize(("ip", "expected"), [("127.0.0.1", True), ("192.168.1.1", False)])
 @pytest.mark.django_db
 @override_settings(DEBUG=False, WHITELISTED_IPS="127.0.0.1")
 def test_whitelist_permission_allowed(request_factory, ip, expected):
