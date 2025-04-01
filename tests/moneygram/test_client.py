@@ -340,7 +340,7 @@ def test_refund(mg):
     )
     _, resp = client.refund(transaction_id, pr.payload)
     pr.refresh_from_db()
-    assert pr.message == "Refunded"
+    assert pr.message == "Refunded Wrong Currency"
     assert pr.status == PaymentRecordState.REFUND
     assert resp.status_code == 200
 

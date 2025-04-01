@@ -67,12 +67,12 @@ class NisNotificationView(WesternUnionApi):
 
         try:
             for tag_name in [
-                "message_code",
-                "message_text",
                 "reason_code",
                 "reason_desc",
+                "message_code",
+                "message_text",
             ]:
-                payload.pop(tag_name, None)
+                message = payload.pop(tag_name, "")
             payload["ack_message"] = "Acknowledged"
             resp = self.prepare_response(payload)
         except ValidationError as exp:
@@ -106,15 +106,15 @@ class NisNotificationView(WesternUnionApi):
                 )
             elif notification_type in [CANCEL, REJECT_APN]:
                 flow.cancel()
-                pr.message = "Cancelled by FSP"
+                pr.message = f"Cancelled by FSP: {message}"
             elif notification_type == PURGED:
                 flow.purge()
-                pr.message = "Purged by FSP"
+                pr.message = f"Purged by FSP: {message}"
             elif notification_type == REFUND:
-                pr.message = "Refund by FSP"
+                pr.message = f"Refund by FSP: {message}"
                 flow.refund()
             else:
-                pr.message = "Error in Notification"
+                pr.message = f"Error in Notification: {message}"
                 flow.fail()
         except TransitionNotAllowed:
             return Response({"error": "transition_not_allowed"}, status=HTTP_400_BAD_REQUEST)
