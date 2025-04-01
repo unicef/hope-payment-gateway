@@ -1,15 +1,12 @@
-MONEYGRAM_DM_MAPPING = {
-    "WILL_CALL": "WILL_CALL",
-    "DIRECT_TO_ACCT": "DIRECT_TO_ACCT",  # wallet / mobile money
-    "BANK_DEPOSIT": "BANK_DEPOSIT",  # bank account
-    "WILLCALL_TO": "WILLCALL_TO",
-    "2_HOUR": "2_HOUR",
-    "OVERNIGHT": "OVERNIGHT",
-    "OVERNIGHT2ANY": "OVERNIGHT2ANY",
-    "24_HOUR": "24_HOUR",
-    "CARD_DEPOSIT": "CARD_DEPOSIT",
-    "HOME_DELIVERY": "HOME_DELIVERY",
-}
+REFUND_CHOICES = (
+    ("INCORRECT_AMT", "Incorrect Amount"),
+    ("TECH_PROB", "Technical Problem"),
+    ("DUP_TRAN", "Duplicate Transaction"),
+    ("NO_PICKUP", "No Pickup Available"),
+    ("WRONG_CNTRY", "Wrong Country"),
+    ("WRONG_CRNCY", "Wrong Currency"),
+)
+
 
 UNFUNDED = "UNFUNDED"
 SENT = "SENT"

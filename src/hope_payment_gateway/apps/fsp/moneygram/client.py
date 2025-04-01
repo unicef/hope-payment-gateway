@@ -20,6 +20,7 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     IN_TRANSIT,
     RECEIVED,
     REFUNDED,
+    REFUND_CHOICES,
     REJECTED,
     SENT,
     UNFUNDED,
@@ -314,13 +315,15 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         payload = self.get_basic_payload(base_payload["agent_partner_id"])
         status_transaction_id = str(uuid.uuid4())
         payload["refundReasonCode"] = base_payload.get("refuse_reason_code")
+        reason = dict(REFUND_CHOICES).get("WRONG_CRNCY", "-")
+
         resp = self.perform_request(endpoint, status_transaction_id, payload)
         if resp.status_code == 200:
             pr = PaymentRecord.objects.get(
                 fsp_code=transaction_id,
                 parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
             )
-            pr.message = "Request per REFUND"
+            pr.message = f"Request per REFUND {reason}"
             pr.save()
             payload = self.get_basic_payload(base_payload["agent_partner_id"])
             payload["refundId"] = resp.data["refundId"]
@@ -329,7 +332,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             status_transaction_id = str(uuid.uuid4())
             resp = self.perform_request(endpoint, status_transaction_id, payload, "put")
             if resp.status_code == 200:
-                pr.message = "Refunded"
+                pr.message = f"Refunded {reason}"
                 pr.extra_data.update({"refund_reference": payload["refundId"]})
                 update_status(pr, REFUNDED)
                 pr.save()

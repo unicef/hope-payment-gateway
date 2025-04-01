@@ -20,6 +20,7 @@ from django.utils.encoding import smart_str
 from django.utils.timezone import get_default_timezone
 from django.utils.translation import gettext_lazy as _
 
+from hope_payment_gateway.apps.fsp.moneygram import REFUND_CHOICES
 from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
@@ -31,14 +32,6 @@ class ActionForm(forms.Form):
 
 
 class RefundForm(ActionForm):
-    REFUND_CHOICES = (
-        ("INCORRECT_AMT", "Incorrect Amount"),
-        ("TECH_PROB", "Technical Problem"),
-        ("DUP_TRAN", "Duplicate Transaction"),
-        ("NO_PICKUP", "No Pickup Available"),
-        ("WRONG_CNTRY", "Wrong Country"),
-        ("WRONG_CRNCY", "Wrong Currency"),
-    )
     reason = forms.ChoiceField(choices=REFUND_CHOICES)
 
 
