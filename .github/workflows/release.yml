@@ -8,22 +8,6 @@ on:
       - deleted
       - prereleased
       - released
-# Trigger the action manually from the UI
-#  workflow_dispatch:
-#    inputs:
-#      branch:
-#        description: 'Branch'
-#        required: true
-#        default: 'develop'
-#        type: choice
-#        options:
-#          - develop
-#          - staging
-#          - master
-#      tag:
-#        description: 'Version Tag'
-#        required: true
-#        default: 'warning'
 jobs:
   build:
     name: Build Docker Images
@@ -31,6 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: DockerHub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5.5.1
@@ -57,25 +46,14 @@ jobs:
         run: echo "version=${{ steps.meta.outputs.version }}rc" >> "$GITHUB_OUTPUT"
       - if: github.event_name == 'release' && github.event.action == 'published'
         run: echo "version=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
-      - run: echo "Build ... unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}-${{ env.version }}"
-
-#        if: github.event_name == 'release' && github.event.action == 'published'
-#
-
-#          Build ... "unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}"
-#
-#          docker build \
-#             --target dist \
-#             -t "unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}" \
-#             --cache-from "type=gha" \
-#             --cache-to "type=gha,mode=max" \
-#             -f docker/Dockerfile .
-#          docker push "unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}"
-#          docker inspect --format='{{index .Id}}' "unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}"
-#
-#      - name: Generate artifact attestation
-#        uses: actions/attest-build-provenance@v1
-#        with:
-#          subject-name: unicef/hope-payment-gateway
-#          subject-digest: ${{ steps.push.outputs.digest }}
-#          push-to-registry: true
+      - if: github.event_name == 'release' && github.event.action == 'published'
+        run: |
+          echo "Build ... unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}-${{ env.version }}"
+          docker build \
+             --target dist \
+             -t "unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}" \
+             --cache-from "type=gha" \
+             --cache-to "type=gha,mode=max" \
+             -f docker/Dockerfile .
+          docker push "unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}"
+          docker inspect --format='{{index .Id}}' "unicef/hope-payment-gateway:${{ steps.meta.outputs.version }}"
