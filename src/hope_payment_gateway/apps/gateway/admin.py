@@ -221,12 +221,19 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def wu_corridor(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.get_object(request, pk)
         payload = obj.get_payload()
+
         corridor = Corridor.objects.filter(
             destination_country=payload.get("destination_country"),
             destination_currency=payload.get("destination_currency"),
         ).first()
         if corridor and payload.get("delivery_services_code") == "800":
             return redirect(reverse("admin:western_union_corridor_change", args=[corridor.pk]))
+        message = (
+            "Invalid service delivery code"
+            if corridor
+            else f"Cannot find corridor for {payload.get('destination_country')}/{payload.get('destination_currency')}"
+        )
+        messages.add_message(request, messages.ERROR, message)
         return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
 
     @view(
@@ -541,7 +548,7 @@ class AccountTypeAdmin(admin.ModelAdmin):
 
 @admin.register(DeliveryMechanism)
 class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("code", "name", "transfer_type")
+    list_display = ("code", "name", "transfer_type", "account_type")
     search_fields = ("code", "name")
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},

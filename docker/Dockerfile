@@ -104,7 +104,7 @@ RUN --mount=type=cache,target=/root/.uv-cache \
     uv sync --cache-dir=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
-        --no-dev --frozen --extra distribution
+        --no-dev --frozen
 
 
 

@@ -12,20 +12,20 @@
     },
     "data": [
         {
-            "id": 1,
-            "key": "RtjRyHRZPytN",
-            "label": "YAcYWNBZXMhe",
+            "id": 51,
+            "key": "CPMCzwHkasoX",
+            "label": "zhhmQJFDNEwa",
             "fsp": {
                 "id": 1,
                 "name": "QsxiyBTnkWSt",
                 "vendor_number": "jTBrgmvmqLdx"
             },
             "delivery_mechanism": {
-                "id": 1,
-                "code": "LZlpphJPVVCj",
-                "name": "MeIQwlfeUTBX",
+                "id": 58,
+                "code": "dLktZTkWFLLP",
+                "name": "leTNOBXVzvVL",
                 "description": null,
-                "account_type": null,
+                "account_type": 61,
                 "transfer_type": "",
                 "requirements": {
                     "unique_fields": [],
