@@ -97,6 +97,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.wu_search_request,
             self.wu_cancel,
             self.wu_corridor,
+            self.wu_config,
         ]
         return button
 
@@ -235,6 +236,18 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         )
         messages.add_message(request, messages.ERROR, message)
         return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Config",
+    )
+    def wu_config(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        obj = self.get_object(request, pk)
+        try:
+            config = obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key"))
+            return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
+        except (KeyError, FinancialServiceProviderConfig.DoesNotExist):
+            return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
@@ -538,6 +551,12 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
+
+
+@admin.register(FinancialServiceProviderConfig)
+class FinancialServiceProviderConfigAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = ("key", "label", "fsp", "delivery_mechanism", "required_fields")
+    search_fields = ("remote_id", "fsp__name", "delivery_mechanism__name", "delivery_mechanism__code")
 
 
 @admin.register(AccountType)
