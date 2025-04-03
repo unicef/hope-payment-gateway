@@ -24,6 +24,7 @@ from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, Mo
 from hope_payment_gateway.apps.fsp.utils import extrapolate_errors
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidCorridorError, PayloadException
+from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from hope_payment_gateway.apps.gateway.actions import (
     TemplateExportForm,
     export_as_template,
@@ -95,6 +96,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.wu_status_update,
             self.wu_search_request,
             self.wu_cancel,
+            self.wu_corridor,
         ]
         return button
 
@@ -211,6 +213,21 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         log = WesternUnionClient().refund(obj.fsp_code, obj.extra_data)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
         messages.add_message(request, loglevel, log.message)
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Corridor",
+    )
+    def wu_corridor(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        obj = self.get_object(request, pk)
+        payload = obj.get_payload()
+        corridor = Corridor.objects.filter(
+            destination_country=payload.get("destination_country"),
+            destination_currency=payload.get("destination_currency"),
+        ).first()
+        if corridor and payload.get("delivery_services_code") == "800":
+            return redirect(reverse("admin:western_union_corridor_change", args=[corridor.pk]))
+        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
@@ -365,16 +382,6 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.mg_refund,
         ]
         return button
-
-    @link()
-    def instruction(self, button: button) -> str | None:
-        if "original" in button.context:
-            obj = button.context["original"]
-            button.href = reverse("admin:gateway_paymentinstruction_change", args=[obj.parent.pk])
-            button.visible = True
-        else:
-            button.visible = False
-        return None
 
     def handle_mg_response(
         self, request: HttpRequest, payload: dict, resp: HttpRequest, pk: int, title: str
