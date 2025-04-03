@@ -2,13 +2,14 @@
     "configuration": {
         "master": {
             "model": "gateway.financialserviceproviderconfig",
-            "pk": 1,
+            "pk": 51,
             "fields": {
-                "key": "RtjRyHRZPytN",
-                "label": "YAcYWNBZXMhe",
+                "key": "CPMCzwHkasoX",
+                "label": "zhhmQJFDNEwa",
                 "fsp": 1,
-                "delivery_mechanism": 1,
-                "configuration": {}
+                "delivery_mechanism": 58,
+                "configuration": {},
+                "required_fields": "[]"
             }
         },
         "deps": [
@@ -27,18 +28,31 @@
             },
             {
                 "model": "gateway.deliverymechanism",
-                "pk": 1,
+                "pk": 58,
                 "fields": {
-                    "created": "2025-02-24T09:42:28.369Z",
-                    "modified": "2025-02-24T09:42:28.369Z",
-                    "code": "LZlpphJPVVCj",
-                    "name": "MeIQwlfeUTBX",
+                    "created": "2025-04-03T09:37:12.480Z",
+                    "modified": "2025-04-03T09:37:12.480Z",
+                    "code": "dLktZTkWFLLP",
+                    "name": "leTNOBXVzvVL",
+                    "description": null,
+                    "account_type": 61,
                     "transfer_type": "",
                     "requirements": {
                         "unique_fields": [],
                         "optional_fields": [],
                         "required_fields": []
                     }
+                }
+            },
+            {
+                "model": "gateway.accounttype",
+                "pk": 61,
+                "fields": {
+                    "created": "2025-04-03T09:37:12.479Z",
+                    "modified": "2025-04-03T09:37:12.479Z",
+                    "key": "EODuHsfmirol",
+                    "label": "ZzxQEoBODzsW",
+                    "unique_fields": "[]"
                 }
             }
         ]

@@ -16,7 +16,7 @@ from zeep.wsdl.utils import etree_to_string
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
-from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
+from hope_payment_gateway.apps.fsp.utils import get_phone_number
 from hope_payment_gateway.apps.fsp.western_union.api import MONEY_IN_TIME, WALLET, WIC, WMF, agent, web
 from hope_payment_gateway.apps.fsp.western_union.api.utils import integrate_payload
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
@@ -144,7 +144,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "counter_id": counter_id,
             }
 
-            delivery_phone_number = get_from_delivery_mechanism(base_payload, "delivery_phone_number")
+            delivery_phone_number = base_payload.get("delivery_phone_number")
             phone_number, country_code = get_phone_number(delivery_phone_number)
             contact_no = base_payload.get("phone_no", "N/A")
 
@@ -207,9 +207,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                     "delivery_services": delivery_services,
                     "foreign_remote_system": frm,
                     "partner_info_buffer": partner_notification,
-                    "wallet_details": {
-                        "service_provider_code": get_from_delivery_mechanism(base_payload, "service_provider_code")
-                    },
+                    "wallet_details": {"service_provider_code": base_payload.get("service_provider_code")},
                 }
             )
 
@@ -342,7 +340,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             "mtcn": mtcn,
             "foreign_remote_system": frm,
         }
-        response = self.response_context(self.status_client, "PayStatus", payload, f"SOAP_HTTP_Port_{wu_env}")
+        response = self.response_context(
+            self.status_client, "PayStatus", payload, "PayStatus_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
         if update:
             wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
                 "pay_status_description"
@@ -387,7 +387,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "partner_info_buffer": partner_notification,
             }
         )
-        return self.response_context(self.search_client, "Search", payload, f"SOAP_HTTP_Port_{wu_env}")
+        return self.response_context(
+            self.search_client, "Search", payload, "Search_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
 
     def cancel_request(self, frm, mtcn, database_key, reason=WIC):
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
@@ -409,7 +411,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
         ref_no = payload.get("foreign_remote_system", dict).get("reference_no", "N/A")
         logging.info(f"CANCEL {ref_no}")
-        return self.response_context(self.cancel_client, "CancelSend", payload, f"SOAP_HTTP_Port_{wu_env}")
+        return self.response_context(
+            self.cancel_client, "CancelSend", payload, "CancelSend_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
 
     def refund(self, transaction_id, base_payload):
         pr = PaymentRecord.objects.get(
@@ -472,7 +476,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                     },
                 }
             )
-            response = self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
+            response = self.response_context(
+                self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            )
             if isinstance(response["content_response"], dict):
                 context = response["content_response"]["MTML"]["REPLY"]["DATA_CONTEXT"]
                 more_data = context["HEADER"]["DATA_MORE"] == "Y"
@@ -516,7 +522,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 },
             }
         )
-        return self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
+        return self.response_context(
+            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
 
     def das_destination_countries(self, identifier, counter_id):
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
@@ -535,7 +543,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "filters": {"queryfilter1": "en", "queryfilter2": "US USD"},
             }
         )
-        return self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
+        return self.response_context(
+            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
 
     def das_destination_currencies(self, destination_country, identifier, counter_id):
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
@@ -558,7 +568,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 },
             }
         )
-        return self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
+        return self.response_context(
+            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
 
     def das_delivery_services(
         self,
@@ -589,7 +601,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 },
             }
         )
-        response = self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
+        response = self.response_context(
+            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
 
         if (
             isinstance(response["content_response"], dict)
@@ -639,7 +653,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 },
             }
         )
-        response = self.response_context(self.das_client, "DAS_Service", payload, f"SOAP_HTTP_Port_{wu_env}")
+        response = self.response_context(
+            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+        )
         if (
             isinstance(response["content_response"], dict)
             and "content" in response

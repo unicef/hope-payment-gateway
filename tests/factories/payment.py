@@ -42,6 +42,7 @@ class AccountTypeFactory(AutoRegisterModelFactory):
 class DeliveryMechanismFactory(AutoRegisterModelFactory):
     code = fuzzy.FuzzyText()
     name = fuzzy.FuzzyText()
+    account_type = factory.SubFactory(AccountTypeFactory)
 
     class Meta:
         model = DeliveryMechanism
