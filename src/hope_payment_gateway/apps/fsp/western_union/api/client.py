@@ -293,7 +293,6 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 pr.fail()
             pr.save()
             return pr
-
         extra_data = {
             key: smv_payload[key]
             for key in [
@@ -301,7 +300,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "instant_notification",
                 "mtcn",
                 "new_mtcn",
-                "financials",
+                "filing_date",
+                "filing_time",
             ]
         }
         log_data = extra_data.copy()
