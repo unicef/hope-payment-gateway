@@ -2,14 +2,14 @@
     "dm": {
         "master": {
             "model": "gateway.deliverymechanism",
-            "pk": 71,
+            "pk": 57,
             "fields": {
-                "created": "2025-03-21T11:30:59.815Z",
-                "modified": "2025-03-21T11:30:59.815Z",
-                "code": "KYBhoYkOHsZP",
-                "name": "WJZbbLWixbyg",
+                "created": "2025-04-03T09:36:34.323Z",
+                "modified": "2025-04-03T09:36:34.323Z",
+                "code": "LOOZDXQndJQu",
+                "name": "igVVfegrDjVz",
                 "description": null,
-                "account_type": null,
+                "account_type": 60,
                 "transfer_type": "",
                 "requirements": {
                     "unique_fields": [],
@@ -18,6 +18,18 @@
                 }
             }
         },
-        "deps": []
+        "deps": [
+            {
+                "model": "gateway.accounttype",
+                "pk": 60,
+                "fields": {
+                    "created": "2025-04-03T09:36:34.322Z",
+                    "modified": "2025-04-03T09:36:34.322Z",
+                    "key": "GjuucKQMTxme",
+                    "label": "vRSwvOrHYOlG",
+                    "unique_fields": "[]"
+                }
+            }
+        ]
     }
 }
