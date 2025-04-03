@@ -278,17 +278,17 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.fsp_code = smv_payload["new_mtcn"]
             pr.save()
         except (InvalidCorridorError, PayloadException, TransitionNotAllowed) as exc:
-            pr.message = str(exc)
-            pr.status = PaymentRecordState.ERROR
-            pr.success = False
+            pr.message, pr.status, pr.success = str(exc), PaymentRecordState.ERROR, False
             pr.save()
             return pr
 
         if response["code"] != 200:
-            pr.message = f"Send Money Validation: {response['error']}"
-            pr.success = False
-            pr.auth_code = smv_payload["mtcn"]
-            pr.fsp_code = smv_payload["new_mtcn"]
+            pr.message, pr.success, pr.auth_code, pr.fsp_code = (
+                f"Send Money Validation: {response['error']}",
+                False,
+                smv_payload["mtcn"],
+                smv_payload["new_mtcn"],
+            )
             if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
                 pr.fail()
             pr.save()
@@ -302,11 +302,15 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "mtcn",
                 "new_mtcn",
                 "financials",
+                "filing_date",
+                "filing_time",
             ]
         }
         log_data = extra_data.copy()
         log_data["record_code"] = base_payload["payment_record_code"]
         log_data.pop("financials")
+        extra_data.pop("filing_date")
+        extra_data.pop("filing_time")
         pr.message = "Send Money Validation: Success"
         pr.success = True
         pr.extra_data.update(log_data)
