@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "189",
+        "Content-Length": "111",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -17,12 +17,7 @@
             "name": "igVVfegrDjVz",
             "description": null,
             "account_type": 60,
-            "transfer_type": "",
-            "requirements": {
-                "unique_fields": [],
-                "optional_fields": [],
-                "required_fields": []
-            }
+            "transfer_type": ""
         }
     ],
     "content_type": "application/json"

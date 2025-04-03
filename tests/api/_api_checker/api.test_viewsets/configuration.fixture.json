@@ -36,12 +36,7 @@
                     "name": "leTNOBXVzvVL",
                     "description": null,
                     "account_type": 61,
-                    "transfer_type": "",
-                    "requirements": {
-                        "unique_fields": [],
-                        "optional_fields": [],
-                        "required_fields": []
-                    }
+                    "transfer_type": ""
                 }
             },
             {

@@ -293,7 +293,6 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 pr.fail()
             pr.save()
             return pr
-
         extra_data = {
             key: smv_payload[key]
             for key in [
