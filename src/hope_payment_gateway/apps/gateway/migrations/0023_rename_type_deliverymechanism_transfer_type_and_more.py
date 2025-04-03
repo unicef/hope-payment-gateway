@@ -2,8 +2,6 @@
 
 from django.db import migrations, models
 
-import hope_payment_gateway.apps.gateway.models
-
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -25,7 +23,7 @@ class Migration(migrations.Migration):
             name="requirements",
             field=models.JSONField(
                 blank=True,
-                default=hope_payment_gateway.apps.gateway.models.default_requirements,
+                default=None,
                 null=True,
             ),
         ),
