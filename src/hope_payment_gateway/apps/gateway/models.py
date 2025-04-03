@@ -47,9 +47,7 @@ class DeliveryMechanism(TimeStampedModel):
     code = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=128)
     description = models.TextField(null=True, blank=True)
-    account_type = models.ForeignKey(
-        AccountType, on_delete=models.CASCADE, related_name="delivery_mechanisms", null=True, blank=True
-    )  # todo remove
+    account_type = models.ForeignKey(AccountType, on_delete=models.CASCADE, related_name="delivery_mechanisms")
     transfer_type = models.CharField(choices=DELIVERY_MECHANISM_TYPE, max_length=32)
     requirements = models.JSONField(default=default_requirements, null=True, blank=True)
 
