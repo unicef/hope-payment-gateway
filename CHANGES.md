@@ -1,3 +1,9 @@
+1.1
+===
+* Western Union: Fixed service call (wrong env)
+* Western Union: Added corridor link
+
+
 1.0
 ===
 
