@@ -72,6 +72,7 @@ OPTIONAL = {
     "SESSION_COOKIE_SECURE": (bool, True),
     "STATIC_URL": (str, "/static/"),
     "STATIC_ROOT": (str, "/tmp/static/"),  # noqa
+    "SUPERUSERS": (str, ""),
     "TIME_ZONE": (str, "UTC"),
     "WESTERN_UNION_BASE_URL": (str, ""),
     "WESTERN_UNION_CERT": (str, ""),
