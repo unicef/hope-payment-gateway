@@ -34,7 +34,6 @@ jobs:
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
       - run: |
-          echo "Log level: $TAG"
           echo "Environment: $ENVIRONMENT"
           echo "${{ toJSON(github.event) }}"
         env:
