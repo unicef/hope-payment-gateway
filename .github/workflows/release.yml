@@ -22,7 +22,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5.5.1
+        uses: docker/metadata-action@v5
         with:
           images: "unicef/hope-payment-gateway"
           tags: |
@@ -33,12 +33,6 @@ jobs:
             type=semver,pattern={{raw}}
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
-      - run: |
-          echo "Environment: $ENVIRONMENT"
-          echo "${{ toJSON(github.event) }}"
-        env:
-          LEVEL: ${{ inputs.tag }}
-          ENVIRONMENT: ${{ inputs.environment }}
       - if: github.event_name == 'release' && github.event.action == 'created'
         run: echo "version=${{ steps.meta.outputs.version }}dev" >> "$GITHUB_OUTPUT"
       - if: github.event_name == 'release' && github.event.action == 'prereleased'
