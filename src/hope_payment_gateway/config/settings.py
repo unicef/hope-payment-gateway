@@ -189,4 +189,5 @@ EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 
 LOGIN_ENABLED = env("LOGIN_ENABLED")
 
+SUPERUSERS = env("SUPERUSERS").split(",")
 from .fragments import *  # noqa
