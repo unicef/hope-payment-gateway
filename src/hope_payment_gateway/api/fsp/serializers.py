@@ -47,7 +47,7 @@ class AccountTypeSerializer(serializers.ModelSerializer):
 class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
     class Meta:
         model = DeliveryMechanism
-        fields = ("id", "code", "name", "description", "account_type", "transfer_type", "requirements")
+        fields = ("id", "code", "name", "description", "account_type", "transfer_type")
 
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):

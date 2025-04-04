@@ -1,3 +1,9 @@
+1.2
+===
+* Western Union: Store Transaction date
+* Western Union: Expose config and corridor
+
+
 1.1
 ===
 * Western Union: Fixed service call (wrong env)

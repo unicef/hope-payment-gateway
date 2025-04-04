@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "332",
+        "Content-Length": "254",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -26,12 +26,7 @@
                 "name": "leTNOBXVzvVL",
                 "description": null,
                 "account_type": 61,
-                "transfer_type": "",
-                "requirements": {
-                    "unique_fields": [],
-                    "optional_fields": [],
-                    "required_fields": []
-                }
+                "transfer_type": ""
             }
         }
     ],
