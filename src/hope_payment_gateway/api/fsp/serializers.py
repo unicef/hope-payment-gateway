@@ -41,7 +41,7 @@ class PayloadMixin:
 class AccountTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountType
-        fields = ("key", "label", "unique_fields")
+        fields = ("id", "key", "label", "unique_fields")
 
 
 class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
