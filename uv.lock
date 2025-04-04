@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.13"
 
 [[package]]
@@ -617,18 +616,17 @@ wheels = [
 
 [[package]]
 name = "django-celery-boost"
-version = "0.6.0"
+version = "0.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "celery" },
-    { name = "django" },
     { name = "django-admin-extra-buttons" },
     { name = "django-concurrency" },
     { name = "sentry-sdk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/6d/7ef1ea99d516971fc9e431db775d90e26697675b3d36cce3d2e9fde777c1/django_celery_boost-0.6.0.tar.gz", hash = "sha256:d5c1830b09cbaef8deab77600c818ccb099f043da9f0435e690a9007d40c6b86", size = 346874 }
+sdist = { url = "https://files.pythonhosted.org/packages/ac/a3/ec7cdca64ea423a77b0d5bf286fef5f7a9370b3ce9acee288d0ef988040b/django_celery_boost-0.6.2.tar.gz", hash = "sha256:b1dfe235a6bfdbb898aa897e5201754a71f558a0f3c122110802b8abbccec9af", size = 8716 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/4d/ce5a5642d57bfaf49b0c42c974deec51cf99468f61f32ebfc884d54a7e0e/django_celery_boost-0.6.0-py3-none-any.whl", hash = "sha256:54e74a9b34ca1d78628d81f978797a5ea7825a0aecfef4519f37819998735357", size = 44210 },
+    { url = "https://files.pythonhosted.org/packages/36/3e/66eef7271dc951988ee81c60e119733dbce8f7fccdfd15e7d6008c2f9327/django_celery_boost-0.6.2-py3-none-any.whl", hash = "sha256:bf10347c93740c565c47941d96d3c758d5e9020b3fb87d4bc491f887c6d5258c", size = 11171 },
 ]
 
 [[package]]
@@ -1238,7 +1236,7 @@ wheels = [
 
 [[package]]
 name = "hope-payment-gateway"
-version = "1.1"
+version = "1.2"
 source = { editable = "." }
 dependencies = [
     { name = "celery", extra = ["redis"] },
@@ -1358,7 +1356,7 @@ requires-dist = [
     { name = "django-adminfilters" },
     { name = "django-advanced-filters" },
     { name = "django-celery-beat" },
-    { name = "django-celery-boost" },
+    { name = "django-celery-boost", specifier = ">=0.6.2" },
     { name = "django-celery-results" },
     { name = "django-concurrency" },
     { name = "django-constance" },
