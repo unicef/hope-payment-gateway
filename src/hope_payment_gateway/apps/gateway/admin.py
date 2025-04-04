@@ -7,6 +7,7 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
+from constance import config
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
 from django.db.models import JSONField, QuerySet
@@ -86,29 +87,33 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def fsp(self, obj: PaymentRecord) -> str:
         return obj.parent.fsp.name
 
-    @choice(change_list=False)
+    @choice(change_list=False, label="Western Union")
     def western_union(self, button):
         obj: PaymentRecord = button.original
-        button.choices = [
-            self.wu_prepare_payload,
-            self.wu_send_money_validation,
-            self.wu_send_money,
-            self.wu_status,
-            self.wu_status_update,
-            self.wu_search_request,
-            self.wu_cancel,
-        ]
-        payload = obj.get_payload()
-        if (
-            Corridor.objects.filter(
-                destination_country=payload.get("destination_country"),
-                destination_currency=payload.get("destination_currency"),
-            ).exists()
-            and payload.get("delivery_services_code") == "800"
-        ):
-            button.choices.append(self.wu_corridor)
-        if obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key")):
-            button.choices.append(self.wu_config)
+
+        if obj.parent.fsp.vendor_number == config.WESTERN_UNION_VENDOR_NUMBER:
+            button.choices = [
+                self.wu_prepare_payload,
+                self.wu_send_money_validation,
+                self.wu_send_money,
+                self.wu_status,
+                self.wu_status_update,
+                self.wu_search_request,
+                self.wu_cancel,
+            ]
+            payload = obj.get_payload()
+            if (
+                Corridor.objects.filter(
+                    destination_country=payload.get("destination_country"),
+                    destination_currency=payload.get("destination_currency"),
+                ).exists()
+                and payload.get("delivery_services_code") == "800"
+            ):
+                button.choices.append(self.wu_corridor)
+            if obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key")):
+                button.choices.append(self.wu_config)
+        else:
+            button.visible = False
         return button
 
     @view(
@@ -175,7 +180,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def wu_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
-        if mtcn := obj.extra_data.get("mtcn", None):
+        if mtcn := obj.auth_code:
             context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
             context.update(WesternUnionClient().query_status(obj.fsp_code, False))
         else:
@@ -190,10 +195,11 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def wu_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
-        if mtcn := obj.extra_data.get("mtcn", None):
+        if mtcn := obj.auth_code:
             context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
             context.update(WesternUnionClient().query_status(obj.fsp_code, True))
-        messages.warning(request, "Missing MTCN")
+        else:
+            messages.warning(request, "Missing MTCN")
         return TemplateResponse(request, "request.html", context)
 
     @view(
@@ -204,11 +210,12 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def wu_search_request(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
-        if mtcn := obj.extra_data.get("mtcn", None):
+        if mtcn := obj.auth_code:
             context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
             frm = obj.extra_data.get("foreign_remote_system", None)
             context.update(WesternUnionClient().search_request(frm, mtcn))
-        messages.warning(request, "Missing MTCN")
+        else:
+            messages.warning(request, "Missing MTCN")
         return TemplateResponse(request, "request.html", context)
 
     @view(
@@ -219,7 +226,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def wu_cancel(self, request: HttpRequest, pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
-        if mtcn := obj.extra_data.get("mtcn", None):
+        if mtcn := obj.auth_code:
             context["obj"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
         log = WesternUnionClient().refund(obj.fsp_code, obj.extra_data)
         loglevel = messages.SUCCESS if log.success else messages.ERROR
@@ -388,18 +395,22 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
 
-    @choice(change_list=False)
+    @choice(change_list=False, label="MoneyGram")
     def moneygram(self, button):
-        button.choices = [
-            self.mg_prepare_payload,
-            self.mg_create_transaction,
-            self.mg_quote_transaction,
-            self.mg_status,
-            self.mg_status_update,
-            self.mg_get_service_options,
-            self.mg_get_required_fields,
-            self.mg_refund,
-        ]
+        obj: PaymentRecord = button.original
+        if obj.parent.fsp.vendor_number == config.MONEYGRAM_VENDOR_NUMBER:
+            button.choices = [
+                self.mg_prepare_payload,
+                self.mg_create_transaction,
+                self.mg_quote_transaction,
+                self.mg_status,
+                self.mg_status_update,
+                self.mg_get_service_options,
+                self.mg_get_required_fields,
+                self.mg_refund,
+            ]
+        else:
+            button.visible = False
         return button
 
     def handle_mg_response(

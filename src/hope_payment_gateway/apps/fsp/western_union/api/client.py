@@ -350,21 +350,24 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
                 "pay_status_description"
             ]
-            flow = PaymentRecordFlow(pr)
             status = {
                 "PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
                 "WCQ": PaymentRecordState.TRANSFERRED_TO_FSP,
                 "CAN": PaymentRecordState.CANCELLED,
             }.get(wu_status)
             if pr.status != status:
-                if status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
-                    pr.message = "Transferred to Beneficiary*"
+                if status in [PaymentRecordState.TRANSFERRED_TO_FSP]:
+                    pr.message = "Transferred to FSP*"
+                    pr.status = status
                     pr.success = True
-                    flow.confirm()
+                elif status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
+                    pr.message = "Transferred to Beneficiary*"
+                    pr.status = status
+                    pr.success = True
                 elif status in [PaymentRecordState.CANCELLED]:
                     pr.message = "Cancelled*"
+                    pr.status = status
                     pr.success = True
-                    flow.confirm()
                 pr.save()
 
         return response
