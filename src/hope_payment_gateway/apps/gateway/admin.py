@@ -88,6 +88,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
 
     @choice(change_list=False)
     def western_union(self, button):
+        obj: PaymentRecord = button.original
         button.choices = [
             self.wu_prepare_payload,
             self.wu_send_money_validation,
@@ -96,9 +97,18 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             self.wu_status_update,
             self.wu_search_request,
             self.wu_cancel,
-            self.wu_corridor,
-            self.wu_config,
         ]
+        payload = obj.get_payload()
+        if (
+            Corridor.objects.filter(
+                destination_country=payload.get("destination_country"),
+                destination_currency=payload.get("destination_currency"),
+            ).exists()
+            and payload.get("delivery_services_code") == "800"
+        ):
+            button.choices.append(self.wu_corridor)
+        if obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key")):
+            button.choices.append(self.wu_config)
         return button
 
     @view(
@@ -223,19 +233,11 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         obj = self.get_object(request, pk)
         payload = obj.get_payload()
 
-        corridor = Corridor.objects.filter(
+        corridor = Corridor.objects.get(
             destination_country=payload.get("destination_country"),
             destination_currency=payload.get("destination_currency"),
-        ).first()
-        if corridor and payload.get("delivery_services_code") == "800":
-            return redirect(reverse("admin:western_union_corridor_change", args=[corridor.pk]))
-        message = (
-            "Invalid service delivery code"
-            if corridor
-            else f"Cannot find corridor for {payload.get('destination_country')}/{payload.get('destination_currency')}"
         )
-        messages.add_message(request, messages.ERROR, message)
-        return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
+        return redirect(reverse("admin:western_union_corridor_change", args=[corridor.pk]))
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
@@ -243,11 +245,8 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     )
     def wu_config(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.get_object(request, pk)
-        try:
-            config = obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key"))
-            return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
-        except (KeyError, FinancialServiceProviderConfig.DoesNotExist):
-            return reverse("admin:gateway_paymentrecord_change", args=[obj.pk])
+        config = obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key"))
+        return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
