@@ -113,6 +113,8 @@ FROM base_os AS dist
 ARG BUILD_DATE
 ARG GIT_SHA
 ARG BRANCH
+ARG VERSION
+ENV VERSION=$VERSION
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
     BUILD_DATE=$BUILD_DATE \
