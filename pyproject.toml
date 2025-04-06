@@ -118,7 +118,7 @@ name = "hope_payment_gateway"
 version = "1.3"
 description = "HOPE integration with FSPs"
 readme = "README.md"
-license = {text = "MIT"}
+license = "Apache-2.0 OR MIT"
 
 
 [tool.nitpick]
