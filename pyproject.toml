@@ -115,7 +115,7 @@ dependencies = [
     "zeep",
 ]
 name = "hope_payment_gateway"
-version = "1.4"
+version = "1.4.1"
 description = "HOPE integration with FSPs"
 readme = "README.md"
 license = "Apache-2.0 OR MIT"
