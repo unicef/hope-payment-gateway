@@ -14,6 +14,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstruction,
     PaymentRecord,
     AccountType,
+    Office,
 )
 from hope_payment_gateway.apps.gateway.registry import DefaultProcessor
 
@@ -58,10 +59,16 @@ class FinancialServiceProviderFactory(AutoRegisterModelFactory):
         model = FinancialServiceProvider
 
 
+class OfficeFactory(AutoRegisterModelFactory):
+    class Meta:
+        model = Office
+
+
 class FinancialServiceProviderConfigFactory(AutoRegisterModelFactory):
     key = fuzzy.FuzzyText()
     label = fuzzy.FuzzyText()
     fsp = factory.SubFactory(FinancialServiceProviderFactory)
+    office = factory.SubFactory(OfficeFactory)
     delivery_mechanism = factory.SubFactory(DeliveryMechanismFactory)
 
     class Meta:

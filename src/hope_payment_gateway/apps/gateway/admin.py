@@ -567,7 +567,7 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 @admin.register(FinancialServiceProviderConfig)
 class FinancialServiceProviderConfigAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("key", "label", "fsp", "delivery_mechanism", "required_fields")
+    list_display = ("key", "office", "label", "fsp", "delivery_mechanism", "required_fields")
     search_fields = ("remote_id", "fsp__name", "delivery_mechanism__name", "delivery_mechanism__code")
 
 
