@@ -59,8 +59,9 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
         model = FinancialServiceProviderConfig
         fields = (
             "id",
-            "key",
             "label",
+            "key",
+            "office",
             "delivery_mechanism",
             "delivery_mechanism_name",
             "delivery_mechanism_transfer_type",
@@ -102,6 +103,7 @@ class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "key",
+            "office",
             "label",
             "fsp",
             "delivery_mechanism",
