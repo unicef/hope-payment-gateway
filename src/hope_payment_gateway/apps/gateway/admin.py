@@ -114,7 +114,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
             try:
                 obj.parent.fsp.configs.get(
                     key=obj.parent.extra.get("config_key"),
-                    delivery_mechanism=payload.get("delivery_mechanism"),
+                    delivery_mechanism__code=payload.get("delivery_mechanism"),
                     fsp=obj.parent.fsp,
                 )
                 button.choices.append(self.wu_config)
@@ -266,7 +266,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
         payload = obj.get_payload()
         config = obj.parent.fsp.configs.filter(
             key=obj.parent.extra.get("config_key"),
-            delivery_mechanism=payload.get("delivery_mechanism"),
+            delivery_mechanism__code=payload.get("delivery_mechanism"),
             fsp=obj.parent.fsp,
         )
         return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
