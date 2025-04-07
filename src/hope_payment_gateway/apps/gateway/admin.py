@@ -110,7 +110,9 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
                 and payload.get("delivery_services_code") == "800"
             ):
                 button.choices.append(self.wu_corridor)
-            if obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key")):
+            if obj.parent.fsp.configs.filter(
+                key=obj.parent.extra.get("config_key"), delivery_mechanism=payload.get("delivery_mechanism")
+            ).first():
                 button.choices.append(self.wu_config)
         else:
             button.visible = False
