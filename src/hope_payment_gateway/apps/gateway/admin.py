@@ -264,7 +264,7 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     def wu_config(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.get_object(request, pk)
         payload = obj.get_payload()
-        config = obj.parent.fsp.configs.filter(
+        config = obj.parent.fsp.configs.get(
             key=obj.parent.extra.get("config_key"),
             delivery_mechanism__code=payload.get("delivery_mechanism"),
             fsp=obj.parent.fsp,
