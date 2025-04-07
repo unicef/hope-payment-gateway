@@ -102,18 +102,27 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
                 self.wu_cancel,
             ]
             payload = obj.get_payload()
-            if (
-                Corridor.objects.filter(
-                    destination_country=payload.get("destination_country"),
-                    destination_currency=payload.get("destination_currency"),
-                ).exists()
-                and payload.get("delivery_services_code") == "800"
-            ):
-                button.choices.append(self.wu_corridor)
-            if obj.parent.fsp.configs.filter(
-                key=obj.parent.extra.get("config_key"), delivery_mechanism=payload.get("delivery_mechanism")
-            ).first():
+            if payload.get("delivery_services_code") == "800":
+                try:
+                    Corridor.objects.get(
+                        destination_country=payload.get("destination_country"),
+                        destination_currency=payload.get("destination_currency"),
+                    )
+                    button.choices.append(self.wu_corridor)
+                except (Corridor.DoesNotExist, Corridor.MultipleObjectsReturned):
+                    pass
+            try:
+                obj.parent.fsp.configs.get(
+                    key=obj.parent.extra.get("config_key"),
+                    delivery_mechanism=payload.get("delivery_mechanism"),
+                    fsp=obj.parent.fsp,
+                )
                 button.choices.append(self.wu_config)
+            except (
+                FinancialServiceProviderConfig.DoesNotExist,
+                FinancialServiceProviderConfig.MultipleObjectsReturned,
+            ):
+                pass
         else:
             button.visible = False
         return button
@@ -254,7 +263,12 @@ class PaymentRecordAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin)
     )
     def wu_config(self, request: HttpRequest, pk: int) -> TemplateResponse:
         obj = self.get_object(request, pk)
-        config = obj.parent.fsp.configs.get(key=obj.parent.extra.get("config_key"))
+        payload = obj.get_payload()
+        config = obj.parent.fsp.configs.filter(
+            key=obj.parent.extra.get("config_key"),
+            delivery_mechanism=payload.get("delivery_mechanism"),
+            fsp=obj.parent.fsp,
+        )
         return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
 
     @view(
