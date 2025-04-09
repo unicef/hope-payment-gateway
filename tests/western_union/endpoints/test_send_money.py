@@ -136,7 +136,7 @@ def test_send_complete_corridor(django_app, admin_user, wu):
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_mechanism": "mobile_money",
-        "delivery_phone_number": "+346001020345",
+        "delivery_phone_number__mobile_money": "+346001020345",
         "delivery_services_code": "800",
         "reason_for_sending": "P012",
     }
@@ -170,7 +170,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_mechanism": "mobile_money",
-        "delivery_phone_number": "+94786661137",
+        "delivery_phone_number__mobile_money": "+94786661137",
         "delivery_services_code": "800",
         "reason_for_sending": "P012",
     }
@@ -235,7 +235,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_mechanism": "mobile_money",
-        "delivery_phone_number": "+94786661137",
+        "delivery_phone_number__mobile_money": "+94786661137",
         "delivery_services_code": "800",
         "reason_for_sending": "AO12",
     }

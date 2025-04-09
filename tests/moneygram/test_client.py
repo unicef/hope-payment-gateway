@@ -356,8 +356,8 @@ def test_get_required_fields(mg):
     client = MoneyGramClient()
     payload = {
         "delivery_mechanism": "bank_account",
-        "service_provider_code": "BANK_DEPOSIT",
-        "service_provider_routing_code": "74826841",
+        "service_provider_code__bank_account": "BANK_DEPOSIT",
+        "service_provider_routing_code__bank_account": "74826841",
         "amount": 100,
         "origination_currency": "USD",
         "destination_country": "NGA",
