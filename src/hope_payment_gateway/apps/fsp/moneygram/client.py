@@ -27,7 +27,11 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import extrapolate_errors, get_phone_number, get_account_field
+from hope_payment_gateway.apps.fsp.utils import (
+    extrapolate_errors,
+    get_phone_number,
+    get_from_delivery_mechanism,
+)
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
@@ -141,7 +145,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                     }
                 },
                 "targetAccount": {
-                    "accountNumber": get_account_field(base_payload, "number"),
+                    "accountNumber": get_from_delivery_mechanism(base_payload, "bank_account_number"),
                     "bankName": base_payload.get("service_provider_code", None),
                 },
                 "receipt": {
@@ -241,8 +245,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         payload.update(
             {
                 "destinationCountryCode": base_payload["destination_country"],
-                "serviceOptionCode": base_payload.get("service_provider_code", "WILL_CALL"),
-                "serviceOptionRoutingCode": base_payload.get("service_provider_routing_code"),
+                "serviceOptionCode": base_payload.get("service_option_code", "WILL_CALL"),
+                "serviceOptionRoutingCode": base_payload.get("service_option_routing_code", None),
                 "amount": base_payload["amount"],
                 "sendCurrencyCode": base_payload.get("origination_currency", "USD"),
                 "receiveCurrencyCode": base_payload["destination_currency"],
