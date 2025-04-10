@@ -157,7 +157,7 @@ class PaymentRecordState(models.TextChoices):
 class PaymentRecord(TimeStampedModel):
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
-    record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
+    record_code = models.CharField(max_length=64, db_index=True, unique=True)  # Payment Record ID
 
     status = models.CharField(
         max_length=50,
