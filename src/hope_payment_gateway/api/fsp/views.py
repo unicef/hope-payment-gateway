@@ -91,6 +91,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         system = System.objects.get(owner=owner)
         obj = serializer.save(system=system)
         config_key = obj.extra.get("config_key", None)
+        obj.save()
         if config_key:
             office, _ = Office.objects.get_or_create(
                 code=config_key, defaults={"name": config_key, "slug": config_key, "supervised": False}
