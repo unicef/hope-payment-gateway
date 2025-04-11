@@ -4,6 +4,11 @@ from constance.test import override_config
 from factories import CorridorFactory, PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
+from hope_payment_gateway.apps.fsp.western_union.exceptions import (
+    InvalidCorridorError,
+    InvalidChoiceFromCorridor,
+    PayloadIncompatible,
+)
 from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 
@@ -170,7 +175,8 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
         "reason_for_sending": "P012",
     }
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    WesternUnionClient().create_transaction(payload)
+    with pytest.raises(InvalidCorridorError):
+        WesternUnionClient().create_transaction(payload)
     pr.refresh_from_db()
     assert not pr.success
     assert pr.status == PaymentRecordState.ERROR
@@ -178,7 +184,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
 
 
 @pytest.mark.parametrize(
-    ("corridor_template", "message"),
+    ("corridor_template", "message", "exc_class"),
     [
         (
             {
@@ -198,6 +204,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
                 "wallet_details": {"service_provider_code": 22901},
             },
             "Invalid Choice reason_for_sending for AO12",
+            InvalidChoiceFromCorridor,
         ),
         (
             {
@@ -207,11 +214,12 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
                 "missing_value": {"service_provider_code": 22901},
             },
             "Wrong structure: missing_value should not be a leaf",
+            PayloadIncompatible,
         ),
     ],
 )
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message, wu):
+def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message, wu, exc_class):
     record_code = "Y3snz233UkGt1Gw1"
     payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
@@ -237,7 +245,8 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         template=corridor_template,
     )
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    WesternUnionClient().create_transaction(payload)
+    with pytest.raises(exc_class):
+        WesternUnionClient().create_transaction(payload)
     pr.refresh_from_db()
     assert not pr.success
     assert pr.status == PaymentRecordState.ERROR
