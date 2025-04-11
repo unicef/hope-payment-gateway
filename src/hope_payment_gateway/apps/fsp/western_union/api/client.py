@@ -93,11 +93,13 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             code = 400
             logger.exception(exc)
         except TypeError as exc:
+            display_format = "xml"
             title = "Invalid Payload"
             code = 400
             error = str(exc)
             logger.exception(exc)
         except Fault as exc:
+            display_format = "xml"
             title = f"{exc.message} [{exc.code}]"
             response = etree_to_string(exc.detail).decode()
             try:
@@ -116,7 +118,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             "title": title,
             "content_request": payload,
             "content_response": response,
-            "format": display_format,
+            "request_format": "json",
+            "response_format": display_format,
             "code": code,
             "error": error,
         }
@@ -254,16 +257,13 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             f"SOAP_HTTP_Port_{wu_env}",
         )
 
-    def create_transaction(self, base_payload: dict, update: bool = True) -> PaymentRecord | None:
+    def create_transaction(self, base_payload: dict, update: bool = True) -> dict:
         record_code = base_payload["payment_record_code"]
-        try:
-            pr = PaymentRecord.objects.get(
-                record_code=record_code,
-                status=PaymentRecordState.PENDING,
-                parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
-            )
-        except PaymentRecord.DoesNotExist:
-            return None
+        pr = PaymentRecord.objects.get(
+            record_code=record_code,
+            status=PaymentRecordState.PENDING,
+            parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
+        )
         try:
             payload = self.create_validation_payload(base_payload)
             response = self.send_money_validation(payload)
@@ -280,7 +280,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         except (InvalidCorridorError, PayloadException, TransitionNotAllowed) as exc:
             pr.message, pr.status, pr.success = str(exc), PaymentRecordState.ERROR, False
             pr.save()
-            return pr
+            raise exc
 
         if response["code"] != 200:
             pr.message, pr.success, pr.auth_code, pr.fsp_code = (
@@ -292,7 +292,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
                 pr.fail()
             pr.save()
-            return pr
+            return response
         extra_data = {
             key: smv_payload[key]
             for key in [
@@ -328,9 +328,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             flow.fail()
         pr.extra_data.update(log_data)
         pr.save()
-        return pr
+        return response
 
-    def query_status(self, transaction_id, update):
+    def status(self, transaction_id, update):
         pr = PaymentRecord.objects.get(
             fsp_code=transaction_id,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
@@ -440,7 +440,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             flow = PaymentRecordFlow(pr)
             flow.fail()
             pr.save()
-            return pr
+            return response
 
         response = self.cancel_request(frm, mtcn, database_key)
         extra_data = {"db_key": database_key, "mtcn": mtcn}
@@ -453,7 +453,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.success = False
         pr.extra_data.update(extra_data)
         pr.save()
-        return pr
+        return response
 
     # DAS API
 

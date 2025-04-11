@@ -172,6 +172,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 {"context": [{"code": "validation_error", "message": e.args[0]}]},
                 status=HTTP_400_BAD_REQUEST,
             )
+            payload = response
         if response.status_code >= 300:
             pr.message = ", ".join(extrapolate_errors(response.data))
             flow.fail()
@@ -183,7 +184,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
 
-        return base_payload, response
+        return payload, response
 
     def prepare_quote(self, base_payload: dict):
         transaction_id = base_payload["payment_record_code"]
@@ -207,23 +208,28 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         transaction_id, payload = self.prepare_quote(base_payload)
         return payload, self.perform_request(endpoint, transaction_id, payload, "post")
 
-    def status(self, transaction_id, agent_partner_id):
+    def status(self, payload):
+        """Query MoneyGram to get information regarding the transaction status."""
+        record = PaymentRecord.objects.get(record_code=payload["payment_record_code"])
+        agent_partner_id = payload["agent_partner_id"]
+        transaction_id = record.fsp_code
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
         payload = self.get_basic_payload(agent_partner_id)
         status_transaction_id = str(uuid.uuid4())
         return payload, self.perform_request(endpoint, status_transaction_id, payload)
 
-    def query_status(self, transaction_id, agent_partner_id, update):
+    def status_update(self, payload):
         """Query MoneyGram to get information regarding the transaction status."""
-        payload, response = self.status(transaction_id, agent_partner_id)
-        if update and transaction_id:
-            pr = PaymentRecord.objects.get(
-                fsp_code=transaction_id,
-                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
-            )
-            update_status(pr, response.data["transactionStatus"])
-            pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
-            pr.save()
+        record = PaymentRecord.objects.get(record_code=payload["payment_record_code"])
+        transaction_id = record.fsp_code
+        payload, response = self.status(payload)
+        pr = PaymentRecord.objects.get(
+            fsp_code=transaction_id,
+            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+        )
+        update_status(pr, response.data["transactionStatus"])
+        pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
+        pr.save()
         return payload, response
 
     def get_required_fields(self, base_payload):
@@ -310,12 +316,14 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             )
         return response
 
-    def refund(self, transaction_id, base_payload):
+    def refund(self, base_payload):
+        record = PaymentRecord.objects.get(record_code=base_payload["payment_record_code"])
+        transaction_id = record.fsp_code
         endpoint = f"/disbursement/refund/v1/transactions/{transaction_id}"
         payload = self.get_basic_payload(base_payload["agent_partner_id"])
         status_transaction_id = str(uuid.uuid4())
-        payload["refundReasonCode"] = base_payload.get("refuse_reason_code")
-        reason = dict(REFUND_CHOICES).get("WRONG_CRNCY", "-")
+        payload["refundReasonCode"] = base_payload["refuse_reason_code"]
+        reason = dict(REFUND_CHOICES).get(payload["refundReasonCode"], "-")
 
         resp = self.perform_request(endpoint, status_transaction_id, payload)
         if resp.status_code == 200:

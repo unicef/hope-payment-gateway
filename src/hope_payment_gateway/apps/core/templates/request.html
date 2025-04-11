@@ -1,5 +1,5 @@
 {% extends "admin_extra_buttons/action_page.html" %}
-{% load static %}
+{% load static xml_format %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
 
 <pre>
 <h2>Request:</h2>
-{% if format == "json" %}
+{% if request_format == "json" %}
 {{ content_request | pprint }}{% else %}{{ content_request }}
 {% endif %}
 </pre>
@@ -18,10 +18,13 @@
 <hr>
 
 <pre>
-
 <h2>Response:</h2>
-{% if format == "json" %}
-{{ content_response | pprint }}{% else %}{{ content_response }}
+{% if response_format == "json" %}
+{{ content_response | pprint }}
+{% elif response_format == "xml" %}
+{% display_xml content_response %}
+{% else %}
+{{ content_response }}
 {% endif %}
 </pre>
 

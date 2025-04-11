@@ -208,8 +208,9 @@ def test_status_missing(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/status_missing.yaml")
     client = MoneyGramClient()
     transaction_id = "transaction_id"
-    PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    _, response = client.status(transaction_id, agent_partner_id="AAAAAA")
+    record = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
+    payload = {"agent_partner_id": "AAAAAA", "payment_record_code": record.record_code}
+    _, response = client.status(payload)
     assert response.status_code == 400
     assert response.data == {"errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]}
 
@@ -222,8 +223,9 @@ def test_status_ok(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
-    PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    _, response = client.status(transaction_id, agent_partner_id="AAAAAA")
+    record = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
+    payload = {"agent_partner_id": "AAAAAA", "payment_record_code": record.record_code}
+    _, response = client.status(payload)
     assert response.status_code == 200
     assert response.data == {
         "transactionId": "64c228ba-8013-43f6-9baf-a0c87b91a261",
@@ -265,12 +267,13 @@ def test_status_ok(mg):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_query_status(mg):
+def test_status(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
     pr = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
-    client.query_status(transaction_id, agent_partner_id="AAAAAA", update=True)
+    payload = {"agent_partner_id": "AAAAAA", "payment_record_code": pr.record_code}
+    client.status_update(payload)
     pr.refresh_from_db()
     assert pr.payout_amount == 300
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
@@ -338,9 +341,9 @@ def test_refund(mg):
         parent__fsp=mg,
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
-    _, resp = client.refund(transaction_id, pr.payload)
+    _, resp = client.refund(pr.get_payload())
     pr.refresh_from_db()
-    assert pr.message == "Refunded Wrong Currency"
+    assert pr.message == "Refunded Duplicate Transaction"
     assert pr.status == PaymentRecordState.REFUND
     assert resp.status_code == 200
 
