@@ -7,11 +7,11 @@ from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.apps.fsp.palpay.client import PalPayClient
 from hope_payment_gateway.apps.gateway.models import (
     AsyncJob,
+    FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentInstructionState,
     PaymentRecord,
     PaymentRecordState,
-    FinancialServiceProviderConfig,
 )
 from hope_payment_gateway.config.celery import app
 
@@ -31,7 +31,9 @@ def palpay_send_money(tag=None, threshold=10000):
     records_count = 0
 
     qs = PaymentInstruction.objects.filter(
-        status=PaymentInstructionState.READY, fsp__vendor_number=config.PALPAY_VENDOR_NUMBER, active=True
+        status=PaymentInstructionState.READY,
+        fsp__vendor_number=config.PALPAY_VENDOR_NUMBER,
+        active=True,
     )
     if tag:
         qs = qs.filter(tag=tag)

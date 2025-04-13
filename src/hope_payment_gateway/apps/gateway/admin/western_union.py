@@ -1,5 +1,5 @@
-from constance import config
 from admin_extra_buttons.decorators import choice, view
+from constance import config
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -13,7 +13,10 @@ from hope_payment_gateway.apps.fsp.western_union.exceptions import (
     PayloadMissingKeyError,
 )
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
-from hope_payment_gateway.apps.gateway.models import PaymentRecord, FinancialServiceProviderConfig
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProviderConfig,
+    PaymentRecord,
+)
 
 
 class WesternUnionAdminMixin:

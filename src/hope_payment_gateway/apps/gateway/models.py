@@ -52,7 +52,10 @@ class Office(TimeStampedModel):
     name = models.CharField(max_length=100, blank=True, null=True, db_index=True)
     code = models.CharField(max_length=100, blank=True, null=True, db_index=True, unique=True)
     slug = models.SlugField(max_length=100, blank=True, null=True, db_index=True, unique=True)
-    supervised = models.BooleanField(default=False, help_text="Flag to enable/disable offices, which need manual check")
+    supervised = models.BooleanField(
+        default=False,
+        help_text="Flag to enable/disable offices, which need manual check",
+    )
 
     extra_fields = models.JSONField(default=dict, blank=True, null=False)
 
@@ -234,6 +237,10 @@ class ExportTemplate(models.Model):
 
 class AsyncJob(AsyncJobModel):
     instruction = models.ForeignKey(
-        PaymentInstruction, related_name="jobs", on_delete=models.CASCADE, null=True, blank=True
+        PaymentInstruction,
+        related_name="jobs",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     celery_task_name = "hope_payment_gateway.apps.core.tasks.sync_job_task"

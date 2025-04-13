@@ -1,17 +1,16 @@
 import logging
 
+from django.utils.module_loading import import_string
 from strategy_field.utils import fqn
 
 from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.apps.gateway.models import (
+    AsyncJob,
     PaymentInstruction,
     PaymentInstructionState,
-    PaymentRecordState,
-    AsyncJob,
     PaymentRecord,
+    PaymentRecordState,
 )
-
-from django.utils.module_loading import import_string
 
 
 def notify_records_to_fsp(client_fqn, to_process_ids):
@@ -20,12 +19,16 @@ def notify_records_to_fsp(client_fqn, to_process_ids):
         client.create_transaction(record.get_payload())
 
 
-def send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key, threshold=None, tag=None):  # noqa
+def send_to_fsp(  # noqa
+    fsp, fsp_vendor_number, action_fqn, group_key, threshold=None, tag=None
+):
     logging.info(f"{fsp} Task started")
     records_count = 0
 
     qs = PaymentInstruction.objects.select_related("fsp").filter(
-        status=PaymentInstructionState.READY, fsp__vendor_number=fsp_vendor_number, active=True
+        status=PaymentInstructionState.READY,
+        fsp__vendor_number=fsp_vendor_number,
+        active=True,
     )
     if tag:
         qs = qs.filter(tag=tag)

@@ -2,7 +2,7 @@ from constance import config
 from strategy_field.utils import fqn
 
 from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
-from hope_payment_gateway.apps.fsp.tasks_utils import send_to_fsp, notify_records_to_fsp
+from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
 from hope_payment_gateway.apps.gateway.models import (
     PaymentInstructionState,
     PaymentRecord,

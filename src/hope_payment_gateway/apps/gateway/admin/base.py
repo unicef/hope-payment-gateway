@@ -31,15 +31,15 @@ from hope_payment_gateway.apps.gateway.admin.moneygram import MoneyGramAdminMixi
 from hope_payment_gateway.apps.gateway.admin.palpay import PalPayAdminMixin
 from hope_payment_gateway.apps.gateway.admin.western_union import WesternUnionAdminMixin
 from hope_payment_gateway.apps.gateway.models import (
+    AccountType,
     AsyncJob,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
+    Office,
     PaymentInstruction,
     PaymentRecord,
-    Office,
-    AccountType,
 )
 
 if TYPE_CHECKING:
@@ -100,7 +100,15 @@ class PaymentRecordAdmin(
 
 @admin.register(PaymentInstruction)
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("external_code", "office", "remote_id", "fsp", "status", "active", "tag")
+    list_display = (
+        "external_code",
+        "office",
+        "remote_id",
+        "fsp",
+        "status",
+        "active",
+        "tag",
+    )
     list_filter = ("fsp", "status", "active")
     search_fields = ("external_code", "remote_id", "fsp__name", "tag")
     formfield_overrides = {
@@ -223,8 +231,20 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 @admin.register(FinancialServiceProviderConfig)
 class FinancialServiceProviderConfigAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("key", "office", "label", "fsp", "delivery_mechanism", "required_fields")
-    search_fields = ("remote_id", "fsp__name", "delivery_mechanism__name", "delivery_mechanism__code")
+    list_display = (
+        "key",
+        "office",
+        "label",
+        "fsp",
+        "delivery_mechanism",
+        "required_fields",
+    )
+    search_fields = (
+        "remote_id",
+        "fsp__name",
+        "delivery_mechanism__name",
+        "delivery_mechanism__code",
+    )
 
 
 @admin.register(AccountType)
