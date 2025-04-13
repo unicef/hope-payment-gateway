@@ -1,15 +1,17 @@
 import logging
 
-from constance import config
 from admin_extra_buttons.decorators import choice, view
+from constance import config
 from django.contrib import messages
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient, InvalidTokenError
+from hope_payment_gateway.apps.fsp.moneygram.client import (
+    InvalidTokenError,
+    MoneyGramClient,
+)
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
-
 
 logger = logging.getLogger(__name__)
 

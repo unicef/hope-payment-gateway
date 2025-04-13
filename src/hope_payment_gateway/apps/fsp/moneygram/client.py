@@ -19,15 +19,18 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     DELIVERED,
     IN_TRANSIT,
     RECEIVED,
-    REFUNDED,
     REFUND_CHOICES,
+    REFUNDED,
     REJECTED,
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import get_phone_number, extrapolate_errors
+from hope_payment_gateway.apps.fsp.utils import extrapolate_errors, get_phone_number
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    PaymentRecord,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -104,9 +107,15 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         try:
             transaction_id = base_payload["payment_record_code"]
 
-            first_name, rest = base_payload["first_name"][:20], base_payload["first_name"][20:40]
+            first_name, rest = (
+                base_payload["first_name"][:20],
+                base_payload["first_name"][20:40],
+            )
             middle_name = base_payload.get("middle_name", rest)
-            last_name, rest_ln = base_payload["last_name"][:20], base_payload["last_name"][20:40]
+            last_name, rest_ln = (
+                base_payload["last_name"][:20],
+                base_payload["last_name"][20:40],
+            )
             second_last_name = base_payload.get("second_last_name", rest_ln)
 
             name = {

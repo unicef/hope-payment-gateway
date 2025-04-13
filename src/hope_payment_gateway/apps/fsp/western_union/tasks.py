@@ -1,7 +1,7 @@
 from constance import config
 from strategy_field.utils import fqn
 
-from hope_payment_gateway.apps.fsp.tasks_utils import send_to_fsp, notify_records_to_fsp
+from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from hope_payment_gateway.apps.gateway.models import (
