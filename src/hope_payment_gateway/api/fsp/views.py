@@ -6,15 +6,16 @@ from viewflow.fsm import TransitionNotAllowed
 
 from hope_api_auth.views import LoggingAPIViewSet
 from hope_payment_gateway.api.fsp.filters import (
+    AccountTypeFilter,
     DeliveryMechanismFilter,
     ExportTemplateFilter,
     FinancialServiceProviderConfigFilter,
     FinancialServiceProviderFilter,
     PaymentInstructionFilter,
     PaymentRecordFilter,
-    AccountTypeFilter,
 )
 from hope_payment_gateway.api.fsp.serializers import (
+    AccountTypeSerializer,
     DeliveryMechanismSerializer,
     ExportTemplateSerializer,
     FinancialServiceProviderConfigSerializer,
@@ -22,22 +23,21 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentInstructionSerializer,
     PaymentRecordLightSerializer,
     PaymentRecordSerializer,
-    AccountTypeSerializer,
 )
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.actions import export_as_template_impl
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
+    AccountType,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
+    Office,
     PaymentInstruction,
     PaymentInstructionState,
     PaymentRecord,
-    Office,
-    AccountType,
 )
 
 
@@ -94,7 +94,8 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         obj.save()
         if config_key:
             office, _ = Office.objects.get_or_create(
-                code=config_key, defaults={"name": config_key, "slug": config_key, "supervised": False}
+                code=config_key,
+                defaults={"name": config_key, "slug": config_key, "supervised": False},
             )
             obj.office = office
             if office.supervised:

@@ -3,13 +3,13 @@ from typing import Any
 from rest_framework import serializers
 
 from hope_payment_gateway.apps.gateway.models import (
+    AccountType,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
-    AccountType,
 )
 
 
