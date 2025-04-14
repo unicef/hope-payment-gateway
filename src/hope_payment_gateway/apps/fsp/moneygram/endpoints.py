@@ -57,7 +57,7 @@ class MoneyGramWebhook(MoneyGramApi):
         signature = signature_dict["s"]
         unix_time_in_seconds = signature_dict["t"]
 
-        body = str(request.data).replace(" ", "")
+        body = str(request.data).replace(" ", "").replace("'", '"')
         return verify(signature, unix_time_in_seconds, destination_host, body)
 
     def post(self, request):
