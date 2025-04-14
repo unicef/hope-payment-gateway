@@ -4,14 +4,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -57,19 +57,19 @@
 					<xs:element minOccurs="0" name="ips_authorization_code" type="xrsi:ips_authorization_code"/>
 					<xs:element minOccurs="0" name="first_tmt_flag" type="xrsi:yes_no"/>
 					<xs:element minOccurs="0" name="fixed_flag" type="xrsi:fixed_flag"/>
-					
+
 					<xs:element maxOccurs="4" minOccurs="0" name="mocc_comments" type="xrsi:comments"/>
 					<xs:element minOccurs="0" name="customer_acc_no" type="xrsi:TCustomerCreditAccountNumberQQC"/>
 					<xs:element minOccurs="0" name="csc_caution_flag" type="xrsi:yes_no"/>
 					<xs:element minOccurs="0" name="current_fx" type="xrsi:current_fx"/>
-					<xs:element minOccurs="0" name="add_message" type="xrsi:name_base"/>	
+					<xs:element minOccurs="0" name="add_message" type="xrsi:name_base"/>
 					<xs:element minOccurs="0" name="third_party_option" type="xrsi:third_party_option"/>
 					<xs:element minOccurs="0" name="encrypted_pin" type="xrsi:encrypted_pin"/>
-					<xs:element minOccurs="0" name="location" type="xrsi:string"/>		
+					<xs:element minOccurs="0" name="location" type="xrsi:string"/>
 					<xs:element minOccurs="0" name="duplicate_mtcn_override_flag" type="xrsi:duplicate_mtcn_override_flag"/>
 					<xs:element minOccurs="0" name="debit_timeout_resend" type="xrsi:debit_timeout_resend"/>
-					<xs:element minOccurs="0" name="arizona_operator" type="xrsi:general_name"/>	
-					<xs:element minOccurs="0" name="track_data" type="xrsi:track_data"/>		
+					<xs:element minOccurs="0" name="arizona_operator" type="xrsi:general_name"/>
+					<xs:element minOccurs="0" name="track_data" type="xrsi:track_data"/>
 					<xs:element minOccurs="0" name="security_code" type="xrsi:social_security_no"/>
 					<xs:element minOccurs="0" name="customer_affidavit_number" type="xrsi:customer_affidavit_number"/>
 					<xs:element minOccurs="0" name="customer_affidavit" type="xrsi:customer_affidavit"/>
@@ -78,13 +78,13 @@
 					<xs:element minOccurs="0" name="cuba" type="xrsi:cuba"/>
 					<xs:element minOccurs="0" name="consumer_fraud_prompts" type="xrsi:consumer_fraud_prompts"/>
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
-					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>													
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
 					<xs:element minOccurs="0" name="visa_flag" type="xrsi:visa_flag"/>
 					<xs:element minOccurs="0" name="visa_number" type="xrsi:visa_number"/>
 					<xs:element minOccurs="0" name="visa_date" type="xrsi:visa_date"/>
 					<xs:element minOccurs="0" name="TKeySerialNumber" type="xrsi:TKeySerialNumber"/>
 					<xs:element minOccurs="0" name="third_party_flag_send" type="xrsi:third_party_flag_send"/>
-					<xs:element minOccurs="0" name="address_verification_document" type="xrsi:address_verification_document"/>			
+					<xs:element minOccurs="0" name="address_verification_document" type="xrsi:address_verification_document"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

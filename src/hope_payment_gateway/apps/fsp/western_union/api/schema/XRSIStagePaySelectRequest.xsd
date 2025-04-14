@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2014. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2014. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -31,7 +31,7 @@
 					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
 					<xs:element minOccurs="1" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 					<xs:element minOccurs="0" maxOccurs="1" name="currency_change_flag" type="xrsi:currency_change_flag"/>
-					<xs:element minOccurs="0" name="multicurrency_reason_code" type="xrsi:multicurrency_reason_code"/>					
+					<xs:element minOccurs="0" name="multicurrency_reason_code" type="xrsi:multicurrency_reason_code"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

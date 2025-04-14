@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -78,8 +78,8 @@
 					<xs:element minOccurs="0" name="fixed_on_send" type="xrsi:fixed_on_send"/>
 					<xs:element maxOccurs="3" minOccurs="0" name="host_message_set1" type="xrsi:host_message_set1"/>
 					<xs:element maxOccurs="3" minOccurs="0" name="host_message_set3" type="xrsi:host_message_set3"/>
-					<xs:element minOccurs="0" name="pos_message" type="xrsi:pos_message"/>	
-					<xs:element maxOccurs="30" minOccurs="0" name="receipt_text" type="xrsi:receipt_text"/>	
+					<xs:element minOccurs="0" name="pos_message" type="xrsi:pos_message"/>
+					<xs:element maxOccurs="30" minOccurs="0" name="receipt_text" type="xrsi:receipt_text"/>
 					<xs:element minOccurs="0" name="Is_convenience_search_flag" type="xrsi:dcc"/>
 					<xs:element minOccurs="0" name="Is_convenience_suppress_Flag" type="xrsi:dcc"/>
 					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>

@@ -4,14 +4,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -24,7 +24,7 @@
 			<xs:extension base="xrsi:request_transaction_base">
 				<xs:sequence>
 				    <xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
-					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>												    
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
 					<xs:element name="payment_transaction" type="xrsi:payment_transaction" minOccurs="0"/>
 					<xs:element name="wc_search_keys" type="xrsi:wc_search_keys" minOccurs="0"/>
 					<xs:element name="wcr_type" type="xrsi:wcr_type" minOccurs="0"/>
@@ -53,7 +53,7 @@
 	<xs:element name="receive-money-search-request" type="xrsi:receive-money-search-request">
 		<xs:annotation>
 			<xs:documentation>
-				Search by: Sender Name, Sender Phone, Receiver Name, Receiver Pin, MTCN, New MTCN, 
+				Search by: Sender Name, Sender Phone, Receiver Name, Receiver Pin, MTCN, New MTCN,
 				Destination Principal Amt ( expected payout amt ), Payout Country, Payout Currency
 			</xs:documentation>
 		</xs:annotation>

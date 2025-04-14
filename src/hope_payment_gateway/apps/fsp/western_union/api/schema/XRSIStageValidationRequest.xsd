@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -54,10 +54,10 @@
 					<xs:element minOccurs="0" name="client_record_key" type="xrsi:client_record_key"/>
 					<xs:element minOccurs="0" name="yellow_phone_label" type="xrsi:yellow_phone_lable"/>
 					<xs:element minOccurs="0" name="payer_fx_buffer" type="xrsi:payer_fx_buffer"/>
-					<xs:element minOccurs="0" name="cuba" type="xrsi:cuba"/> 
+					<xs:element minOccurs="0" name="cuba" type="xrsi:cuba"/>
 					<xs:element minOccurs="0" name="consumer_fraud_prompts" type="xrsi:consumer_fraud_prompts"/>
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
-					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>													
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
 					<xs:element minOccurs="0" name="visa_flag" type="xrsi:visa_flag"/>
 					<xs:element minOccurs="0" name="visa_number" type="xrsi:visa_number"/>
 					<xs:element minOccurs="0" name="visa_date" type="xrsi:visa_date"/>

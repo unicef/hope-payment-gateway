@@ -457,7 +457,7 @@
       <xsd:element name="mtcn" type="xrsi:mtcn"/>
     </xsd:sequence>
   </xsd:complexType>
-  
+
   <!-- START: Acxsys Fields -->
   <xsd:complexType name="payout_info">
     <xsd:sequence>
@@ -468,10 +468,10 @@
 	  <xsd:element minOccurs="0" name="payout_postal_code" type="xrsi:payout_postal_code"/>
     </xsd:sequence>
   </xsd:complexType>
-  
+
   <!-- END -->
-  
-  
+
+
   <xsd:complexType name="pickup_status">
     <xsd:sequence>
       <xsd:element name="code" type="xrsi:pickup_status_code"/>
@@ -925,6 +925,6 @@
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
-  
+
   <xsd:element name="payment_info" type="xrsi:payment_info"/>
 </xsd:schema>

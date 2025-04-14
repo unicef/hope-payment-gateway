@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2014. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2014. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -23,18 +23,18 @@
 		<xs:complexContent>
 			<xs:extension base="xrsi:store_request_transaction_base">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>					
+					<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
 					<xs:element minOccurs="1" name="receiver" type="xrsi:receiver"/>
 					<xs:element minOccurs="1" name="financials" type="xrsi:financials"/>
 					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
-					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>	
-					<xs:element minOccurs="1" name="money_transfer_key" type="xrsi:money_transfer_key"/>						
-					<xs:element minOccurs="0" name="mtcn" type="xrsi:mocn"/>	
-					<xs:element minOccurs="1" name="new_mtcn" type="xrsi:mtcn"/>					
+					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>
+					<xs:element minOccurs="1" name="money_transfer_key" type="xrsi:money_transfer_key"/>
+					<xs:element minOccurs="0" name="mtcn" type="xrsi:mocn"/>
+					<xs:element minOccurs="1" name="new_mtcn" type="xrsi:mtcn"/>
 					<xs:element minOccurs="1" name="pay_or_do_not_pay_indicator" type="xrsi:pay_or_do_not_pay_indicator"/>
 					<xs:element minOccurs="1" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 					<xs:element minOccurs="0" maxOccurs="1" name="currency_change_flag" type="xrsi:currency_change_flag"/>
-					<xs:element minOccurs="0" name="multicurrency_reason_code" type="xrsi:multicurrency_reason_code"/>										
+					<xs:element minOccurs="0" name="multicurrency_reason_code" type="xrsi:multicurrency_reason_code"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

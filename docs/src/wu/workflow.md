@@ -15,4 +15,3 @@ Western Union calls PG endpoint in order to notify that money has been received 
 - REJECT
 
 When the Payment Plan is set as ready, PG starts sending data to Western Union though SOAP Requests.
-

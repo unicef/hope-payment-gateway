@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -29,11 +29,11 @@
 					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
 					<xs:element minOccurs="0" name="promotions" type="xrsi:promotions"/>
 					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>
-					
+
 					<!-- <xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
 					<xs:element name="receiver" type="xrsi:receiver" minOccurs="0"/>
 					<xs:element name="emea_ii" type="xrsi:emea_ii" minOccurs="0"/> -->
-					
+
 					<xs:element minOccurs="0" name="qp_company" type="xrsi:qp_company"/>
 					<xs:element minOccurs="0" name="wu_card_number" type="xrsi:wu_card_number"/>
         			<xs:element minOccurs="0" name="level_code" type="xrsi:level_code"/>
@@ -41,7 +41,7 @@
 					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
 					<!--  16  digit MTCN -->
 					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>
-        			
+
         			<xs:element minOccurs="0" name="sender_name_type" type="xrsi:name_type"/>
         			<xs:element minOccurs="0" name="receiver_name_type" type="xrsi:name_type"/>
 					<!--<xs:element name="preferred_customer" type="xrsi:preferred_customer" minOccurs="0"/>-->
@@ -63,19 +63,19 @@
                     <xs:element minOccurs="0" name="yellow_phone_label" type="xrsi:yellow_phone_lable"/>
                     <xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
                     <xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
-                    <xs:element minOccurs="0" name="money_tranfer_type" type="xrsi:money_tranfer_type"/>	                   
-					
-					<xs:element minOccurs="0" name="add_message" type="xrsi:name_base"/>	                    
-					
+                    <xs:element minOccurs="0" name="money_tranfer_type" type="xrsi:money_tranfer_type"/>
+
+					<xs:element minOccurs="0" name="add_message" type="xrsi:name_base"/>
+
 					<xs:element minOccurs="0" name="preferred_customer_no" type="xrsi:pref_cust_account_number"/>
-					<xs:element minOccurs="0" name="mywu_number" type="xrsi:pref_cust_account_number"/>					
+					<xs:element minOccurs="0" name="mywu_number" type="xrsi:pref_cust_account_number"/>
 					 <xs:element minOccurs="0" name="splitpay_charges_buffer" type="xrsi:additional_buffer_charges_type"/>
                      <xs:element minOccurs="0" name="misc_buffer_details" type="xrsi:misc_buffer_type"/>
                      <xs:element minOccurs="0" name="incr_total_srvc_count" type="xrsi:directed_srvc_count"/>
                      <xs:element minOccurs="0" name="total_directed_srvc_count" type="xrsi:directed_srvc_count"/>
                      <xs:element minOccurs="0" name="limited_size_reply" type="xrsi:directed_service_ready"/>
                      <xs:element minOccurs="0" name="directed_service_ready" type="xrsi:directed_service_ready"/>
-                     
+
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
