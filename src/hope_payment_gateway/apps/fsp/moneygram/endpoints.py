@@ -1,4 +1,5 @@
 import base64
+import json
 import logging
 from contextlib import suppress
 from datetime import datetime
@@ -57,7 +58,9 @@ class MoneyGramWebhook(MoneyGramApi):
         signature = signature_dict["s"]
         unix_time_in_seconds = signature_dict["t"]
 
-        body = str(request.data).replace(" ", "").replace("'", '"')
+        json_str = request.body.decode("utf-8")
+        data = json.loads(json_str)
+        body = json.dumps(data, separators=(",", ":"))
         return verify(signature, unix_time_in_seconds, destination_host, body)
 
     def post(self, request):
