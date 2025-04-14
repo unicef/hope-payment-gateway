@@ -21,4 +21,3 @@ When the Payment Plan is ready, PG starts sending data to Western Union though S
 - Destination Currency
 - Delivery Services
 - Delivery Option Template
-

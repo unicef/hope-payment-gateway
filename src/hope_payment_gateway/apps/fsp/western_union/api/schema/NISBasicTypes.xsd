@@ -6,7 +6,7 @@
 			$Date: 2012/03/18 $
 	</xsd:documentation>
   </xsd:annotation>
-  
+
   <xsd:simpleType name="gwp_gbs_device_type">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="ATM"/>
@@ -23,7 +23,7 @@
       <xsd:enumeration value="SYSTEM"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
     <xsd:simpleType name="external_reference_no">
     <xsd:annotation>
       <xsd:documentation>partner / remote transaction ref number</xsd:documentation>
@@ -33,7 +33,7 @@
       <xsd:maxLength value="48"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <xsd:simpleType name="ip_address">
     <xsd:annotation>
       <xsd:documentation>IP address</xsd:documentation>
@@ -42,15 +42,15 @@
       <xsd:minLength value="7"/>
       <xsd:maxLength value="17"/>
     </xsd:restriction>
-  </xsd:simpleType>  
-  
+  </xsd:simpleType>
+
   <xsd:simpleType name="pin_verification_time">
     <xsd:annotation>
       <xsd:documentation>UTC timestamp that user pin was verified by sending bank</xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:dateTime"/>
   </xsd:simpleType>
-  
+
   <xsd:simpleType name="amount">
     <xsd:annotation>
       <xsd:documentation>Basic Type for Amount</xsd:documentation>
@@ -174,9 +174,9 @@
       <xsd:maxLength value="5"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
 
- 
+
+
   <xsd:simpleType name="postal_code">
     <xsd:restriction base="xsd:string">
       <xsd:minLength value="0"/>
@@ -244,7 +244,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  
+
   <xsd:simpleType name="frequency_of_transfers">
     <xsd:annotation>
       <xsd:documentation>frequency of transfers per year(emea ii)</xsd:documentation>
@@ -474,8 +474,8 @@
       <xsd:maxLength value="10"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
- <!-- START: Acxsys Fields --> 
+
+ <!-- START: Acxsys Fields -->
   <xsd:simpleType name="payout_agent_id">
     <xsd:restriction base="xsd:string">
 	<xsd:pattern value="[a-zA-Z0-9]"/>
@@ -508,10 +508,10 @@
       <xsd:maxLength value="10"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
-  
+
+
   <!-- END -->
-  
+
   <xsd:simpleType name="number_matches">
     <xsd:annotation>
       <xsd:documentation>Number Matches</xsd:documentation>
@@ -1245,7 +1245,7 @@
       <xsd:maxLength value="16"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
 
   <xsd:simpleType name="wu_product_name">
     <xsd:restriction base="xsd:string">

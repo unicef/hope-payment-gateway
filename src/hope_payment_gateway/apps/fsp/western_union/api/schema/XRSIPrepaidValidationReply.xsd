@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -22,8 +22,8 @@
 	<xs:complexType name="prepaid-validation-reply">
 		<xs:complexContent>
 			<xs:extension base="xrsi:reply_transaction_base">
-				<xs:sequence> 
-					<xs:element minOccurs="0" name="sender" type="xrsi:sender"/> 
+				<xs:sequence>
+					<xs:element minOccurs="0" name="sender" type="xrsi:sender"/>
 					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
 					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
 					<xs:element minOccurs="0" name="promotions" type="xrsi:promotions"/>
@@ -40,7 +40,7 @@
 					</xs:element>-->
 					<xs:element maxOccurs="5" minOccurs="0" name="spare" type="xrsi:spare"/>
 					<xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>
-                    <xs:element maxOccurs="1" minOccurs="0" name="df_fields" type="xrsi:df_fields"  />					
+                    <xs:element maxOccurs="1" minOccurs="0" name="df_fields" type="xrsi:df_fields"  />
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 				</xs:sequence>
 			</xs:extension>

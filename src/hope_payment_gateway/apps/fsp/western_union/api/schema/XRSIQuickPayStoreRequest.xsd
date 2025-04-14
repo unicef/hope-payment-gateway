@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -64,7 +64,7 @@
 					<xs:element name="mocc_comments" type="xrsi:comments" minOccurs="0" maxOccurs="4"/>
 					<xs:element name="yellow_phone_label" type="xrsi:yellow_phone_lable" minOccurs="0"/>
 					<xs:element name="money_transfer_key" type="xrsi:money_transfer_key" minOccurs="0"/>
-					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />					
+					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />
 					<xs:element name="auto_refile_buffer" type="xrsi:auto_refile_buffer" minOccurs="0"/>
 					<xs:element name="corr_error_queue_flag" type="xrsi:yes_no" minOccurs="0"/>
 					<xs:element name="queue_flag" type="xrsi:yes_no" minOccurs="0"/>

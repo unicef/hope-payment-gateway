@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -21,17 +21,17 @@
 	<xs:complexType name="hold-txn-search-reply">
 	<xs:complexContent>
 	<xs:extension base="xrsi:reply_transaction_base">
-	<xs:sequence>				    
+	<xs:sequence>
 		<xs:choice minOccurs="1" maxOccurs="1">
 			<xs:sequence>
-				<xs:element name="sendmoney_hold_transaction" minOccurs="0" maxOccurs="1" type="xrsi:sendmoney_hold_transaction" />			  					
+				<xs:element name="sendmoney_hold_transaction" minOccurs="0" maxOccurs="1" type="xrsi:sendmoney_hold_transaction" />
 				<xs:element name="billpayment_hold_transaction" minOccurs="0" maxOccurs="1" type="xrsi:billpayment_hold_transaction" />
 				<xs:element name="quickpay_hold_transaction" minOccurs="0" maxOccurs="1" type="xrsi:quickpay_hold_transaction" />
 				<xs:element name="receivemoney_hold_transaction" minOccurs="0" maxOccurs="1" type="xrsi:receivemoney_hold_transaction" />
 				<xs:element name="spanish_translations" minOccurs="0" maxOccurs="1" type="xrsi:spanish_translations" />
-			</xs:sequence>			   
+			</xs:sequence>
 			<xs:sequence>
-				<xs:element name="sendmoney_hold_transactions" minOccurs="0" maxOccurs="1" type="xrsi:sendmoney_hold_transactions" />			  					
+				<xs:element name="sendmoney_hold_transactions" minOccurs="0" maxOccurs="1" type="xrsi:sendmoney_hold_transactions" />
 				<xs:element name="billpayment_hold_transactions" minOccurs="0" maxOccurs="1" type="xrsi:billpayment_hold_transactions" />
 				<xs:element name="quickpay_hold_transactions" minOccurs="0" maxOccurs="1" type="xrsi:quickpay_hold_transactions" />
 				<xs:element name="receivemoney_hold_transactions" minOccurs="0" maxOccurs="1" type="xrsi:receivemoney_hold_transactions" />
@@ -48,7 +48,7 @@
 	</xs:sequence>
 	</xs:extension>
 	</xs:complexContent>
-	</xs:complexType>	
+	</xs:complexType>
 	<xs:element name="hold-txn-search-reply" type="xrsi:hold-txn-search-reply">
   </xs:element>
 </xs:schema>

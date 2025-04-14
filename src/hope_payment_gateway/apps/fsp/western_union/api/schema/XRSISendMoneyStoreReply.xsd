@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -28,8 +28,8 @@
 					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
 					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
 					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>
-					<xs:element minOccurs="0" name="wallet_details" type="xrsi:wallet_details"/>										
-					<xs:element minOccurs="0" name="card_details" type="xrsi:card_details"/>										
+					<xs:element minOccurs="0" name="wallet_details" type="xrsi:wallet_details"/>
+					<xs:element minOccurs="0" name="card_details" type="xrsi:card_details"/>
 					<xs:element minOccurs="0" name="promotions" type="xrsi:promotions"/>
 					<!-- The following elements belong to "transaction_details" -->
 					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
@@ -89,8 +89,8 @@
 					<xs:element minOccurs="0" name="fixed_on_send" type="xrsi:fixed_on_send"/>
 					<xs:element minOccurs="0" maxOccurs="3" name="host_message_set1" type="xrsi:host_message_set1"/>
 					<xs:element minOccurs="0" maxOccurs="3" name="host_message_set3" type="xrsi:host_message_set3"/>
-					<xs:element minOccurs="0" name="pos_message" type="xrsi:pos_message"/>	
-					<xs:element maxOccurs="30" minOccurs="0" name="receipt_text" type="xrsi:receipt_text"/>	
+					<xs:element minOccurs="0" name="pos_message" type="xrsi:pos_message"/>
+					<xs:element maxOccurs="30" minOccurs="0" name="receipt_text" type="xrsi:receipt_text"/>
 					<xs:element name="Is_convenience_search_flag" type="xrsi:dcc" minOccurs="0"/>
 					<xs:element name="Is_convenience_suppress_Flag" type="xrsi:dcc" minOccurs="0"/>
 					<xs:element minOccurs="0" name="partner_security_token" type="xrsi:partner_security_token"/>
