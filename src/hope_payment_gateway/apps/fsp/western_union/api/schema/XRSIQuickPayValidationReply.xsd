@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -24,9 +24,9 @@
 			<xs:extension base="xrsi:reply_transaction_base">
 				<xs:sequence>
 					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
-					 <xs:element name="qp_company" type="xrsi:qp_company" minOccurs="0"/> 
-					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/> 
-					<xs:element name="convenience_search" type="xrsi:convenience_search"/> 
+					 <xs:element name="qp_company" type="xrsi:qp_company" minOccurs="0"/>
+					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
+					<xs:element name="convenience_search" type="xrsi:convenience_search"/>
 					<xs:element name="payment_details" type="xrsi:payment_details" minOccurs="0"/>
 					<xs:element name="financials" type="xrsi:financials" minOccurs="0"/>
 					<xs:element name="promotions" type="xrsi:promotions" minOccurs="0"/>
@@ -35,7 +35,7 @@
 					<xs:element name="stage_mtcn" type="xrsi:mtcn" minOccurs="0"/>
 					<xs:element minOccurs="0" name="filing_date" type="xrsi:date"/>
 					<xs:element minOccurs="0" name="filing_time" type="xrsi:time"/>
-					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />					
+					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />
 					<!--<xs:element name="compliance_info" type="xrsi:compliance_info"/>-->
 					<!-- The following elements belong to "transaction_details" -->
 					<!--<xs:element name="transfer_type" minOccurs="0">

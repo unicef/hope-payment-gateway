@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -42,15 +42,15 @@
 					<xs:element name="queue_name" type="xrsi:queue_name" minOccurs="0"/>
 					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0"/>
 					<xs:element name="Partner_data" type="xrsi:partner_data" minOccurs="0"/>
-					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>													
+					<xs:element minOccurs="0" name="host_based_taxes" type="xrsi:host_based_taxes"/>
 					<xs:element name="message" type="xrsi:message" minOccurs="0"/>
 					<xs:element name="paper_check_payment" type="xrsi:paper_check_payment" minOccurs="0"/>
 					<xs:element name="address_verification_document" type="xrsi:address_verification_document" minOccurs="0"/>
 					<xs:element name="second_id" type="xrsi:id_details" minOccurs="0"/>
 					<!-- <xs:element name="agent_defined_data" type="xrsi:agent_defined_data" minOccurs="0"/>-->
-					<xs:element name="arizona_operator" type="xrsi:general_name" minOccurs="0"/>					
+					<xs:element name="arizona_operator" type="xrsi:general_name" minOccurs="0"/>
 					<!-- <xs:element name="test_question_response" type="xrsi:test_question_response" minOccurs="0"/>-->
-				
+
 					<xs:element name="additional_pay_info_buffer" type="xrsi:additional_pay_info_buffer" minOccurs="0"/>
 					<xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>
 					<xs:element minOccurs="0" name="partner_security_token" type="xrsi:partner_security_token"/>

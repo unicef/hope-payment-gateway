@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -32,7 +32,7 @@
 					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>
 					<xs:element minOccurs="0" name="wu_card" type="xrsi:wu_card"/>
 					<xs:element minOccurs="0" name="payer_fx_buffer" type="xrsi:payer_fx_buffer"/>
-					<xs:element minOccurs="0" name="cuba" type="xrsi:cuba"/>					
+					<xs:element minOccurs="0" name="cuba" type="xrsi:cuba"/>
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 					<xs:element minOccurs="0" name="current_fx" type="xrsi:current_fx"/>
 					<xs:element minOccurs="0" name="payment_transactions" type="xrsi:payment_transactions"/>

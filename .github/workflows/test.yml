@@ -3,7 +3,13 @@ name: Test
 on:
   push:
     branches:
-      - '**'
+      - develop
+      - master
+      - staging
+      - release/*
+      - feature/*
+      - bugfix/*
+      - hotfix/*
 #  pull_request:
 #    branches: [ develop, master ]
 #    types: [ synchronize, opened, reopened, ready_for_review ]
@@ -38,7 +44,7 @@ jobs:
         uses: actions/checkout@v4.1.7
       - id: changes
         name: Check for file changes
-        uses: dorny/paths-filter@v3.0.2
+        uses: dorny/v3
         with:
           base: ${{ github.ref }}
           token: ${{ github.token }}
@@ -117,6 +123,18 @@ jobs:
           echo "BUILD_DATE=$(date +"%Y-%m-%d %H:%M" )" >> $GITHUB_ENV
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
 
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+          cache-suffix: ${{ matrix.cfg }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          python-version: ${{ matrix.python }}
+
       - name: Build Test Image
         run: |
              docker build \
@@ -129,6 +147,7 @@ jobs:
       - name: Run Test suite
         run: |
             mkdir output
+            uv build
             docker run --rm \
               --network host \
               -e PYTHONPATH=/app/src \
@@ -140,7 +159,18 @@ jobs:
               -v "./tests:/app/tests" \
               -v "./pytest.ini:/app/pytest.ini" \
               -t ${{env.IMAGE}} \
-              pytest tests/ --create-db -n auto -v --maxfail=5 --migrations --cov-report xml:./output/coverage.xml
+              pytest tests/ --create-db -n auto  -v --maxfail=5 --migrations \
+                      --cov-report xml:./output/coverage.xml \
+                      --headless --time_limit 20
+
+      - name: Archive selenium results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: selenium-log-report
+          path: latest_logs
+          retention-days: 5
+
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -202,22 +232,6 @@ jobs:
                 --build-arg "BRANCH=${{needs.test.outputs.branch}}" \
                 -t ${{needs.test.outputs.image}} \
                 -f docker/Dockerfile .
-#
-#      - name: Docker Integrity Check
-#        run: |
-#            docker run --rm \
-#              --network host \
-#              -e DATABASE_URL=${DATABASE_URL} \
-#              -e CELERY_BROKER_URL=${CELERY_BROKER_URL} \
-#              -e CACHE_URL=${CACHE_URL} \
-#              -e SECRET_KEY=super-secret-key-just-for-testing \
-#              -e HOPE_API_URL="https://dev-hope.unitst.org/api/rest/" \
-#              -e HOPE_API_TOKEN=${{ secrets.HOPE_API_TOKEN }} \
-#              -e AURORA_API_URL="https://uni-hope-ukr-sr-dev.unitst.org/api/" \
-#              -e AURORA_API_TOKEN=${{ secrets.AURORA_API_TOKEN }} \
-#              -t ${{needs.test.outputs.image}} \
-#              django-admin upgrade
-
       - name: Publish images
         run: |
             docker push ${{needs.test.outputs.image}}

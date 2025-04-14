@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -54,7 +54,7 @@
 					<!-- Operator Comments  -->
 					<xs:element minOccurs="0" name="comments" type="xrsi:comments"/>
 					<xs:element minOccurs="0" name="unisys_customer_id" type="xrsi:unisys_customer_id"/>
-					
+
 					<xs:element minOccurs="0" name="first_tmt_flag" type="xrsi:yes_no"/>
 					<xs:element minOccurs="0" name="fixed_flag" type="xrsi:fixed_flag"/>
 					<xs:element minOccurs="0" name="cust_acct_no" type="xrsi:pcp_qqc_account_number"/>
@@ -62,14 +62,14 @@
 					<xs:element maxOccurs="4" minOccurs="0" name="mocc_comments" type="xrsi:comments"/>
 					<xs:element minOccurs="0" name="yellow_phone_label" type="xrsi:yellow_phone_lable"/>
 					<xs:element minOccurs="0" name="money_transfer_key" type="xrsi:money_transfer_key"/>
-					
+
 					<xs:element minOccurs="0" name="auto_refile_buffer" type="xrsi:auto_refile_buffer"/>
 					<xs:element minOccurs="0" name="corr_error_queue_flag" type="xrsi:yes_no"/>
 					<xs:element minOccurs="0" name="queue_flag" type="xrsi:yes_no"/>
 					<xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>
                     <xs:element maxOccurs="1" minOccurs="0" name="df_fields" type="xrsi:df_fields"/>
-                    <xs:element minOccurs="0" name="Card_Swipe_Capture_Flag" type="xrsi:Card_Swipe_Capture_Flag"/>	
-                  	<xs:element minOccurs="0" name="consumer_fraud_prompts" type="xrsi:consumer_fraud_prompts"/>			
+                    <xs:element minOccurs="0" name="Card_Swipe_Capture_Flag" type="xrsi:Card_Swipe_Capture_Flag"/>
+                  	<xs:element minOccurs="0" name="consumer_fraud_prompts" type="xrsi:consumer_fraud_prompts"/>
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 					<xs:element minOccurs="0" name="GDPR_enabled" type="xrsi:GDPR_enabled"/>
 				</xs:sequence>

@@ -4,14 +4,14 @@
 {% block content %}
 
 <i>{% autoescape on %}
-    {{ msg | linebreaksbr }}
+    {{ msg|linebreaksbr }}
 {% endautoescape %}
 </i>
 
 <pre>
 <h2>Request:</h2>
 {% if request_format == "json" %}
-{{ content_request | pprint }}{% else %}{{ content_request }}
+{{ content_request|pprint }}{% else %}{{ content_request }}
 {% endif %}
 </pre>
 
@@ -20,7 +20,7 @@
 <pre>
 <h2>Response:</h2>
 {% if response_format == "json" %}
-{{ content_response | pprint }}
+{{ content_response|pprint }}
 {% elif response_format == "xml" %}
 {% display_xml content_response %}
 {% else %}
@@ -28,4 +28,4 @@
 {% endif %}
 </pre>
 
-{% endblock %}
+{% endblock content %}

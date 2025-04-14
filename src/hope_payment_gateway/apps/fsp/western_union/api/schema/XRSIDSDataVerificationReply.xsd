@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -23,8 +23,8 @@
 			<xs:extension base="xrsi:reply_transaction_base">
 				<xs:sequence>
 					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
-					<xs:element name="receiver" type="xrsi:receiver" minOccurs="0"/>	
-					<xs:element name="bank_account" type="xrsi:bank_details" minOccurs="0" />												
+					<xs:element name="receiver" type="xrsi:receiver" minOccurs="0"/>
+					<xs:element name="bank_account" type="xrsi:bank_details" minOccurs="0" />
 					<xs:element name="wu_product" type="xrsi:wu_product" minOccurs="0" />
 					<xs:element name="status" type="xrsi:notification_status" minOccurs="0"/>
 					<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="0" />
