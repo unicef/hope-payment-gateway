@@ -1,5 +1,6 @@
 nav:
   - index.md
+  - process.md
   - Setup: setup
   - Western Union: wu
   - MoneyGram: mg
