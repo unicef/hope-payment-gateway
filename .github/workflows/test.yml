@@ -28,9 +28,7 @@ permissions:
 
 
 jobs:
-
   test:
-    needs: [ changes ]
     runs-on: ubuntu-latest
     outputs:
       image: ${{ env.IMAGE }}
