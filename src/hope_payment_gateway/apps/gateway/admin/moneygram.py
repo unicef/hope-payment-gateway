@@ -11,7 +11,7 @@ from hope_payment_gateway.apps.fsp.moneygram.client import (
     InvalidTokenError,
     MoneyGramClient,
 )
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.models import PaymentRecord, FinancialServiceProviderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +117,19 @@ class MoneyGramAdminMixin:
                 self.mg_get_required_fields,
                 self.mg_refund,
             ]
+            payload = obj.get_payload()
+            try:
+                obj.parent.fsp.configs.get(
+                    key=obj.parent.extra.get("config_key"),
+                    delivery_mechanism__code=payload.get("delivery_mechanism"),
+                    fsp=obj.parent.fsp,
+                )
+                button.choices.append(self.configuration)
+            except (
+                FinancialServiceProviderConfig.DoesNotExist,
+                FinancialServiceProviderConfig.MultipleObjectsReturned,
+            ):
+                pass
         else:
             button.visible = False
         return button

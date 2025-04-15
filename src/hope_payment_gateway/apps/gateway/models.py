@@ -86,13 +86,12 @@ class FinancialServiceProvider(TimeStampedModel):
 
 
 class FinancialServiceProviderConfig(models.Model):
+    label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
     key = models.CharField(max_length=16, db_index=True)
+    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
     office = models.ForeignKey(Office, on_delete=models.CASCADE, related_name="configs", null=True, blank=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="configs", null=True, blank=True)
-    label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
     fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
-    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
-    configuration = models.JSONField(default=dict, null=True, blank=True)
     required_fields = ArrayField(
         default=list,
         base_field=models.CharField(max_length=255),
@@ -100,6 +99,7 @@ class FinancialServiceProviderConfig(models.Model):
         blank=True,
         null=True,
     )
+    configuration = models.JSONField(default=dict, null=True, blank=True)
 
     class Meta:
         unique_together = ("country", "fsp", "delivery_mechanism")

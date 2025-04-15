@@ -1,8 +1,8 @@
 import csv
 import logging
 from typing import TYPE_CHECKING, Union
-
-from admin_extra_buttons.decorators import button, link
+from django.http import HttpRequest, HttpResponseRedirect
+from admin_extra_buttons.decorators import button, link, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
@@ -12,7 +12,6 @@ from django.contrib.admin.options import TabularInline
 from django.db.models import JSONField, QuerySet
 from django.db.utils import IntegrityError
 from django.forms import FileField, FileInput, Form
-from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -40,10 +39,11 @@ from hope_payment_gateway.apps.gateway.models import (
     Office,
     PaymentInstruction,
     PaymentRecord,
+    Country,
 )
 
 if TYPE_CHECKING:
-    from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
+    from django.http import HttpResponsePermanentRedirect
 
 
 logger = logging.getLogger(__name__)
@@ -96,6 +96,20 @@ class PaymentRecordAdmin(
         loglevel = messages.WARNING if resp.status_code < 500 else messages.ERROR
         msgs = extrapolate_errors(data)
         return loglevel, msgs
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Config",
+    )
+    def configuration(self, request: HttpRequest, pk: int) -> HttpResponseRedirect | HttpResponseRedirect:
+        obj = self.get_object(request, pk)
+        payload = obj.get_payload()
+        config = obj.parent.fsp.configs.get(
+            key=obj.parent.extra.get("config_key"),
+            delivery_mechanism__code=payload.get("delivery_mechanism"),
+            fsp=obj.parent.fsp,
+        )
+        return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
 
 
 @admin.register(PaymentInstruction)
@@ -204,6 +218,13 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 class FinancialServiceProviderConfigInline(TabularInline):
     model = FinancialServiceProviderConfig
     extra = 1
+
+
+@admin.register(Country)
+class CountryAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+    list_display = ("name", "short_name", "iso_code2", "iso_code3", "iso_num")
+    search_fields = ("name", "short_name", "iso_code2", "iso_code3", "iso_num")
+    ordering = ("name",)
 
 
 @admin.register(Office)

@@ -50,7 +50,7 @@ class WesternUnionAdminMixin:
                     delivery_mechanism__code=payload.get("delivery_mechanism"),
                     fsp=obj.parent.fsp,
                 )
-                button.choices.append(self.wu_config)
+                button.choices.append(self.configuration)
             except (
                 FinancialServiceProviderConfig.DoesNotExist,
                 FinancialServiceProviderConfig.MultipleObjectsReturned,
@@ -196,17 +196,3 @@ class WesternUnionAdminMixin:
             destination_currency=payload.get("destination_currency"),
         )
         return redirect(reverse("admin:western_union_corridor_change", args=[corridor.pk]))
-
-    @view(
-        html_attrs={"style": "background-color:#88FF88;color:black"},
-        label="Config",
-    )
-    def wu_config(self, request: HttpRequest, pk: int) -> HttpResponseRedirect | HttpResponseRedirect:
-        obj = self.get_object(request, pk)
-        payload = obj.get_payload()
-        config = obj.parent.fsp.configs.get(
-            key=obj.parent.extra.get("config_key"),
-            delivery_mechanism__code=payload.get("delivery_mechanism"),
-            fsp=obj.parent.fsp,
-        )
-        return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
