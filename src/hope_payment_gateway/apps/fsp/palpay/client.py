@@ -38,7 +38,7 @@ class PalPayClient(FSPClient, metaclass=Singleton):
             phone_number, country_code = get_phone_number(raw_phone_no)
 
             payload = {
-                "first_name":  base_payload["first_name"],
+                "first_name": base_payload["first_name"],
                 "last_name": base_payload["last_name"],
                 "amount": base_payload["amount"],
                 "phone": phone_number,
@@ -82,8 +82,7 @@ class PalPayClient(FSPClient, metaclass=Singleton):
     def status(self, payload):
         """Query PalPay to get information regarding the transaction status."""
         record = PaymentRecord.objects.get(record_code=payload["payment_record_code"])
-        agent_partner_id = payload["agent_partner_id"]
         transaction_id = record.fsp_code
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
         payload = {}
-        return payload, self.perform_request(endpoint, status_transaction_id, payload)
+        return payload, self.perform_request(endpoint, transaction_id, payload)
