@@ -3,14 +3,14 @@
 <xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -24,16 +24,16 @@
 			<xs:choice minOccurs="1" maxOccurs="1">
 			   <xs:sequence>
 			  	<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
-			   </xs:sequence>			   
+			   </xs:sequence>
 			   <xs:sequence>
 				<xs:element name="partner" type="xrsi:channel_partner"/>
 				<xs:element minOccurs="0" name="device" type="xrsi:device"/>
 				<xs:element minOccurs="0" name="external_reference_no" type="xrsi:external_reference_no"/>
 				</xs:sequence>
-			</xs:choice>	
-			<xs:element minOccurs="1" name="image_details" type="xrsi:kyc_image_details" />				
+			</xs:choice>
+			<xs:element minOccurs="1" name="image_details" type="xrsi:kyc_image_details" />
 			<xs:element name="function_details" type="xrsi:kyc_entity_function_details" minOccurs="0"/>
-			<xs:element name="transaction_details" type="xrsi:transaction_details" minOccurs="0" />			
+			<xs:element name="transaction_details" type="xrsi:transaction_details" minOccurs="0" />
 	</xs:sequence>
 	</xs:complexType>
 	<xs:element name="digital-image-lookup-request-2" type="xrsi:digital-image-lookup-request-2">

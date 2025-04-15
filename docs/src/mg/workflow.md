@@ -32,4 +32,3 @@ Retrieve the status of a transaction
 
 Request the refund of a transaction
 <https://developer.moneygram.com/moneygram-developer/docs/disbursement-refund>
-

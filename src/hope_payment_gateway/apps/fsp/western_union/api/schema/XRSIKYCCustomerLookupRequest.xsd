@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -29,13 +29,13 @@
 			   <xs:sequence>
 			   <xs:element minOccurs="0" name="device" type="xrsi:device"/>
 			  	<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
-			   </xs:sequence>			   
+			   </xs:sequence>
 			   <xs:sequence>
 				<xs:element name="partner" type="xrsi:channel_partner"/>
 				<xs:element minOccurs="0" name="device" type="xrsi:device"/>
 				<xs:element minOccurs="0" name="external_reference_no" type="xrsi:external_reference_no"/>
 				</xs:sequence>
-			</xs:choice>			
+			</xs:choice>
 			<xs:element name="customer" type="xrsi:customer" minOccurs="0"/>
 			<xs:element name="search_parameter" type="xrsi:kyc_search_parameter" minOccurs="0"/>
 			<xs:element name="transaction_type" type="xrsi:kyc_transaction_type" minOccurs="0" />
@@ -46,7 +46,7 @@
 			<xs:element name="lookup_context" type="xrsi:lookup_context" minOccurs="0"/>
 			<xs:element name="session_cookie" type="xrsi:convenience_cookie" minOccurs="0"/>
 	</xs:sequence>
-	
+
 	</xs:complexType>
 	<xs:element name="kyc-customer-lookup-request" type="xrsi:kyc-customer-lookup-request"/>
 </xs:schema>

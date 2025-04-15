@@ -7,14 +7,14 @@
 	<xsd:annotation>
 		<xsd:documentation>
 			***********************************************************************************************************
-			Copyright 2010. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2010. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Id$
 			$Revision$
@@ -29,7 +29,7 @@
 			<!--<jxb:schemaBindings>
 				<jxb:package name="com.wu.das.generated">
 					<jxb:javadoc><![CDATA[
-							<body>Package level documentation 
+							<body>Package level documentation
 							for generated package <b>com.nkp.testobjects</b>.
 							<br><br>
 							<b><I>**** WARNING ****</I></B><br>
@@ -376,7 +376,7 @@
 		</xsd:sequence>
 	</xsd:complexType>
 	<!--
-		*** Restrict the length of QUERYFILTERn elements  
+		*** Restrict the length of QUERYFILTERn elements
 	-->
 	<xsd:simpleType name="QUERY_FILTER_Type">
 		<xsd:restriction base="xsd:string">
@@ -468,9 +468,9 @@
 			</xsd:sequence>
 	</xsd:complexType>
 	<!--
-		*** The <HEADER> element contains basic information from the request, and fields to 
+		*** The <HEADER> element contains basic information from the request, and fields to
 		*** indicate number of records returned, if there were more records to return. and
-		*** any error messages. 
+		*** any error messages.
 	-->
 	<xsd:complexType name="HEADER_Type">
 		<xsd:annotation>
@@ -576,9 +576,9 @@
 		</xsd:all>
 	</xsd:complexType>
 	<!--
-		*** The <RECORDSET> element contains basic information from the request, and fields to 
+		*** The <RECORDSET> element contains basic information from the request, and fields to
 		*** indicate number of records returned, if there were more records to return. and
-		*** any error messages. 
+		*** any error messages.
 	-->
 	<xsd:complexType name="RECORDSET_Type">
 		<xsd:annotation>
@@ -862,7 +862,7 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			
+
 			<xsd:element name="GETBANKTRANSACTIONDATA" type="xrsi:BANK_TRANSACTION_Type" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -961,14 +961,14 @@
 						<jxb:property name="DASGetLoyaltyDisclosureStatement"/>
 					</xsd:appinfo>
 				</xsd:annotation>
-			</xsd:element>					
+			</xsd:element>
 		</xsd:choice>
 	</xsd:complexType>
 	<!--
 		***********************************************************************
 		*** Definitions of commonly used elements.
-		*** NOTE: These elements are reference by other ComplexType elements 
-		***       so BE CAREFUL in making any changes to the definitions of 
+		*** NOTE: These elements are reference by other ComplexType elements
+		***       so BE CAREFUL in making any changes to the definitions of
 		***       these commonly used elements
 		***********************************************************************
 	-->
@@ -1054,7 +1054,7 @@
 	</xsd:element>
 	<!--
 		***********************************************************************
-		*** The <MEXICOCITYSTATEINFO_Type> type defines layout of one record of 
+		*** The <MEXICOCITYSTATEINFO_Type> type defines layout of one record of
 		*** Mexico City State information, mapped to DASMexCityStateInfo object.
 		***********************************************************************
 	-->
@@ -1064,7 +1064,7 @@
 				<!-- The <MEXICOCITYSTATEINFO_Type> type is mapped to a DASMexCityStateInfo object-->
 				<jxb:class name="DASMexCityStateInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASMexCityStateInfo</b> object contains the Mexico State City details 
+            				The <b>DASMexCityStateInfo</b> object contains the Mexico State City details
             				for one Mexican City/State combinations.<br>
             				e.g. everything between <GETMEXICOCITYSTATE>...</GETMEXICOCITYSTATE> tags.
             			]]></jxb:javadoc>
@@ -1112,7 +1112,7 @@
 	</xsd:group> -->
 	<!--
 		***********************************************************************
-		*** The <USSTATEINFO_Type> type defines layout of one record of 
+		*** The <USSTATEINFO_Type> type defines layout of one record of
 		*** US State information, mapped to DASUSStateInfo object.
 		***********************************************************************
 	-->
@@ -1122,7 +1122,7 @@
 				<!-- The <USSTATEINFO_Type> type is mapped to a DASUSStateInfo object-->
 				<jxb:class name="DASUSStateInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASUSStateInfo</b> object contains the US State Code and Name 
+            				The <b>DASUSStateInfo</b> object contains the US State Code and Name
             				for one US State<br>
             				e.g. everything between <GETUSSTATELIST>...</GETUSSTATELIST> tags.
             			]]></jxb:javadoc>
@@ -1152,7 +1152,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <DELIVERYSERVICE_Type> type defines layout of one record of 
+		*** The <DELIVERYSERVICE_Type> type defines layout of one record of
 		*** Delivery Service information, mapped to DASDeliverySvc object.
 		***********************************************************************
 	-->
@@ -1293,7 +1293,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <DELIVERYOPTIONTEMPLATE_Type> type defines layout of one record of 
+		*** The <DELIVERYOPTIONTEMPLATE_Type> type defines layout of one record of
 		*** Delivery Option Template information, mapped to DASDelivOptTemplate object.
 		***********************************************************************
 	-->
@@ -1303,7 +1303,7 @@
 				<!-- The <DELIVERYOPTIONTEMPLATE_Type> type is mapped to a DASDelivOptTemplate object-->
 				<jxb:class name="DASDelivOptTemplate">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASDelivOptTemplate</b> object contains one line of a Delivery Option 
+            				The <b>DASDelivOptTemplate</b> object contains one line of a Delivery Option
             				template.<br>
             				e.g. everything between <GETDELIVERYOPTIONTEMPLATE>...</GETDELIVERYOPTIONTEMPLATE> tags.
             			]]></jxb:javadoc>
@@ -1356,7 +1356,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <COMPLIANCE_Type> type defines layout of one record of 
+		*** The <COMPLIANCE_Type> type defines layout of one record of
 		*** (Send or Pay) Compliance Template information, mapped to DASCompliance object.
 		***********************************************************************
 	-->
@@ -1366,7 +1366,7 @@
 				<!-- The <COMPLIANCE_Type> type is mapped to a DASCompliance object-->
 				<jxb:class name="DASCompliance">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASCompliance</b> object contains one line of the 
+            				The <b>DASCompliance</b> object contains one line of the
             				Send or Pay Compliance Template<br>
             				e.g. everything between <GETSENDERCOMPLIANCE>...</GETSENDERCOMPLIANCE> tags.
             			]]></jxb:javadoc>
@@ -1406,7 +1406,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <BANNERMESSAGE_Type> type defines layout of one record of 
+		*** The <BANNERMESSAGE_Type> type defines layout of one record of
 		*** Banner Message information, mapped to DASBannerMsg object.
 		***********************************************************************
 	-->
@@ -1446,7 +1446,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <ISOCURRENCY_Type> type defines layout of one record of 
+		*** The <ISOCURRENCY_Type> type defines layout of one record of
 		*** ISO Currency information, mapped to DASISOCurrency object.
 		***********************************************************************
 	-->
@@ -1456,7 +1456,7 @@
 				<!-- The <ISOCURRENCY_Type> type is mapped to a DASISOCurrency object-->
 				<jxb:class name="DASISOCurrency">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASISOCurrency</b> object contains information for one 
+            				The <b>DASISOCurrency</b> object contains information for one
             				ISO Currency.<br>
             				e.g. everything between <GETDESTINATIONCURRENCIES>...</GETDESTINATIONCURRENCIES> tags.
             			]]></jxb:javadoc>
@@ -1602,12 +1602,12 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 				<!-- This field will be ConsumerLimit in DASISOCurrency object -->
-			</xsd:element> 
+			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <ISOCOUNTRY_Type> type defines layout of one record of 
+		*** The <ISOCOUNTRY_Type> type defines layout of one record of
 		*** ISO Country information, mapped to DASISOCountry object.
 		***********************************************************************
 	-->
@@ -1617,7 +1617,7 @@
 				<!-- The <ISOCOUNTRY_Type> type is mapped to a DASISOCountry object-->
 				<jxb:class name="DASISOCountry">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASISOCountry</b> object contains information for one 
+            				The <b>DASISOCountry</b> object contains information for one
             				ISO Country.<br>
             				e.g. everything between <GETDESTINATIONCOUNTRIES>...</GETDESTINATIONCOUNTRIES> tags.
             			]]></jxb:javadoc>
@@ -1662,7 +1662,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <DASTEMPLATELINE_Type> type defines layout of one record of 
+		*** The <DASTEMPLATELINE_Type> type defines layout of one record of
 		*** Template Line information, mapped to DASTemplateLine object.
 		***********************************************************************
 	-->
@@ -1691,10 +1691,10 @@
 						<jxb:property name="ProductInfo"/>
 					</xsd:appinfo>
 				</xsd:annotation>
-			</xsd:element>  
+			</xsd:element>
 
-  <!-- End IR3413065  -->			
-           
+  <!-- End IR3413065  -->
+
 			<xsd:element name="T_INDEX" type="xsd:string">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -1715,7 +1715,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <COUNTRYINFO_Type> type defines layout of one record of 
+		*** The <COUNTRYINFO_Type> type defines layout of one record of
 		*** textual Country information, mapped to DASCountryInfo object.
 		***********************************************************************
 	-->
@@ -1753,7 +1753,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <DESCRIPTION_Type> type defines layout of one record of 
+		*** The <DESCRIPTION_Type> type defines layout of one record of
 		*** description information, mapped to DASFlag object.
 		***********************************************************************
 	-->
@@ -1782,7 +1782,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <QQCCOMPANYNAME_Type> type defines layout of one record of 
+		*** The <QQCCOMPANYNAME_Type> type defines layout of one record of
 		*** QQC Company Name information, mapped to DASQQCCompany object.
 		***********************************************************************
 	-->
@@ -1792,7 +1792,7 @@
 				<!-- The <ISOCOUNTRY_Type> type is mapped to a DASISOCountry object-->
 				<jxb:class name="DASQQCCompany">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASQQCCompany</b> object contains information for one 
+            				The <b>DASQQCCompany</b> object contains information for one
             				QQC Company.<br>
             				e.g. everything between <GETQQCCOMPANYNAME>...</GETQQCCOMPANYNAME> tags.
             			]]></jxb:javadoc>
@@ -1824,7 +1824,7 @@
 				</xsd:annotation>
 				<!-- NKP 2006-04-24 This field added to hold QQC CPC Code to cope
 					with custom QPAY CPC codes.
-					
+
 					This field will be CpcCode in DASQQCCompany object -->
 			</xsd:element>
 			<!-- This field will be ISOCountryCode in DASQQCCompany object -->
@@ -1880,8 +1880,8 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			
-			
+
+
 			<xsd:element name="MKT_VERTICAL" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -1889,7 +1889,7 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			
+
 			<xsd:element name="CC_FLAG" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -1897,17 +1897,17 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			
-			
-			
-			
-			
+
+
+
+
+
 		</xsd:all>
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <ERRORINFO_Type> type defines layout of one record of 
-		*** Account specific error message information, 
+		*** The <ERRORINFO_Type> type defines layout of one record of
+		*** Account specific error message information,
 		*** mapped to DASErrorInfo object.
 		***********************************************************************
 	-->
@@ -1952,7 +1952,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <TXNHISTORY_Type> type defines layout of one record of 
+		*** The <TXNHISTORY_Type> type defines layout of one record of
 		*** MT transaction history record, mapped to DASTxnHistory object.
 		***********************************************************************
 	-->
@@ -2117,7 +2117,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <TXNDETAIL_Type> type defines layout of one record of 
+		*** The <TXNDETAIL_Type> type defines layout of one record of
 		*** MT transaction detail record, mapped to DASTxnDetail object.
 		***********************************************************************
 	-->
@@ -3702,7 +3702,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <ATMLOCINFO_Type> type defines layout of one record of 
+		*** The <ATMLOCINFO_Type> type defines layout of one record of
 		*** US ATM location information, mapped to DASATMLocInfo object.
 		***********************************************************************
 	-->
@@ -3712,7 +3712,7 @@
 				<!-- The <ATMLOCINFO_Type> type is mapped to a DASATMLocInfo object-->
 				<jxb:class name="DASATMLocInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASATMLocInfo</b> object contains the US ATM Location information 
+            				The <b>DASATMLocInfo</b> object contains the US ATM Location information
             				by City and State for US locations<br>
             				e.g. everything between <GETATMLOCATIONS>...</GETATMLOCATIONS> tags.
             			]]></jxb:javadoc>
@@ -3748,7 +3748,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <D2BBANKINFO_Type> type defines layout of one record of 
+		*** The <D2BBANKINFO_Type> type defines layout of one record of
 		*** D2B Bank Info, mapped to DASBankInfo object.
 		*** [2006-600-000-D2B]
 		***********************************************************************
@@ -3759,7 +3759,7 @@
 				<!-- The <D2BBANKINFO_Type> type is mapped to a DASBankInfo object-->
 				<jxb:class name="DASBankInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASBankInfo</b> object contains D2B bank information for 
+            				The <b>DASBankInfo</b> object contains D2B bank information for
             				a destination D2B bank<br>
             				e.g. everything between <GETBANKLIST>...</GETBANKLIST> tags.
             			]]></jxb:javadoc>
@@ -3808,10 +3808,10 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <SUPPLYORDER_Type> type defines layout of one record of 
+		*** The <SUPPLYORDER_Type> type defines layout of one record of
 		*** Supply Order Item information, mapped to DASSupplyItemInfo object.
 		***
-		*** 2008-03-08 - [Supply Order] GETSUPPLIESLIST Added to 
+		*** 2008-03-08 - [Supply Order] GETSUPPLIESLIST Added to
 		***            support Supply 0rder on release 8750
 		***********************************************************************
 	-->
@@ -3821,7 +3821,7 @@
 				<!-- The <SUPPLYORDER_Type> type is mapped to a DASSupplyItemInfo object-->
 				<jxb:class name="DASSupplyItemInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASSupplyItemInfo</b> object contains the Supply Order Item info 
+            				The <b>DASSupplyItemInfo</b> object contains the Supply Order Item info
             				for one item
             				e.g. everything between <GETSUPPLYORDERLIST>...</GETSUPPLYORDERLIST> tags.
             			]]></jxb:javadoc>
@@ -3857,10 +3857,10 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <CHECKWRITER_Type> type defines layout of one record of 
+		*** The <CHECKWRITER_Type> type defines layout of one record of
 		*** CheckWriter location (e.g.Casino) where money can be sent
 		*** for reciever to pickup from that location
-		*** [8580:SPD-48] NKP 20090521 
+		*** [8580:SPD-48] NKP 20090521
 		***********************************************************************
 	-->
 	<xsd:complexType name="CHECKWRITER_Type">
@@ -3869,7 +3869,7 @@
 				<!-- The <CHECKWRITER_Type> type is mapped to a DASCheckWriterInfo object-->
 				<jxb:class name="DASCheckWriterInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASCheckWriterInfo</b> object contains the location information for 
+            				The <b>DASCheckWriterInfo</b> object contains the location information for
             				for one chech writer (e.g. Casino) location where money can be sent.
             				e.g. everything between <GETCHECKWRITERLIST>...</GETCHECKWRITERLIST> tags.
             			]]></jxb:javadoc>
@@ -3923,7 +3923,7 @@
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <ACCOUNTTABLEINFO_Type> type defines layout of one record of 
+		*** The <ACCOUNTTABLEINFO_Type> type defines layout of one record of
 		*** Account Table information, mapped to DASAccountTableInfo object.
 		***********************************************************************
 	-->
@@ -3933,7 +3933,7 @@
 				<!-- The <ACCOUNTTABLEINFO_Type> type is mapped to a DASAccountTableInfo object-->
 				<jxb:class name="DASAccountTableInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASAccountTableInfo</b> object contains information for one 
+            				The <b>DASAccountTableInfo</b> object contains information for one
             				account table<br>
             				e.g. everything between <GETACCOUNTTABLEINFO>...</GETACCOUNTTABLEINFO> tags.
             			]]></jxb:javadoc>
@@ -3970,7 +3970,7 @@
 					<xsd:appinfo>
 						<jxb:property name="CountryTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 
 			<xsd:element name="RAT_TABLE" type="xsd:string" minOccurs="0">
@@ -3978,7 +3978,7 @@
 					<xsd:appinfo>
 						<jxb:property name="RateTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 
 			<xsd:element name="DSV_TABLE" type="xsd:string" minOccurs="0">
@@ -3986,70 +3986,70 @@
 					<xsd:appinfo>
 						<jxb:property name="DeliveryTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="TMP_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="TemplateTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ERC_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="ErrorCodeTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="QQC_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="QuickCollectTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="MEX_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="MexicanCityStateTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="FIF_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="ForeignInformationTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="BNK_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="AtmBankTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SUP_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="SupplyOrderTableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="CKW_TABLE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="CheckwritertableSuffix"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 
 		</xsd:all>
 	</xsd:complexType>
 	<!--
 		***********************************************************************
-		*** The <COUNTRY_CURRENCY_Type> type defines layout of one record of 
+		*** The <COUNTRY_CURRENCY_Type> type defines layout of one record of
 		*** Account Table information, mapped to DASAccountTableInfo object.
 		***********************************************************************
 	-->
@@ -4059,7 +4059,7 @@
 				<!-- The <COUNTRY_CURRENCY_Type> type is mapped to a DASCountryCurrency object-->
 				<jxb:class name="DASCountryCurrency">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASISOCurrency</b> object contains information for one 
+            				The <b>DASISOCurrency</b> object contains information for one
             				ISO Currency.<br>
             				e.g. everything between <GETCOUNTRIESCURRENCIES>...</GETCOUNTRIESCURRENCIES> tags.
             			]]></jxb:javadoc>
@@ -4125,8 +4125,8 @@
 			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
-	
-	<xsd:complexType name="BANK_TRANSACTION_Type">		
+
+	<xsd:complexType name="BANK_TRANSACTION_Type">
 		<xsd:all>
 			<!-- This field will be ISOCurrencyCode in DASISOCurrency object -->
 			<xsd:element name="TYPE" type="xsd:string">
@@ -4195,7 +4195,7 @@
 			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="REASONLIST_Type">
 		<xsd:annotation>
 			<xsd:appinfo>
@@ -4224,17 +4224,17 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 				<!-- This field will be ErrorDescription in DASErrorInfo object -->
-			</xsd:element>			
+			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="DASCITYSTATELIST_Type">
 		<xsd:annotation>
 			<xsd:appinfo>
 				<!-- The <DASCITYSTATEINFO_Type> type is mapped to a DASCityStateInfo object-->
 				<jxb:class name="DASCityStateInfo">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASCityStateInfo</b> object contains the State City details 
+            				The <b>DASCityStateInfo</b> object contains the State City details
             				for one City/State combination.<br>
             				e.g. everything between <GETCITYSTATELIST>...</GETCITYSTATELIST> tags.
             			]]></jxb:javadoc>
@@ -4248,7 +4248,7 @@
 <!--			<xsd:element ref="xrsi:STATE_NAME"/>-->
 			<!-- This field will be City in DASCityStateInfo object -->
 <!--			<xsd:element ref="xrsi:CITY"/>-->
-			
+
 		<!-- Common definition of <STATE_NAME> (State Name) used frequently in templates  -->
 			<xsd:element minOccurs="0" name="STATE_NAME" type="xsd:string">
 			<xsd:annotation>
@@ -4264,7 +4264,7 @@
 			</xsd:appinfo>
 		</xsd:annotation>
 	</xsd:element>
-	
+
 		</xsd:all>
 	</xsd:complexType>
 	<xsd:complexType name="ACHBANKDATA_Type">
@@ -4400,7 +4400,7 @@
 				<!-- The <DASDELIVERYTRANSLATE_Type> type is mapped to a DASDELIVERYTRANSLATE_Type object-->
 				<jxb:class name="DASDELIVERYTRANSLATE">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASDELIVERYTRANSLATE_Type</b> object contains the DASDELIVERYTRANSLATE_Type details 
+            				The <b>DASDELIVERYTRANSLATE_Type</b> object contains the DASDELIVERYTRANSLATE_Type details
             				for one City/State combination.<br>
             				e.g. everything between <GETCITYSTATELIST>...</GETCITYSTATELIST> tags.
             			]]></jxb:javadoc>
@@ -4408,7 +4408,7 @@
 			</xsd:appinfo>
 		</xsd:annotation>
 		<xsd:all>
-		
+
 <!-- Common definition of <ENGLISH_MESSAGE> (ENGLISH_MESSAGE Name) used frequently in templates  -->
 		<xsd:element name="ENGLISH_MESSAGE" type="xsd:string">
 			<xsd:annotation>
@@ -4426,7 +4426,7 @@
 	</xsd:element>
 	</xsd:all>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="DASQQCFIELDSTEMPLATE_Type">
 		<xsd:annotation>
 			<xsd:appinfo>
@@ -4465,7 +4465,7 @@
 	</xsd:complexType>
 	<xsd:complexType name="GETREASONCODELIST_Type">
 		<xsd:annotation>
-			
+
 		</xsd:annotation>
 		<xsd:all>
 			<xsd:element name="REASON_CODE" type="xsd:string">
@@ -4473,21 +4473,21 @@
 					<xsd:appinfo>
 						<jxb:property name="ReasonCode"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="REASON_DESC" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="ReasonDescription"/>
 					</xsd:appinfo>
-				</xsd:annotation>				
-			</xsd:element>	
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="ADJ_TYPE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<jxb:property name="AdjustmentTypeDescription"/>
 					</xsd:appinfo>
-				</xsd:annotation>			
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ADJ_SUBTYPE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
@@ -4502,13 +4502,13 @@
 						<jxb:property name="DFIndicatorDescription"/>
 					</xsd:appinfo>
 				</xsd:annotation>
-			</xsd:element>		
+			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
-	
+
 	<!--
 		***********************************************************************
-		*** The <CASCADE_LIST_Type> type defines layout of one record of 
+		*** The <CASCADE_LIST_Type> type defines layout of one record of
 		*** Cascade List information, mapped to DASCascadeList object.
 		***********************************************************************
 	-->
@@ -4518,7 +4518,7 @@
 				<!-- The <CASCADE_LIST_Type> type is mapped to a DASCascadeList object-->
 				<jxb:class name="DASCascadeList">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASCascadeList</b> object contains the next level List OR Result 
+            				The <b>DASCascadeList</b> object contains the next level List OR Result
             				for given List<br>
             				e.g. everything between <GETCASCADELIST>...</GETCASCADELIST> tags.
             			]]></jxb:javadoc>
@@ -4562,7 +4562,7 @@
 			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
-	
+
 	<!-- CHANGES FOR BRAZIL REGULATORY -->
 
 	<xsd:complexType name="GETREASONOFTRANSACTION_Type">
@@ -4571,7 +4571,7 @@
 				<!-- The <CASCADE_LIST_Type> type is mapped to a DASCascadeList object-->
 				<jxb:class name="DASGetReasonOfTransactionList">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASGetReasonOfTransactionList</b> object contains the next level List OR Result 
+            				The <b>DASGetReasonOfTransactionList</b> object contains the next level List OR Result
             				for given List<br>
             				e.g. everything between <GETREASONOFTRANSACTION>...</GETREASONOFTRANSACTION> tags.
             			]]></jxb:javadoc>
@@ -4595,7 +4595,7 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			
+
 			<xsd:element name="RECEIPT_DESC" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -4604,17 +4604,17 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
-	</xsd:complexType>	
-	
+	</xsd:complexType>
+
 	<!-- Changes for Stage and Pay Open Loop  -->
-	
+
 	<xsd:complexType name="GETSTAGEDFULFILLMENTREGIONS_Type">
 		<xsd:annotation>
 			<xsd:appinfo>
 				<!-- The <GETSTAGEDFULFILLMENTREGIONS_Type> type is mapped to a DASGetStagedFulfillmentRegions object-->
 				<jxb:class name="DASGetStagedFulfillmentRegionsList">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASGetStagedFulfillmentRegions</b> object contains the next level List OR Result 
+            				The <b>DASGetStagedFulfillmentRegions</b> object contains the next level List OR Result
             				for given List<br>
             				e.g. everything between <GETSTAGEDFULFILLMENTREGIONS>...</GETSTAGEDFULFILLMENTREGIONS> tags.
             			]]></jxb:javadoc>
@@ -4644,7 +4644,7 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			
+
 			<xsd:element name="SUBREGION_TYPE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -4652,7 +4652,7 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			
+
 			<xsd:element name="SUBREGION_VALUE" type="xsd:string" minOccurs="0">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -4677,7 +4677,7 @@
 			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
-	
+
 	<!-- Changes for APN Srilanka  -->
 	<xsd:complexType name="GETMESSAGELIST_Type">
 		<xsd:annotation>
@@ -4685,7 +4685,7 @@
 				<!-- The <GETMESSAGELIST_Type> type is mapped to a DASGetMessageList object-->
 				<jxb:class name="DASGetMessageList">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASGetMessageList</b> object contains the next level List OR Result 
+            				The <b>DASGetMessageList</b> object contains the next level List OR Result
             				for given List<br>
             				e.g. everything between <GETMESSAGELIST>...</GETMESSAGELIST> tags.
             			]]></jxb:javadoc>
@@ -4708,14 +4708,14 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
-	</xsd:complexType>		
+	</xsd:complexType>
 	<xsd:complexType name="GETSTATELIST_Type">
 		<xsd:annotation>
 			<xsd:appinfo>
 				<!-- The <GETSTATELIST_Type> type is mapped to a DASGetStateList object-->
 				<jxb:class name="DASGetStateList">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASGetStateList</b> object contains the next level List OR Result 
+            				The <b>DASGetStateList</b> object contains the next level List OR Result
             				for given List<br>
             				e.g. everything between <GETSTATELIST_Type>...</GETSTATELIST_Type> tags.
             			]]></jxb:javadoc>
@@ -4745,7 +4745,7 @@
 				<!-- The <GETLOYALTYDISCLOSURESTATEMENT_Type> type is mapped to a DASGetLoyaltyDisclosureStatement object-->
 				<jxb:class name="DASGetLoyaltyDisclosureStatement">
 					<jxb:javadoc><![CDATA[
-            				The <b>DASGetLoyaltyDisclosureStatement</b> object contains the next level List OR Result 
+            				The <b>DASGetLoyaltyDisclosureStatement</b> object contains the next level List OR Result
             				for given List<br>
             				e.g. everything between <GETLOYALTYDISCLOSURESTATEMENT_Type>...</GETLOYALTYDISCLOSURESTATEMENT_Type> tags.
             			]]></jxb:javadoc>
@@ -4761,5 +4761,5 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
-	</xsd:complexType>	
+	</xsd:complexType>
 </xsd:schema>

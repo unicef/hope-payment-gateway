@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -44,7 +44,7 @@
 					<xs:element name="address_verification_document" type="xrsi:address_verification_document" minOccurs="0"/>
 					<xs:element name="second_id" type="xrsi:id_details" minOccurs="0"/>
 					<!-- <xs:element name="agent_defined_data" type="xrsi:agent_defined_data" minOccurs="0"/>-->
-					<xs:element name="arizona_operator" type="xrsi:general_name" minOccurs="0"/>					
+					<xs:element name="arizona_operator" type="xrsi:general_name" minOccurs="0"/>
 					<!-- <xs:element name="test_question_response" type="xrsi:test_question_response" minOccurs="0"/>-->
 					<xs:element name="pc_full_version_number" type="xrsi:pc_full_version_number" minOccurs="0"/>
 					<xs:element name="receipt_format" type="xrsi:string" minOccurs="0"/>

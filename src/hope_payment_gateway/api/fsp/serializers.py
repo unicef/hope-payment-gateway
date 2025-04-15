@@ -10,6 +10,8 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
+    Office,
+    Country,
 )
 
 
@@ -44,6 +46,18 @@ class AccountTypeSerializer(serializers.ModelSerializer):
         fields = ("id", "key", "label", "unique_fields")
 
 
+class OfficeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Office
+        fields = ("id", "name", "code", "slug")
+
+
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = ("id", "name", "iso_code2", "iso_code3")
+
+
 class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
     class Meta:
         model = DeliveryMechanism
@@ -51,6 +65,10 @@ class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
 
 
 class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
+    country_iso_code2 = serializers.CharField(source="country.iso_code2", allow_null=True)
+    country_iso_code3 = serializers.CharField(source="country.iso_code3", allow_null=True)
+    office_code = serializers.CharField(source="office.code", allow_null=True)
+    office_slug = serializers.CharField(source="office.slug", allow_null=True)
     delivery_mechanism_name = serializers.CharField(source="delivery_mechanism.name", allow_null=True)
     delivery_mechanism_code = serializers.CharField(source="delivery_mechanism.code", allow_null=True)
     delivery_mechanism_transfer_type = serializers.CharField(source="delivery_mechanism.transfer_type", allow_null=True)
@@ -62,6 +80,11 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
             "label",
             "key",
             "office",
+            "office_code",
+            "office_slug",
+            "country",
+            "country_iso_code2",
+            "country_iso_code3",
             "delivery_mechanism",
             "delivery_mechanism_name",
             "delivery_mechanism_transfer_type",
@@ -97,6 +120,8 @@ class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializ
 class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
     fsp = FinancialServiceProviderLightSerializer()
     delivery_mechanism = DeliveryMechanismSerializer()
+    office = OfficeSerializer()
+    country = CountrySerializer()
 
     class Meta:
         model = FinancialServiceProviderConfig
@@ -104,6 +129,7 @@ class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
             "id",
             "key",
             "office",
+            "country",
             "label",
             "fsp",
             "delivery_mechanism",
