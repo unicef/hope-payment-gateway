@@ -234,6 +234,7 @@ class FinancialServiceProviderConfigAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
         "key",
         "office",
+        "country",
         "label",
         "fsp",
         "delivery_mechanism",
@@ -242,6 +243,12 @@ class FinancialServiceProviderConfigAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     search_fields = (
         "remote_id",
         "fsp__name",
+        "country__name",
+        "country__iso_code2",
+        "country__iso_code3",
+        "office__name",
+        "office__code",
+        "office__slug",
         "delivery_mechanism__name",
         "delivery_mechanism__code",
     )
