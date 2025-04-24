@@ -99,18 +99,6 @@ jobs:
           echo "BUILD_DATE=$(date +"%Y-%m-%d %H:%M" )" >> $GITHUB_ENV
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          version: "latest"
-          enable-cache: true
-          cache-dependency-glob: |
-            pyproject.toml
-            uv.lock
-          cache-suffix: ${{ matrix.cfg }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          python-version: ${{ matrix.python }}
-
       - name: Build Test Image
         run: |
              docker build \
@@ -123,7 +111,6 @@ jobs:
       - name: Run Test suite
         run: |
             mkdir output
-            uv build
             docker run --rm \
               --network host \
               -e PYTHONPATH=/app/src \

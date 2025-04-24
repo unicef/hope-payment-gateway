@@ -14,10 +14,9 @@ license = "Apache-2.0 OR MIT"
 authors = [
   { name = "Domenico DiNicola", email = "dom.dinicola@gmail.com" },
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
 dynamic = [
