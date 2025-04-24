@@ -61,8 +61,7 @@ dependencies = [
   "zeep",
 ]
 
-[dependency-groups]
-dev = [
+optional-dependencies.dev = [
   "argh",
   "cairosvg",
   "django-regex",
@@ -98,8 +97,7 @@ dev = [
   "unittest-xml-reporting",
   "watchdog",
 ]
-
-docs = [
+optional-dependencies.docs = [
   "mkdocs",
   "mkdocs-alias-plugin",
   "mkdocs-autolinks-plugin",

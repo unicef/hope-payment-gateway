@@ -45,7 +45,7 @@ jobs:
       PYTHONPATH: src/
     steps:
       - uses: actions/checkout@v4
-      - uses: yezz123/setup-uv@v4
+      - uses: yezz123/setup-uv@v4.1
 
       - uses: actions/cache/restore@v4
         id: restore-cache

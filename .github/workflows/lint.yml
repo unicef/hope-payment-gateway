@@ -54,10 +54,10 @@ jobs:
         with:
           python-version: 3.13
           architecture: 'x64'
-      - uses: yezz123/setup-uv@v4
+      - uses: yezz123/setup-uv@v4.1
 
       - name: Install deps
-        run: uv sync --all-groups
+        run: uv sync --extra dev
 
       - name: lint
         if: needs.changes.outputs.lint
