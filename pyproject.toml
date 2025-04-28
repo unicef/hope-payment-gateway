@@ -98,7 +98,6 @@ dev = [
   "unittest-xml-reporting",
   "watchdog",
 ]
-
 docs = [
   "mkdocs",
   "mkdocs-alias-plugin",

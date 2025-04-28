@@ -133,7 +133,7 @@ class PaymentInstruction(TimeStampedModel):
     )
     office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True)
 
-    tag = models.CharField(null=True, blank=True)
+    tag = models.CharField(null=True, blank=True, max_length=128)
     payload = models.JSONField(default=dict, null=True, blank=True)
     active = models.BooleanField(default=True)
     extra = models.JSONField(default=dict, null=True, blank=True)
@@ -223,8 +223,8 @@ class ExportTemplate(models.Model):
     query = models.TextField()
 
     header = models.BooleanField(default=True)
-    delimiter = models.CharField(choices=list(zip(delimiters, delimiters, strict=True)), default=",")
-    quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'")
+    delimiter = models.CharField(choices=list(zip(delimiters, delimiters, strict=True)), default=",", max_length=1)
+    quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'", max_length=1)
     quoting = models.IntegerField(
         choices=(
             (csv.QUOTE_ALL, _("All")),
@@ -234,7 +234,7 @@ class ExportTemplate(models.Model):
         ),
         default=csv.QUOTE_ALL,
     )
-    escapechar = models.CharField(choices=(("", ""), ("\\", "\\")), default="", null=True, blank=True)
+    escapechar = models.CharField(choices=(("", ""), ("\\", "\\")), default="", null=True, blank=True, max_length=1)
 
     class Meta:
         unique_together = ("fsp", "config_key")
