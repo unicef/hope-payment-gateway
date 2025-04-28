@@ -57,7 +57,7 @@ jobs:
       - uses: yezz123/setup-uv@v4.1
 
       - name: Install deps
-        run: uv sync --extra dev
+        run: uv sync --group dev
 
       - name: lint
         if: needs.changes.outputs.lint
