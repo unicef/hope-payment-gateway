@@ -84,7 +84,7 @@ RUN --mount=type=cache,target=/root/.uv-cache \
     uv sync --cache-dir=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
-        --frozen --extra dev
+        --frozen --group dev
 
 # ------- production only deps-------
 FROM builder AS production
@@ -104,7 +104,7 @@ RUN --mount=type=cache,target=/root/.uv-cache \
     uv sync --cache-dir=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
-        --frozen --extra dev
+        --frozen
 
 
 
