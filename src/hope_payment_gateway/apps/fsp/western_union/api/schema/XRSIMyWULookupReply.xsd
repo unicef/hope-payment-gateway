@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -44,8 +44,8 @@
 					<xs:element name="number_matches" type="xrsi:number_matches" minOccurs="0"/>
 					<xs:element name="wu_card_lookup_context" type="xrsi:wu_card_lookup_context" minOccurs="0"/>
 					<xs:element name="convenience_search" type="xrsi:convenience_search" minOccurs="0"/>
-					<xs:element name="save_key" type="xrsi:save_position_key" minOccurs="0"/>		
-					<xs:element name="more_flag" type="xrsi:more_flag" minOccurs="0"/>													
+					<xs:element name="save_key" type="xrsi:save_position_key" minOccurs="0"/>
+					<xs:element name="more_flag" type="xrsi:more_flag" minOccurs="0"/>
 					<xs:element name="is_multi_sender_response" type="xrsi:flag_type" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>

@@ -1,27 +1,8 @@
-exclude *
-exclude requirements.txt
-exclude __pycache__
-exclude node_modules
-
 include README.md
+include CHANGES
+include LICENSE
 include MANIFEST.in
-include AUTHORS
-include CHANGES.md
-include LICENSE.md
-include pyproject.toml
-include *.py
-include uv.lock
 
-
+recursive-include docs *
 recursive-include src/hope_payment_gateway *
-recursive-include src/hope_payment_gateway *.html
-
-prune tests
-prune src/**/__pycache__
-
-global-exclude .*
-global-exclude .pyi
-global-exclude *.scss
-global-exclude *~
-global-exclude ~*
-exclude manage.py
+recursive-include tests *

@@ -3,21 +3,21 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
 		</xs:documentation>
 	</xs:annotation>
 	<!-- Define the basic data types, such as Amount, time, date, datetime, count etc. -->
-	
+
 	<xs:simpleType name="channel_type">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="CSC"/>
@@ -43,7 +43,7 @@
 
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="string">
 		<xs:annotation>
 			<xs:documentation>Generic string type</xs:documentation>
@@ -53,8 +53,8 @@
 			<xs:maxLength value="300"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	
+
+
 	<xs:simpleType name="reference_no">
 		<xs:annotation>
 			<xs:documentation>Reference Number</xs:documentation>
@@ -64,7 +64,7 @@
 			<xs:maxLength value="60"/>
 		</xs:restriction>
 	</xs:simpleType>
-   
+
     <xs:simpleType name="operator_id">
     	<xs:restriction base="xs:string"></xs:restriction>
     </xs:simpleType>
@@ -75,7 +75,7 @@
 			<xs:maxLength value="3"/>
     	</xs:restriction>
     </xs:simpleType>
-	
+
 	<xs:simpleType name="primary_agent_account_id_type">
     		<xs:restriction base="xs:string"></xs:restriction>
     </xs:simpleType>
@@ -88,12 +88,12 @@
     <xs:simpleType name="agent_account_id">
     	<xs:restriction base="xs:string"></xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="terminal_id">
     	<xs:restriction base="xs:string"></xs:restriction>
     </xs:simpleType>
 
-    
+
 
    <xs:simpleType name="nw_flag">
     	<xs:restriction base="xs:string">
@@ -131,7 +131,7 @@
     	</xs:restriction>
     </xs:simpleType>
 
-    
+
 
     <xs:simpleType name="Response_code">
     	<xs:restriction base="xs:string"></xs:restriction>
@@ -141,11 +141,11 @@
     <xs:simpleType name="partner_oper_id">
     	<xs:restriction base="xs:string"></xs:restriction>
     </xs:simpleType>
-    
+
      <xs:simpleType name="consolidated_training_flag">
     	<xs:restriction base="xs:string"></xs:restriction>
     </xs:simpleType>
-    
+
      <xs:simpleType name="training_name">
     	<xs:restriction base="xs:string"></xs:restriction>
     </xs:simpleType>
@@ -179,7 +179,7 @@
 				</xs:enumeration>
 			</xs:restriction>
 		</xs:simpleType>
-		
+
 	<xs:simpleType name="first_name">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -210,5 +210,5 @@
 			<xs:maxLength value="83"/>
 		</xs:restriction>
 	</xs:simpleType>
-		
+
 </xs:schema>

@@ -32,7 +32,7 @@ def test_status(django_app, admin_user, wu):
         parent__fsp=wu,
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
-    resp = WesternUnionClient().query_status(pr.fsp_code, True)
+    resp = WesternUnionClient().status(pr.fsp_code, True)
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
     assert (resp["title"], resp["code"]) == ("PayStatus", 200)

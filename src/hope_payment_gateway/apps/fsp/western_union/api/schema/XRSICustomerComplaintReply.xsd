@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -24,14 +24,14 @@
 	<xs:sequence>
 			 <xs:element name="channel" type="xrsi:channel" minOccurs="1"/>
 			 <xs:element minOccurs="0" name="session_digest" type="xrsi:session_digest"/>
-		 	<xs:element minOccurs="0" name="operator_details" type="xrsi:operator_details"/> 
-	 	   	<xs:element minOccurs="0" name="device" type="xrsi:device"/> 
+		 	<xs:element minOccurs="0" name="operator_details" type="xrsi:operator_details"/>
+	 	   	<xs:element minOccurs="0" name="device" type="xrsi:device"/>
 			<xs:element name="foreign_remote_system" type="xrsi:foreign_remote_system" minOccurs="1"/>
 			<xs:element name="mtcn" type="xrsi:mtcn" minOccurs="0"/>
-			<xs:element name="case_number" type="xrsi:case_number" minOccurs="0"/>		
+			<xs:element name="case_number" type="xrsi:case_number" minOccurs="0"/>
 			<xs:element name="complaint_confirmation" type="xrsi:complaint_confirmation" minOccurs="1"/>
 	</xs:sequence>
-	
+
 	</xs:complexType>
 	<xs:element name="customer-complaint-reply" type="xrsi:customer-complaint-reply"/>
 </xs:schema>

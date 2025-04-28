@@ -4,8 +4,8 @@ docker: &docker
   - added|modified: './docker/*'
 
 dependencies: &dependencies
-  - 'uv.lock'
   - 'pyproject.toml'
+  - 'uv.lock'
 
 actions: &actions
   - added|modified: './.github/**/*'

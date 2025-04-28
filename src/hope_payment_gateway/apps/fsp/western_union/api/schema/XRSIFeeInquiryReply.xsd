@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -29,7 +29,7 @@
 					<xs:element minOccurs="0" name="delivery_services" type="xrsi:delivery_services"/>
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
-                    <xs:element minOccurs="0" name="agent_account" type="xrsi:agent_account"/>                    
+                    <xs:element minOccurs="0" name="agent_account" type="xrsi:agent_account"/>
                     <xs:element minOccurs="0" name="current_fx" type="xrsi:current_fx"/>
                     <xs:element minOccurs="0" name="fee_inquiry_message" type="xrsi:fee_inquiry_message"/>
                     <xs:element minOccurs="0" name="fee_inquiry_flags" type="xrsi:fee_inquiry_flags"/>
@@ -37,7 +37,7 @@
                     <xs:element minOccurs="0" name="splitpay_charges_buffer" type="xrsi:additional_buffer_charges_type"/>
                     <xs:element minOccurs="0" name="misc_buffer_details" type="xrsi:misc_buffer_type"/>
                     <xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>
-				    <xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />		
+				    <xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

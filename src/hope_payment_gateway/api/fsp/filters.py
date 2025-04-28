@@ -2,13 +2,13 @@ import django_filters
 from django_filters import rest_framework as filters
 
 from hope_payment_gateway.apps.gateway.models import (
+    AccountType,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
     PaymentInstruction,
     PaymentRecord,
-    AccountType,
 )
 
 

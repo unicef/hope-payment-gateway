@@ -23,7 +23,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, Pa
 @pytest.mark.django_db
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
-@patch("hope_payment_gateway.apps.fsp.moneygram.tasks.AsyncJob.queue")
+@patch("hope_payment_gateway.apps.fsp.tasks_utils.AsyncJob.queue")
 def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
     instr_a = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg, tag="tag")
     instr_b = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg, tag="tag")
@@ -56,7 +56,7 @@ def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
 @pytest.mark.django_db
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
-@patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.query_status")
+@patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.status_update")
 def test_send_moneygram_update(mock_class, mg, rec_a, rec_b, total):
     instr_a = PaymentInstructionFactory(
         status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}

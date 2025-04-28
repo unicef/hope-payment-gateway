@@ -3,7 +3,13 @@ name: Test
 on:
   push:
     branches:
-      - '**'
+      - develop
+      - master
+      - staging
+      - release/*
+      - feature/*
+      - bugfix/*
+      - hotfix/*
 #  pull_request:
 #    branches: [ develop, master ]
 #    types: [ synchronize, opened, reopened, ready_for_review ]
@@ -22,31 +28,7 @@ permissions:
 
 
 jobs:
-  changes:
-    if: (github.event_name != 'pull_request'
-            || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name)
-            || github.event_name == 'create'
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-    defaults:
-      run:
-        shell: bash
-    outputs:
-      run_tests: ${{ steps.changes.outputs.run_tests }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.7
-      - id: changes
-        name: Check for file changes
-        uses: dorny/paths-filter@v3.0.2
-        with:
-          base: ${{ github.ref }}
-          token: ${{ github.token }}
-          filters: .github/file-filters.yml
-
   test:
-    needs: [ changes ]
-    if: needs.changes.outputs.run_tests == 'true'
     runs-on: ubuntu-latest
     outputs:
       image: ${{ env.IMAGE }}
@@ -140,7 +122,17 @@ jobs:
               -v "./tests:/app/tests" \
               -v "./pytest.ini:/app/pytest.ini" \
               -t ${{env.IMAGE}} \
-              pytest tests/ --create-db -n auto -v --maxfail=5 --migrations --cov-report xml:./output/coverage.xml
+              pytest tests/ --create-db -n auto  -v --maxfail=5 --migrations \
+                      --cov-report xml:./output/coverage.xml
+
+      - name: Archive selenium results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: selenium-log-report
+          path: latest_logs
+          retention-days: 5
+
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -202,22 +194,6 @@ jobs:
                 --build-arg "BRANCH=${{needs.test.outputs.branch}}" \
                 -t ${{needs.test.outputs.image}} \
                 -f docker/Dockerfile .
-#
-#      - name: Docker Integrity Check
-#        run: |
-#            docker run --rm \
-#              --network host \
-#              -e DATABASE_URL=${DATABASE_URL} \
-#              -e CELERY_BROKER_URL=${CELERY_BROKER_URL} \
-#              -e CACHE_URL=${CACHE_URL} \
-#              -e SECRET_KEY=super-secret-key-just-for-testing \
-#              -e HOPE_API_URL="https://dev-hope.unitst.org/api/rest/" \
-#              -e HOPE_API_TOKEN=${{ secrets.HOPE_API_TOKEN }} \
-#              -e AURORA_API_URL="https://uni-hope-ukr-sr-dev.unitst.org/api/" \
-#              -e AURORA_API_TOKEN=${{ secrets.AURORA_API_TOKEN }} \
-#              -t ${{needs.test.outputs.image}} \
-#              django-admin upgrade
-
       - name: Publish images
         run: |
             docker push ${{needs.test.outputs.image}}

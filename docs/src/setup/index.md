@@ -3,9 +3,11 @@
 
 ### System Requirements
 
-- python 3.13
+- [python](https://www.python.org/)
 - [direnv](https://direnv.net/) - not mandatory but strongly recommended
 - [uv](https://docs.astral.sh/uv/)
+- [postgres](https://www.postgresql.org/)
+- [redis](https://redis.io/)
 
 
 **WARNING**

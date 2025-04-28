@@ -52,12 +52,26 @@ class Office(TimeStampedModel):
     name = models.CharField(max_length=100, blank=True, null=True, db_index=True)
     code = models.CharField(max_length=100, blank=True, null=True, db_index=True, unique=True)
     slug = models.SlugField(max_length=100, blank=True, null=True, db_index=True, unique=True)
-    supervised = models.BooleanField(default=False, help_text="Flag to enable/disable offices, which need manual check")
+    supervised = models.BooleanField(
+        default=False,
+        help_text="Flag to enable/disable offices, which need manual check",
+    )
 
     extra_fields = models.JSONField(default=dict, blank=True, null=False)
 
     def __str__(self) -> str:
         return str(self.name)
+
+
+class Country(TimeStampedModel):
+    name = models.CharField(max_length=255, db_index=True)
+    short_name = models.CharField(max_length=255, db_index=True)
+    iso_code2 = models.CharField(max_length=2, unique=True)
+    iso_code3 = models.CharField(max_length=3, unique=True)
+    iso_num = models.CharField(max_length=4, unique=True)
+
+    def __str__(self) -> str:
+        return f"{self.name}"
 
 
 class FinancialServiceProvider(TimeStampedModel):
@@ -72,12 +86,12 @@ class FinancialServiceProvider(TimeStampedModel):
 
 
 class FinancialServiceProviderConfig(models.Model):
-    key = models.CharField(max_length=16, db_index=True)
-    office = models.ForeignKey(Office, on_delete=models.CASCADE, related_name="configs", null=True, blank=True)
     label = models.CharField(max_length=16, db_index=True, null=True, blank=True)
-    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
+    key = models.CharField(max_length=16, db_index=True)
     delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="fsp")
-    configuration = models.JSONField(default=dict, null=True, blank=True)
+    office = models.ForeignKey(Office, on_delete=models.CASCADE, related_name="configs", null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="configs", null=True, blank=True)
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE, related_name="configs")
     required_fields = ArrayField(
         default=list,
         base_field=models.CharField(max_length=255),
@@ -85,9 +99,10 @@ class FinancialServiceProviderConfig(models.Model):
         blank=True,
         null=True,
     )
+    configuration = models.JSONField(default=dict, null=True, blank=True)
 
     class Meta:
-        unique_together = ("key", "fsp", "delivery_mechanism")
+        unique_together = ("country", "fsp", "delivery_mechanism")
 
     def __str__(self) -> str:
         if self.delivery_mechanism:
@@ -118,7 +133,7 @@ class PaymentInstruction(TimeStampedModel):
     )
     office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True)
 
-    tag = models.CharField(null=True, blank=True)
+    tag = models.CharField(null=True, blank=True, max_length=128)
     payload = models.JSONField(default=dict, null=True, blank=True)
     active = models.BooleanField(default=True)
     extra = models.JSONField(default=dict, null=True, blank=True)
@@ -157,7 +172,7 @@ class PaymentRecordState(models.TextChoices):
 class PaymentRecord(TimeStampedModel):
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
     remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
-    record_code = models.CharField(max_length=64, unique=True)  # Payment Record ID
+    record_code = models.CharField(max_length=64, db_index=True, unique=True)  # Payment Record ID
 
     status = models.CharField(
         max_length=50,
@@ -208,8 +223,8 @@ class ExportTemplate(models.Model):
     query = models.TextField()
 
     header = models.BooleanField(default=True)
-    delimiter = models.CharField(choices=list(zip(delimiters, delimiters, strict=True)), default=",")
-    quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'")
+    delimiter = models.CharField(choices=list(zip(delimiters, delimiters, strict=True)), default=",", max_length=1)
+    quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'", max_length=1)
     quoting = models.IntegerField(
         choices=(
             (csv.QUOTE_ALL, _("All")),
@@ -219,7 +234,7 @@ class ExportTemplate(models.Model):
         ),
         default=csv.QUOTE_ALL,
     )
-    escapechar = models.CharField(choices=(("", ""), ("\\", "\\")), default="", null=True, blank=True)
+    escapechar = models.CharField(choices=(("", ""), ("\\", "\\")), default="", null=True, blank=True, max_length=1)
 
     class Meta:
         unique_together = ("fsp", "config_key")
@@ -234,6 +249,10 @@ class ExportTemplate(models.Model):
 
 class AsyncJob(AsyncJobModel):
     instruction = models.ForeignKey(
-        PaymentInstruction, related_name="jobs", on_delete=models.CASCADE, null=True, blank=True
+        PaymentInstruction,
+        related_name="jobs",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     celery_task_name = "hope_payment_gateway.apps.core.tasks.sync_job_task"

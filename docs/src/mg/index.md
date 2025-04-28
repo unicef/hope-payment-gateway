@@ -19,7 +19,7 @@ moreover are available other transaction types
 - CARD_DEPOSIT
 - HOME_DELIVERY
 
-Once MoneyGram delivers the money to beneficiaries it calls PG api through Webhooks. 
+Once MoneyGram delivers the money to beneficiaries it calls PG api through Webhooks.
 
 
 ## PG / WU integration

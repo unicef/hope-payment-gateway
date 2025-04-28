@@ -20,6 +20,7 @@ INSTALLED_APPS = (
     "hope_payment_gateway.apps.gateway.apps.AppConfig",
     "hope_payment_gateway.apps.fsp.western_union.apps.AppConfig",
     "hope_payment_gateway.apps.fsp.moneygram.apps.AppConfig",
+    "hope_payment_gateway.apps.fsp.palpay.apps.AppConfig",
     "hope_api_auth",
     "unicef_security",
     "django.contrib.contenttypes",

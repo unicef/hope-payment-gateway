@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -24,7 +24,7 @@
 				<xs:sequence>
 				    <xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
 					<xs:element minOccurs="1" name="search_key" type="xrsi:search_key"/>
-					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/> 
+					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

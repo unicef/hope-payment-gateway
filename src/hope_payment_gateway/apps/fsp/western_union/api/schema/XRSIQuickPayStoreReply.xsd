@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -24,8 +24,8 @@
 			<xs:extension base="xrsi:reply_transaction_base">
 				<xs:sequence>
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
-					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/> 
-					<xs:element name="convenience_search" type="xrsi:convenience_search"/> 
+					<xs:element name="sender" type="xrsi:sender" minOccurs="0"/>
+					<xs:element name="convenience_search" type="xrsi:convenience_search"/>
 					<xs:element name="payment_details" type="xrsi:payment_details" minOccurs="0"/>
 					<xs:element name="financials" type="xrsi:financials" minOccurs="0"/>
 					<xs:element name="qp_company" type="xrsi:qp_company" minOccurs="0"/>
@@ -56,7 +56,7 @@
 					<xs:element name="auto_enroll_flag" type="xrsi:auto_enroll_flag" minOccurs="0"/>
 					<xs:element name="wu_card" type="xrsi:wu_card" minOccurs="0"/>
 					<xs:element name="dc_pin" type="xrsi:dc_pin" minOccurs="0"/>
-					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />					
+					<xs:element name="df_fields" type="xrsi:df_fields" minOccurs="0" maxOccurs="1" />
 					<xs:element name="status_code" type="xrsi:status_code" minOccurs="0"/>
 					<xs:element name="address_verification_reply" type="xrsi:yes_no" minOccurs="0"/>
 					<xs:element name="nabanco_auth_flag" type="xrsi:yes_no" minOccurs="0"/>

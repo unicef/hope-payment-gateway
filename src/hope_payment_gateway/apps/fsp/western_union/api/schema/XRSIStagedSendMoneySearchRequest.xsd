@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -31,11 +31,11 @@
 								<xs:maxLength value="25"/>
 							</xs:restriction>
 						</xs:simpleType>
-					</xs:element> 
+					</xs:element>
 				-->
 					<!-- The following elements belong to "transaction_details" -->
 					<!--<xs:element name="action" type="xrsi:action" minOccurs="0"/>-->
-					
+
 	                <xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
 					<xs:element minOccurs="0" name="remote_agent_account" type="xrsi:remote_account"/>
 					<xs:element minOccurs="0" name="queue_type" type="xrsi:queue_type"/>

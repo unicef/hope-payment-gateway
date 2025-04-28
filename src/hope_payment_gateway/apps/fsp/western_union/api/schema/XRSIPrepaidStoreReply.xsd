@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -23,7 +23,7 @@
 		<xs:complexContent>
 			<xs:extension base="xrsi:reply_transaction_base">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="sender" type="xrsi:sender"/> 
+					<xs:element minOccurs="0" name="sender" type="xrsi:sender"/>
 					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
 					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
 					<xs:element minOccurs="0" name="qp_company" type="xrsi:qp_company"/>
@@ -38,7 +38,7 @@
 					<xs:element maxOccurs="6" minOccurs="0" name="wu_card_promo_text" type="xrsi:promo_text"/>
 					<!--  Added for mtcn       -->
 					<xs:element minOccurs="0" name="mtcn" type="xrsi:mtcn"/>
-					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>					
+					<xs:element minOccurs="0" name="new_mtcn" type="xrsi:mtcn"/>
 					<!--  Added for newPointsEarned -->
 					<xs:element minOccurs="0" name="new_points_earned" type="xrsi:count"/>
 					<!--  Added for phone_pin  -->
@@ -77,7 +77,7 @@
 					<xs:element minOccurs="0" name="line_out" type="xrsi:line_out"/>
 					<xs:element minOccurs="0" name="misc_buffer_details" type="xrsi:misc_buffer_type"/>
 					<xs:element minOccurs="0" name="misc_buffer" type="xrsi:universal_buffer"/>
-                    <xs:element maxOccurs="1" minOccurs="0" name="df_fields" type="xrsi:df_fields"  />					
+                    <xs:element maxOccurs="1" minOccurs="0" name="df_fields" type="xrsi:df_fields"  />
 					<xs:element minOccurs="0" name="foreign_remote_system" type="xrsi:foreign_remote_system"/>
 					<xs:element minOccurs="0" maxOccurs="1" name="partner_info_buffer" type="xrsi:partner_info_buffer"/>
 				</xs:sequence>

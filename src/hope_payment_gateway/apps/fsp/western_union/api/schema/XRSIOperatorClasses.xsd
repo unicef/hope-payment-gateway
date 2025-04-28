@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -19,8 +19,8 @@
 	<xs:include schemaLocation="XRSIOperatorBasicTypes.xsd"/>
 	<!-- This defines the Western Union Specific Classes that will used by the various transactions -->
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
-	
-	
+
+
 	<xs:complexType name="foreign_remote_system">
 		<xs:sequence>
 			<xs:element minOccurs="0" name="identifier" type="xrsi:string"/>
@@ -50,7 +50,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	
+
 	<xs:complexType name="operator_type">
 		<xs:sequence>
 			<xs:element name="partner_oper_id" type="xrsi:partner_oper_id" maxOccurs="1"
@@ -58,16 +58,16 @@
 			</xs:element>
 			<xs:element name="wu_oper_id" type="xrsi:wu_oper_id_type" maxOccurs="1"
 				minOccurs="0">
-				
+
 			</xs:element>
-			
+
 			<xs:element name="Primary_agent_account_id" type="xrsi:primary_agent_account_id_type" maxOccurs="1"
 				minOccurs="0">
 			</xs:element>
-			
-			
-			
-			
+
+
+
+
 			<xs:element name="name" type="xrsi:general_name" maxOccurs="1"
 				minOccurs="0">
 			</xs:element>
@@ -102,16 +102,16 @@
 		<xs:complexContent>
 			<xs:extension base="xrsi:name_type_base">
 				<xs:sequence>
-					<xs:group minOccurs="0" ref="xrsi:name_group"/>					
+					<xs:group minOccurs="0" ref="xrsi:name_group"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
+
 	<xs:complexType name="name_type_base">
 		<xs:attribute name="name_type" type="xrsi:name_type"/>
 	</xs:complexType>
-	
+
 	<xs:group name="name_group">
 		<xs:choice>
 			<xs:group minOccurs="0" ref="xrsi:individual_name"/>
@@ -134,7 +134,7 @@
 			<xs:element minOccurs="0" name="maternal_name" type="xrsi:maternal_name"/>
 		</xs:sequence>
 	</xs:group>
-	
+
 	<xs:complexType name="training_detail_type">
 		<xs:sequence>
 			<xs:element name="training_name" type="xrsi:training_name" maxOccurs="1"
@@ -155,7 +155,7 @@
 			<xs:element name="completion_date" type="xrsi:completion_date"
 				maxOccurs="1" minOccurs="0">
 			</xs:element>
-		
+
 		</xs:sequence>
 	</xs:complexType>
 
@@ -169,7 +169,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	
+
 	<xs:complexType name="account_list">
     	<xs:sequence>
 			<xs:element name="agent_account" type="xrsi:agent_account"
@@ -177,7 +177,7 @@
 			</xs:element>
 		</xs:sequence>
     </xs:complexType>
-    
+
     <xs:complexType name="agent_account">
     	<xs:sequence>
 			<xs:element name="agent_account_id" type="xrsi:agent_account_id"
@@ -198,4 +198,3 @@
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
-

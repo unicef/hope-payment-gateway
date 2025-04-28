@@ -3,14 +3,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2009. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -44,7 +44,7 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="500"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="count">
 		<xs:annotation>
 			<xs:documentation>Basic Type for Count</xs:documentation>
@@ -117,18 +117,18 @@
 			<xs:maxLength value="24"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<!-- IR3933455 START -->
-	
+
 	<xs:simpleType name="TLocalDeliveryArea">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="84"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<!-- IR3933455 END -->
-	
+
 	<xs:simpleType name="postal_code">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -159,7 +159,7 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="40"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="phone">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -169,7 +169,7 @@
 	<xs:simpleType name="yes_no">
 		<xs:annotation>
 			<xs:appinfo>
-				<jaxb:typesafeEnumClass>				    
+				<jaxb:typesafeEnumClass>
 				    <jaxb:typesafeEnumMember value="true" name="TRUE" />
 				    <jaxb:typesafeEnumMember value="false" name="FALSE" />
 				    <jaxb:typesafeEnumMember value="0" name="ZERO" />
@@ -215,17 +215,17 @@
 			<xs:maxLength value="10"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="mktg_opt_in_out">
-		
+
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Y"/>
 			<xs:enumeration value="N"/>
-			
+
 		</xs:restriction>
 	</xs:simpleType>
-	
-	
+
+
 	<xs:simpleType name="documents_verified">
 		<xs:restriction base="xrsi:yes_no">
 			<!--	<xs:minLength value="0"/>
@@ -328,7 +328,7 @@
 			<xs:maxLength value="20"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="third_id_issuer">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -346,7 +346,7 @@
 		      <xs:appinfo>
 				<jaxb:typesafeEnumClass>
 					<jaxb:typesafeEnumMember value="0" name="ZERO" />
-				    <jaxb:typesafeEnumMember value="1" name="ONE" />		    
+				    <jaxb:typesafeEnumMember value="1" name="ONE" />
 				    <jaxb:typesafeEnumMember value=" " name="SPACE" />
 				    <jaxb:typesafeEnumMember value="" name="EMPTY" />
 				</jaxb:typesafeEnumClass>
@@ -553,7 +553,7 @@
 		<xs:annotation>
 			<xs:documentation>transaction type valid entries are WMN,MOD,QQC,WMF,EPY,CCM,ENR,ERN,CCQ,CMF ,CMW ,AMO ,TMO ,CCW ,GEN ,NTF ,MAL ,TEL ,OVL ,SEC,FAC,WMO,CMO,ACM,PAY,TRN,CCF</xs:documentation>
 			<xs:appinfo>
-			<jaxb:typesafeEnumClass>		    			   
+			<jaxb:typesafeEnumClass>
 			    <jaxb:typesafeEnumMember value="" name="EMPTY" />
 			</jaxb:typesafeEnumClass>
 	      </xs:appinfo>
@@ -564,7 +564,7 @@
 			<xs:enumeration value="MOD"/>
 			<xs:enumeration value="QQC"/>
 			<xs:enumeration value="WMF"/>
-			<xs:enumeration value="EPY"/>			
+			<xs:enumeration value="EPY"/>
 			<xs:enumeration value="CCM"/>
 			<xs:enumeration value="CCMT"/>
 			<xs:enumeration value="ENR"/>
@@ -605,12 +605,12 @@
 			<xs:enumeration value="MOP"/>
 			<xs:enumeration value="MOR"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="trans_type">
 		<xs:annotation>
 			<xs:documentation>transaction type valid entries are SEND,PAY</xs:documentation>
 			<xs:appinfo>
-			<jaxb:typesafeEnumClass>		    			   
+			<jaxb:typesafeEnumClass>
 			    <jaxb:typesafeEnumMember value="" name="EMPTY" />
 			</jaxb:typesafeEnumClass>
 	      </xs:appinfo>
@@ -1421,7 +1421,7 @@
 		<xs:annotation>
 			<xs:documentation>payment type valid entries are 01credit card and 02 debit card</xs:documentation>
 			 <xs:appinfo>
-				<jaxb:typesafeEnumClass>				    
+				<jaxb:typesafeEnumClass>
 				    <jaxb:typesafeEnumMember value="" name="EMPTY" />
 				</jaxb:typesafeEnumClass>
 	      </xs:appinfo>
@@ -1441,7 +1441,7 @@
 			<xs:enumeration value="RetailMoney"/>
 			<xs:enumeration value="Split"/>
 			<xs:enumeration value="WUPay"/>
-            <xs:enumeration value="AC"/> 
+            <xs:enumeration value="AC"/>
             <xs:enumeration value="Iphone"/>
             <xs:enumeration value="BPAY"/>
             <xs:enumeration value="PinDebit"/>
@@ -1459,7 +1459,7 @@
 		<xs:annotation>
 			<xs:documentation>funds out method valid entries are DebitCard, BankAccount and Cash</xs:documentation>
 			 <xs:appinfo>
-				<jaxb:typesafeEnumClass>				    
+				<jaxb:typesafeEnumClass>
 				    <jaxb:typesafeEnumMember value="" name="EMPTY" />
 				</jaxb:typesafeEnumClass>
 	      </xs:appinfo>
@@ -1943,7 +1943,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="search_key">
-	
+
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
 			<xs:maxLength value="100"/>
@@ -1960,7 +1960,7 @@
 		<!--  	<xs:restriction base="xs:integer"/> -->
 		<!--	<xs:restriction base="xs:string">
 					<xs:enumeration value="01"/>
-					<xs:enumeration value="02"/>	
+					<xs:enumeration value="02"/>
 		</xs:restriction> -->
 	</xs:simpleType>
 	<xs:simpleType name="action">
@@ -2490,7 +2490,7 @@
 			<xs:maxLength value="20"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="receipt_text">
 		<xs:annotation>
 			<xs:documentation>EFP FID 300</xs:documentation>
@@ -2619,9 +2619,9 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="1"/>
 			<!--  Tandem is returning U for update not 0/1 -->
-			<!-- 
+			<!--
           	  <xs:enumeration value="0"/>
-			  <xs:enumeration value="1"/>   
+			  <xs:enumeration value="1"/>
 		 -->
 		</xs:restriction>
 	</xs:simpleType>
@@ -2636,7 +2636,7 @@
 		<!--  Tandem is returning Y/N for opt_in_out -->
 		<!--
               <xs:enumeration value="0"/>
-			  <xs:enumeration value="1"/>   
+			  <xs:enumeration value="1"/>
 	      -->
 	</xs:simpleType>
 	<!--  Validation code is changed from integer to string -->
@@ -2838,16 +2838,16 @@
 			<xs:enumeration value="default"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="reprint_flag">
 		<xs:annotation>
 			<xs:documentation>ReprintFlag : FID 363</xs:documentation>
 	        </xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="rep"/>				
+			<xs:enumeration value="rep"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="issuing_bank">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -3568,7 +3568,7 @@
 			<xs:enumeration value="IP"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="refund_type">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -4024,7 +4024,7 @@
 			<xs:maxLength value="2000"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="host_message_set1">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -4105,8 +4105,8 @@
             <xs:enumeration value="PARTNERCSC"/>
     		<xs:enumeration value="RETAILPARTNER"/>
     		<xs:enumeration value="PARTNERMOBILE"/>
-   			 <xs:enumeration value="KIOSKPROFILE"/>   			 
-   			 <xs:enumeration value="FSSKIOSK"/>         
+   			 <xs:enumeration value="KIOSKPROFILE"/>
+   			 <xs:enumeration value="FSSKIOSK"/>
             <xs:enumeration value="DIGITALPARTNER"/>
 			<!-- <xs:enumeration value="WUCSC"/>-->
 		</xs:restriction>
@@ -4217,10 +4217,10 @@
 	<xs:simpleType name="channel_customer_identity_type">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="MOBILE_ACCOUNT"/>
-			<xs:enumeration value="BANK_ACCOUNT"/>			
-			<xs:enumeration value="PREPAID_CARD_NUMBER"/>						
-			<xs:enumeration value="EMAIL_ADDRESS"/>									
-			<xs:enumeration value="LOYALTY_CARD_NUMBER"/>												
+			<xs:enumeration value="BANK_ACCOUNT"/>
+			<xs:enumeration value="PREPAID_CARD_NUMBER"/>
+			<xs:enumeration value="EMAIL_ADDRESS"/>
+			<xs:enumeration value="LOYALTY_CARD_NUMBER"/>
 		</xs:restriction>
 	</xs:simpleType>
 		<xs:simpleType name="channel_customer_identity_data">
@@ -4233,10 +4233,10 @@
 			<xs:enumeration value="FIRST_REMINDER"/>
 			<xs:enumeration value="SECOND_REMINDER"/>
 			<xs:enumeration value="THIRD_REMINDER"/>
-			<xs:enumeration value="FOURTH_REMINDER"/>			
+			<xs:enumeration value="FOURTH_REMINDER"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="money_tranfer_type">
 		<xs:annotation>
 			<xs:documentation>Money Transfer Type</xs:documentation>
@@ -4246,7 +4246,7 @@
 			<xs:maxLength value="3"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="sender_promo_code">
 		<xs:annotation>
 			<xs:documentation>Sender Promo Code</xs:documentation>
@@ -4256,66 +4256,66 @@
 			<xs:maxLength value="20"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="current_fx">		
+
+	<xs:simpleType name="current_fx">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="17"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="message_charge">		
+
+	<xs:simpleType name="message_charge">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="10"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="message_limit">		
+
+	<xs:simpleType name="message_limit">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="3"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="test_question_flag">		
+
+	<xs:simpleType name="test_question_flag">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="company_name">		
+
+	<xs:simpleType name="company_name">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="sent_by">		
+
+	<xs:simpleType name="sent_by">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="25"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="pos_message">
 		<xs:annotation>
 			<xs:documentation>POS Message</xs:documentation>
-		</xs:annotation>		
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="100"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="number_matches">
 		<xs:annotation>
 			<xs:documentation>Number Matches</xs:documentation>
-		</xs:annotation>		
+		</xs:annotation>
 		<xs:restriction base="xs:integer"/>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="money_transfer_type">
 		<xs:annotation>
 			<xs:documentation>money transfer type valid entries are 01 A and 02 B</xs:documentation>
@@ -4325,7 +4325,7 @@
 			<xs:enumeration value="A"/>
 			<!-- Boolean Value ("Y" or "N") -->
 			<xs:enumeration value="B"/>
-			<!-- Monetary Value. Contains only numeric characters ("0-9"). All amounts are in hundredths 
+			<!-- Monetary Value. Contains only numeric characters ("0-9"). All amounts are in hundredths
 			(implied decimal). For example 24000 represents 240.00 -->
 			<xs:enumeration value="M"/>
 			<!-- Numerical Value. Contains only numeric characters ("0-9") and a decimal point (".") -->
@@ -4338,10 +4338,10 @@
 			<xs:enumeration value="S"/>
 			<xs:enumeration value="QQC"/>
 			<xs:enumeration value="WMN"/>
-			<xs:enumeration value=""/>			
-			<xs:enumeration value="MOD"/>			
+			<xs:enumeration value=""/>
+			<xs:enumeration value="MOD"/>
 			<xs:enumeration value="WMF"/>
-			<xs:enumeration value="EPY"/>			
+			<xs:enumeration value="EPY"/>
 			<xs:enumeration value="CCM"/>
 			<xs:enumeration value="ENR"/>
 			<xs:enumeration value="ERN"/>
@@ -4376,38 +4376,38 @@
 			<xs:enumeration value="CNV"/>
 			<xs:enumeration value="TYP"/>
 			<xs:enumeration value="PSD"/>
-			<xs:enumeration value="WMB"/>	
+			<xs:enumeration value="WMB"/>
 			<xs:enumeration value="ALL"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="id_type">		
+
+	<xs:simpleType name="id_type">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="2"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="id_country_of_issue">		
+
+	<xs:simpleType name="id_country_of_issue">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="50"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="id_number">		
+
+	<xs:simpleType name="id_number">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="30"/>
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="receiver_id_number">		
+	<xs:simpleType name="receiver_id_number">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="30"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 
 	<xs:simpleType name="promotion_description">
 		<xs:annotation>
@@ -4418,7 +4418,7 @@
 			<xs:maxLength value="30"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="mobile_number">
 		<xs:annotation>
 			<xs:documentation>Mobile Number</xs:documentation>
@@ -4428,7 +4428,7 @@
 			<xs:maxLength value="17"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="sms_flag">
 		<xs:annotation>
 			<xs:documentation>SMS Flag</xs:documentation>
@@ -4438,7 +4438,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="reason_for_alternative_id">
 		<xs:annotation>
 			<xs:documentation>Reason For Alternative ID</xs:documentation>
@@ -4448,7 +4448,7 @@
 			<xs:maxLength value="10"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="address_verification_document_issue_date">
 		<xs:annotation>
 			<xs:documentation>Address Verification Document Issue Date</xs:documentation>
@@ -4458,7 +4458,7 @@
 			<xs:maxLength value="10"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="address_verification_document">
 		<xs:annotation>
 			<xs:documentation>Address Verification Document</xs:documentation>
@@ -4468,7 +4468,7 @@
 			<xs:maxLength value="20"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="third_party_option">
 		<xs:annotation>
 			<xs:documentation>Third Party Option</xs:documentation>
@@ -4478,7 +4478,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="third_party_flag_send">
 		<xs:annotation>
 			<xs:documentation>Third Party Flag Send</xs:documentation>
@@ -4488,7 +4488,7 @@
 			<xs:maxLength value="80"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="id_has_expiry_date">
 		<xs:annotation>
 			<xs:documentation>Id Has Expiry Date</xs:documentation>
@@ -4498,7 +4498,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="has_id">
 		<xs:annotation>
 			<xs:documentation>Has Id</xs:documentation>
@@ -4508,7 +4508,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="acknowledge_flag">
 		<xs:annotation>
 			<xs:documentation>Acknowledge Flag</xs:documentation>
@@ -4518,7 +4518,7 @@
 			<xs:maxLength value="5"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="encrypted_pin">
 		<xs:annotation>
 			<xs:documentation>Encrypted PIN</xs:documentation>
@@ -4528,7 +4528,7 @@
 			<xs:maxLength value="16"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="duplicate_mtcn_override_flag">
 		<xs:annotation>
 			<xs:documentation>Duplicate MTCN Override Flag</xs:documentation>
@@ -4538,7 +4538,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="debit_timeout_resend">
 		<xs:annotation>
 			<xs:documentation>Debit Timeout Resend</xs:documentation>
@@ -4548,7 +4548,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="flag_type">
 		<xs:annotation>
 			<xs:documentation>Generic Flag</xs:documentation>
@@ -4565,7 +4565,7 @@
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-		
+
 		<xs:simpleType name="Alias_Name">
 		<xs:annotation>
 			<xs:documentation>Alias Name</xs:documentation>
@@ -4575,7 +4575,7 @@
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 		<xs:simpleType name="Check_Number">
 		<xs:annotation>
 			<xs:documentation>Check Number</xs:documentation>
@@ -4585,7 +4585,7 @@
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Adv_Elec_Sign_Sr_No">
 		<xs:annotation>
 			<xs:documentation>Adv Electronic Signature Serial Number</xs:documentation>
@@ -4594,8 +4594,8 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="44"/>
 		</xs:restriction>
-	</xs:simpleType>	
-	
+	</xs:simpleType>
+
 	<xs:simpleType name="convenience_search_type">
 		<xs:annotation>
 			<xs:documentation>Convenience Search Type</xs:documentation>
@@ -4605,7 +4605,7 @@
 			<xs:maxLength value="2"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="convenience_search_key">
 		<xs:annotation>
 			<xs:documentation>Convenience Search Key</xs:documentation>
@@ -4615,7 +4615,7 @@
 			<xs:maxLength value="80"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="wu_card_lookup_context">
 		<xs:annotation>
 			<xs:documentation>Context</xs:documentation>
@@ -4625,7 +4625,7 @@
 			<xs:maxLength value="4"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="sender_filter">
 		<xs:annotation>
 			<xs:documentation>Sender Filter</xs:documentation>
@@ -4635,7 +4635,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="receiver_filter">
 		<xs:annotation>
 			<xs:documentation>Receiver Filter</xs:documentation>
@@ -4645,7 +4645,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="reply_type">
 		<xs:annotation>
 			<xs:documentation>Reply Type</xs:documentation>
@@ -4654,8 +4654,8 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="1"/>
 		</xs:restriction>
-	</xs:simpleType> 
-	
+	</xs:simpleType>
+
 	<xs:simpleType name="card_lookup_search_type">
 		<xs:annotation>
 			<xs:documentation>Card Lookup Search Type</xs:documentation>
@@ -4665,7 +4665,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="fusion_screen">
 		<xs:annotation>
 			<xs:documentation>Fusion Screen</xs:documentation>
@@ -4679,7 +4679,7 @@
 			<xs:enumeration value="AV"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="pfc_filter_flag">
 		<xs:annotation>
 			<xs:documentation>PFC Filter Flag</xs:documentation>
@@ -4689,7 +4689,7 @@
 			<xs:maxLength value="3"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="add_track_one_data">
 		<xs:annotation>
 			<xs:documentation>Add Track One Data</xs:documentation>
@@ -4699,7 +4699,7 @@
 			<xs:maxLength value="80"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="company_person">
 		<xs:annotation>
 			<xs:documentation>Company Person</xs:documentation>
@@ -4709,7 +4709,7 @@
 			<xs:maxLength value="25"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="convenience_cookie">
 		<xs:annotation>
 			<xs:documentation>Convenience Cookie</xs:documentation>
@@ -4719,7 +4719,7 @@
 			<xs:maxLength value="500"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="additional_processing_attribute_buffer">
 		<xs:annotation>
 			<xs:documentation>Additional Processing Attribute Buffer</xs:documentation>
@@ -4729,45 +4729,45 @@
 			<xs:maxLength value="320"/>
 		</xs:restriction>
 	</xs:simpleType>
-		<xs:simpleType name="fx">		
+		<xs:simpleType name="fx">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="17"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="flag_pay">		
+
+	<xs:simpleType name="flag_pay">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Y"/>
-			<xs:enumeration value="N"/>						
+			<xs:enumeration value="N"/>
 			<xs:enumeration value="S"/>
-			<xs:enumeration value="C"/>						
-			<xs:enumeration value=""/>							
+			<xs:enumeration value="C"/>
+			<xs:enumeration value=""/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="agent_defined_data">		
+
+	<xs:simpleType name="agent_defined_data">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="99"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="test_question_response">		
+
+	<xs:simpleType name="test_question_response">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="38"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:simpleType name="flag_update">		
+
+	<xs:simpleType name="flag_update">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="A"/>
 			<xs:enumeration value="U"/>
 			<xs:enumeration value="D"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="relationship">
 		<xs:annotation>
 			<xs:documentation>Relationship</xs:documentation>
@@ -4777,14 +4777,14 @@
 			<xs:maxLength value="20"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Place_of_Organization">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="30"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Date_of_Birth">
 		<xs:annotation>
 			<xs:documentation>Date of Birth</xs:documentation>
@@ -4839,21 +4839,21 @@
 			<xs:maxLength value="20"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="White_List_Key">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="20"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Country_of_Birth">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="44"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Customer_type_Alpha_code">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -4866,7 +4866,7 @@
 			<xs:maxLength value="3"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Location">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -4964,7 +4964,7 @@
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Relationship_to_Receiver_Sender">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -5013,7 +5013,7 @@
 			<xs:maxLength value="18"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Address_verification_document_type">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -5049,7 +5049,7 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="3"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="User_Equipment_ID_Type">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -5062,7 +5062,7 @@
 			<xs:maxLength value="48"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
     <xs:simpleType name="Reason_For_Alternate_Id">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -5205,14 +5205,14 @@
 			<xs:maxLength value="50"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="visa_flag">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="visa_number">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -5514,8 +5514,8 @@
     </xs:simpleType>
 
 
-	
-	
+
+
    <xs:simpleType name="limit_type">
        <xs:restriction base="xs:string">
                 <xs:minLength value="0"/>
@@ -5530,7 +5530,7 @@
             <xs:enumeration value="MIM"/>
             <xs:enumeration value="QCSERVICE"/>
             <xs:enumeration value="OTHERQCSERVICE"/>
-            <xs:enumeration value="ALL"/> 
+            <xs:enumeration value="ALL"/>
         </xs:restriction>-->
     </xs:simpleType>
     <xs:simpleType name="efp_cub_lenght2">
@@ -5713,15 +5713,15 @@
 	    <xs:maxLength value="4000"/>
     	</xs:restriction>
  	</xs:simpleType>
- 	
- 	
+
+
  	 <xs:simpleType name="device_alias">
 	    <xs:restriction base="xs:string">
 	    <xs:minLength value="0"/>
 	    <xs:maxLength value="18"/>
     	</xs:restriction>
  	</xs:simpleType>
- 	
+
  	 <xs:simpleType name="saturn_blaze_response_code">
 	    <xs:restriction base="xs:string">
 	    <xs:minLength value="0"/>
@@ -5761,9 +5761,9 @@
 			<xs:maxLength value="16"/>
 			<xs:enumeration value="REFUND"/>
 			<xs:enumeration value="CANCEL_SEND"/>
-			<xs:enumeration value="CANCEL_PAID"/>  
+			<xs:enumeration value="CANCEL_PAID"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
       <xs:simpleType name="customer_resident_of_agentcountry">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="R"/>
@@ -5796,8 +5796,8 @@
 			<xs:enumeration value="EDIT"/>
 			<xs:enumeration value=""/>
 		</xs:restriction>
-	</xs:simpleType>	
-	
+	</xs:simpleType>
+
 	<xs:simpleType name="host_based_taxes">
 		<xs:annotation>
 			<xs:documentation>Host based Taxes to be calulated in Gateway</xs:documentation>
@@ -5808,7 +5808,7 @@
 			<xs:enumeration value="N"/>
 			<xs:enumeration value=""/>
 		</xs:restriction>
-	</xs:simpleType>		
+	</xs:simpleType>
 	<xs:simpleType name="qp_account_holder_name">
 		<xs:annotation>
 			<xs:documentation>quick pay company account holder name</xs:documentation>
@@ -5826,14 +5826,14 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="15"/>
 		</xs:restriction>
-	</xs:simpleType>		
+	</xs:simpleType>
          <xs:simpleType name="lookup_index">
 		<xs:annotation>
 			<xs:documentation>Lookup Index for Sender or Receiver</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="S"/>
-			<xs:enumeration value="P"/>						
+			<xs:enumeration value="P"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="partner_data">
@@ -5871,7 +5871,7 @@
 	</xs:simpleType>
 	<!-- Template changes for compliance elements End-->
 	<!-- KYC_02 Template changes for compliance elements Begin-->
-	
+
 	<xs:simpleType name="signature_ref_number">
 		<xs:annotation>
 			<xs:documentation>Signature Reference number</xs:documentation>
@@ -5881,8 +5881,8 @@
 			<xs:maxLength value="35"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<!-- KYC_02 Template changes for compliance elements End-->	
+
+	<!-- KYC_02 Template changes for compliance elements End-->
 	<xs:simpleType name="directed_srvc_count">
 		<xs:annotation>
 			<xs:documentation>directed_srvc_count</xs:documentation>
@@ -5940,7 +5940,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="EDIT"/>
 			<xs:enumeration value="SELECT"/>
-			<xs:enumeration value="RELEASE"/> 
+			<xs:enumeration value="RELEASE"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="holdtxn_transaction_type">
@@ -5949,14 +5949,14 @@
 			<xs:enumeration value="PAY"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="partner_security_token">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="200"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="state_license_number">
 		<xs:annotation>
 			<xs:documentation>state license number</xs:documentation>
@@ -5977,14 +5977,14 @@
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="verification_type">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="MOBILE_PHONE"/>
 			<xs:enumeration value="BANK_ACCOUNT" />
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="type_service">
       <xs:restriction base="xs:string">
          <xs:minLength value="0"/>
@@ -6015,7 +6015,7 @@
 			<xs:maxLength value="18"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="purpose_of_txn_doc_control_number">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6040,28 +6040,28 @@
 			<xs:maxLength value="19"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="multi_error_supported">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Y"/>
 			<xs:enumeration value="N"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="additional_data">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="30"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="Employment_Industry">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="id_issuing_authority">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6128,7 +6128,7 @@
 			<xs:enumeration value="N"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<!-- Changes for Fraud scroing project by Manish Shinde - Start -->
 	<xs:simpleType name="dormancy_90days">
 		<xs:restriction base="xs:string">
@@ -6226,7 +6226,7 @@
 			<xs:maxLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="IP_address">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6363,7 +6363,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- END for Brazil Regulatory -->
-	
+
 	<!-- Start for Stage and Pay Open Loop -->
 	<xs:simpleType name="efl_subregion_type">
 		<xs:restriction base="xs:string">
@@ -6394,14 +6394,14 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="300"/>
 		</xs:restriction>
-	</xs:simpleType>	
-<!-- End for Stage and Pay Open Loop -->	
+	</xs:simpleType>
+<!-- End for Stage and Pay Open Loop -->
 	<xs:simpleType name="action_indicator">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="REGULATORY_ENABLED"/>			
+			<xs:enumeration value="REGULATORY_ENABLED"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="bank_approval_doc_number">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6420,8 +6420,8 @@
 			<xs:maxLength value="3"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
-	
+
+
 	<xs:simpleType name="multicurrency_reason_code">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6464,13 +6464,13 @@
 			<xs:enumeration value="N"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 	<xs:simpleType name="PEP_Category">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="50"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
    <xs:simpleType name="FirstName_Upon_Birth">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6561,7 +6561,7 @@
       <xs:restriction base="xs:string">
          <xs:minLength value="0"/>
          <xs:maxLength value="9"/>
-      </xs:restriction>                                                                                 
+      </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="Employer_Address_State">
       <xs:restriction base="xs:string">
@@ -6612,15 +6612,15 @@
 			<xs:enumeration value="Y"/>
 			<xs:enumeration value="N"/>
 		</xs:restriction>
-	</xs:simpleType> 
+	</xs:simpleType>
 	<xs:simpleType name="tax_action">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="PRINT" />
 			<xs:enumeration value="DISPLAY" />
 			<xs:enumeration value="PRINT AND DISPLAY" />
 		</xs:restriction>
-	</xs:simpleType> 
-	
+	</xs:simpleType>
+
 	<xs:simpleType name="compl_addr_validation">
 		<xs:annotation>
 			<xs:documentation> address validation flag (valid values are y or blank)</xs:documentation>
@@ -6644,13 +6644,13 @@
 			<xs:enumeration value="PRINT"/>
 			<xs:enumeration value="NONE"/>
 		</xs:restriction>
-	</xs:simpleType> 
+	</xs:simpleType>
 	<xs:simpleType name="GDPR_enabled">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Y"/>
 			<xs:enumeration value="N"/>
 		</xs:restriction>
-	</xs:simpleType> 
+	</xs:simpleType>
 		<xs:simpleType name="txn_corridor">
 		<xs:annotation>
 			<xs:documentation>transaction corridor</xs:documentation>
@@ -6705,33 +6705,33 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="20"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="ruo">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="50"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="product">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="RETAIL"/>
 			<xs:enumeration value="FSS"/>
 			<xs:enumeration value="KIOSK"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="channel_buffer">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="POS"/>
 			<xs:enumeration value="WEB"/>
 			<xs:enumeration value="KIOSK"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="id_application">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
 			<xs:maxLength value="15"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="cust_entry_device">
 		<xs:restriction base="xs:string">
             <xs:enumeration value="AGENT"/>
@@ -6739,7 +6739,7 @@
     		<xs:enumeration value="RETAILPARTNER"/>
     		<xs:enumeration value="PARTNERMOBILE"/>
    			 <xs:enumeration value="KIOSKPROFILE"/>
-   			 <xs:enumeration value="KIOSKGUEST"/>  
+   			 <xs:enumeration value="KIOSKGUEST"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="Emplr_Name">
@@ -6747,7 +6747,7 @@
 			<xs:minLength value="0"/>
 			<xs:maxLength value="40"/>
 		</xs:restriction>
-	</xs:simpleType>			
+	</xs:simpleType>
 	<xs:simpleType name="bank_card_number">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6786,7 +6786,7 @@
 				<xs:enumeration value="WU_BRAND"/>
 				<xs:enumeration value="CO_BRAND"/>
 		</xs:restriction>
-</xs:simpleType>				
+</xs:simpleType>
 	<xs:simpleType name="fee_indicator">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="0"/>
@@ -6810,13 +6810,13 @@
 			<xs:enumeration value="Y"/>
 			<xs:enumeration value="N"/>
 		</xs:restriction>
-</xs:simpleType>	
+</xs:simpleType>
 		<xs:simpleType name="pre_receipt">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Y"/>
 			<xs:enumeration value="N"/>
 		</xs:restriction>
-		</xs:simpleType>	
+		</xs:simpleType>
 				<xs:simpleType name="fee_type">
 		<xs:restriction base="xs:string">
                 <xs:enumeration value="FIXED"/>
@@ -6831,33 +6831,33 @@
                   <xs:minLength value="0"/>
                   <xs:maxLength value="10"/>
             </xs:restriction>
-      </xs:simpleType>  
+      </xs:simpleType>
       <xs:simpleType name="Message">
     <xs:restriction base="xs:string">
                   <xs:minLength value="0"/>
                   <xs:maxLength value="50"/>
             </xs:restriction>
-      </xs:simpleType> 
+      </xs:simpleType>
       <xs:simpleType name="taxid_doc_type">
     <xs:restriction base="xs:string">
                   <xs:minLength value="0"/>
                   <xs:maxLength value="14"/>
             </xs:restriction>
-      </xs:simpleType> 
+      </xs:simpleType>
       <xs:simpleType name="Mother_Maiden_Name">
     <xs:restriction base="xs:string">
                   <xs:minLength value="0"/>
                   <xs:maxLength value="50"/>
             </xs:restriction>
-      </xs:simpleType> 
+      </xs:simpleType>
       <xs:simpleType name="IdDoc_upload_required">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Y"/>
-			<xs:enumeration value="N"/>		
+			<xs:enumeration value="N"/>
 		</xs:restriction>
 </xs:simpleType>
    <xs:simpleType name="advisory_note">
-      <xs:restriction base="xs:string">                 
+      <xs:restriction base="xs:string">
        </xs:restriction>
-      </xs:simpleType> 
+      </xs:simpleType>
  </xs:schema>

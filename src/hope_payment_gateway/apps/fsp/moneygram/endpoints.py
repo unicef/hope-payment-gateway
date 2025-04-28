@@ -1,27 +1,41 @@
 import base64
-import binascii
+import json
 import logging
 from contextlib import suppress
 from datetime import datetime
 
-import cryptography.exceptions
 import sentry_sdk
 from constance import config
-from cryptography.hazmat.backends import default_backend
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from django.conf import settings
+from django.http import JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
-from hope_payment_gateway.apps.fsp.moneygram import RECEIVED, DELIVERED
+from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED
 from hope_payment_gateway.apps.fsp.moneygram.client import update_status
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 logger = logging.getLogger(__name__)
+
+
+def verify(signature_header, unix_time_in_seconds, destination_host, body):
+    data = f"{unix_time_in_seconds}.{destination_host}.{body}".encode()
+    public_key_str = settings.MONEYGRAM_PUBLIC_KEY
+    public_key_pem = f"-----BEGIN PUBLIC KEY-----\n{public_key_str.strip()}\n-----END PUBLIC KEY-----"
+    public_key = serialization.load_pem_public_key(public_key_pem.encode("utf-8"))
+    signature = base64.b64decode(signature_header)
+
+    try:
+        public_key.verify(signature, data, padding.PKCS1v15(), hashes.SHA256())
+        return True
+    except InvalidSignature:
+        return False
 
 
 class MoneyGramApi(GenericAPIView):
@@ -33,38 +47,25 @@ class MoneyGramWebhook(MoneyGramApi):
         sentry_sdk.capture_message("MoneyGram: Webhook Notification")
         return super().dispatch(request, *args, **kwargs)
 
-    def verify(self, request):
-        header_dict = {
+    def verify_signature(self, request):
+        destination_host = request.headers.get("Host")
+
+        signature_dict = {
             header.split("=", 1)[0]: header.split("=", 1)[1]
             for header in request.headers.get("Signature", "").split(",")
         }
 
-        destination_host = "f-p-sandbox.snssdk.com"
-        public_key = f"""-----BEGIN PUBLIC KEY-----
-        {settings.MONEYGRAM_PUBLIC_KEY}
-        -----END PUBLIC KEY-----"""
-        pub_key = serialization.load_pem_public_key(public_key.encode("utf-8"), backend=default_backend())
+        signature = signature_dict["s"]
+        unix_time_in_seconds = signature_dict["t"]
 
-        unix_time_in_seconds = header_dict.get("t")
-
-        signature_header = header_dict.get("s", "")
-        signature = base64.b64decode(signature_header)
-
-        body = request.body
-        data = f"{unix_time_in_seconds}.{destination_host}.{body}".encode()
-
-        pub_key.verify(signature, data, padding.PKCS1v15(), hashes.SHA256())
+        json_str = request.body.decode("utf-8")
+        data = json.loads(json_str)
+        body = json.dumps(data, separators=(",", ":"))
+        return verify(signature, unix_time_in_seconds, destination_host, body)
 
     def post(self, request):
-        try:
-            self.verify(request)
-        except (IndexError, cryptography.exceptions.InvalidSignature, binascii.Error):
-            if config.MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED:
-                return Response(
-                    {"cannot_decrypt_signature": "Signature is invalid or expired"},
-                    status=HTTP_400_BAD_REQUEST,
-                )
-            logger.warning("Moneygram signature verification invalid")
+        if config.MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED and not self.verify_signature(request):
+            return JsonResponse({"error": "Invalid Signature header"}, status=400)
         payload = request.data
         logger.info(payload)
         record_key = payload["eventPayload"]["transactionId"]
@@ -92,7 +93,8 @@ class MoneyGramWebhook(MoneyGramApi):
         if notification_type in [RECEIVED, DELIVERED]:
             with suppress(KeyError, ValueError):
                 pr.payout_date = datetime.strptime(
-                    payload["eventPayload"]["transactionStatusDate"], "%Y-%m-%dT%H:%M:%S.%f"
+                    payload["eventPayload"]["transactionStatusDate"],
+                    "%Y-%m-%dT%H:%M:%S.%f",
                 ).date()
 
         update_status(pr, notification_type)

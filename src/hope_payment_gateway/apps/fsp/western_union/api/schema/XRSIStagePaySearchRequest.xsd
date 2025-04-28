@@ -4,14 +4,14 @@
 	<xs:annotation>
 		<xs:documentation>
 			***********************************************************************************************************
-			Copyright 2014. Western Union Financial Services, Inc. All Worldwide Rights 
-			Reserved. This media contains unpublished, confidential and proprietary     
-			information of Western Union Financial Services, Inc. You may not disclose, 
-			copy, display, prepare derivative works or use any portion of these         
-			materials for any purpose without the express written consent of Western    
-			Union Financial Services, Inc. You must reproduce this copyright notice and 
-			any other copyright notices included in the machine-readable copies on all  
-			authorized copies.                                                          
+			Copyright 2014. Western Union Financial Services, Inc. All Worldwide Rights
+			Reserved. This media contains unpublished, confidential and proprietary
+			information of Western Union Financial Services, Inc. You may not disclose,
+			copy, display, prepare derivative works or use any portion of these
+			materials for any purpose without the express written consent of Western
+			Union Financial Services, Inc. You must reproduce this copyright notice and
+			any other copyright notices included in the machine-readable copies on all
+			authorized copies.
 			***********************************************************************************************************
 			$Revision$
 			$Date$
@@ -26,7 +26,7 @@
 				<xs:element minOccurs="0" name="swb_fla_info" type="xrsi:swb_fla_info"/>
 				    <xs:element minOccurs="0" name="sender" type="xrsi:sender"/>
 					<xs:element minOccurs="0" name="receiver" type="xrsi:receiver"/>
-					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>					
+					<xs:element minOccurs="0" name="financials" type="xrsi:financials"/>
 					<xs:element minOccurs="0" name="payment_details" type="xrsi:payment_details"/>
 					<xs:element minOccurs="0" name="mtcn" type="xrsi:mocn"/>
 					<xs:element minOccurs="0" name="context" type="xrsi:context"/>
@@ -41,7 +41,7 @@
 	<xs:element name="stage-pay-search-request" type="xrsi:stage-pay-search-request">
 		<xs:annotation>
 			<xs:documentation>
-				Search by: Sender Name, Sender Phone, Receiver Name, Receiver Pin, MTCN, New MTCN, 
+				Search by: Sender Name, Sender Phone, Receiver Name, Receiver Pin, MTCN, New MTCN,
 				Destination Principal Amt ( expected payout amt ), Payout Country, Payout Currency
 			</xs:documentation>
 		</xs:annotation>

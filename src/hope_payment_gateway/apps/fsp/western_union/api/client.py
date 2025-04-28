@@ -17,16 +17,30 @@ from zeep.wsdl.utils import etree_to_string
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
 from hope_payment_gateway.apps.fsp.utils import get_phone_number
-from hope_payment_gateway.apps.fsp.western_union.api import MONEY_IN_TIME, WALLET, WIC, WMF, agent, web
+from hope_payment_gateway.apps.fsp.western_union.api import (
+    MONEY_IN_TIME,
+    WALLET,
+    WIC,
+    WMF,
+    agent,
+    web,
+)
 from hope_payment_gateway.apps.fsp.western_union.api.utils import integrate_payload
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
     InvalidCorridorError,
     PayloadException,
     PayloadMissingKeyError,
 )
-from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
+from hope_payment_gateway.apps.fsp.western_union.models import (
+    Corridor,
+    ServiceProviderCode,
+)
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import FinancialServiceProvider, PaymentRecord, PaymentRecordState
+from hope_payment_gateway.apps.gateway.models import (
+    FinancialServiceProvider,
+    PaymentRecord,
+    PaymentRecordState,
+)
 from hope_payment_gateway.config.settings import WESTERN_UNION_CERT, WESTERN_UNION_KEY
 
 logger = logging.getLogger(__name__)
@@ -93,11 +107,13 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             code = 400
             logger.exception(exc)
         except TypeError as exc:
+            display_format = "xml"
             title = "Invalid Payload"
             code = 400
             error = str(exc)
             logger.exception(exc)
         except Fault as exc:
+            display_format = "xml"
             title = f"{exc.message} [{exc.code}]"
             response = etree_to_string(exc.detail).decode()
             try:
@@ -116,7 +132,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             "title": title,
             "content_request": payload,
             "content_response": response,
-            "format": display_format,
+            "request_format": "json",
+            "response_format": display_format,
             "code": code,
             "error": error,
         }
@@ -254,16 +271,13 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             f"SOAP_HTTP_Port_{wu_env}",
         )
 
-    def create_transaction(self, base_payload: dict, update: bool = True) -> PaymentRecord | None:
+    def create_transaction(self, base_payload: dict, update: bool = True) -> dict:
         record_code = base_payload["payment_record_code"]
-        try:
-            pr = PaymentRecord.objects.get(
-                record_code=record_code,
-                status=PaymentRecordState.PENDING,
-                parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
-            )
-        except PaymentRecord.DoesNotExist:
-            return None
+        pr = PaymentRecord.objects.get(
+            record_code=record_code,
+            status=PaymentRecordState.PENDING,
+            parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
+        )
         try:
             payload = self.create_validation_payload(base_payload)
             response = self.send_money_validation(payload)
@@ -278,9 +292,13 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.fsp_code = smv_payload["new_mtcn"]
             pr.save()
         except (InvalidCorridorError, PayloadException, TransitionNotAllowed) as exc:
-            pr.message, pr.status, pr.success = str(exc), PaymentRecordState.ERROR, False
+            pr.message, pr.status, pr.success = (
+                str(exc),
+                PaymentRecordState.ERROR,
+                False,
+            )
             pr.save()
-            return pr
+            raise exc
 
         if response["code"] != 200:
             pr.message, pr.success, pr.auth_code, pr.fsp_code = (
@@ -292,7 +310,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
                 pr.fail()
             pr.save()
-            return pr
+            return response
         extra_data = {
             key: smv_payload[key]
             for key in [
@@ -328,9 +346,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             flow.fail()
         pr.extra_data.update(log_data)
         pr.save()
-        return pr
+        return response
 
-    def query_status(self, transaction_id, update):
+    def status(self, transaction_id, update):
         pr = PaymentRecord.objects.get(
             fsp_code=transaction_id,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
@@ -344,7 +362,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             "foreign_remote_system": frm,
         }
         response = self.response_context(
-            self.status_client, "PayStatus", payload, "PayStatus_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.status_client,
+            "PayStatus",
+            payload,
+            "PayStatus_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
         if update:
             wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
@@ -394,7 +416,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
         return self.response_context(
-            self.search_client, "Search", payload, "Search_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.search_client,
+            "Search",
+            payload,
+            "Search_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
 
     def cancel_request(self, frm, mtcn, database_key, reason=WIC):
@@ -418,7 +444,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         ref_no = payload.get("foreign_remote_system", dict).get("reference_no", "N/A")
         logging.info(f"CANCEL {ref_no}")
         return self.response_context(
-            self.cancel_client, "CancelSend", payload, "CancelSend_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.cancel_client,
+            "CancelSend",
+            payload,
+            "CancelSend_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
 
     def refund(self, transaction_id, base_payload):
@@ -440,7 +470,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             flow = PaymentRecordFlow(pr)
             flow.fail()
             pr.save()
-            return pr
+            return response
 
         response = self.cancel_request(frm, mtcn, database_key)
         extra_data = {"db_key": database_key, "mtcn": mtcn}
@@ -453,7 +483,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.success = False
         pr.extra_data.update(extra_data)
         pr.save()
-        return pr
+        return response
 
     # DAS API
 
@@ -483,7 +513,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 }
             )
             response = self.response_context(
-                self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+                self.das_client,
+                "DAS_Service",
+                payload,
+                "DAS_Service_H2H",
+                f"SOAP_HTTP_Port_{wu_env}",
             )
             if isinstance(response["content_response"], dict):
                 context = response["content_response"]["MTML"]["REPLY"]["DATA_CONTEXT"]
@@ -529,7 +563,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
         return self.response_context(
-            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.das_client,
+            "DAS_Service",
+            payload,
+            "DAS_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
 
     def das_destination_countries(self, identifier, counter_id):
@@ -550,7 +588,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
         return self.response_context(
-            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.das_client,
+            "DAS_Service",
+            payload,
+            "DAS_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
 
     def das_destination_currencies(self, destination_country, identifier, counter_id):
@@ -575,7 +617,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
         return self.response_context(
-            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.das_client,
+            "DAS_Service",
+            payload,
+            "DAS_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
 
     def das_delivery_services(
@@ -608,7 +654,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
         response = self.response_context(
-            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.das_client,
+            "DAS_Service",
+            payload,
+            "DAS_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
 
         if (
@@ -660,7 +710,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             }
         )
         response = self.response_context(
-            self.das_client, "DAS_Service", payload, "DAS_Service_H2H", f"SOAP_HTTP_Port_{wu_env}"
+            self.das_client,
+            "DAS_Service",
+            payload,
+            "DAS_Service_H2H",
+            f"SOAP_HTTP_Port_{wu_env}",
         )
         if (
             isinstance(response["content_response"], dict)
