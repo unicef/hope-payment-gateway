@@ -3,8 +3,15 @@ import json
 import pytest
 from django.urls import reverse
 from factories import PaymentRecordFactory
-
 from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
+
+from tests.factories import (
+    SystemFactory,
+    DeliveryMechanismFactory,
+    PaymentInstructionFactory,
+    ExportTemplateFactory,
+    OfficeFactory,
+)
 
 
 @pytest.mark.django_db
@@ -34,6 +41,7 @@ def test_payment_instruction(api_client, action, detail, status, token_user):
         ("ready", True, 400),
         ("close", True, 400),
         ("process", True, 400),
+        ("finalize", True, 400),
         ("abort", True, 200),
     ],
 )
@@ -46,6 +54,56 @@ def test_payment_instruction_actions(api_client, action, detail, status, token_u
         url = reverse(f"rest:payment-instruction-{action}")
     view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
     assert view.status_code == status
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "extra",
+    [
+        "{}",
+        '{"config_key": "tester_one", "destination_country": "ES"}',
+    ],
+)
+def _test_payment_instruction_create(api_client, token_user, mg, extra):
+    user, token = token_user
+    SystemFactory.create(owner=user)
+    url = reverse("rest:payment-instruction-list")
+    data = {
+        "remote_id": "123456",
+        "external_code": "654321",
+        "active": True,
+        "status": "DRAFT",
+        "fsp": mg.id,
+        "payload": "{}",
+        "extra": extra,
+    }
+    view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True, data=data)
+    assert view.status_code == 201
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "extra",
+    [
+        "{}",
+        '{"config_key": "tester_one", "destination_country": "ES"}',
+    ],
+)
+def test_payment_instruction_create(api_client, token_user, mg, extra):
+    _test_payment_instruction_create(api_client, token_user, mg, extra)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "extra",
+    [
+        "{}",
+        '{"config_key": "tester_one", "destination_country": "ES"}',
+    ],
+)
+def test_payment_instruction_create_with_office(api_client, token_user, mg, extra):
+    OfficeFactory.create(code="tester_one", supervised=True)
+    _test_payment_instruction_create(api_client, token_user, mg, extra)
 
 
 @pytest.mark.django_db
@@ -138,3 +196,29 @@ def test_instructions_add_records_invalid_status(api_client, token_user):
     assert view.status_code == 400
     assert view.json()["message"] == "Cannot add records to a not Open Plan"
     assert view.json()["status"] == "ABORTED"
+
+
+@pytest.mark.django_db
+def test_payment_instruction_download_fail(api_client, token_user):
+    user, token = token_user
+    instruction_instance = PaymentInstructionFactory(extra={"delivery_mechanism": "tester_one"})
+    pr = PaymentRecordFactory(parent=instruction_instance)
+    DeliveryMechanismFactory.create(code="tester_one")
+    url = reverse("rest:payment-instruction-download", args=[pr.parent.remote_id])
+    view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
+
+    assert view.status_code == 400
+    assert view.data.get("status_error") == "ExportTemplate matching query does not exist."
+
+
+@pytest.mark.django_db
+def test_payment_instruction_download(api_client, token_user):
+    user, token = token_user
+    pi = PaymentInstructionFactory(extra={"delivery_mechanism": "tester_one", "config_key": "123456"})
+    pr = PaymentRecordFactory.create(parent=pi)
+    dm = DeliveryMechanismFactory.create(code="tester_one")
+    ExportTemplateFactory.create(fsp=pi.fsp, config_key="123456", delivery_mechanism=dm)
+    url = reverse("rest:payment-instruction-download", args=[pr.parent.remote_id])
+    view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
+
+    assert view.status_code == 200
