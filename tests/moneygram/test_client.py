@@ -33,7 +33,7 @@ def test_get_token(mg):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_get_headers_token():
+def test_get_headers_token(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
     assert client.get_headers("request_id") == {
@@ -47,7 +47,7 @@ def test_get_headers_token():
 @pytest.mark.django_db
 @responses.activate
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_get_basic_payload():
+def test_get_basic_payload(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
     assert client.get_basic_payload(agent_partner_id="AAAAAA") == {
@@ -57,9 +57,11 @@ def test_get_basic_payload():
     }
 
 
+@responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_prepare_transactions(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
     pr_code = "test-code"
     pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
@@ -124,9 +126,11 @@ def test_prepare_transactions(mg):
     )
 
 
+@responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_prepare_quote(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     client = MoneyGramClient()
     pr_code = "test-code"
     pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
@@ -159,6 +163,7 @@ def test_prepare_quote(mg):
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_quote(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/moneygram/responses/quote.yaml")
     client = MoneyGramClient()
     pr_code = "test-code"
@@ -220,6 +225,7 @@ def test_status_missing(mg):
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_status_ok(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
@@ -268,6 +274,7 @@ def test_status_ok(mg):
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_status(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
@@ -283,6 +290,7 @@ def test_status(mg):
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_create_transaction(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/moneygram/responses/transaction.yaml")
     client = MoneyGramClient()
     pr = PaymentRecordFactory(record_code="code-123", parent__fsp=mg)

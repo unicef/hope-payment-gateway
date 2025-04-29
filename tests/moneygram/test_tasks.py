@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+import responses
 from constance.test import override_config
 from django.test import override_settings
 from factories import PaymentInstructionFactory, PaymentRecordFactory
@@ -46,6 +47,7 @@ def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
     assert len(mock_class.mock_calls) == total
 
 
+@responses.activate
 @pytest.mark.parametrize(
     ("rec_a", "rec_b", "total"),
     [
@@ -58,6 +60,7 @@ def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.status_update")
 def test_send_moneygram_update(mock_class, mg, rec_a, rec_b, total):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     instr_a = PaymentInstructionFactory(
         status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
     )
