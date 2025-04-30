@@ -102,13 +102,11 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
             if office.supervised:
                 obj.active = False
             if ctr_code := obj.extra.get("destination_country"):
-                try:
-                    country, _ = Country.objects.get_or_create(
-                        iso_code2=ctr_code,
-                    )
-                    obj.country = country
-                except Country.DoesNotExist:
-                    pass
+                country, _ = Country.objects.get_or_create(
+                    iso_code2=ctr_code,
+                )
+                obj.country = country
+
             obj.save()
 
     def _change_status(self, status):
