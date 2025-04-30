@@ -209,7 +209,7 @@ class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
         return super().get_serializer_class()
 
     @action(detail=True, methods=["post"])
-    def cancel(self, request):
+    def cancel(self, request, **kwargs):
         record = self.get_object()
         try:
             WesternUnionClient().refund(record.pk, dict)
