@@ -30,6 +30,12 @@ def pytest_configure(config):
     os.environ["SESSION_COOKIE_SECURE"] = "0"
     os.environ["DEFAULT_FROM_EMAIL"] = "test@email.org"
     os.environ["SECRET_KEY"] = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
+    config.addinivalue_line("markers", "smoke: mark test as part of the smoke test suite")
+    config.addinivalue_line("markers", "skip_models(*models): skip test for specified model names")
+    config.addinivalue_line(
+        "markers", "skip_buttons(*buttons): skip test for specified admin buttons, format: 'app.ModelAdmin:button_name'"
+    )
+    config.addinivalue_line("markers", "admin: mark test as part of the admin test suite")
 
 
 @pytest.fixture(autouse=True)
