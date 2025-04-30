@@ -1,9 +1,11 @@
 import json
+from unittest.mock import patch
 
 import pytest
 from django.urls import reverse
 from factories import PaymentRecordFactory
 from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
+from viewflow.fsm import TransitionNotAllowed
 
 from tests.factories import (
     SystemFactory,
@@ -123,6 +125,32 @@ def test_payment_record_list(api_client, action, detail, status, token_user):
         url = reverse(f"rest:payment-record-{action}")
     view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token)
     assert view.status_code == status
+
+
+@pytest.mark.django_db
+@patch("hope_payment_gateway.apps.fsp.western_union.api.client.WesternUnionClient.refund")
+def test_payment_record_cancel(mock_refund, api_client, token_user, mg):
+    user, token = token_user
+    pr = PaymentRecordFactory()
+    url = reverse("rest:payment-record-cancel", args=[pr.remote_id])
+
+    mock_refund.side_effect = None
+    view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token)
+
+    assert view.status_code == 200
+
+
+@pytest.mark.django_db
+@patch("hope_payment_gateway.apps.fsp.western_union.api.client.WesternUnionClient.refund")
+def test_payment_record_cancel_fail(mock_refund, api_client, token_user, mg):
+    user, token = token_user
+    pr = PaymentRecordFactory()
+    url = reverse("rest:payment-record-cancel", args=[pr.remote_id])
+
+    mock_refund.side_effect = TransitionNotAllowed("Cannot cancel this record")
+    view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token)
+
+    assert view.status_code == 400
 
 
 @pytest.mark.django_db
