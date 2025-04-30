@@ -1254,8 +1254,7 @@ wheels = [
 
 [[package]]
 name = "hope-payment-gateway"
-version = "1.5.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "celery", extra = ["redis"] },
     { name = "dj-static" },
@@ -1377,7 +1376,7 @@ requires-dist = [
     { name = "django-adminfilters" },
     { name = "django-advanced-filters" },
     { name = "django-celery-beat" },
-    { name = "django-celery-boost", specifier = ">=0.6.2" },
+    { name = "django-celery-boost" },
     { name = "django-celery-results" },
     { name = "django-concurrency" },
     { name = "django-constance" },

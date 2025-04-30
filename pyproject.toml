@@ -1,6 +1,12 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs>=0.4",
+  "hatchling>=1.25",
+]
+
 [project]
 name = "hope-payment-gateway"
-version = "1.5.0"
 description = "HOPE integration with FSPs"
 readme = "README.md"
 license = "Apache-2.0 OR MIT"
@@ -9,7 +15,13 @@ authors = [
   { name = "Domenico DiNicola", email = "dom.dinicola@gmail.com" },
 ]
 requires-python = ">=3.13"
-classifiers = [ "Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.13" ]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+]
+dynamic = [
+  "version",
+]
 dependencies = [
   "celery[redis]",
   "dj-static",
@@ -20,7 +32,7 @@ dependencies = [
   "django-adminfilters",
   "django-advanced-filters",
   "django-celery-beat",
-  "django-celery-boost>=0.6.2",
+  "django-celery-boost",
   "django-celery-results",
   "django-concurrency",
   "django-constance",
@@ -119,6 +131,21 @@ docs = [
   "mkdocs-simple-hooks",
   "mkdocstrings[python]",
 ]
+
+[tool.hatch.version]
+source = "vcs"
+path = "src/hope_payment_gateway/version.py"
+raw-options = { search_parent_directories = true }
+
+[tool.hatch.build.targets.sdist]
+ignore-vcs = true
+include = [
+  "src/hope_payment_gateway/**/*.*",
+  "src/hope_api_auth/**/*.*",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [ "src/hope_payment_gateway", "src/hope_api_auth" ]
 
 [tool.nitpick]
 style = [
