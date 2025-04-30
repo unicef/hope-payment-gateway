@@ -1327,6 +1327,7 @@ def test_get_required_fields(mg):
 # @_recorder.record(file_path="tests/moneygram/responses/service_options.yaml")
 @responses.activate
 @pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_service_options(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/service_options.yaml")
     client = MoneyGramClient()
