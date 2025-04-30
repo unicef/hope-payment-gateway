@@ -51,7 +51,7 @@ class FileViewset(ViewSet):
         return FTPClient().ls()
 
     def list(self, request):
-        serializer = self.serializer_class(instance=FTPClient().ls(), many=True, context={"request": request})
+        serializer = self.serializer_class(instance=self.get_queryset(), many=True, context={"request": request})
         return Response(serializer.data)
 
     def retrieve(self, request, filename=None):
