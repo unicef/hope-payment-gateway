@@ -250,3 +250,13 @@ def test_payment_instruction_download(api_client, token_user):
     view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
 
     assert view.status_code == 200
+
+
+@pytest.mark.django_db
+def test_health_check(api_client, token_user):
+    url = "http://testserver/health"
+
+    view = api_client.get(url)
+
+    assert view.status_code == 200
+    assert view.text == "OK"

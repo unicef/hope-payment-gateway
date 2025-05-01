@@ -1,6 +1,6 @@
 import pytest
 from django.test import RequestFactory, override_settings
-
+from constance.test import override_config
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission, get_client_ip
 
 
@@ -41,3 +41,11 @@ def test_whitelist_permission_bypass_debug(request_factory):
         request = request_factory.get("/admin")
         permission = WhitelistPermission()
         assert permission.has_permission(request, None)
+
+
+@pytest.mark.django_db
+@override_config(WHITELIST_ENABLED=False)
+def test_whitelist_disabled_permission(request_factory):
+    request = request_factory.get("/admin")
+    permission = WhitelistPermission()
+    assert permission.has_permission(request, None)
