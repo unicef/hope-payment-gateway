@@ -11,7 +11,7 @@ from hope_payment_gateway.config.celery import app
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from redis_lock.django_cache import RedisCache
 
     cache: RedisCache
