@@ -31,7 +31,7 @@ api_patterns = [
 ]
 
 
-def ok() -> HttpResponse:
+def ok(request) -> HttpResponse:
     return HttpResponse("OK")
 
 
