@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp
 from tests.factories import PaymentRecordFactory
@@ -8,8 +8,10 @@ from tests.factories import PaymentRecordFactory
 @pytest.fixture
 def mock_client():
     with patch("hope_payment_gateway.apps.fsp.tasks_utils.import_string") as mock_import:
-        mock_client = mock_import.return_value
-        yield mock_client
+        mock_instance = MagicMock()
+        mock_class = MagicMock(return_value=mock_instance)
+        mock_import.return_value = mock_class
+        yield mock_instance
 
 
 @pytest.mark.django_db
