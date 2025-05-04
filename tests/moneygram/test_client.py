@@ -1,12 +1,31 @@
+from unittest.mock import Mock
+
 import pytest
+import requests
 import responses
 from constance.test import override_config
+from django.conf import settings
 from factories import PaymentRecordFactory
-from responses import _recorder  # noqa
-
-from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED, REFUNDED, SENT
-from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError, MoneyGramClient, update_status
+from hope_payment_gateway.apps.fsp.moneygram import (
+    DELIVERED,
+    RECEIVED,
+    REFUNDED,
+    UNFUNDED,
+    AVAILABLE,
+    REJECTED,
+    CLOSED,
+)
+from hope_payment_gateway.apps.fsp.moneygram.client import (
+    InvalidTokenError,
+    MoneyGramClient,
+    update_status,
+    PayloadMissingKeyError,
+)
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
+from responses import _recorder  # noqa
+from rest_framework.response import Response
+from viewflow.fsm import TransitionNotAllowed
+
 
 # @_recorder.record(file_path="tests/moneygram/responses/token.yaml")
 
@@ -1379,16 +1398,354 @@ def test_get_service_options(mg):
     ]
 
 
+@responses.activate
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    ("from_status", "to_status"),
-    [
-        (PaymentRecordState.PENDING, SENT),
-        (PaymentRecordState.TRANSFERRED_TO_FSP, RECEIVED),
-        (PaymentRecordState.TRANSFERRED_TO_FSP, REFUNDED),
-        (PaymentRecordState.TRANSFERRED_TO_FSP, DELIVERED),
-    ],
-)
-def test_update_status_ok(from_status, to_status):
-    pr = PaymentRecordFactory(status=from_status)
-    update_status(pr, to_status)
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_set_token_connection_error(mg):
+    MoneyGramClient._instances = {}  # MoneyGram client is singleton
+    url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
+    responses.add(responses.GET, url, body=ConnectionError("Connection error occurred"), status=400)
+
+    client = MoneyGramClient()
+    assert client.token is None
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_set_token_expires_in(mg):
+    MoneyGramClient._instances = {}  # Clear singleton instance
+    url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
+    mock_response = {"access_token": "test_token", "expires_in": "3600", "token_type": "Bearer"}
+    responses.add(responses.GET, url, json=mock_response, status=200)
+    client = MoneyGramClient()
+    assert client.expires_in == "3600"
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_set_token_invalid_error(mg):
+    MoneyGramClient._instances = {}  # Clear singleton instance
+    url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
+    mock_error_response = {"error": {"category": "AUTHENTICATION", "message": "Invalid credentials", "code": "401"}}
+    responses.add(responses.GET, url, json=mock_error_response, status=401)
+    with pytest.raises(InvalidTokenError) as exc_info:
+        MoneyGramClient()
+    assert str(exc_info.value) == "AUTHENTICATION: Invalid credentials  [401]"
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_prepare_transaction_with_middle_name(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr_code = "test-code"
+    pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
+    pr.payload = {
+        "first_name": "Alen",
+        "middle_name": "John",
+        "last_name": "Smith",
+        "amount": 100,
+        "destination_country": "IT",
+        "destination_currency": "USD",
+        "origination_country": "US",
+        "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
+    }
+    _, payload = client.prepare_transaction(pr.get_payload())
+    assert payload["beneficiary"]["consumer"]["name"]["middleName"] == "John"
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_prepare_transaction_with_second_last_name(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr_code = "test-code"
+    pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
+    pr.payload = {
+        "first_name": "Alen",
+        "last_name": "Smith",
+        "second_last_name": "Johnson",
+        "amount": 100,
+        "destination_country": "IT",
+        "destination_currency": "USD",
+        "origination_country": "US",
+        "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
+    }
+    _, payload = client.prepare_transaction(pr.get_payload())
+    assert payload["beneficiary"]["consumer"]["name"]["second_last_name"] == "Johnson"
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_prepare_transaction_missing_required_field(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr_code = "test-code"
+    pr = PaymentRecordFactory(record_code=pr_code, parent__fsp=mg)
+    pr.payload = {
+        # Missing first_name which is required
+        "last_name": "Smith",
+        "amount": 100,
+        "destination_country": "IT",
+        "destination_currency": "USD",
+        "origination_country": "US",
+        "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
+    }
+    with pytest.raises(PayloadMissingKeyError) as exc_info:
+        client.prepare_transaction(pr.get_payload())
+    assert "first_name" in str(exc_info.value)
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_create_transaction_missing_key_error(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr = PaymentRecordFactory(parent__fsp=mg)
+    pr.payload = {
+        # Missing required first_name field
+        "last_name": "Smith",
+        "amount": 100,
+        "destination_country": "IT",
+        "destination_currency": "USD",
+        "origination_country": "US",
+        "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
+    }
+    _, response = client.create_transaction(pr.get_payload())
+    assert response.status_code == 400
+    assert response.data == {
+        "context": [{"code": "validation_error", "message": "InvalidPayload: first_name is missing in the payload"}]
+    }
+    pr.refresh_from_db()
+    assert pr.message == "Error"
+    assert not pr.success
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_create_transaction_error_response(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr = PaymentRecordFactory(parent__fsp=mg)
+    pr.payload = {
+        "first_name": "John",
+        "last_name": "Smith",
+        "amount": 100,
+        "destination_country": "IT",
+        "destination_currency": "USD",
+        "origination_country": "US",
+        "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
+        "payment_record_code": pr.record_code,
+    }
+
+    _, prepared_payload = client.prepare_transaction(pr.get_payload())
+    prepared_payload["payment_record_code"] = pr.record_code
+
+    error_response = {
+        "errors": [
+            {"code": "INVALID_AMOUNT", "message": "Amount is invalid"},
+            {"code": "INVALID_CURRENCY", "message": "Currency is invalid"},
+        ]
+    }
+    responses.add(responses.POST, f"{settings.MONEYGRAM_HOST}/transactions", json=error_response, status=400)
+
+    _, response = client.create_transaction(prepared_payload)
+    assert response.status_code == 400
+    pr.refresh_from_db()
+    assert pr.message == "Error"
+    assert not pr.success
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_perform_request_request_exception(mg, monkeypatch):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+
+    def mock_request(*args, **kwargs):
+        raise requests.exceptions.RequestException("Request failed")
+
+    monkeypatch.setattr(requests, "request", mock_request)
+
+    response = client.perform_request("/test", "test-id", {}, "get")
+    assert response is None
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_perform_request_missing_schema(mg, monkeypatch):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+
+    def mock_request(*args, **kwargs):
+        raise requests.exceptions.MissingSchema("No schema supplied")
+
+    monkeypatch.setattr(requests, "request", mock_request)
+
+    response = client.perform_request("/test", "test-id", {}, "get")
+    assert response is None
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_perform_request_no_response(mg, monkeypatch):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+
+    def mock_request(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(requests, "request", mock_request)
+
+    response = client.perform_request("/test", "test-id", {}, "get")
+    assert response is None
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_post_transaction_with_errors(mg):
+    responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr = PaymentRecordFactory(parent__fsp=mg)
+    pr.payload = {
+        "first_name": "John",
+        "last_name": "Smith",
+        "amount": 100,
+        "destination_country": "IT",
+        "destination_currency": "USD",
+        "origination_country": "US",
+        "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
+        "payment_record_code": pr.record_code,
+    }
+
+    error_response = {"errors": [{"code": "INVALID_AMOUNT", "message": "Amount is invalid"}]}
+
+    response = client.post_transaction(Response(error_response, status=200), pr.get_payload())
+    assert response.status_code == 400
+    assert response.data == error_response
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_post_transaction_transition_not_allowed(mg, monkeypatch):
+    client = MoneyGramClient()
+    pr = PaymentRecordFactory(parent__fsp=mg)
+    pr.payload = {
+        "first_name": "John",
+        "last_name": "Smith",
+        "amount": 100,
+        "destination_country": "IT",
+        "destination_currency": "USD",
+        "origination_country": "US",
+        "origination_currency": "USD",
+        "agent_partner_id": "AAAAAA",
+        "payment_record_code": pr.record_code,
+    }
+
+    success_response = Response(
+        {
+            "referenceNumber": "12345",
+            "transactionId": "67890",
+            "receiveAmount": {
+                "fees": {"value": 10, "currencyCode": "USD"},
+                "taxes": {"value": 5, "currencyCode": "USD"},
+                "fxRate": 1.0,
+                "fxRateEstimated": False,
+            },
+            "expectedPayoutDate": "2024-05-04",
+        },
+        status=200,
+    )
+
+    class MockPaymentRecordFlow:
+        def __init__(self, payment_record):
+            self.payment_record = payment_record
+
+        def store(self):
+            raise TransitionNotAllowed("Transition not allowed")
+
+    monkeypatch.setattr("hope_payment_gateway.apps.fsp.moneygram.client.PaymentRecordFlow", MockPaymentRecordFlow)
+    response = client.post_transaction(success_response, pr.get_payload())
+
+    assert response.status_code == 400
+    assert response.data == {"errors": [{"error": "transition_not_allowed"}]}
+
+
+def _test_update_status(mg, monkeypatch, status, flow_method_name=None):
+    pr = PaymentRecordFactory(parent__fsp=mg)
+    original_status = pr.status
+
+    if flow_method_name:
+        mock_flow = Mock()
+        mock_method = Mock()
+        setattr(mock_flow, flow_method_name, mock_method)
+
+        def mock_flow_init(payment_record):
+            return mock_flow
+
+        monkeypatch.setattr("hope_payment_gateway.apps.fsp.moneygram.client.PaymentRecordFlow", mock_flow_init)
+
+    update_status(pr, status)
+    pr.refresh_from_db()
+    assert pr.status == original_status  # Status should remain unchanged
+
+    if flow_method_name:
+        getattr(mock_flow, flow_method_name).assert_called_once()
+
+
+@pytest.mark.django_db
+def test_update_status_unfunded(mg):
+    _test_update_status(mg, None, UNFUNDED)
+
+
+@pytest.mark.django_db
+def test_update_status_available(mg):
+    _test_update_status(mg, None, AVAILABLE)
+
+
+@pytest.mark.django_db
+def test_update_status_rejected(mg, monkeypatch):
+    _test_update_status(mg, monkeypatch, REJECTED, "purge")
+
+
+@pytest.mark.django_db
+def test_update_status_refunded(mg, monkeypatch):
+    _test_update_status(mg, monkeypatch, REFUNDED, "refund")
+
+
+@pytest.mark.django_db
+def test_update_status_closed(mg, monkeypatch):
+    _test_update_status(mg, monkeypatch, CLOSED, "fail")
+
+
+@pytest.mark.django_db
+def test_update_status_other(mg, monkeypatch):
+    _test_update_status(mg, monkeypatch, "OTHER_STATUS", "fail")
+
+
+@pytest.mark.django_db
+def test_update_status_received(mg, monkeypatch):
+    _test_update_status(mg, monkeypatch, RECEIVED, "confirm")
+
+
+@pytest.mark.django_db
+def test_update_status_delivered(mg, monkeypatch):
+    _test_update_status(mg, monkeypatch, DELIVERED, "confirm")
