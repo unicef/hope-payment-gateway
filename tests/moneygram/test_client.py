@@ -198,7 +198,7 @@ def test_quote(mg):
         "delivery_services_code": "WILL_CALL",
         "agent_partner_id": "AAAAAA",
     }
-    _, response = client.quote(pr.get_payload())
+    _, response, _ = client.quote(pr.get_payload())
     assert response.data == {
         "transactions": [
             {
@@ -234,7 +234,7 @@ def test_status_missing(mg):
     transaction_id = "transaction_id"
     record = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
     payload = {"agent_partner_id": "AAAAAA", "payment_record_code": record.record_code}
-    _, response = client.status(payload)
+    _, response, _ = client.status(payload)
     assert response.status_code == 400
     assert response.data == {"errors": [{"category": "IP-20000", "code": "697", "message": "Invalid Transaction ID"}]}
 
@@ -250,7 +250,7 @@ def test_status_ok(mg):
     transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
     record = PaymentRecordFactory(fsp_code=transaction_id, parent__fsp=mg)
     payload = {"agent_partner_id": "AAAAAA", "payment_record_code": record.record_code}
-    _, response = client.status(payload)
+    _, response, _ = client.status(payload)
     assert response.status_code == 200
     assert response.data == {
         "transactionId": "64c228ba-8013-43f6-9baf-a0c87b91a261",
@@ -324,7 +324,7 @@ def test_create_transaction(mg):
         "phone_no": "+393891234567",
         "agent_partner_id": "AAAAAA",
     }
-    _, response = client.create_transaction(payload)
+    _, response, _ = client.create_transaction(payload)
     assert response.status_code == 200
     assert response.data == {
         "transactionId": "18ba47c4-6376-40d4-a0c9-e52722dc52cf",
@@ -368,7 +368,7 @@ def test_refund(mg):
         parent__fsp=mg,
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
-    _, resp = client.refund(pr.get_payload())
+    _, resp, _ = client.refund(pr.get_payload())
     pr.refresh_from_db()
     assert pr.message == "Refunded Duplicate Transaction"
     assert pr.status == PaymentRecordState.REFUND
@@ -392,7 +392,7 @@ def test_get_required_fields(mg):
         "agent_partner_id": "AAAAAA",
     }
     pr = PaymentRecordFactory(payload=payload, parent__fsp=mg)
-    _, response = client.get_required_fields(payload)
+    _, response, _ = client.get_required_fields(payload)
     pr.refresh_from_db()
     assert response.status_code == 200
     assert response.data == {
@@ -1350,7 +1350,7 @@ def test_get_required_fields(mg):
 def test_get_service_options(mg):
     responses._add_from_file(file_path="tests/moneygram/responses/service_options.yaml")
     client = MoneyGramClient()
-    _, response = client.get_service_options({"agent_partner_id": "AAAAAA", "destination_country": "NGA"})
+    _, response, _ = client.get_service_options({"agent_partner_id": "AAAAAA", "destination_country": "NGA"})
     assert response.status_code == 200
     assert response.data == [
         {
@@ -1521,7 +1521,7 @@ def test_create_transaction_missing_key_error(mg):
         "origination_currency": "USD",
         "agent_partner_id": "AAAAAA",
     }
-    _, response = client.create_transaction(pr.get_payload())
+    _, response, _ = client.create_transaction(pr.get_payload())
     assert response.status_code == 400
     assert response.data == {
         "context": [{"code": "validation_error", "message": "InvalidPayload: first_name is missing in the payload"}]
@@ -1561,7 +1561,7 @@ def test_create_transaction_error_response(mg):
     }
     responses.add(responses.POST, f"{settings.MONEYGRAM_HOST}/transactions", json=error_response, status=400)
 
-    _, response = client.create_transaction(prepared_payload)
+    _, response, _ = client.create_transaction(prepared_payload)
     assert response.status_code == 400
     pr.refresh_from_db()
     assert pr.message == "Error"
