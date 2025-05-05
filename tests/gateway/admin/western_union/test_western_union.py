@@ -1,7 +1,6 @@
 import pytest
 from constance.test import override_config
 from django.test import RequestFactory
-from django.contrib.admin.sites import AdminSite
 
 from hope_payment_gateway.apps.gateway.admin import PaymentRecordAdmin
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
@@ -12,11 +11,6 @@ from tests.factories.payment import (
     PaymentRecordFactory,
     CorridorFactory,
 )
-
-
-@pytest.fixture
-def admin_site():
-    return AdminSite()
 
 
 @pytest.fixture

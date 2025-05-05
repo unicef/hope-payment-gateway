@@ -19,6 +19,8 @@ from hope_api_auth.models import Grant
 from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 
+from django.contrib.admin.sites import AdminSite
+
 
 def pytest_configure(config):
     os.environ["TESTING"] = "1"
@@ -181,3 +183,8 @@ def api_client_with_credentials(db, token_user, api_client):
     api_client.force_authenticate(user=token_user, token=token)
     yield api_client
     api_client.force_authenticate(user=None)
+
+
+@pytest.fixture
+def admin_site():
+    return AdminSite()

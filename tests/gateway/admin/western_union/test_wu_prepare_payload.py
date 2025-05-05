@@ -1,9 +1,7 @@
 import pytest
 from django.urls import reverse
 from django.test import RequestFactory
-from django.contrib.admin.sites import AdminSite
 from constance.test import override_config
-from django.contrib import messages
 from django.contrib.auth.models import Permission
 from django.core.exceptions import PermissionDenied
 
@@ -14,11 +12,7 @@ from tests.factories.payment import (
     PaymentRecordFactory,
     CorridorFactory,
 )
-
-
-@pytest.fixture
-def admin_site():
-    return AdminSite()
+from tests.gateway.admin.western_union import assert_error_redirect
 
 
 @pytest.fixture
@@ -79,14 +73,6 @@ def test_wu_prepare_payload_success(user_with_permissions, western_union_admin_i
     assert "content_request" in response.context_data
     assert "content_response" in response.context_data
     assert response.context_data["title"] == "Western Union Payload"
-
-
-def assert_error_redirect(response, payment_record):
-    assert response.status_code == 302
-    assert response.url == reverse("admin:gateway_paymentrecord_change", args=[payment_record.pk])
-    user_messages = list(response.wsgi_request._messages)
-    assert len(user_messages) == 1
-    assert user_messages[0].level == messages.ERROR
 
 
 @pytest.mark.django_db
