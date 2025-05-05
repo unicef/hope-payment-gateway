@@ -14,5 +14,5 @@ class MoneyGram(models.Model):
             ("can_cancel_transaction", "MoneyGram: Can Cancel Transaction"),
         )
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return "Fake model to represent Moneygram and wrap permissions"
