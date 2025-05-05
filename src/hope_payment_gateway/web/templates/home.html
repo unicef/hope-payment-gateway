@@ -7,31 +7,56 @@
   </head>
   <body>
     <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">
-            <img alt="HOPE" src="{% static 'hope/logo.17b19eb3.jpg' %}">
-          </a>
-        </div>
-        <div class="navbar-collapse collapse">
-          {% if user.is_authenticated %}
-          <ul class="nav navbar-nav">
-            <li><a href="/">Home</a></li>
-          </ul>
-          {% endif %}
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-
-        <div id="content" class="container">
-      {% block content %}{% endblock %}
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <!-- Left logo -->
+      <a class="navbar-brand" href="#">
+        <img alt="HOPE" src="{% static 'hope/hope.jpg' %}" style="height: 50px;">
+      </a>
     </div>
 
+    <!-- Right logo -->
+    <div class="navbar-right" style="padding-top: 10px;">
+      <a href="#">
+        <img alt="UNICEF" src="{% static 'hope/unicef.png' %}" style="height: 40px;">
+      </a>
+    </div>
+
+    <!-- Navigation links -->
+    <div id="navbar" class="navbar-collapse collapse">
+      {% if user.is_authenticated %}
+      <ul class="nav navbar-nav">
+        <li><a href="/">Home</a></li>
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+        <div id="content" class="container">
+      {% block content %}
+          <section>
+      <h1>
+        HOPE Payment Gateway
+      </h1>
+      <p>
+          The Payment Gateway is a component to perform integration between MIS and FSPs, through web API. Each FSP can have a different way to interact with the payment gateway though strategy pattern.
+      </p>
+      <a href="https://unicef.github.io/hope-payment-gateway/" target="_blank">Documentation Site</a>
+          </section>
+      {% endblock content %}
+    </div>
+<hr>
+
+  <div class="module help" style="text-align: center;">
+    <p>
+        Version: {{ app.version }} | Build Date: {{ app.build_date }} | Commit: {{ app.commit }}
+    </p>
+</div>
   </body>
 </html>

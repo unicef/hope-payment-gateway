@@ -3,8 +3,10 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
+from django.views.generic import TemplateView
 
 root_patterns = [
+    path(r"", TemplateView.as_view(template_name="home.html"), name="home"),
     path(r"admin/", admin.site.urls),
     path(r"security/", include("unicef_security.urls", namespace="security")),
     path(r"social/", include("social_django.urls", namespace="social")),

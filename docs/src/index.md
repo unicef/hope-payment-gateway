@@ -1,7 +1,7 @@
 # Payment Gateway
 
 The Payment Gateway is a component to perform integration between MIS and FSPs, through web API.
-Each FSP can have a different way to interact with the payment gateway with though strategy pattern.
+Each FSP can have a different way to interact with the payment gateway though strategy pattern.
 
 
 ## Repository

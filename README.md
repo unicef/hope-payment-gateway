@@ -1,4 +1,4 @@
-# hope-hope-payment-gateway
+# hope-payment-gateway
 
 [![Test](https://github.com/unicef/hope-payment-gateway/actions/workflows/test.yml/badge.svg)](https://github.com/unicef/hope-payment-gateway/actions/workflows/test.yml)
 [![Lint](https://github.com/unicef/hope-payment-gateway/actions/workflows/lint.yml/badge.svg)](https://github.com/unicef/hope-payment-gateway/actions/workflows/lint.yml)
