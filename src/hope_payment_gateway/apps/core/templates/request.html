@@ -1,6 +1,20 @@
 {% extends "admin_extra_buttons/action_page.html" %}
 {% load static xml_format %}
 
+{% block extrahead %}
+<style>
+    .status-200 {
+      color: forestgreen;
+    }
+    .status-400 {
+      color: goldenrod;
+    }
+    .status-500 {
+      color: red;
+    }
+</style>
+{% endblock extrahead %}
+
 {% block content %}
 
 <i>{% autoescape on %}
@@ -9,7 +23,7 @@
 </i>
 
 <pre>
-<h2>Request:</h2>
+<h2 class="status-{{ code }}">Request: {{ url }}</h2>
 {% if request_format == "json" %}
 {{ content_request|pprint }}{% else %}{{ content_request }}
 {% endif %}

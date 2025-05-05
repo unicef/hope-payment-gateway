@@ -14,9 +14,9 @@ from hope_payment_gateway.apps.gateway.models import (
 
 
 def notify_records_to_fsp(client_fqn, to_process_ids):
-    client = import_string(client_fqn)
+    client = import_string(client_fqn)()
     for record in PaymentRecord.objects.filter(id__in=to_process_ids):
-        client().create_transaction(record.get_payload())
+        client.create_transaction(record.get_payload())
 
 
 def send_to_fsp(  # noqa

@@ -19,7 +19,8 @@ class PalPayAdminMixin:
             client_call = getattr(PalPayClient(), method)
             payload, resp = client_call(obj.fsp_code, obj.get_payload())
             context = self.get_common_context(request, pk)
-            if resp and resp.status_code < 300:
+            if resp:
+                context["code"] = resp.status_code
                 context["title"] = title
                 context["request_format"] = "json"
                 context["response_format"] = "json"
