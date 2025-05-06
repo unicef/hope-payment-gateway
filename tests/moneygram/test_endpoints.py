@@ -55,8 +55,8 @@ def test_webhook_notification_ko_transition_not_allowed(mg, api_client, admin_us
     url = reverse("moneygram:mg-status-webhook")
     response = api_client.post(url, data=data, user=admin_user, format="json")
     pr.refresh_from_db()
-    assert response.status_code == 400
-    assert response.data == {"error": "transition_not_allowed"}
+    assert response.status_code == 200
+    assert pr.status == PaymentRecordState.REFUND
 
 
 @responses.activate

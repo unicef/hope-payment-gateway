@@ -30,7 +30,7 @@ class PaymentInstructionFlow:
     @state.transition(
         source=PaymentInstructionState.DRAFT,
         target=PaymentInstructionState.OPEN,
-        permission="western_union.change_paymentinstruction",
+        permission="gateway.change_paymentinstruction",
     )
     def open(self) -> None:
         pass
@@ -38,7 +38,7 @@ class PaymentInstructionFlow:
     @state.transition(
         source=PaymentInstructionState.OPEN,
         target=PaymentInstructionState.CLOSED,
-        permission="western_union.change_paymentinstruction",
+        permission="gateway.change_paymentinstruction",
     )
     def close(self) -> None:
         pass
@@ -46,7 +46,7 @@ class PaymentInstructionFlow:
     @state.transition(
         source=PaymentInstructionState.CLOSED,
         target=PaymentInstructionState.READY,
-        permission="western_union.change_paymentinstruction",
+        permission="gateway.change_paymentinstruction",
     )
     def ready(self) -> None:
         pass
@@ -54,7 +54,7 @@ class PaymentInstructionFlow:
     @state.transition(
         source=PaymentInstructionState.READY,
         target=PaymentInstructionState.PROCESSED,
-        permission="western_union.change_paymentinstruction",
+        permission="gateway.change_paymentinstruction",
     )
     def process(self) -> None:
         pass
@@ -67,7 +67,7 @@ class PaymentInstructionFlow:
             PaymentInstructionState.PROCESSED,
         ],
         target=PaymentInstructionState.FINALIZED,
-        permission="western_union.change_paymentinstruction",
+        permission="gateway.change_paymentinstruction",
     )
     def finalize(self) -> None:
         pass
@@ -75,7 +75,7 @@ class PaymentInstructionFlow:
     @state.transition(
         source=State.ANY,
         target=PaymentInstructionState.ABORTED,
-        permission="western_union.change_paymentinstruction",
+        permission="gateway.change_paymentinstruction",
     )
     def abort(self) -> None:
         pass
@@ -102,7 +102,7 @@ class PaymentRecordFlow:
     @state.transition(
         source=PaymentRecordState.PENDING,
         target=PaymentRecordState.TRANSFERRED_TO_FSP,
-        permission="western_union.change_paymentrecordlog",
+        permission="gateway.change_paymentrecord",
     )
     def store(self) -> None:
         pass
@@ -110,7 +110,7 @@ class PaymentRecordFlow:
     @state.transition(
         source=PaymentRecordState.TRANSFERRED_TO_FSP,
         target=PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
-        permission="western_union.change_paymentrecordlog",
+        permission="gateway.change_paymentrecord",
     )
     def confirm(self) -> None:
         pass
@@ -118,7 +118,7 @@ class PaymentRecordFlow:
     @state.transition(
         source=PaymentRecordState.TRANSFERRED_TO_FSP,
         target=PaymentRecordState.PURGED,
-        permission="western_union.change_paymentrecordlog",
+        permission="gateway.change_paymentrecord",
     )
     def purge(self) -> None:
         pass
@@ -126,7 +126,7 @@ class PaymentRecordFlow:
     @state.transition(
         source=PaymentRecordState.TRANSFERRED_TO_FSP,
         target=PaymentRecordState.REFUND,
-        permission="western_union.change_paymentrecordlog",
+        permission="gateway.change_paymentrecord",
     )
     def refund(self) -> None:
         pass
@@ -134,7 +134,7 @@ class PaymentRecordFlow:
     @state.transition(
         source=State.ANY,
         target=PaymentRecordState.CANCELLED,
-        permission="western_union.change_paymentrecordlog",
+        permission="gateway.change_paymentrecord",
     )
     def cancel(self) -> None:
         pass
@@ -142,7 +142,7 @@ class PaymentRecordFlow:
     @state.transition(
         source=State.ANY,
         target=PaymentRecordState.ERROR,
-        permission="western_union.change_paymentrecordlog",
+        permission="gateway.change_paymentrecord",
     )
     def fail(self) -> None:
         pass

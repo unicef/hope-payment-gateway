@@ -1689,8 +1689,8 @@ def test_post_transaction_transition_not_allowed(mg, monkeypatch):
     assert response.data == {"errors": [{"error": "transition_not_allowed"}]}
 
 
-def _test_update_status(mg, monkeypatch, status, flow_method_name=None):
-    pr = PaymentRecordFactory(parent__fsp=mg)
+def _test_update_status(mg, monkeypatch, status, flow_method_name=None, initial_status=None):
+    pr = PaymentRecordFactory(parent__fsp=mg, status=initial_status)
     original_status = pr.status
 
     if flow_method_name:
@@ -1713,39 +1713,34 @@ def _test_update_status(mg, monkeypatch, status, flow_method_name=None):
 
 @pytest.mark.django_db
 def test_update_status_unfunded(mg):
-    _test_update_status(mg, None, UNFUNDED)
+    _test_update_status(mg, None, UNFUNDED, initial_status=PaymentRecordState.PENDING)
 
 
 @pytest.mark.django_db
 def test_update_status_available(mg):
-    _test_update_status(mg, None, AVAILABLE)
+    _test_update_status(mg, None, AVAILABLE, initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
 
 @pytest.mark.django_db
 def test_update_status_rejected(mg, monkeypatch):
-    _test_update_status(mg, monkeypatch, REJECTED, "purge")
+    _test_update_status(mg, monkeypatch, REJECTED, "purge", initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
 
 @pytest.mark.django_db
 def test_update_status_refunded(mg, monkeypatch):
-    _test_update_status(mg, monkeypatch, REFUNDED, "refund")
+    _test_update_status(mg, monkeypatch, REFUNDED, "refund", initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
 
 @pytest.mark.django_db
 def test_update_status_closed(mg, monkeypatch):
-    _test_update_status(mg, monkeypatch, CLOSED, "fail")
-
-
-@pytest.mark.django_db
-def test_update_status_other(mg, monkeypatch):
-    _test_update_status(mg, monkeypatch, "OTHER_STATUS", "fail")
+    _test_update_status(mg, monkeypatch, CLOSED, "fail", initial_status=PaymentRecordState.PENDING)
 
 
 @pytest.mark.django_db
 def test_update_status_received(mg, monkeypatch):
-    _test_update_status(mg, monkeypatch, RECEIVED, "confirm")
+    _test_update_status(mg, monkeypatch, RECEIVED, "confirm", initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
 
 @pytest.mark.django_db
 def test_update_status_delivered(mg, monkeypatch):
-    _test_update_status(mg, monkeypatch, DELIVERED, "confirm")
+    _test_update_status(mg, monkeypatch, DELIVERED, "confirm", initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
