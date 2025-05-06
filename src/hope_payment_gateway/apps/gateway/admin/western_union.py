@@ -9,7 +9,7 @@ from django.urls import reverse
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
     InvalidCorridorError,
-    PayloadException,
+    PayloadError,
     PayloadMissingKeyError,
 )
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
@@ -82,7 +82,7 @@ class WesternUnionAdminMixin:
             context["request_format"] = "json"
             return TemplateResponse(request, "request.html", context)
 
-        except (PayloadException, InvalidCorridorError, PayloadMissingKeyError) as e:
+        except (PayloadError, InvalidCorridorError, PayloadMissingKeyError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return redirect(reverse("admin:gateway_paymentrecord_change", args=[obj.pk]))
 
@@ -102,7 +102,7 @@ class WesternUnionAdminMixin:
             payload = WesternUnionClient.create_validation_payload(payload)
             context.update(WesternUnionClient().send_money_validation(payload))
             return TemplateResponse(request, "request.html", context)
-        except (PayloadException, InvalidCorridorError) as e:
+        except (PayloadError, InvalidCorridorError) as e:
             messages.add_message(request, messages.ERROR, str(e))
             return redirect(reverse("admin:gateway_paymentrecord_change", args=[obj.pk]))
 

@@ -28,7 +28,7 @@ from hope_payment_gateway.apps.fsp.western_union.api import (
 from hope_payment_gateway.apps.fsp.western_union.api.utils import integrate_payload
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
     InvalidCorridorError,
-    PayloadException,
+    PayloadError,
     PayloadMissingKeyError,
 )
 from hope_payment_gateway.apps.fsp.western_union.models import (
@@ -292,7 +292,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.auth_code = smv_payload["mtcn"]
             pr.fsp_code = smv_payload["new_mtcn"]
             pr.save()
-        except (InvalidCorridorError, PayloadException, TransitionNotAllowed) as exc:
+        except (InvalidCorridorError, PayloadError, TransitionNotAllowed) as exc:
             pr.message, pr.status, pr.success = (
                 str(exc),
                 PaymentRecordState.ERROR,

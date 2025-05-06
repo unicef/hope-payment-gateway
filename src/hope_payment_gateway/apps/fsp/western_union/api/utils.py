@@ -1,7 +1,7 @@
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
-    InvalidChoiceFromCorridor,
-    MissingValueInCorridor,
-    PayloadIncompatible,
+    InvalidChoiceFromCorridorError,
+    MissingValueInCorridorError,
+    PayloadIncompatibleError,
 )
 
 
@@ -36,15 +36,15 @@ def integrate_payload(payload, template):
         leaf = path[-2]
         for key in path[:-2]:
             if key not in cursor:
-                raise PayloadIncompatible(f"Wrong structure: {key} should not be a leaf")
+                raise PayloadIncompatibleError(f"Wrong structure: {key} should not be a leaf")
             cursor = cursor[key]
         if value is None:
             if cursor[leaf] is None:
-                raise MissingValueInCorridor(f"Missing Value in Corridor {leaf}")
+                raise MissingValueInCorridorError(f"Missing Value in Corridor {leaf}")
         elif isinstance(value, list):
             val = cursor[leaf] or "-"
             if val is None or val not in value:
-                raise InvalidChoiceFromCorridor(f"Invalid Choice {leaf} for {val}")
+                raise InvalidChoiceFromCorridorError(f"Invalid Choice {leaf} for {val}")
         else:
             cursor[leaf] = value
     return payload

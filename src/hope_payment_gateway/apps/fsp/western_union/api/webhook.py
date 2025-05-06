@@ -19,7 +19,7 @@ from hope_payment_gateway.apps.fsp.western_union.api import (
     SUCCESS_APN,
 )
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidRequest
+from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidRequestError
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
@@ -52,7 +52,7 @@ class NisNotificationView(WesternUnionApi):
     def get(self, request):
         try:
             payload = self.get_payload(request)
-        except InvalidRequest as e:
+        except InvalidRequestError as e:
             return Response(
                 {"invalid_request": str(e)},
                 status=HTTP_400_BAD_REQUEST,
@@ -62,7 +62,7 @@ class NisNotificationView(WesternUnionApi):
     def post(self, request):
         try:
             payload = self.get_payload(request)
-        except InvalidRequest as e:
+        except InvalidRequestError as e:
             return Response(
                 {"invalid_request": str(e)},
                 status=HTTP_400_BAD_REQUEST,
@@ -150,7 +150,7 @@ class NisNotificationXMLView(XMLViewMixin, NisNotificationView):
             else:
                 key = header
                 keys = ", ".join(request.data.keys())
-            raise InvalidRequest(f"header {key} not in {keys}")
+            raise InvalidRequestError(f"header {key} not in {keys}")
 
     @staticmethod
     def prepare_response(payload):
