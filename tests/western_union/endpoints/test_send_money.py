@@ -6,8 +6,8 @@ from factories import CorridorFactory, PaymentRecordFactory
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.exceptions import (
     InvalidCorridorError,
-    InvalidChoiceFromCorridor,
-    PayloadIncompatible,
+    InvalidChoiceFromCorridorError,
+    PayloadIncompatibleError,
 )
 from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
@@ -204,7 +204,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
                 "wallet_details": {"service_provider_code": 22901},
             },
             "Invalid Choice reason_for_sending for AO12",
-            InvalidChoiceFromCorridor,
+            InvalidChoiceFromCorridorError,
         ),
         (
             {
@@ -214,7 +214,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
                 "missing_value": {"service_provider_code": 22901},
             },
             "Wrong structure: missing_value should not be a leaf",
-            PayloadIncompatible,
+            PayloadIncompatibleError,
         ),
     ],
 )

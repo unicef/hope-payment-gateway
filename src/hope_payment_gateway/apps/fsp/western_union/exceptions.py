@@ -1,26 +1,26 @@
-class InvalidCorridorError(BaseException):
+class InvalidCorridorError(Exception):
     pass
 
 
-class PayloadException(BaseException):
+class PayloadError(Exception):
     pass
 
 
-class InvalidRequest(BaseException):
+class InvalidRequestError(Exception):
     pass
 
 
-class PayloadMissingKeyError(PayloadException):
+class PayloadMissingKeyError(PayloadError):
     pass
 
 
-class MissingValueInCorridor(PayloadException):
+class MissingValueInCorridorError(PayloadError):
     pass
 
 
-class InvalidChoiceFromCorridor(PayloadException):
+class InvalidChoiceFromCorridorError(PayloadError):
     pass
 
 
-class PayloadIncompatible(PayloadException):
+class PayloadIncompatibleError(PayloadError):
     pass
