@@ -61,7 +61,7 @@ class MoneyGramAdminMixin:
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Quote",
-        permissions="moneygram.can_quote_transaction",
+        permission="moneygram.can_quote_transaction",
     )
     def mg_quote_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "quote", "Quote")
