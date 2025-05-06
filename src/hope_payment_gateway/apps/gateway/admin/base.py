@@ -300,11 +300,12 @@ class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 @admin.register(AsyncJob)
 class AsyncJobAdmin(AdminFiltersMixin, CeleryTaskModelAdmin, admin.ModelAdmin):
-    list_display = ("type", "verbose_status", "owner")
+    list_display = ("instruction", "type", "verbose_status", "action", "owner")
     autocomplete_fields = ("owner", "content_type")
     list_filter = (
         ("owner", AutoCompleteFilter),
         "type",
+        "action",
     )
 
     def get_readonly_fields(self, request: "HttpRequest", obj: AsyncJob | None = None):

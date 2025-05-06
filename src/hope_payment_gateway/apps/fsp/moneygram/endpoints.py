@@ -106,7 +106,7 @@ class MoneyGramWebhook(MoneyGramApi):
                 "subscriptionType": payload["subscriptionType"],
                 "transactionSubStatus": [
                     {"status": substatus["subStatus"], "message": substatus["message"]}
-                    for substatus in payload["eventPayload"]["transactionSubStatus"]
+                    for substatus in payload["eventPayload"].get("transactionSubStatus", [])
                 ],
             }
         )
