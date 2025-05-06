@@ -4,6 +4,7 @@ from django.test import RequestFactory
 from django.contrib.auth.models import Permission
 from unittest.mock import patch, MagicMock
 
+from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError
 from hope_payment_gateway.apps.gateway.admin import PaymentRecordAdmin
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 from tests.factories.payment import (
@@ -13,7 +14,6 @@ from tests.factories.payment import (
 
 from django.contrib import messages
 from viewflow.fsm import TransitionNotAllowed
-from hope_payment_gateway.apps.fsp.moneygram.client import InvalidTokenError
 
 
 @pytest.fixture

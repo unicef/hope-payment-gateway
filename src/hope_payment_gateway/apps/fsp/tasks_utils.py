@@ -4,6 +4,7 @@ from django.utils.module_loading import import_string
 from strategy_field.utils import fqn
 
 from hope_payment_gateway.apps.core.tasks import lock_job
+from hope_payment_gateway.apps.fsp.exceptions import TokenError, PayloadError, InvalidCorridorError
 from hope_payment_gateway.apps.gateway.models import (
     AsyncJob,
     PaymentInstruction,
@@ -16,7 +17,10 @@ from hope_payment_gateway.apps.gateway.models import (
 def notify_records_to_fsp(client_fqn, to_process_ids):
     client = import_string(client_fqn)()
     for record in PaymentRecord.objects.filter(id__in=to_process_ids):
-        client.create_transaction(record.get_payload())
+        try:
+            client.create_transaction(record.get_payload())
+        except (TokenError, PayloadError, InvalidCorridorError):
+            logging.info(f"{record.record_code} transaction did not success")
 
 
 def send_to_fsp(  # noqa

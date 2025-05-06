@@ -7,8 +7,8 @@ from django.http import HttpRequest
 from django.template.response import TemplateResponse
 from viewflow.fsm import TransitionNotAllowed
 
+from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError
 from hope_payment_gateway.apps.fsp.moneygram.client import (
-    InvalidTokenError,
     MoneyGramClient,
 )
 from hope_payment_gateway.apps.gateway.models import PaymentRecord, FinancialServiceProviderConfig

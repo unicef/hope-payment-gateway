@@ -26,7 +26,7 @@ from hope_payment_gateway.apps.fsp.western_union.api import (
     web,
 )
 from hope_payment_gateway.apps.fsp.western_union.api.utils import integrate_payload
-from hope_payment_gateway.apps.fsp.western_union.exceptions import (
+from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidCorridorError,
     PayloadError,
     PayloadMissingKeyError,

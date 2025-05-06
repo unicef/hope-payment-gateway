@@ -1,4 +1,4 @@
-from hope_payment_gateway.apps.fsp.western_union.exceptions import (
+from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidChoiceFromCorridorError,
     MissingValueInCorridorError,
     PayloadIncompatibleError,

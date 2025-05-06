@@ -53,7 +53,7 @@ def palpay_send_money(tag=None, threshold=10000):
             action=fqn(palpay_notify),
             config={"to_process_ids": records_ids},
             instruction=pi,
-            group_key="mg-send-instruction",
+            group_key="palpay-send-instruction",
         )
         with lock_job(job):
             job.queue()

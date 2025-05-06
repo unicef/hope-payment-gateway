@@ -6,10 +6,6 @@ class PayloadError(Exception):
     pass
 
 
-class InvalidRequestError(Exception):
-    pass
-
-
 class PayloadMissingKeyError(PayloadError):
     pass
 
@@ -23,4 +19,20 @@ class InvalidChoiceFromCorridorError(PayloadError):
 
 
 class PayloadIncompatibleError(PayloadError):
+    pass
+
+
+class TokenError(Exception):
+    pass
+
+
+class InvalidTokenError(TokenError):
+    pass
+
+
+class ExpiredTokenError(TokenError):
+    pass
+
+
+class InvalidRequestError(Exception):
     pass

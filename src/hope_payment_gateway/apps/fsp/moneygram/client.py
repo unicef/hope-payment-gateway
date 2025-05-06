@@ -13,6 +13,7 @@ from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
+from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError, PayloadMissingKeyError
 from hope_payment_gateway.apps.fsp.moneygram import (
     AVAILABLE,
     CLOSED,
@@ -34,18 +35,6 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class PayloadMissingKeyError(Exception):
-    pass
-
-
-class InvalidTokenError(Exception):
-    pass
-
-
-class ExpiredTokenError(Exception):
-    pass
 
 
 class MoneyGramClient(FSPClient, metaclass=Singleton):

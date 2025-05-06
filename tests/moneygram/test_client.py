@@ -6,6 +6,7 @@ import responses
 from constance.test import override_config
 from django.conf import settings
 from factories import PaymentRecordFactory
+from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError, PayloadMissingKeyError
 from hope_payment_gateway.apps.fsp.moneygram import (
     DELIVERED,
     RECEIVED,
@@ -16,10 +17,8 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     CLOSED,
 )
 from hope_payment_gateway.apps.fsp.moneygram.client import (
-    InvalidTokenError,
     MoneyGramClient,
     update_status,
-    PayloadMissingKeyError,
 )
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 from responses import _recorder  # noqa

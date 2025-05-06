@@ -8,6 +8,6 @@ urlpatterns = [
     re_path(
         "webhook_status_events/",
         view=PalPayWebhook.as_view(),
-        name="mg-status-webhook",
+        name="palpay-status-webhook",
     ),
 ]

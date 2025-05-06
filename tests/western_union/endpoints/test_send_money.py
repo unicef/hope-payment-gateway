@@ -4,7 +4,7 @@ from constance.test import override_config
 from factories import CorridorFactory, PaymentRecordFactory
 
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.exceptions import (
+from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidCorridorError,
     InvalidChoiceFromCorridorError,
     PayloadIncompatibleError,

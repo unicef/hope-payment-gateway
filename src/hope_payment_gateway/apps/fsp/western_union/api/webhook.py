@@ -19,7 +19,7 @@ from hope_payment_gateway.apps.fsp.western_union.api import (
     SUCCESS_APN,
 )
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.exceptions import InvalidRequestError
+from hope_payment_gateway.apps.fsp.exceptions import InvalidRequestError
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
