@@ -130,6 +130,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
         return {
             "title": title,
+            "url": f"{wsdl_name}:{service_name}",
             "content_request": payload,
             "content_response": response,
             "request_format": "json",
@@ -286,7 +287,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 pr.message = f"Validation failed: {response['error']}"
                 pr.status, pr.success = PaymentRecordState.ERROR, False
                 pr.save()
-                return pr
+                return response
             smv_payload = serialize_object(response["content_response"])
             pr.auth_code = smv_payload["mtcn"]
             pr.fsp_code = smv_payload["new_mtcn"]

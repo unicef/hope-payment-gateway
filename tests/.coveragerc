@@ -8,7 +8,6 @@ omit =
     */commands/*,
     */apps.py,
     */wsgi.py,
-    */dbrouters.py,
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -27,7 +26,7 @@ exclude_lines =
     #if 0:
     if __name__ == .__main__.:
 
-fail_under = 70
+fail_under = 80
 
 ignore_errors = True
 

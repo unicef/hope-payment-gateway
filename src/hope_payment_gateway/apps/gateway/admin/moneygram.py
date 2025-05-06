@@ -21,9 +21,11 @@ class MoneyGramAdminMixin:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             try:
-                payload, resp = getattr(MoneyGramClient(), method)(obj.get_payload())
+                payload, resp, endpoint = getattr(MoneyGramClient(), method)(obj.get_payload())
                 context = self.get_common_context(request, pk)
                 if resp:
+                    context["code"] = resp.status_code
+                    context["url"] = endpoint
                     if resp.status_code < 300:
                         context["title"] = title
                         context["request_format"] = "json"
