@@ -30,6 +30,7 @@ from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
     PaymentRecord,
+    PaymentRecordState,
 )
 
 logger = logging.getLogger(__name__)
@@ -357,11 +358,20 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
 
 def update_status(pr, status):
-    if pr.status != status:
+    mg_enabled_transaction = {
+        PaymentRecordState.PENDING: [SENT, AVAILABLE, IN_TRANSIT, CLOSED],
+        PaymentRecordState.TRANSFERRED_TO_FSP: [RECEIVED, DELIVERED, REJECTED, REFUNDED, CLOSED],
+        PaymentRecordState.TRANSFERRED_TO_BENEFICIARY: [CLOSED],
+        PaymentRecordState.CANCELLED: [],
+        PaymentRecordState.REFUND: [],
+        PaymentRecordState.PURGED: [],
+        PaymentRecordState.ERROR: [],
+    }
+    if status in mg_enabled_transaction[pr.status]:
         flow = PaymentRecordFlow(pr)
-        if status in [UNFUNDED, AVAILABLE]:
+        if status in [UNFUNDED]:
             pass
-        elif status in [SENT, IN_TRANSIT]:
+        elif status in [SENT, AVAILABLE, IN_TRANSIT]:
             flow.store()
             pr.success = True
         elif status in [RECEIVED, DELIVERED]:
@@ -372,7 +382,5 @@ def update_status(pr, status):
         elif status in [REFUNDED]:
             flow.refund()
         elif status in [CLOSED]:
-            flow.fail()
-        else:
             flow.fail()
         pr.save()
