@@ -54,6 +54,10 @@ def mock_response():
                                     "T_INDEX": "003",
                                     "DESCRIPTION": "other_field;type;VALUE;Description",
                                 },
+                                {
+                                    "T_INDEX": "000",
+                                    "DESCRIPTION": "other_field;type;VALUE;Description",
+                                },
                             ]
                         }
                     }
