@@ -2,14 +2,8 @@ import pytest
 from unittest.mock import patch
 from constance.test import override_config
 
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from tests.factories import CorridorFactory
-
-
-@pytest.fixture
-def wu_client():
-    return WesternUnionClient()
 
 
 @pytest.fixture

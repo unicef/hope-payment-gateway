@@ -7,6 +7,7 @@ from django.contrib.admin.sites import AdminSite
 from django.test import RequestFactory
 from hope_api_auth.models import Grant
 from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
+from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 from strategy_field.utils import fqn
 
@@ -211,3 +212,8 @@ def modeladmin():
     admin.admin_site.each_context.return_value = {}
     admin.get_fieldsets.return_value = []
     return admin
+
+
+@pytest.fixture
+def wu_client():
+    return WesternUnionClient()
