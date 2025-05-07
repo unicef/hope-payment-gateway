@@ -1,7 +1,9 @@
+from unittest.mock import Mock
+
 import pytest
 import responses
 from constance.test import override_config
-
+from zeep.exceptions import TransportError
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 
 
@@ -18,6 +20,25 @@ def test_client_invalid():
     resp = client.response_context(client.search_client, "Search", payload)
 
     assert resp["title"] == "Invalid Payload"
+    assert resp["code"] == 400
+
+
+def test_client_invalid_address():
+    client = WesternUnionClient()
+    resp = client.response_context(client.search_client, "Search", dict, wsdl_name="wrong_one", port="wrong_one")
+
+    assert resp["title"] == "Service not found"
+    assert resp["code"] == 400
+    assert resp["error"] == "Service not found"
+
+
+def test_client_transport_error():
+    mock_client = Mock()
+    mock_client.service.Search.side_effect = TransportError("Transport Error", status_code=400)
+    client = WesternUnionClient()
+    payload = {"i am": "valid"}
+    resp = client.response_context(mock_client, "Search", payload)
+    assert resp["title"] == "Transport Error [400]"
     assert resp["code"] == 400
 
 
