@@ -4,8 +4,6 @@ import tempfile
 import pytest
 import responses
 from django.contrib.admin.sites import AdminSite
-from django.contrib.messages.middleware import MessageMiddleware
-from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory
 from hope_api_auth.models import Grant
 from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
@@ -193,35 +191,8 @@ def admin_site():
 
 
 @pytest.fixture
-def moneygram_fsp():
-    return FinancialServiceProviderFactory(vendor_number="MONEYGRAM")
-
-
-@pytest.fixture
-def moneygram_record(moneygram_fsp):
-    return PaymentRecordFactory(parent__fsp=moneygram_fsp, fsp_code="TEST123")
-
-
-@pytest.fixture
 def request_factory():
     return RequestFactory()
-
-
-@pytest.fixture
-def request_with_messages(request_factory):
-    request = request_factory.post("/")
-    middleware = SessionMiddleware(lambda r: None)
-    middleware.process_request(request)
-    middleware = MessageMiddleware(lambda r: None)
-    middleware.process_request(request)
-    return request
-
-
-@pytest.fixture
-def sample_queryset():
-    from hope_payment_gateway.apps.gateway.models import PaymentRecord
-
-    return PaymentRecord.objects.all()
 
 
 @pytest.fixture
@@ -240,25 +211,3 @@ def modeladmin():
     admin.admin_site.each_context.return_value = {}
     admin.get_fieldsets.return_value = []
     return admin
-
-
-@pytest.fixture
-def request_with_data(request_with_messages, admin_user):
-    from django.http import QueryDict
-
-    request_with_messages.user = admin_user
-    post_data = QueryDict(mutable=True)
-    post_data.update(
-        {
-            "action": "export_as_template",
-            "_selected_action": ["1", "2"],
-            "columns": "Record Code#record_code\r\nMessage#message",
-            "delimiter": ",",
-            "quotechar": '"',
-            "quoting": "0",
-            "escapechar": "\\",
-            "apply": "Export",
-        }
-    )
-    request_with_messages.POST = post_data
-    return request_with_messages
