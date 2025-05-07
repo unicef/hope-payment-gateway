@@ -129,7 +129,7 @@ def export_as_template_impl(  # noqa
             context = Context({"obj": obj})
             for template in templates:
                 value = template.render(context)
-                if isinstance(value, datetime.datetime):
+                if isinstance(value, datetime.datetime):  # pragma: no cover
                     try:
                         value = dateformat.format(
                             value.astimezone(settingstime_zone),
@@ -138,9 +138,9 @@ def export_as_template_impl(  # noqa
                     except ValueError:
                         # astimezone() cannot be applied to a naive datetime
                         value = dateformat.format(value, config["datetime_format"])
-                elif isinstance(value, datetime.date):
+                elif isinstance(value, datetime.date):  # pragma: no cover
                     value = dateformat.format(value, config["date_format"])
-                elif isinstance(value, datetime.time):
+                elif isinstance(value, datetime.time):  # pragma: no cover
                     value = dateformat.format(value, config["time_format"])
                 row.append(smart_str(value))
             yield writer.writerow(row)

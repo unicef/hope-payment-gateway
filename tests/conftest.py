@@ -3,6 +3,13 @@ import tempfile
 
 import pytest
 import responses
+from django.contrib.admin.sites import AdminSite
+from django.test import RequestFactory
+from hope_api_auth.models import Grant
+from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
+from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
+from strategy_field.utils import fqn
+
 from factories import (
     APITokenFactory,
     CorridorFactory,
@@ -13,13 +20,6 @@ from factories import (
     FinancialServiceProviderConfigFactory,
     DeliveryMechanismFactory,
 )
-from strategy_field.utils import fqn
-
-from hope_api_auth.models import Grant
-from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
-from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
-
-from django.contrib.admin.sites import AdminSite
 
 
 def pytest_configure(config):
@@ -188,3 +188,26 @@ def api_client_with_credentials(db, token_user, api_client):
 @pytest.fixture
 def admin_site():
     return AdminSite()
+
+
+@pytest.fixture
+def request_factory():
+    return RequestFactory()
+
+
+@pytest.fixture
+def modeladmin():
+    from django.contrib.admin import ModelAdmin
+    from hope_payment_gateway.apps.gateway.models import PaymentRecord
+    from unittest.mock import MagicMock
+
+    admin = MagicMock(spec=ModelAdmin)
+    admin.model = PaymentRecord
+    admin.opts = MagicMock()
+    admin.opts.verbose_name_plural = "Payment Records"
+    admin.opts.app_label = "gateway"
+    admin.admin_site = MagicMock()
+    admin.admin_site.name = "admin"
+    admin.admin_site.each_context.return_value = {}
+    admin.get_fieldsets.return_value = []
+    return admin
