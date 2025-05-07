@@ -44,6 +44,10 @@ def mock_response():
                             "GETDELIVERYOPTIONTEMPLATE": [
                                 {
                                     "T_INDEX": "001",
+                                    "DESCRIPTION": "wallet_details.no_service_provider_code;type;WALLET1;WP 1",
+                                },
+                                {
+                                    "T_INDEX": "001",
                                     "DESCRIPTION": "wallet_details.service_provider_code;type;WALLET1;WP 1",
                                 },
                                 {
