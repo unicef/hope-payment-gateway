@@ -4,6 +4,8 @@ from unittest.mock import patch, MagicMock
 import pytest
 from constance.test import override_config
 from django.conf import settings
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpResponse, StreamingHttpResponse, QueryDict
 from django.urls import reverse
 from factories import PaymentRecordFactory
@@ -15,6 +17,46 @@ from hope_payment_gateway.apps.gateway.actions import (
     moneygram_refund,
 )
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
+
+
+@pytest.fixture
+def request_with_messages(request_factory):
+    request = request_factory.post("/")
+    middleware = SessionMiddleware(lambda r: None)
+    middleware.process_request(request)
+    middleware = MessageMiddleware(lambda r: None)
+    middleware.process_request(request)
+    return request
+
+
+@pytest.fixture
+def sample_queryset():
+    from hope_payment_gateway.apps.gateway.models import PaymentRecord
+
+    records = PaymentRecordFactory.create_batch(2)
+    return PaymentRecord.objects.filter(id__in=[r.id for r in records])
+
+
+@pytest.fixture
+def request_with_data(request_with_messages, admin_user):
+    from django.http import QueryDict
+
+    request_with_messages.user = admin_user
+    post_data = QueryDict(mutable=True)
+    post_data.update(
+        {
+            "action": "export_as_template",
+            "_selected_action": ["1", "2"],
+            "columns": "Record Code#record_code\r\nMessage#message",
+            "delimiter": ",",
+            "quotechar": '"',
+            "quoting": "0",
+            "escapechar": "\\",
+            "apply": "Export",
+        }
+    )
+    request_with_messages.POST = post_data
+    return request_with_messages
 
 
 @pytest.mark.parametrize(
@@ -291,10 +333,10 @@ def test_export_with_custom_template(modeladmin, request_with_data):
                 assert call_kwargs["form_class"]._mock_name == "TemplateExportForm"
 
 
-@override_config(MONEYGRAM_VENDOR_NUMBER="MONEYGRAM")
+@override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_moneygram_update_called(modeladmin, request_with_messages, moneygram_fsp):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=moneygram_fsp)
+def test_moneygram_update_called(modeladmin, request_with_messages, mg):
+    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg)
     record_ids = [record.id for record in records]
     queryset = PaymentRecord.objects.filter(id__in=record_ids).values_list("id", flat=True)
 
@@ -303,10 +345,10 @@ def test_moneygram_update_called(modeladmin, request_with_messages, moneygram_fs
         mock_update.assert_called_once()
 
 
-@override_config(MONEYGRAM_VENDOR_NUMBER="MONEYGRAM")
+@override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_refund_with_permission(modeladmin, request_with_messages, moneygram_fsp):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=moneygram_fsp, fsp_code="TEST123")
+def test_refund_with_permission(modeladmin, request_with_messages, mg):
+    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg, fsp_code="TEST123")
     record_ids = [record.id for record in records]
     queryset = PaymentRecord.objects.filter(id__in=record_ids)
 
@@ -344,10 +386,10 @@ def test_refund_with_permission(modeladmin, request_with_messages, moneygram_fsp
                 assert response.url == reverse("admin:gateway_paymentrecord_changelist")
 
 
-@override_config(MONEYGRAM_VENDOR_NUMBER="MONEYGRAM")
+@override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_refund_without_permission(modeladmin, request_with_messages, moneygram_fsp):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=moneygram_fsp, fsp_code="TEST123")
+def test_refund_without_permission(modeladmin, request_with_messages, mg):
+    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg, fsp_code="TEST123")
     record_ids = [record.id for record in records]
     queryset = PaymentRecord.objects.filter(id__in=record_ids)
 
@@ -380,10 +422,10 @@ def test_refund_without_permission(modeladmin, request_with_messages, moneygram_
             assert response is None
 
 
-@override_config(MONEYGRAM_VENDOR_NUMBER="MONEYGRAM")
+@override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_refund_with_invalid_form(modeladmin, request_with_messages, moneygram_fsp):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=moneygram_fsp, fsp_code="TEST123")
+def test_refund_with_invalid_form(modeladmin, request_with_messages, mg):
+    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg, fsp_code="TEST123")
     record_ids = [record.id for record in records]
     queryset = PaymentRecord.objects.filter(id__in=record_ids)
 
