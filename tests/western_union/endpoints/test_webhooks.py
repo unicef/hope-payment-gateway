@@ -15,13 +15,13 @@ def test_nis_notification_rejected(wu, api_client, admin_user):
         PaymentRecordFactory(record_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
         url = reverse("western_union:nis-notification-xml-view")
         data = xml.read()
-        api_client.post(url, data=data, user=admin_user, content_type="application/xml")
+        response = api_client.post(url, data=data, user=admin_user, content_type="application/xml")
+
+        assert response.status_code == 400
+        assert "cannot_find_transaction" in response.data
 
 
-def test_nis_notification_xml_with_invalid_request(
-    api_client,
-    admin_user,
-):
+def test_nis_notification_xml_with_invalid_request(api_client, admin_user):
     url = reverse("western_union:nis-notification-xml-view")
     response = api_client.get(url, data={}, user=admin_user, content_type="application/xml")
 
