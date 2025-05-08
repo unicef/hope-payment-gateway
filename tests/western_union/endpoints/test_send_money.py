@@ -281,7 +281,7 @@ def test_send_complete_send_money_validation_response_error(wu, wu_client):
     with patch.object(wu_client, "send_money_validation", return_value=mock_response):
         response = wu_client.create_transaction(payload)
         pr.refresh_from_db()
-        assert pr.message == f"Validation failed: {mock_response['error']}"
+        assert pr.message == f"Send Money Validation failed: {mock_response['error']}"
         assert pr.status == PaymentRecordState.ERROR
         assert pr.success is False
         assert response == mock_response
