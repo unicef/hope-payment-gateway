@@ -284,8 +284,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             response = self.send_money_validation(payload)
             pr.refresh_from_db()
             if response["code"] != 200:
-                pr.message = f"Validation failed: {response['error']}"
-                pr.status, pr.success = PaymentRecordState.ERROR, False
+                pr.message = f"Send Money Validation failed: {response['error']}"
+                if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
+                    flow = PaymentRecordFlow(pr)
+                    flow.fail()
+                pr.success = False
                 pr.save()
                 return response
             smv_payload = serialize_object(response["content_response"])
@@ -301,17 +304,6 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.save()
             raise exc
 
-        if response["code"] != 200:
-            pr.message, pr.success, pr.auth_code, pr.fsp_code = (
-                f"Send Money Validation: {response['error']}",
-                False,
-                smv_payload["mtcn"],
-                smv_payload["new_mtcn"],
-            )
-            if response["error"][:5] not in config.WESTERN_UNION_ERRORS.split(";"):
-                pr.fail()
-            pr.save()
-            return response
         extra_data = {
             key: smv_payload[key]
             for key in [
