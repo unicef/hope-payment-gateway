@@ -26,7 +26,7 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import extrapolate_errors, get_phone_number
+from hope_payment_gateway.apps.fsp.utils import extrapolate_errors, get_phone_number, get_account_field
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
@@ -140,8 +140,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                     }
                 },
                 "targetAccount": {
-                    "accountNumber": base_payload.get("bank_account_number"),
-                    "bankName": base_payload.get("bank_code"),
+                    "accountNumber": get_account_field(base_payload, "number"),
+                    "bankName": get_account_field(base_payload, "code"),
                 },
                 "receipt": {
                     "primaryLanguage": base_payload.get("receipt_primary_language", None),

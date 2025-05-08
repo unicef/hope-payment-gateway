@@ -14,6 +14,12 @@ def get_phone_number(raw_phone_no):
     return phone_number, country_code
 
 
+def get_account_field(payload, field_name):
+    if account_dict := payload.get("account"):
+        return account_dict.get(field_name, None)
+    return None
+
+
 def extrapolate_errors(data):
     msgs = []
     if "errors" in data:
