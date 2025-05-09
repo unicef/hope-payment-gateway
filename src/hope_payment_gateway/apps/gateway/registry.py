@@ -7,10 +7,10 @@ class FSPProcessor:
         self.fsp = fsp
 
     def label(self) -> str:
-        return self.__class__.__name__  # pragma no-cover
+        return self.__class__.__name__  # pragma: no-cover
 
     def notify(self) -> None:
-        pass  # pragma no-cover
+        pass  # pragma: no-cover
 
     def get_configuration(self, config_key, delivery_mechanism):
         payload = self.fsp.configuration
