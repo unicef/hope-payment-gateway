@@ -251,7 +251,7 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 
 @admin.register(FinancialServiceProviderConfig)
-class FinancialServiceProviderConfigAdmin(ExtraButtonsMixin, admin.ModelAdmin):
+class FinancialServiceProviderConfigAdmin(AdminFiltersMixin, ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
         "key",
         "office",
@@ -272,6 +272,12 @@ class FinancialServiceProviderConfigAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         "office__slug",
         "delivery_mechanism__name",
         "delivery_mechanism__code",
+    )
+    list_filter = (
+        "fsp",
+        "delivery_mechanism",
+        ("country", AutoCompleteFilter),
+        ("office", AutoCompleteFilter),
     )
 
 

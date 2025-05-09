@@ -162,7 +162,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "counter_id": counter_id,
             }
 
-            delivery_phone_number = base_payload.get("delivery_phone_number")
+            delivery_phone_number = base_payload.get("phone_no")
             phone_number, country_code = get_phone_number(delivery_phone_number)
             contact_no = base_payload.get("phone_no", "N/A")
 
