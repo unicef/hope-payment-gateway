@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 import responses
 from constance.test import override_config
@@ -15,7 +17,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecor
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_validation.yaml")
 @responses.activate
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_money_validation(django_app, admin_user, wu):
+def test_send_money_validation(django_app, admin_user, wu, wu_client):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money_validation.yaml")
     payload = {
@@ -34,14 +36,13 @@ def test_send_money_validation(django_app, admin_user, wu):
         "delivery_services_code": "000",
     }
     payload = WesternUnionClient.create_validation_payload(payload)
-    client = WesternUnionClient()
-    resp = client.send_money_validation(payload)
+    resp = wu_client.send_money_validation(payload)
     assert (resp["title"], resp["code"]) == ("sendmoneyValidation", 200)
 
 
 @responses.activate
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_money_validation_ko(django_app, admin_user, wu):
+def test_send_money_validation_ko(django_app, admin_user, wu, wu_client):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money_validation_ko.yaml")
     payload = {
@@ -60,8 +61,7 @@ def test_send_money_validation_ko(django_app, admin_user, wu):
         "delivery_services_code": "000",
     }
     payload = WesternUnionClient.create_validation_payload(payload)
-    client = WesternUnionClient()
-    resp = client.send_money_validation(payload)
+    resp = wu_client.send_money_validation(payload)
     assert (resp["title"], resp["code"]) == (
         "business exception [xrsi:error-reply]",
         400,
@@ -71,7 +71,7 @@ def test_send_money_validation_ko(django_app, admin_user, wu):
 # @_recorder.record(file_path="tests/western_union/endpoints/send_money_complete.yaml")
 @responses.activate
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete(django_app, admin_user, wu):
+def test_send_complete(django_app, admin_user, wu, wu_client):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
@@ -92,7 +92,7 @@ def test_send_complete(django_app, admin_user, wu):
         "delivery_services_code": "000",
     }
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    WesternUnionClient().create_transaction(payload)
+    wu_client.create_transaction(payload)
     pr.refresh_from_db()
     assert pr.success
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
@@ -101,7 +101,7 @@ def test_send_complete(django_app, admin_user, wu):
 
 @responses.activate
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_corridor(django_app, admin_user, wu):
+def test_send_complete_corridor(django_app, admin_user, wu, wu_client):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/western_union/endpoints/send_money.yaml")
@@ -146,7 +146,7 @@ def test_send_complete_corridor(django_app, admin_user, wu):
         template=corridor_template,
     )
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    WesternUnionClient().create_transaction(payload)
+    wu_client.create_transaction(payload)
     pr.refresh_from_db()
     assert pr.success
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
@@ -154,7 +154,7 @@ def test_send_complete_corridor(django_app, admin_user, wu):
 
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
+def test_send_complete_corridor_no_exist(django_app, admin_user, wu, wu_client):
     record_code = "Y3snz233UkGt1Gw1"
     payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
@@ -176,7 +176,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
     }
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
     with pytest.raises(InvalidCorridorError):
-        WesternUnionClient().create_transaction(payload)
+        wu_client.create_transaction(payload)
     pr.refresh_from_db()
     assert not pr.success
     assert pr.status == PaymentRecordState.ERROR
@@ -219,7 +219,7 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu):
     ],
 )
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message, wu, exc_class):
+def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message, wu, exc_class, wu_client):
     record_code = "Y3snz233UkGt1Gw1"
     payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
@@ -246,8 +246,80 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
     )
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
     with pytest.raises(exc_class):
-        WesternUnionClient().create_transaction(payload)
+        wu_client.create_transaction(payload)
     pr.refresh_from_db()
     assert not pr.success
     assert pr.status == PaymentRecordState.ERROR
     assert pr.message == message
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_send_complete_send_money_validation_response_error(wu, wu_client):
+    record_code = "Y3snz233UkGt1Gw4"
+    payload = {
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
+        "first_name": "Aliyah",
+        "last_name": "GRAY",
+        "phone_no": "+94786661137",
+        "source_country": "US",
+        "source_currency": "USD",
+        "transaction_type": "WMF",
+        "destination_country": "ES",
+        "destination_currency": "EUR",
+        "duplication_enabled": "D",
+        "amount": 199900,
+        "delivery_services_code": "000",
+    }
+    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
+
+    mock_response = {
+        "code": 400,
+        "error": "Error",
+    }
+    with patch.object(wu_client, "send_money_validation", return_value=mock_response):
+        response = wu_client.create_transaction(payload)
+        pr.refresh_from_db()
+        assert pr.message == f"Send Money Validation failed: {mock_response['error']}"
+        assert pr.status == PaymentRecordState.ERROR
+        assert pr.success is False
+        assert response == mock_response
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_send_complete_send_money_store_response_error(wu, wu_client):
+    responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
+    responses._add_from_file(file_path="tests/western_union/endpoints/send_money_validation.yaml")
+
+    record_code = "Y3snz233UkGt1Gw4"
+    payload = {
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
+        "first_name": "Aliyah",
+        "last_name": "GRAY",
+        "phone_no": "+94786661137",
+        "source_country": "US",
+        "source_currency": "USD",
+        "transaction_type": "WMF",
+        "destination_country": "ES",
+        "destination_currency": "EUR",
+        "duplication_enabled": "D",
+        "amount": 199900,
+        "delivery_services_code": "000",
+    }
+    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
+
+    mock_response = {
+        "code": 400,
+        "error": "Error",
+    }
+    with patch.object(wu_client, "send_money_store", return_value=mock_response):
+        response = wu_client.create_transaction(payload)
+        pr.refresh_from_db()
+        assert pr.message == f"Send Money Store: {mock_response['error']}"
+        assert pr.status == PaymentRecordState.ERROR
+        assert pr.success is False
+        assert response == mock_response
