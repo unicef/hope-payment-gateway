@@ -43,7 +43,7 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 if TYPE_CHECKING:
-    from django.http import HttpResponsePermanentRedirect
+    from django.http import HttpResponsePermanentRedirect  # pragma: no-cover
 
 
 logger = logging.getLogger(__name__)
