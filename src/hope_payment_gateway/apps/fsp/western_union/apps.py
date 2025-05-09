@@ -1,6 +1,6 @@
 from django.apps import AppConfig as BaseAppConfig
 
-from hope_payment_gateway.apps.gateway.registry import export_registry, registry
+from hope_payment_gateway.apps.gateway.registry import registry
 
 
 class AppConfig(BaseAppConfig):
@@ -8,8 +8,7 @@ class AppConfig(BaseAppConfig):
     verbose_name = "Western Union"
 
     def ready(self) -> None:
-        from .handlers import CSVExportStrategy, WesternUnionHandler
+        from .handlers import WesternUnionHandler
 
         registry.register(WesternUnionHandler)
-        export_registry.register(CSVExportStrategy)
         from . import tasks  # noqa

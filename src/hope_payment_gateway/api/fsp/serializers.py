@@ -1,5 +1,3 @@
-from typing import Any
-
 from rest_framework import serializers
 
 from hope_payment_gateway.apps.gateway.models import (
@@ -13,31 +11,6 @@ from hope_payment_gateway.apps.gateway.models import (
     Office,
     Country,
 )
-
-
-class PayloadMixin:
-    payload = serializers.SerializerMethodField()
-
-    def get_payload(self, obj: Any) -> Any:
-        return {
-            "instruction": {
-                "destination_country": "mandatory: CO",
-                "destination_currency": "mandatory: COP",
-                "country_code": "optional: 63",
-                "reason_for_sending": "optional: P20",
-                "delivery_services_code": "optional: 000 (money in minutes) 800 (wallet)",
-                "corridor": "optional: Benin",
-                "service_provider_code": "optional: 06301",
-                "transaction_type": "optional: WMF (fixed money transfer) WMN (money transfer)",
-                "duplication_enabled": "optional: D",
-            },
-            "record": {
-                "amount": "mandatory: 20000",
-                "first_name": "mandatory: Jason",
-                "last_name": "mandatory: Yorker",
-                "phone_no": "optional: 63123123",
-            },
-        }
 
 
 class AccountTypeSerializer(serializers.ModelSerializer):
@@ -58,7 +31,7 @@ class CountrySerializer(serializers.ModelSerializer):
         fields = ("id", "name", "iso_code2", "iso_code3")
 
 
-class DeliveryMechanismSerializer(PayloadMixin, serializers.ModelSerializer):
+class DeliveryMechanismSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeliveryMechanism
         fields = ("id", "code", "name", "description", "account_type", "transfer_type")
@@ -93,7 +66,7 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
         )
 
 
-class FinancialServiceProviderLightSerializer(PayloadMixin, serializers.ModelSerializer):
+class FinancialServiceProviderLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialServiceProvider
         fields = (
@@ -103,7 +76,7 @@ class FinancialServiceProviderLightSerializer(PayloadMixin, serializers.ModelSer
         )
 
 
-class FinancialServiceProviderSerializer(PayloadMixin, serializers.ModelSerializer):
+class FinancialServiceProviderSerializer(serializers.ModelSerializer):
     configs = FinancialServiceProviderConfigNestedSerializer(many=True, read_only=True)
 
     class Meta:
