@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NS1:Envelope xmlns:NS1="http://schemas.xmlsoap.org/soap/envelope/" xmlns:NS2="http://www.westernunion.com/schema/xrsi">
+    <NS1:Header>
+        <invalid_key>invalid_value</invalid_key>
+    </NS1:Header>
+    <NS1:Body>
+        <invalid_notification>
+            <transaction_id>TEST123</transaction_id>
+        </invalid_notification>
+    </NS1:Body>
+</NS1:Envelope>
