@@ -1,15 +1,10 @@
 from django.core import mail
 from django.core.mail import send_mail
-import pytest
-from pytest_django.fixtures import SettingsWrapper
+from django.test import override_settings
 
 
-@pytest.fixture
-def mail_backend(settings: SettingsWrapper) -> None:
-    settings.EMAIL_BACKEND = "anymail.backends.test.EmailBackend"
-
-
-def test_mail_configuration(mail_backend: None, settings: SettingsWrapper) -> None:
+@override_settings(EMAIL_BACKEND="anymail.backends.test.EmailBackend")
+def test_mail_configuration(settings) -> None:
     subject = "Test subject"
     body = "Test body"
     from_email = "to@example.com"
