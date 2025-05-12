@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     "django_celery_boost",
     "drf_spectacular",
     "drf_spectacular_sidecar",
+    "anymail",
 )
 
 MIDDLEWARE = (
@@ -176,18 +177,6 @@ LOGGING = {
 AUTH_USER_MODEL = "core.User"
 
 HOST = env("HOST")
-
-
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_HOST = env(
-    "EMAIL_HOST",
-)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 
 LOGIN_ENABLED = env("LOGIN_ENABLED")
 

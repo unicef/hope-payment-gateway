@@ -8,3 +8,4 @@ from .rest_framework import *  # noqa
 from .sentry import *  # noqa
 from .social_auth import *  # noqa
 from .western_union import *  # noqa
+from .mail import *  # noqa
