@@ -16,7 +16,7 @@ from zeep.wsdl.utils import etree_to_string
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
-from hope_payment_gateway.apps.fsp.utils import get_phone_number
+from hope_payment_gateway.apps.fsp.utils import get_from_delivery_mechanism, get_phone_number
 from hope_payment_gateway.apps.fsp.western_union.api import (
     MONEY_IN_TIME,
     WALLET,
@@ -225,7 +225,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                     "delivery_services": delivery_services,
                     "foreign_remote_system": frm,
                     "partner_info_buffer": partner_notification,
-                    "wallet_details": {"service_provider_code": base_payload.get("service_provider_code")},
+                    "wallet_details": {
+                        "service_provider_code": get_from_delivery_mechanism(base_payload, "service_provider_code")
+                    },
                 }
             )
 
