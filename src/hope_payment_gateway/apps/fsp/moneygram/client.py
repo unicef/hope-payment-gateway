@@ -26,8 +26,11 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import extrapolate_errors, get_phone_number, get_account_field, \
-    get_from_delivery_mechanism
+from hope_payment_gateway.apps.fsp.utils import (
+    extrapolate_errors,
+    get_phone_number,
+    get_from_delivery_mechanism,
+)
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
