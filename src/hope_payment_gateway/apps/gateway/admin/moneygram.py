@@ -26,11 +26,11 @@ class MoneyGramAdminMixin:
                 if resp:
                     context["code"] = resp.status_code
                     context["url"] = endpoint
+                    context["request_format"] = "json"
+                    context["content_request"] = payload
                     if resp.status_code < 300:
                         context["title"] = title
-                        context["request_format"] = "json"
                         context["response_format"] = "json"
-                        context["content_request"] = payload
                         context["content_response"] = resp.data
                         return TemplateResponse(request, "request.html", context)
 
