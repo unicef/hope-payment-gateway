@@ -24,20 +24,18 @@ class MoneyGramAdminMixin:
                 payload, resp, endpoint = getattr(MoneyGramClient(), method)(obj.get_payload())
                 context = self.get_common_context(request, pk)
                 if resp:
+                    context["title"] = title
                     context["code"] = resp.status_code
                     context["url"] = endpoint
                     context["request_format"] = "json"
                     context["content_request"] = payload
-                    if resp.status_code < 300:
-                        context["title"] = title
-                        context["response_format"] = "json"
-                        context["content_response"] = resp.data
-                        return TemplateResponse(request, "request.html", context)
+                    context["response_format"] = "json"
+                    context["content_response"] = resp.data
+                    if resp.status_code > 300:
+                        loglevel, msgs = self.handle_error(resp)
 
-                    loglevel, msgs = self.handle_error(resp)
-
-                    for msg in msgs:
-                        messages.add_message(request, loglevel, msg)
+                        for msg in msgs:
+                            messages.add_message(request, loglevel, msg)
                 else:
                     messages.add_message(request, messages.ERROR, "Connection Error")
                 return TemplateResponse(request, "request.html", context)
