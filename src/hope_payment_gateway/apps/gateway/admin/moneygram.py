@@ -31,7 +31,7 @@ class MoneyGramAdminMixin:
                     context["content_request"] = payload
                     context["response_format"] = "json"
                     context["content_response"] = resp.data
-                    if resp.status_code > 300:
+                    if resp.status_code >= 300:
                         loglevel, msgs = self.handle_error(resp)
 
                         for msg in msgs:
