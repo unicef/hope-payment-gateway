@@ -158,6 +158,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         record_code = base_payload["payment_record_code"]
         pr = PaymentRecord.objects.get(
             record_code=record_code,
+            status=PaymentRecordState.PENDING,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
 
