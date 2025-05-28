@@ -169,7 +169,7 @@ def test_prepare_quote(mg):
             "agentPartnerId": "AAAAAA",
             "userLanguage": "en-US",
             "destinationCountryCode": "US",
-            "serviceOptionCode": None,
+            "serviceOptionCode": "WILL_CALL",
             "beneficiaryTypeCode": "Consumer",
             "receiveAmount": {"currencyCode": "USD", "value": 100},
         },

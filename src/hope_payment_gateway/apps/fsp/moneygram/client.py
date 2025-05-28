@@ -122,8 +122,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "userLanguage": "en-US",
                 "destinationCountryCode": base_payload["destination_country"],
                 "sendCurrencyCode": base_payload.get("origination_currency", "USD"),
-                "serviceOptionCode": base_payload.get("service_provider_code", "WILL_CALL"),
-                "serviceOptionRoutingCode": base_payload.get("service_provider_routing_code"),
+                "serviceOptionCode": base_payload.get("service_option_code", "WILL_CALL"),
+                "serviceOptionRoutingCode": base_payload.get("service_option_routing_code", None),
                 "autoCommit": "true",
                 "receiveAmount": {
                     "currencyCode": base_payload.get("destination_currency", "USD"),
@@ -141,7 +141,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 },
                 "targetAccount": {
                     "accountNumber": get_account_field(base_payload, "number"),
-                    "bankName": get_account_field(base_payload, "code"),
+                    "bankName": base_payload.get("service_provider_code", None),
                 },
                 "receipt": {
                     "primaryLanguage": base_payload.get("receipt_primary_language", None),
@@ -192,7 +192,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         payload.update(
             {
                 "destinationCountryCode": base_payload["destination_country"],
-                "serviceOptionCode": base_payload.get("service_provider_code"),
+                "serviceOptionCode": base_payload.get("service_option_code", "WILL_CALL"),
                 "beneficiaryTypeCode": "Consumer",
                 "receiveAmount": {
                     "currencyCode": base_payload.get("destination_currency", "USD"),
