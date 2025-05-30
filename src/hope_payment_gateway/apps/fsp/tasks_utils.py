@@ -45,7 +45,7 @@ def send_to_fsp(  # noqa
             break
 
         logging.info(f"Sending {records_count} records {pi} to {fsp}")
-        records_ids = list(records.values_list("id", flat=True))
+        records_ids = set(records.values_list("id", flat=True))
         job = AsyncJob.objects.create(
             description=f"Send Instruction to {fsp}",
             type=AsyncJob.JobType.STANDARD_TASK,
