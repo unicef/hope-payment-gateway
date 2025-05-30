@@ -16,7 +16,7 @@ from hope_payment_gateway.apps.gateway.models import (
 
 def notify_records_to_fsp(client_fqn, to_process_ids):
     client = import_string(client_fqn)()
-    for record in PaymentRecord.objects.filter(id__in=to_process_ids):
+    for record in PaymentRecord.objects.filter(id__in=to_process_ids, status=PaymentRecordState.PENDING):
         try:
             client.create_transaction(record.get_payload())
         except (TokenError, PayloadError, InvalidCorridorError):

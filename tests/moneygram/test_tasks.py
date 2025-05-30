@@ -142,7 +142,7 @@ def test_moneygram_notify(mock_create_transaction, mg):
     instr = PaymentInstructionFactory(
         status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
     )
-    record = PaymentRecordFactory(parent=instr, status=PaymentRecordState.TRANSFERRED_TO_FSP, fsp_code="1234567890")
+    record = PaymentRecordFactory(parent=instr, status=PaymentRecordState.PENDING, fsp_code="1234567890")
 
     mock_create_transaction.return_value = None, None
 

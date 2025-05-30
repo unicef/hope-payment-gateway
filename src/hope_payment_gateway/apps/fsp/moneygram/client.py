@@ -5,6 +5,7 @@ import uuid
 from urllib.parse import urlencode
 
 import requests
+import sentry_sdk
 from constance import config
 from django.conf import settings
 from rest_framework.response import Response
@@ -165,6 +166,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         flow = PaymentRecordFlow(pr)
         try:
             transaction_id, payload = self.prepare_transaction(base_payload)
+            sentry_sdk.capture_message("MoneyGram Union: Create Transaction")
             response = self.perform_request(endpoint, transaction_id, payload, "post")
         except (PayloadMissingKeyError, ValueError, TypeError) as e:
             pr.message = e.args[0]
