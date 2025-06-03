@@ -142,7 +142,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 },
                 "targetAccount": {
                     "accountNumber": get_account_field(base_payload, "number"),
-                    "bankName": base_payload.get("service_provider_code", None),
+                    "bankName": get_account_field(base_payload, "service_provider_code"),
                 },
                 "receipt": {
                     "primaryLanguage": base_payload.get("receipt_primary_language", None),
@@ -159,9 +159,10 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         record_code = base_payload["payment_record_code"]
         pr = PaymentRecord.objects.get(
             record_code=record_code,
-            status=PaymentRecordState.PENDING,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
+        if pr.status != PaymentRecordState.PENDING:
+            raise TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
 
         flow = PaymentRecordFlow(pr)
         try:

@@ -16,7 +16,7 @@ from zeep.wsdl.utils import etree_to_string
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
-from hope_payment_gateway.apps.fsp.utils import get_phone_number
+from hope_payment_gateway.apps.fsp.utils import get_phone_number, get_account_field
 from hope_payment_gateway.apps.fsp.western_union.api import (
     MONEY_IN_TIME,
     WALLET,
@@ -225,7 +225,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                     "delivery_services": delivery_services,
                     "foreign_remote_system": frm,
                     "partner_info_buffer": partner_notification,
-                    "wallet_details": {"service_provider_code": base_payload.get("service_provider_code")},
+                    "wallet_details": {
+                        "service_provider_code": get_account_field(base_payload, "service_provider_code")
+                    },
                 }
             )
 
@@ -276,9 +278,10 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         record_code = base_payload["payment_record_code"]
         pr = PaymentRecord.objects.get(
             record_code=record_code,
-            status=PaymentRecordState.PENDING,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
+        if pr.status != PaymentRecordState.PENDING:
+            raise TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
         try:
             payload = self.create_validation_payload(base_payload)
             response = self.send_money_validation(payload)
