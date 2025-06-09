@@ -16,8 +16,7 @@ class PalPayAdminMixin:
     def handle_pal_response(self, request: HttpRequest, pk: int, method: str, title: str) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            client_call = getattr(PalPayClient(), method)
-            payload, resp = client_call(obj.fsp_code, obj.get_payload())
+            payload, resp, endpoint = getattr(PalPayClient(), method)(obj.get_payload())
             context = self.get_common_context(request, pk)
             if resp:
                 context["code"] = resp.status_code
