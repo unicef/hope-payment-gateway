@@ -33,7 +33,7 @@ def test_configuration_view_redirects_correctly(user, payment_record_admin_insta
     delivery_mechanism = DeliveryMechanismFactory(code="CASH")
     config = FinancialServiceProviderConfigFactory(key="test_config", fsp=fsp, delivery_mechanism=delivery_mechanism)
 
-    instruction = PaymentInstructionFactory(fsp=fsp, extra={"config_key": "test_config"})
+    instruction = PaymentInstructionFactory(fsp=fsp, payload={"config_key": "test_config"})
 
     payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
 
@@ -50,7 +50,7 @@ def test_configuration_view_handles_missing_config(user, payment_record_admin_in
     request.user = user
 
     fsp = FinancialServiceProviderFactory()
-    instruction = PaymentInstructionFactory(fsp=fsp, extra={"config_key": "non_existent_config"})
+    instruction = PaymentInstructionFactory(fsp=fsp, payload={"config_key": "non_existent_config"})
 
     payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
 

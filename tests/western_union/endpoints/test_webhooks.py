@@ -120,7 +120,7 @@ def _test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_use
     assert payment_record.message == "Transferred to Beneficiary by Push Notification"
     assert payment_record.payout_amount == 85.00  # 8500 / 100 from XML
     assert payment_record.payout_date.strftime("%Y-%m-%d") == "2023-08-23"
-    assert str(payment_record.extra_data["mtcn"]) == "3634673433"
+    assert str(payment_record.fsp_data["mtcn"]) == "3634673433"
 
 
 @pytest.mark.django_db

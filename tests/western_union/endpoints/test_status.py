@@ -27,7 +27,7 @@ def test_status(wu, wu_client):
     pr = PaymentRecordFactory(
         fsp_code=mtcn,
         record_code=ref_no,
-        extra_data={
+        fsp_data={
             "mtcn": mtcn,
             "foreign_remote_system": frm,
             "channel": {"type": "H2H", "name": "TEST", "version": "9500"},
@@ -63,7 +63,7 @@ def test_status_no_matching_status(wu, wu_client, pr_status, response_status, me
     pr = PaymentRecordFactory(
         fsp_code=mtcn,
         record_code=ref_no,
-        extra_data={
+        fsp_data={
             "mtcn": mtcn,
             "foreign_remote_system": frm,
             "channel": {"type": "H2H", "name": "TEST", "version": "9500"},

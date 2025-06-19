@@ -62,19 +62,23 @@ def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
 def test_send_moneygram_update(mock_class, mg, rec_a, rec_b, total):
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     instr_a = PaymentInstructionFactory(
-        status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+        status=PaymentInstructionState.PROCESSED,
+        fsp=mg,
+        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
     )
     instr_b = PaymentInstructionFactory(
-        status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+        status=PaymentInstructionState.PROCESSED,
+        fsp=mg,
+        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
     )
     PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.TRANSFERRED_TO_FSP)
     PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
     instr_noise = PaymentInstructionFactory(
-        status=PaymentInstructionState.OPEN, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "money"}
     )
     instr_noise_no_tag = PaymentInstructionFactory(
-        status=PaymentInstructionState.OPEN, extra={"config_key": "mg-key", "delivery_mechanism": "voucher"}
+        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "voucher"}
     )
     PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
@@ -102,19 +106,23 @@ def test_send_moneygram_update(mock_class, mg, rec_a, rec_b, total):
 def test_send_moneygram_update_with_ids(mock_class, mg, rec_a, rec_b, total):
     responses._add_from_file(file_path="tests/moneygram/responses/token.yaml")
     instr_a = PaymentInstructionFactory(
-        status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+        status=PaymentInstructionState.PROCESSED,
+        fsp=mg,
+        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
     )
     instr_b = PaymentInstructionFactory(
-        status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+        status=PaymentInstructionState.PROCESSED,
+        fsp=mg,
+        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
     )
     records_a = PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.TRANSFERRED_TO_FSP)
     records_b = PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
     instr_noise = PaymentInstructionFactory(
-        status=PaymentInstructionState.OPEN, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "money"}
     )
     instr_noise_no_tag = PaymentInstructionFactory(
-        status=PaymentInstructionState.OPEN, extra={"config_key": "mg-key", "delivery_mechanism": "voucher"}
+        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "voucher"}
     )
     PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
@@ -140,7 +148,9 @@ def test_moneygram_notify(mock_create_transaction, mg):
     mg.save()
 
     instr = PaymentInstructionFactory(
-        status=PaymentInstructionState.PROCESSED, fsp=mg, extra={"config_key": "mg-key", "delivery_mechanism": "money"}
+        status=PaymentInstructionState.PROCESSED,
+        fsp=mg,
+        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
     )
     record = PaymentRecordFactory(parent=instr, status=PaymentRecordState.PENDING, fsp_code="1234567890")
 

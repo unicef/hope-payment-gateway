@@ -77,7 +77,7 @@ class PaymentRecordAdmin(
     )
     list_filter = ("parent__fsp", ("parent", AutoCompleteFilter), "status", "success")
     search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
-    readonly_fields = ("extra_data",)
+    readonly_fields = ("fsp_data",)
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
@@ -105,7 +105,7 @@ class PaymentRecordAdmin(
         obj = self.get_object(request, pk)
         payload = obj.get_payload()
         config = obj.parent.fsp.configs.get(
-            key=obj.parent.extra.get("config_key"),
+            key=obj.parent.payload.get("config_key"),
             delivery_mechanism__code=payload.get("delivery_mechanism"),
             fsp=obj.parent.fsp,
         )

@@ -52,7 +52,7 @@ def test_moneygram_button_with_configuration(mg, req, payment_record_admin_insta
     delivery_mechanism = DeliveryMechanismFactory(code="CASH")
 
     FinancialServiceProviderConfigFactory(key="test_config", fsp=mg, delivery_mechanism=delivery_mechanism)
-    instruction = PaymentInstructionFactory(fsp=mg, extra={"config_key": "test_config"})
+    instruction = PaymentInstructionFactory(fsp=mg, payload={"config_key": "test_config"})
     payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
     req.original = payment_record
 
