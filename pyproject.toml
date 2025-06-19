@@ -82,7 +82,7 @@ dev = [
   "parso",
   "pre-commit",
   "pymdown-extensions",
-  "pytest",
+  "pytest<8.4",
   "pytest-cov",
   "pytest-django",
   "pytest-echo",

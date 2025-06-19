@@ -54,7 +54,7 @@ def test_wu_search_request_success(
     mock_wu_client.return_value.search_request.return_value = mock_response
 
     payment_record.auth_code = "1234567890"
-    payment_record.extra_data = {"foreign_remote_system": "TEST_SYSTEM"}
+    payment_record.fsp_data = {"foreign_remote_system": "TEST_SYSTEM"}
     payment_record.save()
 
     client.force_login(user_with_permissions)

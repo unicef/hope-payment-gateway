@@ -124,7 +124,6 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "fsp",
             "system",
             "payload",
-            "extra",
         )
 
     def create(self, validated_data):

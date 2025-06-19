@@ -14,8 +14,7 @@
                 "office": null,
                 "tag": null,
                 "payload": {},
-                "active": true,
-                "extra": {}
+                "active": true
             }
         },
         "deps": [
