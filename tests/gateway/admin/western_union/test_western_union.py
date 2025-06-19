@@ -70,7 +70,7 @@ def test_western_union_button_with_configuration(wu, req, payment_record_admin_i
     delivery_mechanism = DeliveryMechanismFactory(code="CASH")
 
     FinancialServiceProviderConfigFactory(key="test_config", fsp=wu, delivery_mechanism=delivery_mechanism)
-    instruction = PaymentInstructionFactory(fsp=wu, extra={"config_key": "test_config"})
+    instruction = PaymentInstructionFactory(fsp=wu, payload={"config_key": "test_config"})
     payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
     req.original = payment_record
 

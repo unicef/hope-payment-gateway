@@ -138,7 +138,6 @@ class PaymentInstruction(TimeStampedModel):
     tag = models.CharField(null=True, blank=True, max_length=128)
     payload = models.JSONField(default=dict, null=True, blank=True)
     active = models.BooleanField(default=True)
-    extra = models.JSONField(default=dict, null=True, blank=True)
 
     class Meta:
         unique_together = ("system", "remote_id")
@@ -148,12 +147,11 @@ class PaymentInstruction(TimeStampedModel):
 
     def get_payload(self) -> dict:
         payload = self.payload.copy()
-        if "config_key" in self.extra:
+        if "config_key" in self.payload:
             config_payload = self.fsp.strategy.get_configuration(
-                self.extra["config_key"],
-                self.extra.get("delivery_mechanism", "cash_over_the_counter"),  # temp fix
+                self.payload["config_key"],
+                self.payload.get("delivery_mechanism", "cash_over_the_counter"),  # temp fix
             )
-            payload.update(self.extra)
             payload.update(config_payload)
         return payload
 
@@ -173,8 +171,8 @@ class PaymentRecordState(models.TextChoices):
 
 class PaymentRecord(TimeStampedModel):
     parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
-    remote_id = models.CharField(max_length=255, db_index=True, unique=True)  # HOPE UUID
-    record_code = models.CharField(max_length=64, db_index=True, unique=True)  # Payment Record ID
+    remote_id = models.CharField(max_length=255, db_index=True, unique=True, help_text="Remote system ID")
+    record_code = models.CharField(max_length=64, db_index=True, unique=True, help_text="Payment record code")
 
     status = models.CharField(
         max_length=50,
@@ -183,7 +181,9 @@ class PaymentRecord(TimeStampedModel):
         db_index=True,
     )
     success = models.BooleanField(null=True, blank=True)
-    message = models.CharField(max_length=4096, null=True, blank=True)
+    message = models.CharField(
+        max_length=4096, null=True, blank=True, help_text="Help Text message from latest FSP call"
+    )
 
     auth_code = models.CharField(
         max_length=64,
@@ -201,10 +201,16 @@ class PaymentRecord(TimeStampedModel):
         help_text="new MTCN for western union, transaction id for MoneyGram",
     )
     payload = models.JSONField(default=dict, null=True, blank=True)
-    extra_data = models.JSONField(default=dict, null=True, blank=True)
 
-    payout_amount = models.DecimalField(decimal_places=2, max_digits=12, null=True, blank=True)
-    payout_date = models.DateField(null=True, blank=True)
+    payout_amount = models.DecimalField(
+        decimal_places=2, max_digits=12, null=True, blank=True, help_text="Amount paid by FSP"
+    )
+    payout_date = models.DateField(null=True, blank=True, help_text="Date of payout from FSP")
+
+    fsp_data = models.JSONField(default=dict, null=True, blank=True, help_text="FSP data stored for troubleshooting")
+    extra_data = models.JSONField(
+        default=dict, null=True, blank=True, help_text="Useful information related original record"
+    )
 
     def __str__(self) -> str:
         return f"{self.record_code} / {self.status}"
