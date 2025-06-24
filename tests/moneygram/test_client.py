@@ -92,6 +92,9 @@ def test_prepare_transactions(mg):
         "origination_country": "US",
         "origination_currency": "USD",
         "agent_partner_id": "AAAAAA",
+        "account": {
+            "number": "+94786661137",
+        },
     }
     assert client.prepare_transaction(pr.get_payload()) == (
         pr_code,
@@ -129,11 +132,11 @@ def test_prepare_transactions(mg):
                         "firstName": "Alen",
                         "lastName": "Smith",
                     },
-                    "mobilePhone": {"number": "N/A", "countryDialCode": None},
+                    "mobilePhone": {"number": 786661137, "countryDialCode": 94},
                 }
             },
             "targetAccount": {
-                "accountNumber": None,
+                "accountNumber": "+94786661137",
                 "bankName": None,
             },
             "receipt": {

@@ -25,7 +25,9 @@ def test_send_money_validation(django_app, admin_user, wu, wu_client):
         "payment_record_code": "Y3snz233UkGt1Gw4",
         "first_name": "Aliyah",
         "last_name": "GRAY",
-        "phone_no": "+94786661137",
+        "account": {
+            "number": "+94786661137",
+        },
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
@@ -50,7 +52,9 @@ def test_send_money_validation_ko(django_app, admin_user, wu, wu_client):
         "payment_record_code": "681cbf43",
         "first_name": "Aldo",
         "last_name": "Baglio",
-        "phone_no": "+229123456",
+        "account": {
+            "number": "+94786661137",
+        },
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
@@ -81,7 +85,9 @@ def test_send_complete(django_app, admin_user, wu, wu_client):
         "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
-        "phone_no": "+94786661137",
+        "account": {
+            "number": "+94786661137",
+        },
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
@@ -127,7 +133,6 @@ def test_send_complete_corridor(django_app, admin_user, wu, wu_client):
         "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
-        "phone_no": "+94786661137",
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
@@ -136,7 +141,9 @@ def test_send_complete_corridor(django_app, admin_user, wu, wu_client):
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_mechanism": "mobile_money",
-        "delivery_phone_number": "+346001020345",
+        "account": {
+            "number": "+94786661137",
+        },
         "delivery_services_code": "800",
         "reason_for_sending": "P012",
     }
@@ -161,7 +168,6 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu, wu_client):
         "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
-        "phone_no": "+94786661137",
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
@@ -170,9 +176,11 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu, wu_client):
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_mechanism": "mobile_money",
-        "delivery_phone_number": "+94786661137",
         "delivery_services_code": "800",
         "reason_for_sending": "P012",
+        "account": {
+            "number": "+94786661137",
+        },
     }
     pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
     with pytest.raises(InvalidCorridorError):
@@ -226,7 +234,9 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
-        "phone_no": "+94786661137",
+        "account": {
+            "number": "+94786661137",
+        },
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
@@ -235,7 +245,6 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         "duplication_enabled": "D",
         "amount": 199900,
         "delivery_mechanism": "mobile_money",
-        "delivery_phone_number": "+94786661137",
         "delivery_services_code": "800",
         "reason_for_sending": "AO12",
     }
@@ -262,7 +271,9 @@ def test_send_complete_send_money_validation_response_error(wu, wu_client):
         "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
-        "phone_no": "+94786661137",
+        "account": {
+            "number": "+94786661137",
+        },
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
@@ -300,7 +311,9 @@ def test_send_complete_send_money_store_response_error(wu, wu_client):
         "payment_record_code": record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
-        "phone_no": "+94786661137",
+        "account": {
+            "number": "+94786661137",
+        },
         "source_country": "US",
         "source_currency": "USD",
         "transaction_type": "WMF",
