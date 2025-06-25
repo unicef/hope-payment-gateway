@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "130",
+        "Content-Length": "119",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -19,8 +19,7 @@
             "status": "DRAFT",
             "fsp": 1,
             "system": 1,
-            "payload": {},
-            "extra": {}
+            "payload": {}
         }
     ],
     "content_type": "application/json"

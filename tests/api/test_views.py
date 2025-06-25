@@ -60,13 +60,13 @@ def test_payment_instruction_actions(api_client, action, detail, status, token_u
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "extra",
+    "payload",
     [
         "{}",
         '{"config_key": "tester_one", "destination_country": "ES"}',
     ],
 )
-def _test_payment_instruction_create(api_client, token_user, mg, extra):
+def _test_payment_instruction_create(api_client, token_user, mg, payload):
     user, token = token_user
     SystemFactory.create(owner=user)
     url = reverse("rest:payment-instruction-list")
@@ -76,8 +76,7 @@ def _test_payment_instruction_create(api_client, token_user, mg, extra):
         "active": True,
         "status": "DRAFT",
         "fsp": mg.id,
-        "payload": "{}",
-        "extra": extra,
+        "payload": payload,
     }
     view = api_client.post(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True, data=data)
     assert view.status_code == 201
@@ -85,27 +84,27 @@ def _test_payment_instruction_create(api_client, token_user, mg, extra):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "extra",
+    "payload",
     [
         "{}",
         '{"config_key": "tester_one", "destination_country": "ES"}',
     ],
 )
-def test_payment_instruction_create(api_client, token_user, mg, extra):
-    _test_payment_instruction_create(api_client, token_user, mg, extra)
+def test_payment_instruction_create(api_client, token_user, mg, payload):
+    _test_payment_instruction_create(api_client, token_user, mg, payload)
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "extra",
+    "payload",
     [
         "{}",
         '{"config_key": "tester_one", "destination_country": "ES"}',
     ],
 )
-def test_payment_instruction_create_with_office(api_client, token_user, mg, extra):
+def test_payment_instruction_create_with_office(api_client, token_user, mg, payload):
     OfficeFactory.create(code="tester_one", supervised=True)
-    _test_payment_instruction_create(api_client, token_user, mg, extra)
+    _test_payment_instruction_create(api_client, token_user, mg, payload)
 
 
 @pytest.mark.django_db
@@ -229,7 +228,7 @@ def test_instructions_add_records_invalid_status(api_client, token_user):
 @pytest.mark.django_db
 def test_payment_instruction_download_fail(api_client, token_user):
     user, token = token_user
-    instruction_instance = PaymentInstructionFactory(extra={"delivery_mechanism": "tester_one"})
+    instruction_instance = PaymentInstructionFactory(payload={"delivery_mechanism": "tester_one"})
     pr = PaymentRecordFactory(parent=instruction_instance)
     DeliveryMechanismFactory.create(code="tester_one")
     url = reverse("rest:payment-instruction-download", args=[pr.parent.remote_id])
@@ -242,7 +241,7 @@ def test_payment_instruction_download_fail(api_client, token_user):
 @pytest.mark.django_db
 def test_payment_instruction_download(api_client, token_user):
     user, token = token_user
-    pi = PaymentInstructionFactory(extra={"delivery_mechanism": "tester_one", "config_key": "123456"})
+    pi = PaymentInstructionFactory(payload={"delivery_mechanism": "tester_one", "config_key": "123456"})
     pr = PaymentRecordFactory.create(parent=pi)
     dm = DeliveryMechanismFactory.create(code="tester_one")
     ExportTemplateFactory.create(fsp=pi.fsp, config_key="123456", delivery_mechanism=dm)

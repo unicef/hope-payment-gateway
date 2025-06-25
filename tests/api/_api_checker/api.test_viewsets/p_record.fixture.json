@@ -15,7 +15,7 @@
                 "auth_code": null,
                 "fsp_code": null,
                 "payload": {},
-                "extra_data": {},
+                "fsp_data": {},
                 "payout_amount": null,
                 "payout_date": null
             }
@@ -35,8 +35,7 @@
                     "office": null,
                     "tag": null,
                     "payload": {},
-                    "active": true,
-                    "extra": {}
+                    "active": true
                 }
             },
             {

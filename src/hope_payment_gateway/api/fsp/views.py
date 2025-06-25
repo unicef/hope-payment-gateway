@@ -91,7 +91,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         owner = get_user_model().objects.filter(apitoken=self.request.auth).first()
         system = System.objects.get(owner=owner)
         obj = serializer.save(system=system)
-        config_key = obj.extra.get("config_key", None)
+        config_key = obj.payload.get("config_key", None)
         obj.save()
         if config_key:
             office, _ = Office.objects.get_or_create(
@@ -101,7 +101,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
             obj.office = office
             if office.supervised:
                 obj.active = False
-            if ctr_code := obj.extra.get("destination_country"):
+            if ctr_code := obj.payload.get("destination_country"):
                 country, _ = Country.objects.get_or_create(
                     iso_code2=ctr_code,
                 )
@@ -180,10 +180,10 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     def download(self, request, remote_id=None):
         obj = self.get_object()
         try:
-            dm = DeliveryMechanism.objects.get(code=obj.extra.get("delivery_mechanism", None))
+            dm = DeliveryMechanism.objects.get(code=obj.payload.get("delivery_mechanism", None))
             export = ExportTemplate.objects.get(
                 fsp=obj.fsp,
-                config_key=obj.extra.get("config_key", None),
+                config_key=obj.payload.get("config_key", None),
                 delivery_mechanism=dm,
             )
             queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
