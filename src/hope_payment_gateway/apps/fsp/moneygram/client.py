@@ -92,8 +92,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
     def prepare_transaction(self, base_payload):
         """Prepare the payload to create transactions."""
-        raw_phone_no = base_payload.get("phone_no", "N/A")
-        phone_number, country_code = get_phone_number(raw_phone_no)
+        delivery_phone_number = get_account_field(base_payload, "number")
+        phone_number, country_code = get_phone_number(delivery_phone_number)
 
         try:
             transaction_id = base_payload["payment_record_code"]
