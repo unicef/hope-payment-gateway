@@ -157,7 +157,7 @@ def test_send_complete_corridor(django_app, admin_user, wu, wu_client):
     pr.refresh_from_db()
     assert pr.success
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
-    assert "mtcn" in pr.extra_data
+    assert "mtcn" in pr.fsp_data
 
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")

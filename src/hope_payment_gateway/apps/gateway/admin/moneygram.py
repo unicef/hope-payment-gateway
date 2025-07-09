@@ -120,7 +120,7 @@ class MoneyGramAdminMixin:
             payload = obj.get_payload()
             try:
                 obj.parent.fsp.configs.get(
-                    key=obj.parent.extra.get("config_key"),
+                    key=obj.parent.payload.get("config_key"),
                     delivery_mechanism__code=payload.get("delivery_mechanism"),
                     fsp=obj.parent.fsp,
                 )

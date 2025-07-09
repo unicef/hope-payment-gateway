@@ -99,7 +99,7 @@ class MoneyGramWebhook(MoneyGramApi):
 
         update_status(pr, notification_type)
 
-        pr.extra_data.update(
+        pr.fsp_data.update(
             {
                 "eventId": payload["eventId"],
                 "eventDate": payload["eventDate"],

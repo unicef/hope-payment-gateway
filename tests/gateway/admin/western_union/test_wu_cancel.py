@@ -52,7 +52,7 @@ def test_wu_cancel_success(mock_wu_client, user_with_permissions, western_union_
     mock_wu_client.return_value.refund.return_value = mock_response
 
     payment_record.auth_code = "1234567890"
-    payment_record.extra_data = {"test_data": "value"}
+    payment_record.fsp_data = {"test_data": "value"}
     payment_record.save()
 
     client.force_login(user_with_permissions)
@@ -63,7 +63,7 @@ def test_wu_cancel_success(mock_wu_client, user_with_permissions, western_union_
     assert response.context_data["title"] == "mocked title"
     assert "obj" in response.context_data
     assert "1234567890" in response.context_data["obj"]
-    mock_wu_client.return_value.refund.assert_called_once_with(payment_record.fsp_code, payment_record.extra_data)
+    mock_wu_client.return_value.refund.assert_called_once_with(payment_record.fsp_code, payment_record.fsp_data)
 
 
 @pytest.mark.django_db

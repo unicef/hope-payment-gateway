@@ -46,7 +46,7 @@ class WesternUnionAdminMixin:
                     pass
             try:
                 obj.parent.fsp.configs.get(
-                    key=obj.parent.extra.get("config_key"),
+                    key=obj.parent.payload.get("config_key"),
                     delivery_mechanism__code=payload.get("delivery_mechanism"),
                     fsp=obj.parent.fsp,
                 )
@@ -163,7 +163,7 @@ class WesternUnionAdminMixin:
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
             context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
-            frm = obj.extra_data.get("foreign_remote_system", None)
+            frm = obj.fsp_data.get("foreign_remote_system", None)
             context.update(WesternUnionClient().search_request(frm, mtcn))
         else:
             messages.warning(request, "Missing MTCN")
@@ -179,7 +179,7 @@ class WesternUnionAdminMixin:
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
             context["obj"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
-            context.update(WesternUnionClient().refund(obj.fsp_code, obj.extra_data))
+            context.update(WesternUnionClient().refund(obj.fsp_code, obj.fsp_data))
 
         return TemplateResponse(request, "request.html", context)
 

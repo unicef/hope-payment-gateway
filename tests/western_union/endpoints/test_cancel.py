@@ -26,7 +26,7 @@ def test_search_request(wu, wu_client):
     )
     PaymentRecordFactory(
         record_code=ref_no,
-        extra_data={
+        fsp_data={
             "mtcn": mtcn,
             "foreign_remote_system": frm,
         },
@@ -56,7 +56,7 @@ def test_cancel(wu, wu_client):
         },
     )
     pl = PaymentRecordFactory(
-        extra_data={
+        fsp_data={
             "mtcn": mtcn,
             "foreign_remote_system": frm,
         },
@@ -103,7 +103,7 @@ def test_cancel_type_error(wu, wu_client):
             },
         )
         pl = PaymentRecordFactory(
-            extra_data={
+            fsp_data={
                 "mtcn": mtcn,
                 "foreign_remote_system": frm,
             },
@@ -136,7 +136,7 @@ def test_cancel_request_not_successful(wu, wu_client):
             },
         )
         pl = PaymentRecordFactory(
-            extra_data={
+            fsp_data={
                 "mtcn": mtcn,
                 "foreign_remote_system": frm,
             },
