@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand, call_command
 from django.core.management.base import CommandError, SystemCheckError
 from django.core.validators import validate_email
-
+from hope_payment_gateway.apps.core.models import User
 from hope_payment_gateway.config import env
 
 if TYPE_CHECKING:
@@ -107,8 +107,6 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args: Any, **options: Any) -> None:  # noqa
-        from hope_payment_gateway.apps.core.models import User
-
         self.get_options(options)
         if self.verbosity >= 1:
             echo = self.stdout.write

@@ -8,7 +8,7 @@ class AppConfig(BaseAppConfig):
 
     def ready(self) -> None:
         super().ready()
-        from django.contrib.contenttypes.models import ContentType
-        from smart_admin.smart_auth.admin import ContentTypeAdmin
+        from django.contrib.contenttypes.models import ContentType  # noqa
+        from smart_admin.smart_auth.admin import ContentTypeAdmin  # noqa
 
         smart_register(ContentType)(ContentTypeAdmin)
