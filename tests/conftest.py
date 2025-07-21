@@ -10,7 +10,7 @@ from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 from strategy_field.utils import fqn
-
+from unittest.mock import MagicMock
 from factories import (
     APITokenFactory,
     CorridorFactory,
@@ -21,6 +21,10 @@ from factories import (
     FinancialServiceProviderConfigFactory,
     DeliveryMechanismFactory,
 )
+from rest_framework.test import APIClient
+
+from django.contrib.admin import ModelAdmin
+from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 
 def pytest_configure(config):
@@ -173,8 +177,6 @@ def token_user():
 
 @pytest.fixture
 def api_client():
-    from rest_framework.test import APIClient
-
     return APIClient()
 
 
@@ -198,10 +200,6 @@ def request_factory():
 
 @pytest.fixture
 def modeladmin():
-    from django.contrib.admin import ModelAdmin
-    from hope_payment_gateway.apps.gateway.models import PaymentRecord
-    from unittest.mock import MagicMock
-
     admin = MagicMock(spec=ModelAdmin)
     admin.model = PaymentRecord
     admin.opts = MagicMock()

@@ -90,6 +90,7 @@ dev = [
   "pytest-xdist",
   "requests-mock",
   "responses",
+  "ruff",
   "tox",
   "types-freezegun",
   "types-python-dateutil",

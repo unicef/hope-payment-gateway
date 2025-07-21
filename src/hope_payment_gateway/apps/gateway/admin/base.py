@@ -173,7 +173,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                     for row in reader:
                         parent = self.model.objects.get(pk=pk)
                         payload = {
-                            key: row[key]
+                            key: value
                             for key, value in row.items()
                             if key
                             in [

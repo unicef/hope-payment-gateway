@@ -7,6 +7,7 @@ from constance.test import override_config
 from django.urls import reverse
 from factories import PaymentRecordFactory
 from viewflow.fsm import TransitionNotAllowed
+from zeep.exceptions import ValidationError
 
 
 @responses.activate
@@ -81,8 +82,6 @@ def test_nis_notification_xml_post_with_validation_error(wu, api_client, admin_u
     url = reverse("western_union:nis-notification-xml-view")
 
     def mock_prepare(*args, **kwargs):
-        from zeep.exceptions import ValidationError
-
         raise ValidationError("Invalid XML structure")
 
     monkeypatch.setattr(

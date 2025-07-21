@@ -8,7 +8,7 @@ class AppConfig(BaseAppConfig):
     verbose_name = "Western Union"
 
     def ready(self) -> None:
-        from .handlers import WesternUnionHandler
+        from .handlers import WesternUnionHandler  # noqa
 
         registry.register(WesternUnionHandler)
         from . import tasks  # noqa

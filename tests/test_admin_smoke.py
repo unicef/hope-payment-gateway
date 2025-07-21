@@ -9,6 +9,7 @@ from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
 from factories import SuperUserFactory
+from admin_extra_buttons.handlers import LinkHandler
 
 pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
 
@@ -56,7 +57,7 @@ def log_submit_error(res):
 
 
 def pytest_generate_tests(metafunc):  # noqa
-    import django
+    import django  # noqa
 
     markers = metafunc.definition.own_markers
     excluded_models = RegexList(GLOBAL_EXCLUDED_MODELS)
@@ -99,7 +100,7 @@ def pytest_generate_tests(metafunc):  # noqa
 
 @pytest.fixture
 def record(db, request):
-    from factories import get_factory_for_model
+    from factories import get_factory_for_model  # noqa
 
     modeladmin = request.getfixturevalue("modeladmin")
     instance = modeladmin.model.objects.first()
@@ -189,8 +190,6 @@ def test_admin_delete(app, modeladmin, record, monkeypatch):
 @pytest.mark.skip_buttons("security.UserAdmin:link_user_data", "gateway.AsyncJobAdmin:celery_inspect")
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 def test_admin_buttons(app, modeladmin, button_handler, record, monkeypatch, wu):
-    from admin_extra_buttons.handlers import LinkHandler
-
     if isinstance(button_handler, ChoiceHandler):
         pass
     elif isinstance(button_handler, LinkHandler):

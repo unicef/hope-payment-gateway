@@ -8,8 +8,6 @@ class AppConfig(BaseAppConfig):
     verbose_name = "Gateway"
 
     def ready(self) -> None:
-        from hope_payment_gateway.apps.fsp.western_union.handlers import (
-            WesternUnionHandler,
-        )
+        from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler  # noqa
 
         registry.register(WesternUnionHandler)
