@@ -156,9 +156,10 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 else counter_ids
             )
             transaction_type = base_payload.get("transaction_type", WMF)
+            reference_number = base_payload.get("payment_record_code", "N/A")[-20:]  # due to WU constraint
             frm = {
                 "identifier": base_payload.get("identifier", "N/A"),
-                "reference_no": base_payload.get("payment_record_code", "N/A"),
+                "reference_no": reference_number,
                 "counter_id": counter_id,
             }
 
