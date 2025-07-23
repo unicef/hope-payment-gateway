@@ -1,7 +1,9 @@
 FROM python:3.13-slim-bookworm AS base_os
 ARG GOSU_VERSION=1.17
 ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
-
+ARG BUILD_DATE
+ARG VERSION
+ARG SOURCE_COMMIT
 
 RUN set -x \
   && runtimeDeps=" \
@@ -62,7 +64,8 @@ RUN pip install uv uwsgi
 # ------- tests -------
 FROM builder AS tests
 ARG BUILD_DATE
-ARG GIT_SHA
+ARG VERSION
+ARG SOURCE_COMMIT
 
 LABEL distro="tests"
 LABEL org.opencontainers.image.created="$BUILD_DATE"
@@ -111,14 +114,14 @@ RUN --mount=type=cache,target=/root/.uv-cache \
 # ------- dist -------
 FROM base_os AS dist
 ARG BUILD_DATE
-ARG GIT_SHA
+ARG SOURCE_COMMIT
 ARG BRANCH
 ARG VERSION
 ENV VERSION=$VERSION
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
     BUILD_DATE=$BUILD_DATE \
-    GIT_SHA=$GIT_SHA \
+    SOURCE_COMMIT=$SOURCE_COMMIT \
     VERSION=$VERSION \
     BRANCH=$BRANCH \
     PYTHONUNBUFFERED=1 \
@@ -133,7 +136,7 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
- "commit": "$GIT_SHA",
+ "commit": "$SOURCE_COMMIT",
  "date": "$BUILD_DATE",
 }
 EOF
@@ -160,9 +163,9 @@ LABEL org.opencontainers.image.authors="hope@unicef.org"
 LABEL org.opencontainers.image.description="Hope Payment Gateway"
 LABEL org.opencontainers.image.documentation="https://github.com/unicef/hope-payment-gateway/"
 LABEL org.opencontainers.image.title="Hope Payment Gateway"
-LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GIT_SHA:-master}/LICENSE"
-LABEL org.opencontainers.image.revision=$GIT_SHA
-LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GIT_SHA:-master}/"
+LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${SOURCE_COMMIT:-master}/LICENSE"
+LABEL org.opencontainers.image.revision=$SOURCE_COMMIT
+LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${SOURCE_COMMIT:-master}/"
 LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/unicef/hope-payment-gateway/tags/"
 LABEL org.opencontainers.image.vendor="UNICEF"
 LABEL org.opencontainers.image.created="$BUILD_DATE"
