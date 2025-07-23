@@ -1,38 +1,83 @@
 import logging
+from io import BytesIO
 
+import openpyxl
+import requests
 from constance import config
+from django.conf import settings
 from strategy_field.utils import fqn
 
 from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.apps.fsp.palpay.client import PalPayClient
+from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
 from hope_payment_gateway.apps.gateway.models import (
-    AsyncJob,
-    FinancialServiceProviderConfig,
-    PaymentInstruction,
-    PaymentInstructionState,
-    PaymentRecord,
-    PaymentRecordState,
+    PaymentRecord, PaymentInstruction, PaymentInstructionState, PaymentRecordState, AsyncJob,
 )
 from hope_payment_gateway.config.celery import app
 
 
 def palpay_notify(to_process_ids: list[PaymentRecord]) -> None:
-    client = PalPayClient()
-    for record in PaymentRecord.objects.select_related("parent__fsp").filter(id__in=to_process_ids):
-        client.create_transaction(record.get_payload())
+    notify_records_to_fsp(fqn(PalPayClient), to_process_ids)
+
+
+# for user in User.objects.all():
+#     print(user.username, user.last_login, user.status, )
+def palpay_money_transfer(pk: int) -> None:
+    instruction = PaymentInstruction.objects.get(pk=pk)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = instruction.external_code
+
+    ws.append(["ID", "Full Name", "Mobile", "Amount"])
+
+    for record in PaymentRecord.objects.filter(parent=instruction):
+        payload = record.payload
+        ws.append([
+            record.id,
+            " ".join(payload[value] for value in ["first_name", "middle_name", "last_name"] if payload.get(value)),
+            payload["mobile"],
+            payload["mobile"],
+        ])
+
+    file_stream = BytesIO()
+    wb.save(file_stream)
+    file_stream.seek(0)
+
+    files = {'file': (f'{ws.title}.xlsx', file_stream, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')}
+    try:
+        response = requests.post(settings.PALPAY_INSTRUCTION_POST, files=files)
+        response.raise_for_status()
+        return {"status": "success", "code": response.status_code}
+    except requests.RequestException as e:
+        return {"status": "error", "message": str(e)}
 
 
 @app.task()  # queue="executors"
 def palpay_send_money(tag=None, threshold=10000):
     """Task to trigger PalPay payments."""
-    logging.info("PalPay Task started")
+    fsp = "PalPay"
+    fsp_vendor_number = config.PALPAY_VENDOR_NUMBER
     threshold = threshold or config.PALPAY_THREASHOLD
+    action_fqn = palpay_notify
+    group_key = "pal-send-instruction"
 
+    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key, threshold, tag)
+
+
+
+@app.task()  # queue="executors"
+def palpay_send_money_cash(tag=None, threshold=10000):
+    fsp = "PalPay"
+    fsp_vendor_number = config.PALPAY_VENDOR_NUMBER
+    action_fqn = palpay_notify
+    group_key = "pal-send-money-instruction"
+    logging.info(f"{fsp} Money Task started")
     records_count = 0
 
-    qs = PaymentInstruction.objects.filter(
+    qs = PaymentInstruction.objects.select_related("fsp").filter(
         status=PaymentInstructionState.READY,
-        fsp__vendor_number=config.PALPAY_VENDOR_NUMBER,
+        fsp__vendor_number=fsp_vendor_number,
         active=True,
     )
     if tag:
@@ -40,43 +85,15 @@ def palpay_send_money(tag=None, threshold=10000):
 
     for pi in qs:
         logging.info(f"Processing payment instruction {pi.external_code}")
-        records = pi.paymentrecord_set.filter(status=PaymentRecordState.PENDING)
-        records_count += records.count()
-        if records_count > threshold:
-            break
-
-        logging.info(f"Sending {records_count} records {pi} to PalPay")
-        records_ids = list(records.values_list("id", flat=True))
         job = AsyncJob.objects.create(
-            description="Send Instruction to PalPay",
+            description=f"Send Instruction to {fsp}",
             type=AsyncJob.JobType.STANDARD_TASK,
-            action=fqn(palpay_notify),
-            config={"to_process_ids": records_ids},
+            action=fqn(action_fqn),
+            config={"to_process_ids": pi.pk},
             instruction=pi,
-            group_key="palpay-send-instruction",
+            group_key=group_key,
         )
         with lock_job(job):
             job.queue()
-            pi.status = PaymentInstructionState.PROCESSED
-            pi.save()
 
-    logging.info("PalPay Task completed")
-
-
-@app.task
-def palpay_update(ids=None) -> None:
-    qs = PaymentRecord.objects.select_related("parent__fsp").filter(
-        parent__fsp__vendor_number=config.PALPAY_VENDOR_NUMBER,
-        parent__status=PaymentInstructionState.PROCESSED,
-        status=PaymentRecordState.TRANSFERRED_TO_FSP,
-    )
-    client = PalPayClient()
-    if ids:
-        qs = qs.filter(id__in=ids)
-    for record in qs:
-        agent_partner_id = FinancialServiceProviderConfig.objects.get(
-            fsp=record.parent.fsp,
-            delivery_mechanism__code=record.get_payload()["delivery_mechanism"],
-            key=record.get_payload()["config_key"],
-        ).configuration["agent_partner_id"]
-        client.status(record.fsp_code, agent_partner_id, True)
+    logging.info(f"{fsp} Task completed")
