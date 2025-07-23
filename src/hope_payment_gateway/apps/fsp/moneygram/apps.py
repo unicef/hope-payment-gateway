@@ -8,7 +8,7 @@ class AppConfig(BaseAppConfig):
     verbose_name = "MoneyGram"
 
     def ready(self) -> None:
-        from .handlers import MoneyGramHandler
+        from .handlers import MoneyGramHandler  # noqa
 
         registry.register(MoneyGramHandler)
         from . import tasks  # noqa

@@ -8,7 +8,7 @@ class AppConfig(BaseAppConfig):
     verbose_name = "PalPay"
 
     def ready(self) -> None:
-        from .handlers import PalPayHandler
+        from .handlers import PalPayHandler  # noqa
 
         registry.register(PalPayHandler)
         from . import tasks  # noqa

@@ -156,9 +156,10 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 else counter_ids
             )
             transaction_type = base_payload.get("transaction_type", WMF)
+            reference_number = base_payload.get("payment_record_code", "N/A")[-20:]  # due to WU constraint
             frm = {
                 "identifier": base_payload.get("identifier", "N/A"),
-                "reference_no": base_payload.get("payment_record_code", "N/A"),
+                "reference_no": reference_number,
                 "counter_id": counter_id,
             }
 
@@ -307,7 +308,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             pr.save()
             raise exc
 
-        extra_data = {
+        fsp_data = {
             key: smv_payload[key]
             for key in [
                 "foreign_remote_system",
@@ -319,16 +320,16 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 "filing_time",
             ]
         }
-        log_data = extra_data.copy()
+        log_data = fsp_data.copy()
         log_data["record_code"] = base_payload["payment_record_code"]
         log_data.pop("financials")
-        extra_data.pop("filing_date")
-        extra_data.pop("filing_time")
+        fsp_data.pop("filing_date")
+        fsp_data.pop("filing_time")
         pr.message = "Send Money Validation: Success"
         pr.success = True
-        pr.extra_data.update(log_data)
+        pr.fsp_data.update(log_data)
         pr.save()
-        for key, value in extra_data.items():
+        for key, value in fsp_data.items():
             payload[key] = value
 
         response = self.send_money_store(payload)
@@ -340,7 +341,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         else:
             pr.message, pr.success = f"Send Money Store: {response['error']}", False
             flow.fail()
-        pr.extra_data.update(log_data)
+        pr.fsp_data.update(log_data)
         pr.save()
         return response
 
@@ -350,8 +351,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-        frm = pr.extra_data.get("foreign_remote_system", None)
-        mtcn = pr.extra_data.get("mtcn", None)
+        frm = pr.fsp_data.get("foreign_remote_system", None)
+        mtcn = pr.fsp_data.get("mtcn", None)
         payload = {
             "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
             "mtcn": mtcn,
@@ -452,8 +453,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             fsp_code=transaction_id,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
-        mtcn = pr.extra_data.get("mtcn", None)
-        frm = pr.extra_data.get("foreign_remote_system", None)
+        mtcn = pr.fsp_data.get("mtcn", None)
+        frm = pr.fsp_data.get("foreign_remote_system", None)
         response = self.search_request(frm, mtcn)
         payload = response["content_response"]
         try:
@@ -469,7 +470,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             return response
 
         response = self.cancel_request(frm, mtcn, database_key)
-        extra_data = {"db_key": database_key, "mtcn": mtcn}
+        fsp_data = {"db_key": database_key, "mtcn": mtcn}
 
         if response["code"] == 200:
             pr.message = "Request for cancel"
@@ -477,7 +478,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         else:
             pr.message = f"Cancel request error: {response['error']}"
             pr.success = False
-        pr.extra_data.update(extra_data)
+        pr.fsp_data.update(fsp_data)
         pr.save()
         return response
 

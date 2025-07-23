@@ -299,7 +299,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         pr.auth_code = body["referenceNumber"]
         pr.fsp_code = body["transactionId"]
         pr.success = True
-        pr.extra_data.update(
+        pr.fsp_data.update(
             {
                 "fee": f"{body['receiveAmount']['fees']['value']} {body['receiveAmount']['fees']['currencyCode']}",
                 "taxes": f"{body['receiveAmount']['taxes']['value']} {body['receiveAmount']['taxes']['currencyCode']}",
@@ -344,7 +344,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             resp = self.perform_request(endpoint, status_transaction_id, payload, "put")
             if resp.status_code == 200:
                 pr.message = f"Refunded {reason}"
-                pr.extra_data.update({"refund_reference": payload["refundId"]})
+                pr.fsp_data.update({"refund_reference": payload["refundId"]})
                 update_status(pr, REFUNDED)
                 pr.save()
         return payload, resp, endpoint

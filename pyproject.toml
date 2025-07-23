@@ -1,6 +1,11 @@
+[build-system]
+build-backend = "hatchling.build"
+
+requires = [ "hatchling" ]
+
 [project]
 name = "hope-payment-gateway"
-version = "1.8.0"
+version = "1.9.0"
 description = "HOPE integration with FSPs"
 readme = "README.md"
 license = "Apache-2.0 OR MIT"
@@ -82,7 +87,7 @@ dev = [
   "parso",
   "pre-commit",
   "pymdown-extensions",
-  "pytest",
+  "pytest<8.4",
   "pytest-cov",
   "pytest-django",
   "pytest-echo",
@@ -90,6 +95,7 @@ dev = [
   "pytest-xdist",
   "requests-mock",
   "responses",
+  "ruff",
   "tox",
   "types-freezegun",
   "types-python-dateutil",
@@ -119,6 +125,18 @@ docs = [
   "mkdocs-pdf-export-plugin",
   "mkdocs-simple-hooks",
   "mkdocstrings[python]",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/hope_api_auth/**/*.*",
+  "src/hope_payment_gateway/**/*.*",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "src/hope_api_auth",
+  "src/hope_payment_gateway",
 ]
 
 [tool.nitpick]

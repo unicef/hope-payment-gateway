@@ -17,6 +17,7 @@ from hope_payment_gateway.apps.gateway.actions import (
     moneygram_refund,
 )
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from csv import excel_tab
 
 
 @pytest.fixture
@@ -31,16 +32,12 @@ def request_with_messages(request_factory):
 
 @pytest.fixture
 def sample_queryset():
-    from hope_payment_gateway.apps.gateway.models import PaymentRecord
-
     records = PaymentRecordFactory.create_batch(2)
     return PaymentRecord.objects.filter(id__in=[r.id for r in records])
 
 
 @pytest.fixture
 def request_with_data(request_with_messages, admin_user):
-    from django.http import QueryDict
-
     request_with_messages.user = admin_user
     post_data = QueryDict(mutable=True)
     post_data.update(
@@ -143,8 +140,6 @@ def test_datetime_formatting(field_type, field_value, expected_format):
 
 @pytest.mark.django_db
 def test_with_custom_dialect(sample_queryset):
-    from csv import excel_tab
-
     fields = ["{{ obj.record_code }}", "{{ obj.message }}"]
     header = ["Record Code", "Message"]
 
