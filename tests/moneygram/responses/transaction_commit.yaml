@@ -1,0 +1,101 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\n  \"refresh_token_expires_in\" : \"0\",\n  \"api_product_list\" : \"\
+      [DisbursementStatus-Ext, DisbursementRefund-Ext, DisbursementProfiles-Ext, Disbursement-Ext,\
+      \ FxRate-Ext, ReferenceData-Ext]\",\n  \"api_product_list_json\" : [ \"DisbursementStatus-Ext\"\
+      , \"DisbursementRefund-Ext\", \"DisbursementProfiles-Ext\", \"Disbursement-Ext\"\
+      , \"FxRate-Ext\", \"ReferenceData-Ext\" ],\n  \"organization_name\" : \"moneygram\"\
+      ,\n  \"developer.email\" : \"developer@moneygram.com\",\n  \"token_type\" :\
+      \ \"BearerToken\",\n  \"issued_at\" : \"1753455987738\",\n  \"client_id\" :\
+      \ \"xxxx\",\n  \"access_token\" : \"\"\
+      ,\n  \"application_name\" : \"6547622b-725c-4bb9-a035-8b32a8e25d5a\",\n  \"\
+      scope\" : \"\",\n  \"expires_in\" : \"3599\",\n  \"refresh_count\" : \"0\",\n\
+      \  \"status\" : \"approved\"\n}"
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, POST
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Set-Cookie: visid_incap_2947185=rkaTsLZgQxmHxif3v0FopXOdg2gAAAAAQUIPAAAAAAC1/1IPdhOJiiEMqxaNRGYE;
+        expires=Fri, 24 Jul 2026 22:36:33 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=EDh2VsVr7DxAFRZhdIbzIAAAAAD84KTLVVpAghgWDbeMNKzi; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_268_2947185=M7FLKgj25gKOWKr++iC4A3Odg2gAAAAAGK7LNJ2iT2j3/vh5bAGaHw==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 61-54395591-54390802 PNYN RT(1753455987638 45) q(0 0 0 -1) r(1 1) U16
+      X-MG-ClientRequestId: ''
+      X-MG-RequestId: rrt-3540981637016382526-b-gce-2067939-146742938-2
+      X-MG-SessionId: ''
+    method: GET
+    status: 200
+    url: https://sandboxapi.moneygram.com/oauth/accesstoken?grant_type=client_credentials
+- response:
+    auto_calculate_content_length: false
+    body: '{"transactionId":"369cc376-b172-4616-a1c0-0fdc23305558","partnerTransactionId":"code-123","businessProfileId":"bp-mdiyf7o2-15c22c0a","serviceOptionName":"Cash
+      Pickup - Anywhere","referenceNumber":"99067959","expectedPayoutDate":"2025-07-25","sendAmount":{"amount":{"value":1.35,"currencyCode":"USD"},"fees":{"value":0.04,"currencyCode":"USD"},"taxes":{"value":0.00,"currencyCode":"USD"},"discountsApplied":{"totalDiscount":{"value":0.00,"currencyCode":"USD"}},"total":{"value":1.39,"currencyCode":"USD"}},"receiveAmount":{"amount":{"value":1000.00,"currencyCode":"NGN"},"fees":{"value":0.00,"currencyCode":"NGN"},"taxes":{"value":0.00,"currencyCode":"NGN"},"total":{"value":1000.00,"currencyCode":"NGN"},"fxRate":740.7407,"fxRateEstimated":false}}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Server-Timing: intid;desc=0aac540ba0b0c91f
+      Set-Cookie: visid_incap_2947185=yE59eBIERV+n65ByQ0r013adg2gAAAAAQUIPAAAAAAAcJkBKuWgAykFuEi6DuFGL;
+        expires=Fri, 24 Jul 2026 22:36:32 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=OuB6e9Mjo3zKXwEQdIbzIAAAAAAX69pNLVpRWjXitg+GyI37; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_268_2947185=QY0yKmGlOjfBZar++iC4A3adg2gAAAAAZX+GDltgzo/FKkqy3eLFyA==;
+        path=/; Domain=.moneygram.com
+      Transfer-Encoding: chunked
+      X-CDN: Imperva
+      X-Iinfo: 57-39931911-39931923 NNYY CT(98 204 0) RT(1753455987932 38) q(0 0 0
+        -1) r(29 29) U6
+      X-MG-ClientRequestId: code-123
+      X-MG-RequestId: rrt-4196228350274624958-f-gce-3745765-145760245-1
+      X-MG-SessionId: 9821731E1753455988126984659236NN
+      X-transGUID: f930833d-3962-493e-aec4-d1bfe0dd9f04
+      vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      x-amz-apigw-id: ORWKMEe8CYcFzaQ=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Date: Fri, 25 Jul 2025 15:06:30 GMT
+      x-amzn-Remapped-Server: nginx/1.25.5
+      x-amzn-RequestId: edff1f48-ca6a-42db-80ca-32d0c2d4a96e
+    method: POST
+    status: 200
+    url: https://sandboxapi.moneygram.com/disbursement/v1/transactions
+- response:
+    auto_calculate_content_length: false
+    body: '{"referenceNumber":"99067959"}'
+    content_type: text/plain
+    headers:
+      Access-Control-Allow-Headers: origin, x-requested-with, accept, content-type,
+        authorization, X-MG-SessionId, X-MG-ClientRequestId
+      Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Max-Age: '3628800'
+      Server-Timing: intid;desc=8f5893dc53964249
+      Set-Cookie: visid_incap_2947185=KYJ4hSGHT3GtNTa1JtuSknadg2gAAAAAQUIPAAAAAAAZ0J0RXv/mqx2yXb0WukA3;
+        expires=Fri, 24 Jul 2026 22:36:33 GMT; HttpOnly; path=/; Domain=.moneygram.com,
+        nlbi_2947185=JQqEdpkB6wiP5cIXdIbzIAAAAACxa02ymUtTNEPt0eLbPPhd; HttpOnly; path=/;
+        Domain=.moneygram.com, incap_ses_268_2947185=8MzbIGRxlGPzZqr++iC4A3adg2gAAAAATzwHVWkPwi+hZoN1G3Lf+A==;
+        path=/; Domain=.moneygram.com
+      X-CDN: Imperva
+      X-Iinfo: 34-8459179-8459181 NNNY CT(98 202 0) RT(1753455990956 53) q(0 0 0 -1)
+        r(2 2) U6
+      X-MG-ClientRequestId: 64384d78-9e93-4f84-aa0f-8468aaf4283b
+      X-MG-RequestId: rrt-2095328497387629630-b-gce-477234-148361702-1
+      X-MG-SessionId: ''
+      X-transGUID: 1681e2a3-4edd-42fc-a480-257c5f790d6a
+      accept-charset: utf-8
+      x-amz-apigw-id: ORWKqFqRCYcF56A=
+      x-amzn-Remapped-Connection: keep-alive
+      x-amzn-Remapped-Date: Fri, 25 Jul 2025 15:06:31 GMT
+      x-amzn-Remapped-Server: nginx/1.25.5
+      x-amzn-RequestId: 06f8ad0f-e80e-49ee-8d11-00915647d14a
+    method: PUT
+    status: 200
+    url: https://sandboxapi.moneygram.com/disbursement/v1/transactions/369cc376-b172-4616-a1c0-0fdc23305558/commit

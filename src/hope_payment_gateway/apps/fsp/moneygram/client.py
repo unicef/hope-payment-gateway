@@ -90,7 +90,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             "userLanguage": "en-US",
         }
 
-    def prepare_transaction(self, base_payload):
+    def prepare_transaction(self, base_payload, autocommit=False):
         """Prepare the payload to create transactions."""
         delivery_phone_number = get_account_field(base_payload, "number")
         phone_number, country_code = get_phone_number(delivery_phone_number)
@@ -117,43 +117,46 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 name["middleName"] = middle_name
             if second_last_name:
                 name["second_last_name"] = second_last_name
-            payload = {
-                "targetAudience": "AGENT_FACING",
-                "agentPartnerId": base_payload["agent_partner_id"],
-                "userLanguage": "en-US",
-                "destinationCountryCode": base_payload["destination_country"],
-                "sendCurrencyCode": base_payload.get("origination_currency", "USD"),
-                "serviceOptionCode": base_payload.get("service_option_code", "WILL_CALL"),
-                "serviceOptionRoutingCode": base_payload.get("service_option_routing_code", None),
-                "autoCommit": "true",
-                "receiveAmount": {
-                    "currencyCode": base_payload.get("destination_currency", "USD"),
-                    "value": base_payload["amount"],
-                },
-                "sender": self.sender,
-                "beneficiary": {
-                    "consumer": {
-                        "name": name,
-                        "mobilePhone": {
-                            "number": phone_number,
-                            "countryDialCode": country_code,
-                        },
-                    }
-                },
-                "targetAccount": {
-                    "accountNumber": get_account_field(base_payload, "number"),
-                    "bankName": get_account_field(base_payload, "service_provider_code"),
-                },
-                "receipt": {
-                    "primaryLanguage": base_payload.get("receipt_primary_language", None),
-                    "secondaryLanguage": base_payload.get("receipt_secondary_language", None),
-                },
-            }
+
+            payload = self.get_basic_payload(base_payload["agent_partner_id"])
+            payload.update(
+                {
+                    "destinationCountryCode": base_payload["destination_country"],
+                    "sendCurrencyCode": base_payload.get("origination_currency", "USD"),
+                    "serviceOptionCode": base_payload.get("service_option_code", "WILL_CALL"),
+                    "serviceOptionRoutingCode": base_payload.get("service_option_routing_code", None),
+                    "receiveAmount": {
+                        "currencyCode": base_payload.get("destination_currency", "USD"),
+                        "value": base_payload["amount"],
+                    },
+                    "sender": self.sender,
+                    "beneficiary": {
+                        "consumer": {
+                            "name": name,
+                            "mobilePhone": {
+                                "number": phone_number,
+                                "countryDialCode": country_code,
+                            },
+                        }
+                    },
+                    "targetAccount": {
+                        "accountNumber": get_account_field(base_payload, "number"),
+                        "bankName": get_account_field(base_payload, "service_provider_code"),
+                    },
+                    "receipt": {
+                        "primaryLanguage": base_payload.get("receipt_primary_language", None),
+                        "secondaryLanguage": base_payload.get("receipt_secondary_language", None),
+                    },
+                    "partnerTransactionId": transaction_id,
+                }
+            )
+            if autocommit:
+                payload["autoCommit"] = "true"
         except KeyError as e:
             raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload")
         return transaction_id, payload
 
-    def create_transaction(self, base_payload, update=True):
+    def draft_transaction(self, base_payload, autocommit=False):
         """Create a transaction to MoneyGram."""
         endpoint = "/disbursement/v1/transactions"
         record_code = base_payload["payment_record_code"]
@@ -166,7 +169,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
         flow = PaymentRecordFlow(pr)
         try:
-            transaction_id, payload = self.prepare_transaction(base_payload)
+            transaction_id, payload = self.prepare_transaction(base_payload, autocommit)
             sentry_sdk.capture_message("MoneyGram Union: Create Transaction")
             response = self.perform_request(endpoint, transaction_id, payload, "post")
         except (PayloadMissingKeyError, ValueError, TypeError) as e:
@@ -183,10 +186,40 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             response = Response(response.data, status=HTTP_400_BAD_REQUEST)
         else:
             pr.success = True
-        pr.save()
-        if update and response.status_code == 200:
             self.post_transaction(response, base_payload)
+            if autocommit:
+                self.post_commit(response, base_payload)
+            else:
+                pr.fsp_code = response.data["transactionId"]
+        pr.save()
+        return payload, response, endpoint
 
+    def create_transaction(self, base_payload, **kwargs):
+        record_code = base_payload["payment_record_code"]
+        pr = PaymentRecord.objects.get(
+            record_code=record_code,
+            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+        )
+        if not pr.fsp_code:
+            payload, response, endpoint = self.draft_transaction(base_payload)
+            if not response or response.status_code >= 300:
+                return payload, response, endpoint
+        return self.commit_transaction(base_payload)
+
+    def commit_transaction(self, base_payload):
+        """Commit a transaction in a separate after creating it in MoneyGram."""
+        record_code = base_payload["payment_record_code"]
+        pr = PaymentRecord.objects.get(
+            record_code=record_code,
+            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+        )
+        transaction_id = pr.fsp_code
+        payload = {"partnerTransactionId": record_code}
+        endpoint = f"/disbursement/v1/transactions/{transaction_id}/commit"
+        status_transaction_id = str(uuid.uuid4())
+        response = self.perform_request(endpoint, status_transaction_id, payload, "put")
+        if response and response.status_code == 200:
+            self.post_commit(response, base_payload)
         return payload, response, endpoint
 
     def prepare_quote(self, base_payload: dict):
@@ -287,6 +320,30 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         return response
 
     def post_transaction(self, response, payload):
+        body = response.data
+        record_code = payload["payment_record_code"]
+        pr = PaymentRecord.objects.get(
+            record_code=record_code,
+            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+        )
+
+        transaction_ids = pr.fsp_data.get("transactionId", [])
+        if not isinstance(transaction_ids, list):  # this is for legacy data, we could remove soon
+            transaction_ids = [transaction_ids]
+        transaction_ids.append(body["transactionId"])
+
+        pr.fsp_data.update(
+            {
+                "fee": f"{body['receiveAmount']['fees']['value']} {body['receiveAmount']['fees']['currencyCode']}",
+                "taxes": f"{body['receiveAmount']['taxes']['value']} {body['receiveAmount']['taxes']['currencyCode']}",
+                "fx_rate": f"{body['receiveAmount']['fxRate']} (estimated {body['receiveAmount']['fxRateEstimated']}",
+                "expectedPayoutDate": body["expectedPayoutDate"],
+                "transactionId": transaction_ids,
+            }
+        )
+        pr.save()
+
+    def post_commit(self, response, payload):
         """Update record in the database."""
         body = response.data
         record_code = payload["payment_record_code"]
@@ -297,17 +354,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         if "errors" in body:
             return Response(body, status=HTTP_400_BAD_REQUEST)
         pr.auth_code = body["referenceNumber"]
-        pr.fsp_code = body["transactionId"]
         pr.success = True
-        pr.fsp_data.update(
-            {
-                "fee": f"{body['receiveAmount']['fees']['value']} {body['receiveAmount']['fees']['currencyCode']}",
-                "taxes": f"{body['receiveAmount']['taxes']['value']} {body['receiveAmount']['taxes']['currencyCode']}",
-                "fx_rate": f"{body['receiveAmount']['fxRate']} (estimated {body['receiveAmount']['fxRateEstimated']}",
-                "expectedPayoutDate": body["expectedPayoutDate"],
-                "transactionId": body["transactionId"],
-            }
-        )
 
         try:
             flow = PaymentRecordFlow(pr)
