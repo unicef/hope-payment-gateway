@@ -352,8 +352,10 @@ def test_draft_transaction(mg):
         },
     }
     pr.refresh_from_db()
+    assert pr.status == PaymentRecordState.PENDING
     assert pr.fsp_code == "18ba47c4-6376-40d4-a0c9-e52722dc52cf"
     assert pr.success
+    assert pr.message == "Created Draft Transaction"
 
 
 # @_recorder.record(file_path="tests/moneygram/responses/refund.yaml")
@@ -1776,6 +1778,7 @@ def test_create_transaction(mg):
     assert response.data == {"referenceNumber": "99067959"}
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
+    assert pr.message == "Transaction submitted successfully"
 
 
 @responses.activate
@@ -1791,3 +1794,4 @@ def test_commit_transaction(mg):
     assert response.data == {"referenceNumber": "99067959"}
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
+    assert pr.message == "Transaction submitted successfully"

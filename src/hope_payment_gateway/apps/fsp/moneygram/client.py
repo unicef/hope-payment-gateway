@@ -183,15 +183,15 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             pr.message = ", ".join(extrapolate_errors(response.data))
             flow.fail()
             pr.success = False
+            pr.save()
             response = Response(response.data, status=HTTP_400_BAD_REQUEST)
         else:
             pr.success = True
+            pr.message = "Created Draft Transaction"
+            pr.save()
             self.post_transaction(response, base_payload)
             if autocommit:
                 self.post_commit(response, base_payload)
-            else:
-                pr.fsp_code = response.data["transactionId"]
-        pr.save()
         return payload, response, endpoint
 
     def create_transaction(self, base_payload, **kwargs):
@@ -326,12 +326,16 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
+        transaction_id = body["transactionId"]
+        reference_number = body["referenceNumber"]
 
         transaction_ids = pr.fsp_data.get("transactionId", [])
         if not isinstance(transaction_ids, list):  # this is for legacy data, we could remove soon
             transaction_ids = [transaction_ids]
-        transaction_ids.append(body["transactionId"])
+        transaction_ids.append(transaction_id)
 
+        pr.fsp_code = transaction_id
+        pr.auth_code = reference_number
         pr.fsp_data.update(
             {
                 "fee": f"{body['receiveAmount']['fees']['value']} {body['receiveAmount']['fees']['currencyCode']}",
@@ -339,6 +343,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "fx_rate": f"{body['receiveAmount']['fxRate']} (estimated {body['receiveAmount']['fxRateEstimated']}",
                 "expectedPayoutDate": body["expectedPayoutDate"],
                 "transactionId": transaction_ids,
+                "referenceNumber": reference_number,
             }
         )
         pr.save()
@@ -355,6 +360,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             return Response(body, status=HTTP_400_BAD_REQUEST)
         pr.auth_code = body["referenceNumber"]
         pr.success = True
+        pr.message = "Transaction submitted successfully"
 
         try:
             flow = PaymentRecordFlow(pr)
