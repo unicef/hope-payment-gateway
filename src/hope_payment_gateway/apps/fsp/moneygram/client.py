@@ -141,7 +141,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                     },
                     "targetAccount": {
                         "accountNumber": get_account_field(base_payload, "number"),
-                        "bankName": get_account_field(base_payload, "service_provider_code"),
+                        "bankName": get_account_field(base_payload, "bank_code"),
                     },
                     "receipt": {
                         "primaryLanguage": base_payload.get("receipt_primary_language", None),
