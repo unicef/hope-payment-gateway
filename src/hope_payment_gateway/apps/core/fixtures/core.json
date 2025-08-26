@@ -3,40 +3,18 @@
     "model": "core.user",
     "pk": 1,
     "fields": {
-        "password": "pbkdf2_sha256$600000$xTQkOq1RpsB7sdZhce1Y3v$vW/F89sjfDXmDkpYvgubqufGJdaBToKaBUlvU1jccTI=",
         "last_login": "2023-09-15T20:02:19Z",
         "is_superuser": true,
-        "username": "jojo",
+        "username": "hope",
         "first_name": "",
         "last_name": "",
-        "email": "jojo@unicef.org",
+        "email": "hope@unicef.org",
         "is_staff": true,
         "is_active": true,
         "date_joined": "2023-07-06T09:39:57Z",
         "azure_id": null,
         "job_title": null,
-        "display_name": "jojo",
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "core.user",
-    "pk": 2,
-    "fields": {
-        "password": "pbkdf2_sha256$600000$eihZ9OEFRfjDwVkY9sFy8a$r9HqzGerWm2iNujoDAHAq0PJUu1BwXBYw3nFerJplEY=",
-        "last_login": "2023-09-25T09:32:58.358Z",
-        "is_superuser": false,
-        "username": "dome",
-        "first_name": "",
-        "last_name": "",
-        "email": "",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2023-09-25T09:30:33Z",
-        "azure_id": null,
-        "job_title": null,
-        "display_name": "dome",
+        "display_name": "hope",
         "groups": [],
         "user_permissions": []
     }
