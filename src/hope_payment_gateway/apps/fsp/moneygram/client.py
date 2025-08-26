@@ -252,7 +252,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
         payload = self.get_basic_payload(agent_partner_id)
         status_transaction_id = str(uuid.uuid4())
-        return payload, self.perform_request(endpoint, status_transaction_id, payload), endpoint
+        return payload, self.perform_request(endpoint, status_transaction_id, payload, "get"), endpoint
 
     def status_update(self, payload):
         """Query MoneyGram to get information regarding the transaction status."""
