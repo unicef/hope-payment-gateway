@@ -20,7 +20,7 @@ from hope_payment_gateway.apps.gateway.models import (
 
 
 class WesternUnionAdminMixin:
-    @choice(change_list=False, label="Western Union")
+    @choice(change_list=False, label="Western Union", permission="western_union.can_check_status")
     def western_union(self, button):
         obj: PaymentRecord = button.original
 

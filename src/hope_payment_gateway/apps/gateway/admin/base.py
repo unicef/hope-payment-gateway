@@ -77,7 +77,7 @@ class PaymentRecordAdmin(
     )
     list_filter = ("parent__fsp", ("parent", AutoCompleteFilter), "status", "success")
     search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
-    readonly_fields = ("fsp_data",)
+    readonly_fields = ("fsp_data", "extra_data", "payout_date", "payout_amount")
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
