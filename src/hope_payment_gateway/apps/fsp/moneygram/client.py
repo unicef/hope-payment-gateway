@@ -336,16 +336,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
         pr.fsp_code = transaction_id
         pr.auth_code = reference_number
-        pr.fsp_data.update(
-            {
-                "fee": f"{body['receiveAmount']['fees']['value']} {body['receiveAmount']['fees']['currencyCode']}",
-                "taxes": f"{body['receiveAmount']['taxes']['value']} {body['receiveAmount']['taxes']['currencyCode']}",
-                "fx_rate": f"{body['receiveAmount']['fxRate']} (estimated {body['receiveAmount']['fxRateEstimated']}",
-                "expectedPayoutDate": body["expectedPayoutDate"],
-                "transactionId": transaction_ids,
-                "referenceNumber": reference_number,
-            }
-        )
+        pr.fsp_data.update(body)
         pr.save()
 
     def post_commit(self, response, payload):

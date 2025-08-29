@@ -96,7 +96,8 @@ class MoneyGramWebhook(MoneyGramApi):
                     payload["eventPayload"]["transactionStatusDate"],
                     "%Y-%m-%dT%H:%M:%S.%f",
                 ).date()
-
+            with suppress(KeyError, ValueError):
+                pr.payout_amount = pr.fsp_data["receiveAmount"]["amount"]["value"]
         update_status(pr, notification_type)
 
         pr.fsp_data.update(
