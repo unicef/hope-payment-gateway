@@ -181,7 +181,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                         "national_number": phone_number,
                     },
                 },
-                "reason_for_sending": base_payload.get("reason_for_sending", None),
+                "reason_for_sending": base_payload.get("reason_for_sending", "P019"),
             }
             amount_key = "destination_principal_amount" if transaction_type == WMF else "originators_principal_amount"
             financials = {
