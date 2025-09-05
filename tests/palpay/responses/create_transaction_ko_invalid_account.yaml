@@ -1,0 +1,18 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: "{\"Succeeded\":false,\"Message\":\"\u0639\u0630\u0631\u0627 \u062A\u0645\
+      \ \u0627\u0646\u0634\u0627\u0621 \u0637\u0644\u0628 \u0627\u0644\u0635\u0631\
+      \u0641 \u0645\u0633\u0628\u0642\u0627\",\"Data\":{},\"ErrorCode\":-1003}"
+    content_type: text/plain; charset=utf-8
+    headers:
+      CF-RAY: 97bfed0dffc92fa7-MAD
+      Set-Cookie: cookiesession1=678A8C58B8DBB6DB3986EFB9F4E7A6A7;Expires=Tue, 08
+        Sep 2026 16:47:08 GMT;Path=/;HttpOnly, __cf_bm=7aFldkykpRai_7.7Jzo5E70p0aIs9A1SfwSHdt6Rit0-1757350028-1.0.1.1-9o7KPtWUfC0hJbjYbxAEqhKKtahyA5SwqdwXXGK_1FN3K1o_2bLOnfMPWgk2EJBufSm5dZiov2S1hL.mQo69ovuSYrRYXAJsRnbnMZYq91w;
+        path=/; expires=Mon, 08-Sep-25 17:17:08 GMT; domain=.palpay.ps; HttpOnly;
+        Secure; SameSite=None
+      Transfer-Encoding: chunked
+      cf-cache-status: DYNAMIC
+    method: POST
+    status: 200
+    url: https://sandbox.palpay.ps/api/v1/moneytransfer/transfer/new-transaction

@@ -40,7 +40,11 @@ class DeliveryMechanism(TimeStampedModel):
     name = models.CharField(max_length=128)
     description = models.TextField(null=True, blank=True)
     account_type = models.ForeignKey(
-        AccountType, on_delete=models.CASCADE, related_name="delivery_mechanisms", null=True, blank=True
+        AccountType,
+        on_delete=models.CASCADE,
+        related_name="delivery_mechanisms",
+        null=True,
+        blank=True,
     )
     transfer_type = models.CharField(choices=DELIVERY_MECHANISM_TYPE, max_length=32)
 
@@ -182,7 +186,10 @@ class PaymentRecord(TimeStampedModel):
     )
     success = models.BooleanField(null=True, blank=True)
     message = models.CharField(
-        max_length=4096, null=True, blank=True, help_text="Help Text message from latest FSP call"
+        max_length=4096,
+        null=True,
+        blank=True,
+        help_text="Help Text message from latest FSP call",
     )
 
     auth_code = models.CharField(
@@ -203,13 +210,25 @@ class PaymentRecord(TimeStampedModel):
     payload = models.JSONField(default=dict, null=True, blank=True)
 
     payout_amount = models.DecimalField(
-        decimal_places=2, max_digits=12, null=True, blank=True, help_text="Amount paid by FSP"
+        decimal_places=2,
+        max_digits=12,
+        null=True,
+        blank=True,
+        help_text="Amount paid by FSP",
     )
     payout_date = models.DateField(null=True, blank=True, help_text="Date of payout from FSP")
 
-    fsp_data = models.JSONField(default=dict, null=True, blank=True, help_text="FSP data stored for troubleshooting")
+    fsp_data = models.JSONField(
+        default=dict,
+        null=True,
+        blank=True,
+        help_text="FSP data stored for troubleshooting",
+    )
     extra_data = models.JSONField(
-        default=dict, null=True, blank=True, help_text="Useful information related original record"
+        default=dict,
+        null=True,
+        blank=True,
+        help_text="Useful information related original record",
     )
 
     def __str__(self) -> str:
@@ -231,7 +250,11 @@ class ExportTemplate(models.Model):
     query = models.TextField()
 
     header = models.BooleanField(default=True)
-    delimiter = models.CharField(choices=list(zip(delimiters, delimiters, strict=True)), default=",", max_length=1)
+    delimiter = models.CharField(
+        choices=list(zip(delimiters, delimiters, strict=True)),
+        default=",",
+        max_length=1,
+    )
     quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'", max_length=1)
     quoting = models.IntegerField(
         choices=(
@@ -242,7 +265,13 @@ class ExportTemplate(models.Model):
         ),
         default=csv.QUOTE_ALL,
     )
-    escapechar = models.CharField(choices=(("", ""), ("\\", "\\")), default="", null=True, blank=True, max_length=1)
+    escapechar = models.CharField(
+        choices=(("", ""), ("\\", "\\")),
+        default="",
+        null=True,
+        blank=True,
+        max_length=1,
+    )
 
     class Meta:
         unique_together = ("fsp", "config_key")

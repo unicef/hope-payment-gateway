@@ -1,0 +1,18 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"Succeeded":true,"Message":"","Data":[{"ProfileId":1,"ProfileName":"USD
+      ","AccountNameAr":"Unicef","AccountNameEn":null,"PalpayAccount":"xxxxxx","FullPalpayAccount":"AAAAAA"},{"ProfileId":2,"ProfileName":"ILS
+      ","AccountNameAr":"Unicef","AccountNameEn":null,"PalpayAccount":"yyyyyy","FullPalpayAccount":"BBBBBB"}],"TotalPages":1,"Page":1,"TotalCount":2}'
+    content_type: text/plain
+    headers:
+      CF-RAY: 97bd0f228995cfe2-MAD
+      Set-Cookie: cookiesession1=678A8C58C13A94DCD3829842C2413528;Expires=Tue, 08
+        Sep 2026 08:26:07 GMT;Path=/;HttpOnly, __cf_bm=mKkE9QQ8eJZOB1i34X71O_Vb1h_zhl4Zu2_dgIxb1oI-1757319967-1.0.1.1-N4mJI.fhrV5sEqQk7ZukPOCHb53QEiOK1LdWnpFNUCQABme0vCTYPdNXfkyrpOytr2tBVEBIvwtw4tPAsWkZ833EOkT_C80nCvh6bwEESzY;
+        path=/; expires=Mon, 08-Sep-25 08:56:07 GMT; domain=.palpay.ps; HttpOnly;
+        Secure; SameSite=None
+      Transfer-Encoding: chunked
+      cf-cache-status: DYNAMIC
+    method: GET
+    status: 200
+    url: https://sandbox.palpay.ps/api/v1/moneytransfer/profile

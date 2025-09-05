@@ -1,0 +1,16 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"Succeeded":true,"Message":"","Data":[],"TotalPages":0,"Page":1,"TotalCount":0}'
+    content_type: text/plain
+    headers:
+      CF-RAY: 97bdc4cf4eb800b2-MAD
+      Set-Cookie: cookiesession1=678A8C5807926E25F783D6722B02DBFC;Expires=Tue, 08
+        Sep 2026 10:30:13 GMT;Path=/;HttpOnly, __cf_bm=2S60ff5tIKIzS2sBm_73ZK687Etdg6yE0icriXDIukg-1757327413-1.0.1.1-x1TFvzsEqaWnsSnjDyeRqaxAztUq3m15XVCFLFnvP2IlmdiaSvmiERwvOX_DK.LYoVgommUYM2yWURDvWWCIdZlHqZj8ohy9moNutr1ciAg;
+        path=/; expires=Mon, 08-Sep-25 11:00:13 GMT; domain=.palpay.ps; HttpOnly;
+        Secure; SameSite=None
+      Transfer-Encoding: chunked
+      cf-cache-status: DYNAMIC
+    method: GET
+    status: 200
+    url: https://sandbox.palpay.ps/api/v1/moneytransfer/beneficiary

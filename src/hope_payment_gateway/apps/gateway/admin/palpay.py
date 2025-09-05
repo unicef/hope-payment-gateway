@@ -16,22 +16,54 @@ class PalPayAdminMixin:
     def handle_pal_response(self, request: HttpRequest, pk: int, method: str, title: str) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
-            client_call = getattr(PalPayClient(), method)
-            payload, resp = client_call(obj.fsp_code, obj.get_payload())
+            payload, resp, endpoint = getattr(PalPayClient(), method)(obj.get_payload())
             context = self.get_common_context(request, pk)
             if resp:
                 context["code"] = resp.status_code
                 context["title"] = title
+                context["url"] = endpoint
                 context["request_format"] = "json"
                 context["response_format"] = "json"
                 context["content_request"] = payload
-                context["content_response"] = resp.data
+                context["content_response"] = resp.data if hasattr(resp, "data") else resp.json()
             else:
                 messages.add_message(request, messages.ERROR, "Connection Error")
             return TemplateResponse(request, "request.html", context)
         except KeyError as e:
             logger.error(e)
             self.message_user(request, str(e), messages.ERROR)
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Profile",
+        permission="palpay.can_check_profile",
+    )
+    def pal_profile(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        return self.handle_pal_response(request, pk, "get_profile", "Check Profile")
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Check Balance",
+        permission="palpay.can_check_balance",
+    )
+    def pal_balance(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        return self.handle_pal_response(request, pk, "balance", "Check Balance")
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Check Beneficiary",
+        permission="palpay.can_check_beneficiary",
+    )
+    def pal_beneficiary(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        return self.handle_pal_response(request, pk, "beneficiary", "Check Beneficiary")
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Check Transactions",
+        permission="palpay.can_check_transactions",
+    )
+    def pal_transactions(self, request: HttpRequest, pk: int) -> TemplateResponse:
+        return self.handle_pal_response(request, pk, "transactions", "Check Transactions")
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},
@@ -57,23 +89,18 @@ class PalPayAdminMixin:
     def pal_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "status_update", "Update Status")
 
-    @view(
-        html_attrs={"style": "background-color:#88FF88;color:black"},
-        label="Cancel",
-        permission="palpay.can_cancel_transaction",
-    )
-    def pal_refund(self, request: HttpRequest, pk: int) -> TemplateResponse:
-        return self.handle_pal_response(request, pk, "status_update", "Cancel")
-
     @choice(change_list=False, label="PalPay")
     def palpay(self, button):
         obj: PaymentRecord = button.original
         if obj.parent.fsp.vendor_number == config.PALPAY_VENDOR_NUMBER:
             button.choices = [
+                self.pal_profile,
+                self.pal_balance,
+                self.pal_beneficiary,
+                self.pal_transactions,
                 self.pal_create_transaction,
                 self.pal_status,
                 self.pal_status_update,
-                self.pal_refund,
             ]
         else:
             button.visible = False

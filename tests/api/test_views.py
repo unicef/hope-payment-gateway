@@ -103,7 +103,10 @@ def test_payment_instruction_create(api_client, token_user, mg, payload):
     ],
 )
 def test_payment_instruction_create_with_office(api_client, token_user, mg, payload):
-    OfficeFactory.create(code="tester_one", supervised=True)
+    OfficeFactory.create(
+        code="tester_one",
+        supervised=True,
+    )
     _test_payment_instruction_create(api_client, token_user, mg, payload)
 
 

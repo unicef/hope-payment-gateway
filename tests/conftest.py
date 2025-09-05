@@ -7,6 +7,7 @@ from django.contrib.admin.sites import AdminSite
 from django.test import RequestFactory
 from hope_api_auth.models import Grant
 from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
+from hope_payment_gateway.apps.fsp.palpay.handlers import PalPayHandler
 from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 from strategy_field.utils import fqn
@@ -20,6 +21,8 @@ from factories import (
     UserFactory,
     FinancialServiceProviderConfigFactory,
     DeliveryMechanismFactory,
+    CountryFactory,
+    OfficeFactory,
 )
 from rest_framework.test import APIClient
 
@@ -49,6 +52,7 @@ def pytest_configure(config):
 def use_override_settings(settings):
     settings.WESTERN_UNION_BASE_URL = "https://wugateway2pi.westernunion.com/"
     settings.MONEYGRAM_HOST = "https://sandboxapi.moneygram.com"
+    settings.PALPAY_HOST = "https://sandbox.palpay.ps"
     settings.SECRET_KEY = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
 
 
@@ -75,8 +79,18 @@ def corridor():
 
 
 @pytest.fixture
-def pi():
-    return PaymentInstructionFactory()
+def country():
+    return CountryFactory()
+
+
+@pytest.fixture
+def office():
+    return OfficeFactory()
+
+
+@pytest.fixture
+def pi(office):
+    return PaymentInstructionFactory(office=office)
 
 
 @pytest.fixture
@@ -158,6 +172,32 @@ def mg():
     )
 
     return mg
+
+
+@pytest.fixture
+def palpay(office):
+    palpay = FinancialServiceProviderFactory(
+        name="Palpay",
+        vendor_number="XYZ",
+        strategy=fqn(PalPayHandler),
+        configuration={"profileId": "51"},
+    )
+    dm = DeliveryMechanismFactory(code="money")
+    FinancialServiceProviderConfigFactory(
+        key="pp-key",
+        fsp=palpay,
+        delivery_mechanism=dm,
+        configuration={
+            "ProfileId": 52,
+            "ProfileName": "USD ",
+            "AccountNameAr": "Test",
+            "AccountNameEn": None,
+            "PalpayAccount": "100",
+            "FullPalpayAccount": "20",
+        },
+        office=office,
+    )
+    return palpay
 
 
 @pytest.fixture
