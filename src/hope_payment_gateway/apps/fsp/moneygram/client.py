@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import re
 import uuid
 from urllib.parse import urlencode
 
@@ -110,13 +111,17 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             second_last_name = base_payload.get("second_last_name", rest_ln)
 
             name = {
-                "firstName": first_name,
-                "lastName": last_name,
+                "firstName": re.sub(r"[.,:;]", "", first_name),
+                "lastName": re.sub(
+                    r"[.,:;]",
+                    "",
+                    last_name,
+                ),
             }
             if middle_name:
-                name["middleName"] = middle_name
+                name["middleName"] = re.sub(r"[.,:;]", "", middle_name)
             if second_last_name:
-                name["second_last_name"] = second_last_name
+                name["second_last_name"] = re.sub(r"[.,:;]", "", second_last_name)
 
             payload = self.get_basic_payload(base_payload["agent_partner_id"])
             payload.update(
