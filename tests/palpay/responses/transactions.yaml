@@ -1,0 +1,16 @@
+responses:
+- response:
+    auto_calculate_content_length: false
+    body: '{"Succeeded":true,"Message":"","Data":[{"Id":1140,"TraDate":"2025-09-05T20:09:52","TransRefNo":"1234566777","TransferName":"1234566777","PalpayAccount":"100000949173376","SalaryAmount":0.0,"CurrencyCode":"376","ProfileId":51,"Status":5},{"Id":1139,"TraDate":"2025-09-05T20:06:34","TransRefNo":"1234566","TransferName":"1234566","PalpayAccount":"100000949173376","SalaryAmount":0.0,"CurrencyCode":"376","ProfileId":51,"Status":5},{"Id":1138,"TraDate":"2025-09-05T18:15:53","TransRefNo":"12345","TransferName":"12345","PalpayAccount":"100000949173376","SalaryAmount":0.0,"CurrencyCode":"376","ProfileId":51,"Status":5},{"Id":1137,"TraDate":"2025-09-05T18:06:07","TransRefNo":"None","TransferName":"12345","PalpayAccount":"100000949173376","SalaryAmount":0.0,"CurrencyCode":"376","ProfileId":51,"Status":5}],"TotalPages":1,"Page":1,"TotalCount":4}'
+    content_type: text/plain
+    headers:
+      CF-RAY: 97bdc4f20fb70328-MAD
+      Set-Cookie: cookiesession1=678A8C5899BECD59452418F333105DFE;Expires=Tue, 08
+        Sep 2026 10:30:14 GMT;Path=/;HttpOnly, __cf_bm=e7E4PnFpTfVy.g446yqlR59LCth2dMd70Omd7dqADSY-1757327414-1.0.1.1-QK2PyJj0YIddDISTRDQf8ukYdFJJdGUYyfkvSEkGrtPQ5BCx1CV7cXjHYaL0q7mOowUh4sc_ZsJiskCWZ0M2hlXGME_d1CIX7i4Swpuf5Vc;
+        path=/; expires=Mon, 08-Sep-25 11:00:14 GMT; domain=.palpay.ps; HttpOnly;
+        Secure; SameSite=None
+      Transfer-Encoding: chunked
+      cf-cache-status: DYNAMIC
+    method: GET
+    status: 200
+    url: https://sandbox.palpay.ps/api/v1/moneytransfer/transactions

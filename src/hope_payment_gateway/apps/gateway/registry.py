@@ -13,7 +13,7 @@ class FSPProcessor:
         pass  # pragma: no-cover
 
     def get_configuration(self, config_key, delivery_mechanism):
-        payload = self.fsp.configuration
+        payload = self.fsp.configuration or {}
         try:
             config = self.fsp.configs.get(key=config_key, delivery_mechanism__code=delivery_mechanism).configuration
             payload["delivery_mechanism"] = delivery_mechanism

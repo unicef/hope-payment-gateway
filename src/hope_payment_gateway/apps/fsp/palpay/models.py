@@ -6,12 +6,13 @@ class PalPayGram(models.Model):
         managed = False
         default_permissions = ()
         permissions = (
-            ("can_prepare_payment", "PalPay: Can Prepare Transaction"),
-            ("can_create_transaction", "PalPay: Can Create Transaction"),
-            ("can_quote_transaction", "PalPay: Can Quote Transaction"),
-            ("can_check_status", "PalPay: Can Check Status"),
-            ("can_update_status", "PalPay: Can Update Status"),
-            ("can_cancel_transaction", "PalPay: Can Cancel Transaction"),
+            ("can_check_profile", "PalPay: Can Check Profiles"),
+            ("can_check_balance", "PalPay: Can Check Balance"),
+            ("can_check_beneficiary", "PalPay: Can Check Beneficiary"),
+            ("can_check_transactions", "PalPay: Can Check Transactions"),
+            ("can_create_transaction", "PalPay: Can Create Transactions"),
+            ("can_check_status", "PalPay: Can Check Transaction Status"),
+            ("can_update_status", "PalPay: Can Update Transaction Status"),
         )
 
     def __str__(self):
