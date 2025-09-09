@@ -11,7 +11,10 @@ from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError
 from hope_payment_gateway.apps.fsp.moneygram.client import (
     MoneyGramClient,
 )
-from hope_payment_gateway.apps.gateway.models import PaymentRecord, FinancialServiceProviderConfig
+from hope_payment_gateway.apps.gateway.models import (
+    PaymentRecord,
+    FinancialServiceProviderConfig,
+)
 
 logger = logging.getLogger(__name__)
 

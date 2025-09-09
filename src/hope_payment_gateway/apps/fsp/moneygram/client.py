@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import re
 import uuid
 from urllib.parse import urlencode
 
@@ -14,7 +15,10 @@ from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
-from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError, PayloadMissingKeyError
+from hope_payment_gateway.apps.fsp.exceptions import (
+    InvalidTokenError,
+    PayloadMissingKeyError,
+)
 from hope_payment_gateway.apps.fsp.moneygram import (
     AVAILABLE,
     CLOSED,
@@ -27,7 +31,11 @@ from hope_payment_gateway.apps.fsp.moneygram import (
     SENT,
     UNFUNDED,
 )
-from hope_payment_gateway.apps.fsp.utils import extrapolate_errors, get_phone_number, get_account_field
+from hope_payment_gateway.apps.fsp.utils import (
+    extrapolate_errors,
+    get_phone_number,
+    get_account_field,
+)
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProvider,
@@ -110,13 +118,17 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             second_last_name = base_payload.get("second_last_name", rest_ln)
 
             name = {
-                "firstName": first_name,
-                "lastName": last_name,
+                "firstName": re.sub(r"[.,:;]", "", first_name),
+                "lastName": re.sub(
+                    r"[.,:;]",
+                    "",
+                    last_name,
+                ),
             }
             if middle_name:
-                name["middleName"] = middle_name
+                name["middleName"] = re.sub(r"[.,:;]", "", middle_name)
             if second_last_name:
-                name["second_last_name"] = second_last_name
+                name["second_last_name"] = re.sub(r"[.,:;]", "", second_last_name)
 
             payload = self.get_basic_payload(base_payload["agent_partner_id"])
             payload.update(
@@ -242,7 +254,11 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         """Create a quote request to MoneyGram."""
         endpoint = "/disbursement/v1/transactions/quote"
         transaction_id, payload = self.prepare_quote(base_payload)
-        return payload, self.perform_request(endpoint, transaction_id, payload, "post"), endpoint
+        return (
+            payload,
+            self.perform_request(endpoint, transaction_id, payload, "post"),
+            endpoint,
+        )
 
     def status(self, payload):
         """Query MoneyGram to get information regarding the transaction status."""
@@ -252,7 +268,11 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
         payload = self.get_basic_payload(agent_partner_id)
         status_transaction_id = str(uuid.uuid4())
-        return payload, self.perform_request(endpoint, status_transaction_id, payload, "get"), endpoint
+        return (
+            payload,
+            self.perform_request(endpoint, status_transaction_id, payload, "get"),
+            endpoint,
+        )
 
     def status_update(self, payload):
         """Query MoneyGram to get information regarding the transaction status."""
@@ -282,14 +302,22 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                 "receiveCurrencyCode": base_payload["destination_currency"],
             }
         )
-        return payload, self.perform_request(endpoint, transaction_id, payload), endpoint
+        return (
+            payload,
+            self.perform_request(endpoint, transaction_id, payload),
+            endpoint,
+        )
 
     def get_service_options(self, base_payload):
         endpoint = "/reference-data/v1/service-options"
         payload = self.get_basic_payload(base_payload["agent_partner_id"])
         transaction_id = str(uuid.uuid4())
         payload["destinationCountryCode"] = base_payload["destination_country"]
-        return payload, self.perform_request(endpoint, transaction_id, payload), endpoint
+        return (
+            payload,
+            self.perform_request(endpoint, transaction_id, payload),
+            endpoint,
+        )
 
     def perform_request(self, endpoint, transaction_id, payload, method="get"):
         response = None
@@ -397,7 +425,13 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 def update_status(pr, status):
     mg_enabled_transaction = {
         PaymentRecordState.PENDING: [SENT, AVAILABLE, IN_TRANSIT, CLOSED],
-        PaymentRecordState.TRANSFERRED_TO_FSP: [RECEIVED, DELIVERED, REJECTED, REFUNDED, CLOSED],
+        PaymentRecordState.TRANSFERRED_TO_FSP: [
+            RECEIVED,
+            DELIVERED,
+            REJECTED,
+            REFUNDED,
+            CLOSED,
+        ],
         PaymentRecordState.TRANSFERRED_TO_BENEFICIARY: [CLOSED],
         PaymentRecordState.CANCELLED: [],
         PaymentRecordState.REFUND: [],

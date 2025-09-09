@@ -1,6 +1,5 @@
 import pytest
 from constance.test import override_config
-from factories import DeliveryMechanismFactory, FinancialServiceProviderConfigFactory
 
 from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
 
@@ -10,6 +9,4 @@ from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
 def test_webhook_notification_ko_invalid_payload(mg):
     config_key = "config_key"
     code = "code"
-    dm = DeliveryMechanismFactory(code=code)
-    FinancialServiceProviderConfigFactory(fsp=mg, delivery_mechanism=dm)
     MoneyGramHandler(mg).get_configuration(config_key, code)
