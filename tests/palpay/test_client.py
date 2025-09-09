@@ -1,18 +1,17 @@
 import pytest
 import responses
 from constance.test import override_config
+
 from factories import PaymentRecordFactory
 from responses import _recorder  # noqa
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.fsp.palpay.client import PalPayClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
-from django.test import override_settings
 
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
 def test_get_profile(palpay):
     responses._add_from_file(file_path="tests/palpay/responses/profile.yaml")
@@ -24,7 +23,6 @@ def test_get_profile(palpay):
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
 def test_check_balance(mg):
     responses._add_from_file(file_path="tests/palpay/responses/check_balance.yaml")
@@ -41,7 +39,6 @@ def test_check_balance(mg):
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
 def test_beneficiary(mg):
     responses._add_from_file(file_path="tests/palpay/responses/beneficiary.yaml")
@@ -53,7 +50,6 @@ def test_beneficiary(mg):
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
 def test_transactions(mg):
     responses._add_from_file(file_path="tests/palpay/responses/transactions.yaml")
@@ -69,7 +65,6 @@ def test_transactions(mg):
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
 def test_create_transaction_ko_invalid_payload(palpay):
     responses._add_from_file(file_path="tests/palpay/responses/create_transaction_ko_invalid_payload.yaml")
@@ -88,9 +83,8 @@ def test_create_transaction_ko_invalid_payload(palpay):
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_create_transaction_ko_invalid(palpay):
+def test_create_transaction_ko_invalid_(palpay):
     responses._add_from_file(file_path="tests/palpay/responses/create_transaction_ko_invalid_account.yaml")
     pr = PaymentRecordFactory(
         parent__office=palpay.configs.first().office,
@@ -114,7 +108,6 @@ def test_create_transaction_ko_invalid(palpay):
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
 def test_status_ok(palpay):
     responses._add_from_file(file_path="tests/palpay/responses/status_ok.yaml")
@@ -143,7 +136,6 @@ def test_status_ok(palpay):
 
 @responses.activate
 @pytest.mark.django_db
-@override_settings(PALPAY_HOST="https://sandbox.palpay.ps/")
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
 def test_create_transaction_ko_invalid_status(palpay):
     responses._add_from_file(file_path="tests/palpay/responses/create_transaction_ko_invalid_account.yaml")

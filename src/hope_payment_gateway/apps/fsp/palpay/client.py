@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
 from hope_payment_gateway.apps.fsp.palpay.utils import generate_hmac_signature
 from hope_payment_gateway.apps.fsp.utils import get_phone_number
@@ -17,7 +16,7 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentRecordState,
 )
-from hope_payment_gateway.config import settings
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class ExpiredTokenError(Exception):
     pass
 
 
-class PalPayClient(FSPClient, metaclass=Singleton):
+class PalPayClient(FSPClient):
     def perform_request(self, endpoint, method, payload=None):
         headers = {
             "Authorization": generate_hmac_signature(
@@ -45,7 +44,7 @@ class PalPayClient(FSPClient, metaclass=Singleton):
             ),
             "Content-Type": "application/json",
         }
-        base_url = f"{settings.PALPAY_HOST}{endpoint}"
+        base_url = settings.PALPAY_HOST + endpoint
         if method in ["get", "GET"]:
             payload = payload or {}
             url = base_url + "?" + urlencode(payload)
