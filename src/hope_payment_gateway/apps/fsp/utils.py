@@ -16,7 +16,7 @@ def get_phone_number(raw_phone_no):
 
 def get_account_field(payload, field_name, default=None):
     if account_dict := payload.get("account"):
-        return account_dict.get(field_name, None)
+        return account_dict.get(field_name, default)
     return default
 
 
