@@ -44,6 +44,7 @@ dependencies = [
   "django-smart-env",
   "django-storages[azure]",
   "django-strategy-field",
+  "django-streaming>=0.7",
   "django-viewflow",
   "djangorestframework",
   "djangorestframework-xml",
