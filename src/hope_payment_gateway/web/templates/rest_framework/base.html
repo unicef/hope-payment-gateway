@@ -1,0 +1,16 @@
+{% extends "rest_framework/base.html" %}
+{% load security %}
+{% block title %}HOPE Payment Gateway API{% endblock %}
+
+{% block branding %}
+    <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
+        HOPE Payment Gateway API
+    </a>
+{% endblock branding %}
+
+{% block userlinks %}
+    {{ block.super }}
+    {% if not user.is_authenticated %}
+        <li><a class="button" href="{% ad_backend %}">Login with Azure</a></li>
+    {% endif %}
+{% endblock userlinks %}

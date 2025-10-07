@@ -1,3 +1,5 @@
+import socket
+
 from django.http import FileResponse
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
@@ -51,7 +53,13 @@ class FileViewset(ViewSet):
         return FTPClient().ls()
 
     def list(self, request):
-        serializer = self.serializer_class(instance=self.get_queryset(), many=True, context={"request": request})
+        try:
+            serializer = self.serializer_class(instance=self.get_queryset(), many=True, context={"request": request})
+        except socket.gaierror:
+            return Response(
+                {"context": [{"code": "ftp_error", "message": "cannot reach FTP server"}]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(serializer.data)
 
     def retrieve(self, request, filename=None):
