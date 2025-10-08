@@ -1,5 +1,5 @@
 import io
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import pytest
 from django.urls import reverse
@@ -8,7 +8,10 @@ from django.urls import reverse
 @pytest.mark.django_db
 @patch("hope_payment_gateway.api.western_union.views.FTPClient")
 def test_api_wu_file_list(mock_ftp_client_class, api_client, admin_user):
-    file_names = ["file_number_1.txt", "file_number_2.txt"]
+    file_names = [
+        Mock(filename="file_number_1.txt", st_mtime=1672531200, st_size=1024),
+        Mock(filename="file_number_2.txt", st_mtime=1672534800, st_size=2048),
+    ]
     mock_instance = mock_ftp_client_class.return_value
     mock_instance.ls.return_value = file_names
 
@@ -19,10 +22,10 @@ def test_api_wu_file_list(mock_ftp_client_class, api_client, admin_user):
     assert view.status_code == 200
     assert isinstance(view.json(), list)
 
-    for index, name in enumerate(file_names):
+    for index, sftp_attr in enumerate(file_names):
         _obj = view.json()[index]
-        assert name == _obj.get("name")
-        assert f"http://testserver{url}{name}" == _obj.get("url")
+        assert sftp_attr.filename == _obj.get("name")
+        assert f"http://testserver{url}{sftp_attr.filename}" == _obj.get("url")
 
 
 @pytest.mark.django_db
