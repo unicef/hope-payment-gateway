@@ -2,7 +2,6 @@ import socket
 
 from django.http import FileResponse
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
@@ -15,6 +14,7 @@ from hope_payment_gateway.api.western_union.serializers import (
     FileSerializer,
     ServiceProviderCodeSerializer,
 )
+from hope_payment_gateway.apps.core.permissions import HasAnyPermission
 from hope_payment_gateway.apps.fsp.western_union.models import (
     Corridor,
     ServiceProviderCode,
@@ -47,7 +47,9 @@ class FileViewset(ViewSet):
     serializer_class = FileSerializer
     lookup_field = "filename"
     lookup_value_regex = r".*\..*"
-    permission_classes = (IsAdminUser,)
+
+    permission_classes = (HasAnyPermission,)
+    required_permissions = ["core.can_access_ftp"]
 
     def get_queryset(self):
         return FTPClient().ls()

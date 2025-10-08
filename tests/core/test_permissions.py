@@ -1,7 +1,14 @@
 import pytest
 from django.test import RequestFactory, override_settings
 from constance.test import override_config
-from hope_payment_gateway.apps.core.permissions import WhitelistPermission, get_client_ip
+from django.urls import reverse
+
+from hope_payment_gateway.apps.core.permissions import (
+    WhitelistPermission,
+    get_client_ip,
+)
+from tests.factories.user import UserFactory
+from tests.perms import user_grant_permissions
 
 
 @pytest.fixture
@@ -49,3 +56,17 @@ def test_whitelist_disabled_permission(request_factory):
     request = request_factory.get("/admin")
     permission = WhitelistPermission()
     assert permission.has_permission(request, None)
+
+
+@pytest.mark.django_db
+def test_has_any_permission_view(api_client):
+    user = UserFactory()
+    api_client.force_authenticate(user=user)
+    url = reverse("rest:wu-files-list")
+
+    response = api_client.get(url)
+    assert response.status_code == 403
+
+    with user_grant_permissions(user, "core.can_access_ftp"):
+        response = api_client.get(url)
+        assert response.status_code in [200, 400]

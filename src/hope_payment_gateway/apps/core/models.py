@@ -23,6 +23,7 @@ class System(models.Model):
 
     class Meta:
         app_label = "core"
+        permissions = (("can_access_ftp", "Can access files from FTP"),)
 
     def __str__(self) -> str:
         return self.name
