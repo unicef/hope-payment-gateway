@@ -18,3 +18,16 @@ class WhitelistPermission(permissions.BasePermission):
         if config.WHITELIST_ENABLED:
             return get_client_ip(request) in config.WHITELISTED_IPS.split(";")
         return True
+
+
+class HasAnyPermission(permissions.BasePermission):
+    """Permission that checks if a user has *at least one* of the given Django permissions."""
+
+    required_permissions = []
+
+    def has_permission(self, request, view):
+        perms = getattr(view, "required_permissions", self.required_permissions)
+        if not perms:
+            return False
+
+        return any(request.user.has_perm(p) for p in perms)
