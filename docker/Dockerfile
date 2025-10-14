@@ -81,8 +81,7 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
     UWSGI_PROCESSES=4
 
 WORKDIR /app
-COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
-COPY src /app/src/
+COPY . /app/
 
 RUN --mount=type=cache,target=/root/.uv-cache \
     uv sync --cache-dir=/root/.uv-cache \
@@ -101,8 +100,7 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
     UWSGI_PROCESSES=4
 
 WORKDIR /app
-COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
-COPY src /app/src/
+COPY . /app/
 
 RUN --mount=type=cache,target=/root/.uv-cache \
     uv sync --cache-dir=/root/.uv-cache \

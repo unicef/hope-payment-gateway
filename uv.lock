@@ -1428,7 +1428,6 @@ wheels = [
 
 [[package]]
 name = "hope-payment-gateway"
-version = "1.12.0"
 source = { editable = "." }
 dependencies = [
     { name = "celery", extra = ["redis"] },
@@ -1548,7 +1547,7 @@ requires-dist = [
     { name = "celery", extras = ["redis"] },
     { name = "dj-static" },
     { name = "django" },
-    { name = "django-admin-extra-buttons", specifier = "<2.1.2" },
+    { name = "django-admin-extra-buttons", specifier = "<=2.1.1" },
     { name = "django-admin-sync" },
     { name = "django-adminactions" },
     { name = "django-adminfilters" },
