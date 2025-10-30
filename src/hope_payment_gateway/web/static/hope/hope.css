@@ -12,3 +12,9 @@ a {
   color: #1396ef;
   text-decoration: none;
 }
+.navbar-right {
+    padding-top: 10px;
+}
+#logo-unicef {
+    height: 40px;
+}

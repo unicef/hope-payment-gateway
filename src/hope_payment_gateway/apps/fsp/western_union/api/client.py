@@ -241,12 +241,12 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                         destination_currency=currency,
                     ).template
 
-                except Corridor.DoesNotExist:
-                    raise InvalidCorridorError(f"Invalid corridor for {country}/{currency}")
+                except Corridor.DoesNotExist as exc:
+                    raise InvalidCorridorError(f"Invalid corridor for {country}/{currency}") from exc
 
                 payload = integrate_payload(payload, template)
         except KeyError as e:
-            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload")
+            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload") from e
         return payload
 
     def send_money_validation(self, payload):
