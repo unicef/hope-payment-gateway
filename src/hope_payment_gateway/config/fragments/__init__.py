@@ -7,6 +7,7 @@ from .palpay import *  # noqa
 from .power_query import *  # noqa
 from .rest_framework import *  # noqa
 from .sentry import *  # noqa
+from .streaming import *  # noqa
 from .social_auth import *  # noqa
 from .western_union import *  # noqa
 from .mail import *  # noqa

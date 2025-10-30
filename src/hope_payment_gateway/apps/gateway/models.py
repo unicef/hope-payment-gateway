@@ -13,7 +13,7 @@ from django.dispatch import receiver
 
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.registry import export_registry, registry
-from hope_payment_gateway.apps.streaming.handlers import (
+from hope_payment_gateway.apps.stream.handlers import (
     notify_record_change,
     notify_instruction_change,
 )
@@ -303,14 +303,18 @@ class AsyncJob(AsyncJobModel):
 
 
 @receiver(post_save, sender=PaymentInstruction)
-def instruction_updated(sender: Any, instance: PaymentInstruction, *args: list, **kwargs: dict) -> None:
-    if instance:
-        # change status
-        notify_instruction_change()
+def instruction_updated(
+    sender: Any, instance: PaymentInstruction, created: bool, update_fields=None, **kwargs: dict
+) -> None:
+    if created:
+        return
+    if update_fields and "status" in update_fields:
+        notify_instruction_change(instance.pk, instance.status)
 
 
 @receiver(post_save, sender=PaymentRecord)
-def record_updated(sender: Any, instance: PaymentRecord, *args: Any, **kwargs: Any) -> None:
-    if instance:
-        # change status
-        notify_record_change()
+def record_updated(sender: Any, instance: PaymentRecord, created: bool, update_fields=None, **kwargs: Any) -> None:
+    if created:
+        return
+    if update_fields and "status" in update_fields:
+        notify_record_change(instance.pk, instance.status)
