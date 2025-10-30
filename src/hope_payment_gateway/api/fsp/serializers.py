@@ -126,7 +126,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "payload",
         )
 
-    def create(self, validated_data):
+    def create(self, validated_data) -> PaymentInstruction | None:
         try:
             instance = PaymentInstruction.objects.get(
                 remote_id=validated_data["remote_id"], system=validated_data["system"]

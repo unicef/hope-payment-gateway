@@ -7,9 +7,16 @@ from django.utils.translation import gettext_lazy as _
 from django_celery_boost.models import AsyncJobModel
 from model_utils.models import TimeStampedModel
 from strategy_field.fields import StrategyField
+from typing import Any
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.registry import export_registry, registry
+from hope_payment_gateway.apps.streaming.handlers import (
+    notify_record_change,
+    notify_instruction_change,
+)
 
 
 class AccountType(TimeStampedModel):
@@ -134,7 +141,7 @@ class PaymentInstruction(TimeStampedModel):
     status = models.CharField(
         max_length=50,
         default=PaymentInstructionState.DRAFT,
-        choices=PaymentInstructionState.choices,
+        choices=PaymentInstructionState,
         db_index=True,
     )
     office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True)
@@ -181,7 +188,7 @@ class PaymentRecord(TimeStampedModel):
     status = models.CharField(
         max_length=50,
         default=PaymentRecordState.PENDING,
-        choices=PaymentRecordState.choices,
+        choices=PaymentRecordState,
         db_index=True,
     )
     success = models.BooleanField(null=True, blank=True)
@@ -293,3 +300,17 @@ class AsyncJob(AsyncJobModel):
         blank=True,
     )
     celery_task_name = "hope_payment_gateway.apps.core.tasks.sync_job_task"
+
+
+@receiver(post_save, sender=PaymentInstruction)
+def instruction_updated(sender: Any, instance: PaymentInstruction, *args: list, **kwargs: dict) -> None:
+    if instance:
+        # change status
+        notify_instruction_change()
+
+
+@receiver(post_save, sender=PaymentRecord)
+def record_updated(sender: Any, instance: PaymentRecord, *args: Any, **kwargs: Any) -> None:
+    if instance:
+        # change status
+        notify_record_change()

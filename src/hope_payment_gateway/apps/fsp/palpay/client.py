@@ -117,7 +117,7 @@ class PalPayClient(FSPClient):
             }
 
         except KeyError as e:
-            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload")
+            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload") from e
         return transaction_id, payload
 
     def create_transaction(self, base_payload, update=True):

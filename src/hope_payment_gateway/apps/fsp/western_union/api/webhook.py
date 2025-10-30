@@ -143,14 +143,14 @@ class NisNotificationXMLView(XMLViewMixin, NisNotificationView):
 
         try:
             return request.data[header][secondary_header]
-        except KeyError:
+        except KeyError as exc:
             if header in request.data:
                 key = secondary_header
                 keys = ", ".join(request.data[header].keys())
             else:
                 key = header
                 keys = ", ".join(request.data.keys())
-            raise InvalidRequestError(f"header {key} not in {keys}")
+            raise InvalidRequestError(f"header {key} not in {keys}") from exc
 
     @staticmethod
     def prepare_response(payload):

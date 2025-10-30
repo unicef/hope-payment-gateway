@@ -26,8 +26,8 @@ class LoggingTokenAuthentication(TokenAuthentication):
                 .filter(Q(valid_to__gte=timezone.now()) | Q(valid_to__isnull=True))
                 .get(key=key)
             )
-        except APIToken.DoesNotExist:
-            raise exceptions.AuthenticationFailed(_("Invalid token."))
+        except APIToken.DoesNotExist as exc:
+            raise exceptions.AuthenticationFailed(_("Invalid token.")) from exc
 
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_("User inactive or deleted."))

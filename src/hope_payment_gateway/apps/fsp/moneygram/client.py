@@ -154,7 +154,9 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
                     "targetAccount": {
                         "accountNumber": get_account_field(base_payload, "number"),
                         "bankName": get_account_field(
-                            base_payload, "service_provider_code", get_account_field(base_payload, "bank_code")
+                            base_payload,
+                            "service_provider_code",
+                            get_account_field(base_payload, "bank_code"),
                         ),
                     },
                     "receipt": {
@@ -167,7 +169,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             if autocommit:
                 payload["autoCommit"] = "true"
         except KeyError as e:
-            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload")
+            raise PayloadMissingKeyError(f"InvalidPayload: {e.args[0]} is missing in the payload") from e
         return transaction_id, payload
 
     def draft_transaction(self, base_payload, autocommit=False):
