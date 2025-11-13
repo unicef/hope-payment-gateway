@@ -130,7 +130,7 @@ def test_payment_record_list(api_client, action, detail, status, token_user):
 
 
 @pytest.mark.django_db
-@patch("hope_payment_gateway.apps.fsp.western_union.api.client.WesternUnionClient.refund")
+@patch("hope_payment_gateway.api.western_union.client.WesternUnionClient.refund")
 def test_payment_record_cancel(mock_refund, api_client, token_user, mg):
     user, token = token_user
     pr = PaymentRecordFactory()
@@ -143,7 +143,7 @@ def test_payment_record_cancel(mock_refund, api_client, token_user, mg):
 
 
 @pytest.mark.django_db
-@patch("hope_payment_gateway.apps.fsp.western_union.api.client.WesternUnionClient.refund")
+@patch("hope_payment_gateway.api.western_union.client.WesternUnionClient.refund")
 def test_payment_record_cancel_fail(mock_refund, api_client, token_user, mg):
     user, token = token_user
     pr = PaymentRecordFactory()

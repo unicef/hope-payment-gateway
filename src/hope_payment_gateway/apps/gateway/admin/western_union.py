@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
+from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidCorridorError,
     PayloadError,

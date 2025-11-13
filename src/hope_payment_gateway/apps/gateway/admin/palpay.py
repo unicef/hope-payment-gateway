@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
 
-from hope_payment_gateway.apps.fsp.palpay.client import PalPayClient
+from hope_payment_gateway.api.palpay.client import PalPayClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 logger = logging.getLogger(__name__)
