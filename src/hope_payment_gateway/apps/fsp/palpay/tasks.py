@@ -8,7 +8,7 @@ from django.conf import settings
 from strategy_field.utils import fqn
 
 from hope_payment_gateway.apps.core.tasks import lock_job
-from hope_payment_gateway.apps.fsp.palpay.client import PalPayClient
+from hope_payment_gateway.api.palpay.client import PalPayClient
 from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
 from hope_payment_gateway.apps.gateway.models import (
     PaymentRecord,
@@ -55,7 +55,7 @@ def palpay_money_transfer(pk: int) -> None:
         )
     }
     try:
-        response = requests.post(settings.PALPAY_INSTRUCTION_POST, files=files, timeout=30)
+        response = requests.post(settings.PALPAY_INSTRUCTION_POST, files=files, timeout=60)
         response.raise_for_status()
         return {"status": "success", "code": response.status_code}
     except requests.RequestException as e:

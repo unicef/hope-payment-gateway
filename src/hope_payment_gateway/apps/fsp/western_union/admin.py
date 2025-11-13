@@ -8,8 +8,8 @@ from django.template.response import TemplateResponse
 from jsoneditor.forms import JSONEditor
 from unicef_security.admin import is_superuser
 
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.api.request import requests_request
+from hope_payment_gateway.api.western_union.client import WesternUnionClient
+from hope_payment_gateway.api.western_union.views.request import requests_request
 from hope_payment_gateway.apps.fsp.western_union.models import (
     Corridor,
     ServiceProviderCode,

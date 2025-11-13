@@ -25,7 +25,7 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentRecordSerializer,
 )
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
+from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.actions import export_as_template_impl
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
