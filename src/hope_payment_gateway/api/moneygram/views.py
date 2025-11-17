@@ -1,7 +1,6 @@
 import base64
 import json
 import logging
-from contextlib import suppress
 from datetime import datetime
 
 import sentry_sdk
@@ -17,9 +16,8 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
-from hope_payment_gateway.apps.fsp.moneygram import DELIVERED, RECEIVED
 from hope_payment_gateway.api.moneygram.client import update_status
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 logger = logging.getLogger(__name__)
 
@@ -91,27 +89,14 @@ class MoneyGramWebhook(MoneyGramApi):
 
     @staticmethod
     def update_record(pr, payload):
-        notification_type = payload["eventPayload"]["transactionStatus"]
-
-        if notification_type in [RECEIVED, DELIVERED]:
-            with suppress(KeyError, ValueError):
-                pr.payout_date = datetime.strptime(
-                    payload["eventPayload"]["transactionStatusDate"],
-                    "%Y-%m-%dT%H:%M:%S.%f",
-                ).date()
-            with suppress(KeyError, ValueError):
-                pr.payout_amount = pr.fsp_data["receiveAmount"]["amount"]["value"]
-        update_status(pr, notification_type)
-
-        pr.fsp_data.update(
-            {
-                "eventId": payload["eventId"],
-                "eventDate": payload["eventDate"],
-                "subscriptionType": payload["subscriptionType"],
-                "transactionSubStatus": [
-                    {"status": substatus["subStatus"], "message": substatus["message"]}
-                    for substatus in payload["eventPayload"].get("transactionSubStatus", [])
-                ],
-            }
-        )
+        update_status(pr, payload["eventPayload"]["transactionStatus"])
+        if pr.status in PaymentRecordState.TRANSFERRED_TO_BENEFICIARY:
+            pr.payout_date = datetime.strptime(
+                payload["eventPayload"]["transactionStatusDate"],
+                "%Y-%m-%dT%H:%M:%S.%f",
+            ).date()
+            pr.amount = pr.payload.get("amount")  # todo
+        events = pr.fsp_data.get("events", [])
+        events.append(payload)
+        pr.fsp_data["events"] = events
         pr.save()

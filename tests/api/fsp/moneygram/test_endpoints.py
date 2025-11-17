@@ -112,13 +112,21 @@ def test_webhook_notification_payout_date(mg, api_client, admin_user):
     with open(Path(__file__).parent / "responses" / "push_notification.json") as f:
         data = json.load(f)
 
-    pr = PaymentRecordFactory(fsp_code="1234567890", status=PaymentRecordState.TRANSFERRED_TO_FSP, parent__fsp=mg)
+    pr = PaymentRecordFactory(
+        fsp_code="1234567890",
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+        parent__fsp=mg,
+        payout_date=None,
+        payout_amount=None,
+        payload={"amount": 100},
+    )
     url = reverse("moneygram:mg-status-webhook")
 
     data["eventPayload"]["transactionStatus"] = "RECEIVED"
     api_client.post(url, data=data, user=admin_user, format="json")
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
+    assert pr.payout_amount is None
     assert pr.payout_date is not None
     assert pr.payout_date.strftime("%Y-%m-%d") == "2023-03-27"
 

@@ -14,11 +14,11 @@ from zeep.exceptions import ValidationError
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.api.western_union import (
     CANCEL,
-    PURGED,
     REFUND,
     REJECT_APN,
     SUCCESS,
     SUCCESS_APN,
+    PURGED_CODE,
 )
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.exceptions import InvalidRequestError
@@ -74,6 +74,8 @@ class NisNotificationView(WesternUnionApi):
         fsp_code = payload["transaction_id"]
         mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
+        message_code = payload["message_code"]
+
         payout_amount = payload["payment_details"]["destination"]["expected_payout_amount"]
 
         try:
@@ -120,12 +122,13 @@ class NisNotificationView(WesternUnionApi):
             elif notification_type in [CANCEL, REJECT_APN]:
                 flow.cancel()
                 pr.message = f"Cancelled by FSP: {message}"
-            elif notification_type == PURGED:
-                flow.purge()
-                pr.message = f"Purged by FSP: {message}"
             elif notification_type == REFUND:
-                pr.message = f"Refund by FSP: {message}"
-                flow.refund()
+                if message_code == PURGED_CODE:
+                    flow.purge()
+                    pr.message = f"Purged by FSP: {message}"
+                else:
+                    flow.refund()
+                    pr.message = f"Refund by FSP: {message}"
             else:
                 pr.message = f"Error in Notification: {message}"
                 flow.fail()

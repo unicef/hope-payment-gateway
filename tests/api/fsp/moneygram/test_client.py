@@ -305,7 +305,7 @@ def test_status(mg):
     payload = {"agent_partner_id": "AAAAAA", "payment_record_code": pr.record_code}
     client.status_update(payload)
     pr.refresh_from_db()
-    assert pr.payout_amount == 300
+    assert pr.payout_amount is None
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
 
 
