@@ -263,33 +263,29 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             endpoint,
         )
 
-    def status(self, payload):
+    def status(self, payload, update=False):
         """Query MoneyGram to get information regarding the transaction status."""
-        record = PaymentRecord.objects.get(record_code=payload["payment_record_code"])
         agent_partner_id = payload["agent_partner_id"]
-        transaction_id = record.fsp_code
-        endpoint = f"/disbursement/status/v1/transactions/{transaction_id}"
+        record_code = payload["payment_record_code"]
         payload = self.get_basic_payload(agent_partner_id)
-        status_transaction_id = str(uuid.uuid4())
-        return (
-            payload,
-            self.perform_request(endpoint, status_transaction_id, payload, "get"),
-            endpoint,
+        record = PaymentRecord.objects.get(
+            record_code=record_code,
+            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
+        if record.fsp_code:
+            endpoint = f"/disbursement/status/v1/transactions/{record.fsp_code}"
+        else:
+            endpoint = "/status/v1/transactions/"
+            payload["reference_number"] = record.auth_code
+        status_transaction_id = str(uuid.uuid4())
+        response = self.perform_request(endpoint, status_transaction_id, payload, "get")
+        if update:
+            update_status(record, response.data["transactionStatus"])
+        return payload, response, endpoint
 
     def status_update(self, payload):
         """Query MoneyGram to get information regarding the transaction status."""
-        record = PaymentRecord.objects.get(record_code=payload["payment_record_code"])
-        transaction_id = record.fsp_code
-        payload, response, endpoint = self.status(payload)
-        pr = PaymentRecord.objects.get(
-            fsp_code=transaction_id,
-            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
-        )
-        update_status(pr, response.data["transactionStatus"])
-        pr.payout_amount = response.data["receiveAmount"]["amount"]["value"]
-        pr.save()
-        return payload, response, endpoint
+        return self.status(payload, True)
 
     def get_required_fields(self, base_payload):
         endpoint = "/reference-data/v1/transaction-fields-send"

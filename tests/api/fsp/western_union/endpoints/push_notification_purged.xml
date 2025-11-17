@@ -73,8 +73,8 @@
             <date>2023-08-23</date>
             <mtcn>3634673433</mtcn>
          </money_transfer_control>
-         <notification_type>BIS016</notification_type>
-         <message_code>DVQRFB51</message_code>
+         <notification_type>BIS006</notification_type>
+         <message_code>AGE</message_code>
          <message_text>Receiver Paid Notification</message_text>
       </NS2:nis-notification-request>
    </NS1:Body>
