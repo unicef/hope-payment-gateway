@@ -47,7 +47,7 @@ def test_api_wu_file_download(mock_ftp_client_class, api_client, admin_user):
 
 
 @pytest.mark.django_db
-@pytest.mark.xfail
+# @pytest.mark.xfail
 @patch("hope_payment_gateway.api.western_union.views.ftp.FTPClient")
 def test_api_wu_file_download_fail(mock_ftp_client_class, api_client, admin_user):
     mock_instance = mock_ftp_client_class.return_value
