@@ -1688,7 +1688,7 @@ def test_post_transaction_transition_not_allowed(mg, monkeypatch):
             raise TransitionNotAllowed("Transition not allowed")
 
     monkeypatch.setattr("hope_payment_gateway.api.moneygram.client.PaymentRecordFlow", MockPaymentRecordFlow)
-    response = client.post_commit(success_response, pr.get_payload())
+    response = client.post_commit(success_response, pr)
 
     assert response.status_code == 400
     assert response.data == {"errors": [{"error": "transition_not_allowed"}]}
@@ -1772,6 +1772,8 @@ def test_create_transaction(mg):
             "phone_no": "+393891234567",
             "agent_partner_id": "AAAAAA",
         },
+        fsp_code=None,
+        auth_code=None,
     )
 
     _, response, _ = client.create_transaction(pr.get_payload())
@@ -1796,3 +1798,51 @@ def test_commit_transaction(mg):
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
     assert pr.message == "Transaction submitted successfully"
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_create_transaction_with_auth_code(mg):
+    from hope_payment_gateway.apps.fsp.exceptions import PotentialDuplicateError
+
+    responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr = PaymentRecordFactory(
+        record_code="code-123",
+        parent__fsp=mg,
+        auth_code="some-auth-code",
+    )
+    with pytest.raises(PotentialDuplicateError):
+        client.create_transaction(pr.get_payload())
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_create_transaction_with_fsp_code(mg):
+    from hope_payment_gateway.apps.fsp.exceptions import PotentialDuplicateError
+
+    responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr = PaymentRecordFactory(record_code="code-123", parent__fsp=mg, fsp_code=None, auth_code="some-auth-code")
+    with pytest.raises(PotentialDuplicateError):
+        client.create_transaction(pr.get_payload())
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(MONEYGRAM_VENDOR_NUMBER=67890)
+def test_commit_transaction_with_auth_code(mg):
+    from hope_payment_gateway.apps.fsp.exceptions import PotentialDuplicateError
+
+    responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
+    client = MoneyGramClient()
+    pr = PaymentRecordFactory(
+        record_code="code-123",
+        parent__fsp=mg,
+        fsp_code="some-fsp-code",
+        auth_code="some-auth-code",
+    )
+    with pytest.raises(PotentialDuplicateError):
+        client.commit_transaction(pr.get_payload())
