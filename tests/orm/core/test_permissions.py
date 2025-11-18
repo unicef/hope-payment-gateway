@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django.test import RequestFactory, override_settings
 from constance.test import override_config
@@ -59,7 +61,8 @@ def test_whitelist_disabled_permission(request_factory):
 
 
 @pytest.mark.django_db
-def test_has_any_permission_view(api_client):
+@patch("hope_payment_gateway.api.western_union.views.ftp.FTPClient")
+def test_has_any_permission_view(mock_patch, api_client):
     user = UserFactory()
     api_client.force_authenticate(user=user)
     url = reverse("rest:wu-files-list")

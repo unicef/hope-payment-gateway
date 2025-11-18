@@ -74,7 +74,7 @@ class NisNotificationView(WesternUnionApi):
         fsp_code = payload["transaction_id"]
         mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
-        message_code = payload["message_code"]
+        reason_code = payload.get("reason_code", None)
 
         payout_amount = payload["payment_details"]["destination"]["expected_payout_amount"]
 
@@ -123,7 +123,7 @@ class NisNotificationView(WesternUnionApi):
                 flow.cancel()
                 pr.message = f"Cancelled by FSP: {message}"
             elif notification_type == REFUND:
-                if message_code == PURGED_CODE:
+                if reason_code == PURGED_CODE:
                     flow.purge()
                     pr.message = f"Purged by FSP: {message}"
                 else:
