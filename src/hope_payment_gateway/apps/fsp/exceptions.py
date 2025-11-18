@@ -36,3 +36,7 @@ class ExpiredTokenError(TokenError):
 
 class InvalidRequestError(Exception):
     pass
+
+
+class PotentialDuplicateError(Exception):
+    pass

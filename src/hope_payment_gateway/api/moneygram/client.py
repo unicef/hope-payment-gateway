@@ -18,6 +18,7 @@ from hope_payment_gateway.apps.fsp.client import FSPClient
 from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidTokenError,
     PayloadMissingKeyError,
+    PotentialDuplicateError,
 )
 from hope_payment_gateway.apps.fsp.moneygram import (
     AVAILABLE,
@@ -179,6 +180,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
+        if pr.auth_code or pr.fsp_code:
+            raise PotentialDuplicateError(f"This transaction has already codes {pr.auth_code} - {pr.fsp_code}")
         if pr.status != PaymentRecordState.PENDING:
             raise TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
 
@@ -204,9 +207,9 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             pr.success = True
             pr.message = "Created Draft Transaction"
             pr.save()
-            self.post_transaction(response, base_payload)
+            self.post_transaction(response, pr)
             if autocommit:
-                self.post_commit(response, base_payload)
+                self.post_commit(response, pr)
         return payload, response, endpoint
 
     def create_transaction(self, base_payload, **kwargs):
@@ -227,14 +230,17 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         pr = PaymentRecord.objects.get(
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+            fsp_code__isnull=False,
         )
+        if pr.auth_code:
+            raise PotentialDuplicateError(f"This transaction has already codes {pr.auth_code}")
         transaction_id = pr.fsp_code
         payload = {"partnerTransactionId": record_code}
         endpoint = f"/disbursement/v1/transactions/{transaction_id}/commit"
         status_transaction_id = str(uuid.uuid4())
         response = self.perform_request(endpoint, status_transaction_id, payload, "put")
         if response and response.status_code == 200:
-            self.post_commit(response, base_payload)
+            self.post_commit(response, pr)
         return payload, response, endpoint
 
     def prepare_quote(self, base_payload: dict):
@@ -346,15 +352,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             logger.error(f"Request failed with status code {response.status_code}")
         return response
 
-    def post_transaction(self, response, payload):
+    def post_transaction(self, response, pr):
         body = response.data
-        record_code = payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(
-            record_code=record_code,
-            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
-            status=PaymentRecordState.PENDING,
-            fsp_code=None,
-        )
         transaction_id = body["transactionId"]
 
         transaction_ids = pr.fsp_data.get("transactionId", [])
@@ -366,16 +365,9 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         pr.fsp_data.update(body)
         pr.save()
 
-    def post_commit(self, response, payload):
+    def post_commit(self, response, pr):
         """Update record in the database."""
         body = response.data
-        record_code = payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(
-            record_code=record_code,
-            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
-            status=PaymentRecordState.PENDING,
-            auth_code=None,
-        )
         if "errors" in body:
             return Response(body, status=HTTP_400_BAD_REQUEST)
         pr.auth_code = body["referenceNumber"]
@@ -385,7 +377,8 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         try:
             flow = PaymentRecordFlow(pr)
             flow.store()
-        except TransitionNotAllowed:
+        except TransitionNotAllowed as exc:
+            logger.exception(exc)
             response = Response(
                 {"errors": [{"error": "transition_not_allowed"}]},
                 status=HTTP_400_BAD_REQUEST,
