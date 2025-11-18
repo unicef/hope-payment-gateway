@@ -21,7 +21,7 @@ from tests.factories import CorridorFactory
     ("rec_a", "rec_b", "total"),
     [
         (5, 4, 2),  # 9),
-        (5, 8, 1),  # 5),
+        (5, 8, 2),  # 5),
         (5, 5, 2),  # 10),
         (4, 0, 2),  # 4),
         (0, 4, 2),  # 4),
@@ -33,8 +33,8 @@ from tests.factories import CorridorFactory
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.apps.fsp.tasks_utils.AsyncJob.queue")
 def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
-    instr_a = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=wu, tag="tag")
-    instr_b = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=wu, tag="tag")
+    instr_a = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=wu)
+    instr_b = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=wu)
     PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.PENDING)
 
@@ -50,7 +50,7 @@ def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
         status=PaymentRecordState.PENDING,
     )
 
-    western_union_send_task(tag="tag", threshold=10)
+    western_union_send_task()
     assert len(mock_class.mock_calls) == total
 
 

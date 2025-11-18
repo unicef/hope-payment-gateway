@@ -14,7 +14,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, Pa
     ("rec_a", "rec_b", "total"),
     [
         (5, 4, 2),
-        (5, 8, 1),
+        (5, 8, 2),
         (5, 5, 2),
         (4, 0, 2),
         (0, 4, 2),
@@ -26,16 +26,14 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, Pa
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @patch("hope_payment_gateway.apps.fsp.tasks_utils.AsyncJob.queue")
 def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
-    instr_a = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg, tag="tag")
-    instr_b = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg, tag="tag")
+    instr_a = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg)
+    instr_b = PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=mg)
     PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.PENDING)
 
     instr_noise = PaymentInstructionFactory(status=PaymentInstructionState.OPEN)
-    instr_noise_no_tag = PaymentInstructionFactory(status=PaymentInstructionState.OPEN)
     PaymentRecordFactory.create_batch(5, parent=instr_a, status=PaymentRecordState.CANCELLED)
     PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
-    PaymentRecordFactory.create_batch(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(5, parent__status=PaymentRecordState.PENDING, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(
         5,
@@ -43,7 +41,7 @@ def test_send_money_task(mock_class, mg, rec_a, rec_b, total):
         status=PaymentRecordState.PENDING,
     )
 
-    moneygram_send_money(tag="tag", threshold=10)
+    moneygram_send_money()
     assert len(mock_class.mock_calls) == total
 
 
@@ -121,11 +119,7 @@ def test_send_moneygram_update_with_ids(mock_class, mg, rec_a, rec_b, total):
     instr_noise = PaymentInstructionFactory(
         status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "money"}
     )
-    instr_noise_no_tag = PaymentInstructionFactory(
-        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "voucher"}
-    )
     PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
-    PaymentRecordFactory.create_batch(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
     PaymentRecordFactory.create_batch(
         5,
         parent__status=PaymentRecordState.PENDING,
@@ -156,7 +150,7 @@ def test_moneygram_notify(mock_create_transaction, mg):
 
     mock_create_transaction.return_value = None, None
 
-    moneygram_notify([record.id])
+    moneygram_notify(record.parent.id)
 
     mock_create_transaction.assert_called_once()
     call_args = mock_create_transaction.call_args[0][0]

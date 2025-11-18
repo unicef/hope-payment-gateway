@@ -67,11 +67,10 @@ def palpay_send_money(tag=None, threshold=10000):
     """Task to trigger PalPay payments."""
     fsp = "PalPay"
     fsp_vendor_number = config.PALPAY_VENDOR_NUMBER
-    threshold = threshold or config.PALPAY_THREASHOLD
     action_fqn = palpay_notify
     group_key = "pal-send-instruction"
 
-    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key, threshold, tag)
+    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key)
 
 
 @app.task()  # queue="executors"

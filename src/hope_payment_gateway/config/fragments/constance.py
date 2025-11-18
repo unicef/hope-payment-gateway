@@ -3,11 +3,6 @@ from hope_payment_gateway.config.settings import CACHE_URL
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
 CONSTANCE_CONFIG = {
-    "MONEYGRAM_THREASHOLD": (
-        10000,
-        "Hourly threshold of calls to be made to MoneyGram API",
-        int,
-    ),
     "MONEYGRAM_VENDOR_NUMBER": ("", "MoneyGram Vendor Number", str),
     "MONEYGRAM_SIGNATURE_VERIFICATION_ENABLED": (
         True,
@@ -15,11 +10,6 @@ CONSTANCE_CONFIG = {
         bool,
     ),
     "PALPAY_VENDOR_NUMBER": ("", "PalPay Vendor Number", str),
-    "WESTERN_UNION_THREASHOLD": (
-        10000,
-        "Hourly threshold of calls to be made to Western Union API",
-        int,
-    ),
     "WESTERN_UNION_ERRORS": (
         "E0604;T2337;T3251;T3252;T3253;E0801;E1300;R5643;T0305;T0354;T0355;T0357;T0358;T0361;T0365;T0367;T0400;T0402;"
         "T0403;T0410;T0411;T0436;T0440;T0441;T0442;T0445;T0457;T0460;T0462;T0463;T0464;T0466;T0479;T0485;T0488;T0499;"

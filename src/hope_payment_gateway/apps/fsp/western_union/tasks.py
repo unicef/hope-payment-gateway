@@ -15,15 +15,13 @@ def western_union_notify(to_process_ids: list[PaymentRecord]) -> None:
 
 
 @app.task()  # queue="executors"
-def western_union_send_task(tag=None, threshold=10000):
+def western_union_send_task():
     """Task to trigger Western Union payments."""
     fsp = "WesternUnion"
     fsp_vendor_number = config.WESTERN_UNION_VENDOR_NUMBER
-    threshold = threshold or config.WESTERN_UNION_THREASHOLD
     action_fqn = western_union_notify
     group_key = "wu-send-instruction"
-
-    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key, threshold, tag)
+    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key)
 
 
 @app.task
