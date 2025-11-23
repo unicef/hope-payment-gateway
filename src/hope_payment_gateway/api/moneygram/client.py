@@ -176,7 +176,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         """Create a transaction to MoneyGram."""
         endpoint = "/disbursement/v1/transactions"
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(
+        pr = PaymentRecord.objects.select_for_update().get(
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
@@ -214,7 +214,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
     def create_transaction(self, base_payload, **kwargs):
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(
+        pr = PaymentRecord.objects.select_for_update().get(
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
@@ -227,7 +227,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
     def commit_transaction(self, base_payload):
         """Commit a transaction in a separate after creating it in MoneyGram."""
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(
+        pr = PaymentRecord.objects.select_for_update().get(
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
             fsp_code__isnull=False,

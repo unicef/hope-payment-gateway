@@ -277,7 +277,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     def create_transaction(self, base_payload: dict, update: bool = True) -> dict:
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.get(
+        pr = PaymentRecord.objects.select_for_update().get(
             record_code=record_code,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
@@ -346,7 +346,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         return response
 
     def status(self, transaction_id, update):
-        pr = PaymentRecord.objects.get(
+        pr = PaymentRecord.objects.select_for_update().get(
             fsp_code=transaction_id,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
@@ -449,7 +449,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         )
 
     def refund(self, transaction_id, base_payload):
-        pr = PaymentRecord.objects.get(
+        pr = PaymentRecord.objects.select_for_update().get(
             fsp_code=transaction_id,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
