@@ -19,8 +19,8 @@ from hope_payment_gateway.apps.gateway.models import (
 from hope_payment_gateway.config.celery import app
 
 
-def palpay_notify(to_process_ids: list[PaymentRecord]) -> None:
-    notify_records_to_fsp(fqn(PalPayClient), to_process_ids)
+def palpay_notify(instruction_id: int) -> None:
+    notify_records_to_fsp(fqn(PalPayClient), instruction_id)
 
 
 def palpay_money_transfer(pk: int) -> None:

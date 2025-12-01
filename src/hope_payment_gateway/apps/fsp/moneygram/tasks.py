@@ -11,8 +11,8 @@ from hope_payment_gateway.apps.gateway.models import (
 from hope_payment_gateway.config.celery import app
 
 
-def moneygram_notify(to_process_ids: list[PaymentRecord]) -> None:
-    notify_records_to_fsp(fqn(MoneyGramClient), to_process_ids)
+def moneygram_notify(instruction_id: int) -> None:
+    notify_records_to_fsp(fqn(MoneyGramClient), instruction_id)
 
 
 @app.task()  # queue="executors"
