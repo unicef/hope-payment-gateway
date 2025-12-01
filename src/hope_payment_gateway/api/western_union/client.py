@@ -5,6 +5,7 @@ from pathlib import Path
 import sentry_sdk
 from constance import config
 from defusedxml.minidom import parseString
+from django.db import transaction
 from requests import Session
 from requests.exceptions import ConnectTimeout
 from viewflow.fsm import TransitionNotAllowed
@@ -277,7 +278,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     def create_transaction(self, base_payload: dict, update: bool = True) -> dict:
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.select_for_update().get(
+        pr = PaymentRecord.objects.get(
             record_code=record_code,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
@@ -346,49 +347,49 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         return response
 
     def status(self, transaction_id, update):
-        pr = PaymentRecord.objects.select_for_update().get(
-            fsp_code=transaction_id,
-            parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
-        )
-        wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-        frm = pr.fsp_data.get("foreign_remote_system", None)
-        mtcn = pr.fsp_data.get("mtcn", None)
-        payload = {
-            "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
-            "mtcn": mtcn,
-            "foreign_remote_system": frm,
-        }
-        response = self.response_context(
-            self.status_client,
-            "PayStatus",
-            payload,
-            "PayStatus_Service_H2H",
-            f"SOAP_HTTP_Port_{wu_env}",
-        )
-        if update:
-            wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
-                "pay_status_description"
-            ]
-            status = {
-                "PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
-                "WCQ": PaymentRecordState.TRANSFERRED_TO_FSP,
-                "CAN": PaymentRecordState.CANCELLED,
-            }.get(wu_status)
-            if pr.status != status:
-                if status in [PaymentRecordState.TRANSFERRED_TO_FSP]:
-                    pr.message = "Transferred to FSP*"
-                    pr.status = status
-                    pr.success = True
-                elif status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
-                    pr.message = "Transferred to Beneficiary*"
-                    pr.status = status
-                    pr.success = True
-                elif status in [PaymentRecordState.CANCELLED]:
-                    pr.message = "Cancelled*"
-                    pr.status = status
-                    pr.success = True
-                pr.save()
-
+        with transaction.atomic():
+            pr = PaymentRecord.objects.select_for_update().get(
+                fsp_code=transaction_id,
+                parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
+            )
+            wu_env = config.WESTERN_UNION_WHITELISTED_ENV
+            frm = pr.fsp_data.get("foreign_remote_system", None)
+            mtcn = pr.fsp_data.get("mtcn", None)
+            payload = {
+                "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
+                "mtcn": mtcn,
+                "foreign_remote_system": frm,
+            }
+            response = self.response_context(
+                self.status_client,
+                "PayStatus",
+                payload,
+                "PayStatus_Service_H2H",
+                f"SOAP_HTTP_Port_{wu_env}",
+            )
+            if update:
+                wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
+                    "pay_status_description"
+                ]
+                status = {
+                    "PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
+                    "WCQ": PaymentRecordState.TRANSFERRED_TO_FSP,
+                    "CAN": PaymentRecordState.CANCELLED,
+                }.get(wu_status)
+                if pr.status != status:
+                    if status in [PaymentRecordState.TRANSFERRED_TO_FSP]:
+                        pr.message = "Transferred to FSP*"
+                        pr.status = status
+                        pr.success = True
+                    elif status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
+                        pr.message = "Transferred to Beneficiary*"
+                        pr.status = status
+                        pr.success = True
+                    elif status in [PaymentRecordState.CANCELLED]:
+                        pr.message = "Cancelled*"
+                        pr.status = status
+                        pr.success = True
+                    pr.save()
         return response
 
     def search_request(self, frm, mtcn):
@@ -449,37 +450,38 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         )
 
     def refund(self, transaction_id, base_payload):
-        pr = PaymentRecord.objects.select_for_update().get(
-            fsp_code=transaction_id,
-            parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
-        )
-        mtcn = pr.fsp_data.get("mtcn", None)
-        frm = pr.fsp_data.get("foreign_remote_system", None)
-        response = self.search_request(frm, mtcn)
-        payload = response["content_response"]
-        try:
-            database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
-        except TypeError:
-            database_key = None
-        if not database_key:
-            pr.message = "Search Error: No Money Transfer Key"
-            pr.success = False
-            flow = PaymentRecordFlow(pr)
-            flow.fail()
+        with transaction.atomic():
+            pr = PaymentRecord.objects.select_for_update().get(
+                fsp_code=transaction_id,
+                parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
+            )
+            mtcn = pr.fsp_data.get("mtcn", None)
+            frm = pr.fsp_data.get("foreign_remote_system", None)
+            response = self.search_request(frm, mtcn)
+            payload = response["content_response"]
+            try:
+                database_key = payload["payment_transactions"]["payment_transaction"][0]["money_transfer_key"]
+            except TypeError:
+                database_key = None
+            if not database_key:
+                pr.message = "Search Error: No Money Transfer Key"
+                pr.success = False
+                flow = PaymentRecordFlow(pr)
+                flow.fail()
+                pr.save()
+                return response
+
+            response = self.cancel_request(frm, mtcn, database_key)
+            fsp_data = {"db_key": database_key, "mtcn": mtcn}
+
+            if response["code"] == 200:
+                pr.message = "Request for cancel"
+                pr.success = True
+            else:
+                pr.message = f"Cancel request error: {response['error']}"
+                pr.success = False
+            pr.fsp_data.update(fsp_data)
             pr.save()
-            return response
-
-        response = self.cancel_request(frm, mtcn, database_key)
-        fsp_data = {"db_key": database_key, "mtcn": mtcn}
-
-        if response["code"] == 200:
-            pr.message = "Request for cancel"
-            pr.success = True
-        else:
-            pr.message = f"Cancel request error: {response['error']}"
-            pr.success = False
-        pr.fsp_data.update(fsp_data)
-        pr.save()
         return response
 
     # DAS API

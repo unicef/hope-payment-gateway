@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+from django.db import transaction
 import re
 import uuid
 from urllib.parse import urlencode
@@ -176,45 +177,44 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         """Create a transaction to MoneyGram."""
         endpoint = "/disbursement/v1/transactions"
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.select_for_update().get(
-            record_code=record_code,
-            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
-        )
-        if pr.auth_code or pr.fsp_code:
-            raise PotentialDuplicateError(f"This transaction has already codes {pr.auth_code} - {pr.fsp_code}")
-        if pr.status != PaymentRecordState.PENDING:
-            raise TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
-
-        flow = PaymentRecordFlow(pr)
-        try:
-            transaction_id, payload = self.prepare_transaction(base_payload, autocommit)
-            sentry_sdk.capture_message("MoneyGram Union: Create Transaction")
-            response = self.perform_request(endpoint, transaction_id, payload, "post")
-        except (PayloadMissingKeyError, ValueError, TypeError) as e:
-            pr.message = e.args[0]
-            response = Response(
-                {"context": [{"code": "validation_error", "message": e.args[0]}]},
-                status=HTTP_400_BAD_REQUEST,
+        with transaction.atomic():
+            pr = PaymentRecord.objects.select_for_update().get(
+                record_code=record_code,
+                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
             )
-            payload = response
-        if response.status_code >= 300:
-            pr.message = ", ".join(extrapolate_errors(response.data))
-            flow.fail()
-            pr.success = False
-            pr.save()
-            response = Response(response.data, status=HTTP_400_BAD_REQUEST)
-        else:
-            pr.success = True
-            pr.message = "Created Draft Transaction"
-            pr.save()
-            self.post_transaction(response, pr)
-            if autocommit:
-                self.post_commit(response, pr)
+            if pr.auth_code or pr.fsp_code:
+                raise PotentialDuplicateError(f"This transaction has already codes {pr.auth_code} - {pr.fsp_code}")
+            if pr.status != PaymentRecordState.PENDING:
+                raise TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
+
+            flow = PaymentRecordFlow(pr)
+            try:
+                transaction_id, payload = self.prepare_transaction(base_payload, autocommit)
+                sentry_sdk.capture_message("MoneyGram Union: Create Transaction")
+                response = self.perform_request(endpoint, transaction_id, payload, "post")
+            except (PayloadMissingKeyError, ValueError, TypeError) as e:
+                pr.message = e.args[0]
+                response = Response(
+                    {"context": [{"code": "validation_error", "message": e.args[0]}]},
+                    status=HTTP_400_BAD_REQUEST,
+                )
+                payload = response
+            if response.status_code >= 300:
+                pr.message = ", ".join(extrapolate_errors(response.data))
+                flow.fail()
+                pr.success = False
+                pr.save()
+                response = Response(response.data, status=HTTP_400_BAD_REQUEST)
+            else:
+                pr.success = True
+                pr.message = "Created Draft Transaction"
+                pr.save()
+                self.post_transaction(response, pr)
         return payload, response, endpoint
 
     def create_transaction(self, base_payload, **kwargs):
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.select_for_update().get(
+        pr = PaymentRecord.objects.get(
             record_code=record_code,
             parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
         )
@@ -227,20 +227,21 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
     def commit_transaction(self, base_payload):
         """Commit a transaction in a separate after creating it in MoneyGram."""
         record_code = base_payload["payment_record_code"]
-        pr = PaymentRecord.objects.select_for_update().get(
-            record_code=record_code,
-            parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
-            fsp_code__isnull=False,
-        )
-        if pr.auth_code:
-            raise PotentialDuplicateError(f"This transaction has already codes {pr.auth_code}")
-        transaction_id = pr.fsp_code
-        payload = {"partnerTransactionId": record_code}
-        endpoint = f"/disbursement/v1/transactions/{transaction_id}/commit"
-        status_transaction_id = str(uuid.uuid4())
-        response = self.perform_request(endpoint, status_transaction_id, payload, "put")
-        if response and response.status_code == 200:
-            self.post_commit(response, pr)
+        with transaction.atomic():
+            pr = PaymentRecord.objects.select_for_update().get(
+                record_code=record_code,
+                parent__fsp__vendor_number=config.MONEYGRAM_VENDOR_NUMBER,
+                fsp_code__isnull=False,
+            )
+            if pr.auth_code:
+                raise PotentialDuplicateError(f"This transaction has already codes {pr.auth_code}")
+            transaction_id = pr.fsp_code
+            payload = {"partnerTransactionId": record_code}
+            endpoint = f"/disbursement/v1/transactions/{transaction_id}/commit"
+            status_transaction_id = str(uuid.uuid4())
+            response = self.perform_request(endpoint, status_transaction_id, payload, "put")
+            if response and response.status_code == 200:
+                self.post_commit(response, pr)
         return payload, response, endpoint
 
     def prepare_quote(self, base_payload: dict):
