@@ -908,6 +908,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-flags"
+version = "5.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cb/36/c731dc6ac74214d1759f3504b565747bb2c9fff874c1cffd0d453ea1ac74/django_flags-5.1.0.tar.gz", hash = "sha256:47f33efba238fe83a2c1f6f5764147fe62d770039f64b3a039e0e461bbc36e79", size = 246822, upload-time = "2025-11-19T13:31:28.641Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/36/0a64432b7bb56da10888400c938173313358bcd039f7cb25990b8e52fe87/django_flags-5.1.0-py3-none-any.whl", hash = "sha256:6cfb15151f94d13de1a497901fc1dd4f0510251e5ec23a6732d674824f499e72", size = 42571, upload-time = "2025-11-19T13:31:27.474Z" },
+]
+
+[[package]]
 name = "django-import-export"
 version = "4.3.14"
 source = { registry = "https://pypi.org/simple" }
@@ -1451,6 +1463,7 @@ dependencies = [
     { name = "django-environ" },
     { name = "django-extensions" },
     { name = "django-filter" },
+    { name = "django-flags" },
     { name = "django-import-export" },
     { name = "django-jsoneditor" },
     { name = "django-model-utils" },
@@ -1565,6 +1578,7 @@ requires-dist = [
     { name = "django-environ" },
     { name = "django-extensions" },
     { name = "django-filter" },
+    { name = "django-flags", specifier = ">=5.1.0" },
     { name = "django-import-export" },
     { name = "django-jsoneditor" },
     { name = "django-model-utils" },

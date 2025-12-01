@@ -36,6 +36,7 @@ dependencies = [
   "django-environ",
   "django-extensions",
   "django-filter",
+  "django-flags>=5.1",
   "django-import-export",
   "django-jsoneditor",
   "django-model-utils",

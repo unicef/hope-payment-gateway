@@ -73,6 +73,7 @@ jobs:
       CELERY_BROKER_URL: redis://redis:6379/1
       CACHE_URL: redis://redis:6379/2
       DOCKER_BUILDKIT: 1
+      STREAMING_BROKER_URL: "rabbit://guest:guest@localhost:5672?exchange=hope_live"
     strategy:
       fail-fast: false
       matrix:
