@@ -7,6 +7,3 @@ class AppConfig(BaseAppConfig):
 
     def ready(self) -> None:
         super().ready()
-        from streaming.manager import initialize_engine  # noqa
-
-        initialize_engine()

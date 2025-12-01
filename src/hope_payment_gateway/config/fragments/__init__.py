@@ -2,6 +2,7 @@ from .celery import *  # noqa
 from .constance import *  # noqa
 from .cors import *  # noqa
 from .debug_toolbar import *  # noqa
+from .flags import *  # noqa
 from .moneygram import *  # noqa
 from .palpay import *  # noqa
 from .power_query import *  # noqa

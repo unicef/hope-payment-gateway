@@ -33,6 +33,14 @@ jobs:
             type=semver,pattern={{raw}}
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+      - run: |
+          echo "Log level: $TAG"
+          echo "Environment: $ENVIRONMENT"
+          echo "${{ toJSON(github.event) }}"
+        env:
+          LEVEL: ${{ inputs.tag }}
+          ENVIRONMENT:
+            ${{ inputs.environment }}
       - if: github.event_name == 'release' && github.event.action == 'created'
         run: echo "version=${{ steps.meta.outputs.version }}dev" >> "$GITHUB_OUTPUT"
       - if: github.event_name == 'release' && github.event.action == 'prereleased'

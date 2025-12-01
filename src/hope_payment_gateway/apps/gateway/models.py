@@ -7,16 +7,10 @@ from django.utils.translation import gettext_lazy as _
 from django_celery_boost.models import AsyncJobModel
 from model_utils.models import TimeStampedModel
 from strategy_field.fields import StrategyField
-from typing import Any
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+
 
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.registry import export_registry, registry
-from hope_payment_gateway.apps.stream.handlers import (
-    notify_record_change,
-    notify_instruction_change,
-)
 
 
 class AccountType(TimeStampedModel):
@@ -300,21 +294,3 @@ class AsyncJob(AsyncJobModel):
         blank=True,
     )
     celery_task_name = "hope_payment_gateway.apps.core.tasks.sync_job_task"
-
-
-@receiver(post_save, sender=PaymentInstruction)
-def instruction_updated(
-    sender: Any, instance: PaymentInstruction, created: bool, update_fields=None, **kwargs: dict
-) -> None:
-    if created:
-        return
-    if update_fields and "status" in update_fields:
-        notify_instruction_change(instance.pk, instance.status)
-
-
-@receiver(post_save, sender=PaymentRecord)
-def record_updated(sender: Any, instance: PaymentRecord, created: bool, update_fields=None, **kwargs: Any) -> None:
-    if created:
-        return
-    if update_fields and "status" in update_fields:
-        notify_record_change(instance.pk, instance.status)
