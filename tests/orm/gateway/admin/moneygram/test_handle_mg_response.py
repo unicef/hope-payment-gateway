@@ -151,7 +151,7 @@ def test_handle_mg_response_keyerror(
     user_messages = list(response.wsgi_request._messages)
     assert len(user_messages) == 1
     assert user_messages[0].level == messages.ERROR
-    assert str(user_messages[0]) == "Keyerror: 'some field not found'"
+    assert str(user_messages[0]) == "'some field not found'"
 
 
 @pytest.mark.django_db

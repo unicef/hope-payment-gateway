@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from django.template.response import TemplateResponse
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError
+from hope_payment_gateway.apps.fsp.exceptions import InvalidTokenError, PotentialDuplicateError
 from hope_payment_gateway.api.moneygram.client import (
     MoneyGramClient,
 )
@@ -43,9 +43,7 @@ class MoneyGramAdminMixin:
                     messages.add_message(request, messages.ERROR, "Connection Error")
                 return TemplateResponse(request, "request.html", context)
 
-            except KeyError as e:
-                self.message_user(request, f"Keyerror: {str(e)}", messages.ERROR)
-            except TransitionNotAllowed as e:
+            except (KeyError, TransitionNotAllowed, PotentialDuplicateError) as e:
                 self.message_user(request, str(e), messages.ERROR)
         except InvalidTokenError as e:
             logger.error(e)
