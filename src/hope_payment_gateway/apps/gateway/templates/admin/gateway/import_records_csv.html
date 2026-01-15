@@ -2,7 +2,9 @@
 {% load admin_modify admin_urls i18n static %}
 {% block content %}
     {% if form %}
-        <h4>Upload a csv file with headers in the format bellow:</h4>
+        <h4>
+            Upload a csv file with headers in the format bellow:
+        </h4>
         <p>
             <table>
                 <thead>
@@ -29,25 +31,34 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>REC-1234-0000</td>
-                        <td>John</td>
-                        <td>Smith</td>
-                        <td>1000</td>
-                        <td>+393383040500</td>
-                        <td>KE-AIRTEL</td>
+                        <td>
+                            REC-1234-0000
+                        </td>
+                        <td>
+                            John
+                        </td>
+                        <td>
+                            Smith
+                        </td>
+                        <td>
+                            1000
+                        </td>
+                        <td>
+                            +393383040500
+                        </td>
+                        <td>
+                            KE-AIRTEL
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </p>
-        <hr>
-        <form method="post"
-              id="load_users"
-              enctype="multipart/form-data"
-              novalidate>
+        <hr />
+        <form method="post" id="load_users" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
             {{ form }}
             <div>
-                <input type="submit" value="Import">
+                <input type="submit" value="Import" />
             </div>
         </form>
     {% endif %}
