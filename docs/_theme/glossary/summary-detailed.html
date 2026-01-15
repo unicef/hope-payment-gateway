@@ -4,14 +4,15 @@
         <dt>
             {% if defs|length > 0 %}
                 {% set def = defs[0] %}
-                <a href="{{ root }}{{ def.page.url }}#{{ def.target }}"
-                   title="{{ def.definition }}">{{ term }}</a>
+                <a href="{{ root }}{{ def.page.url }}#{{ def.target }}" title="{{ def.definition }}">{{ term }}</a>
             {% else %}
                 {{ term }}
             {% endif %}
         </dt>
         <dd>
-            <p>{{ glossary.definition(section, term) | safe }}</p>
+            <p>
+                {{ glossary.definition(section, term) | safe }}
+            </p>
             <ul>
                 {% for entry in glossary.get(section, term, 'refs') %}
                     <li>

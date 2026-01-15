@@ -2,10 +2,9 @@
 <html lang="en-US">
     <head>
         <title>HOPE - ChangeLog</title>
-        <meta name="keywords" content="HOPE, UNICEF, payments, gateway">
-        <link rel="stylesheet"
-              href="{% static 'rest_framework/css/bootstrap.min.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'hope/hope.css' %}">
+        <meta name="keywords" content="HOPE, UNICEF, payments, gateway" />
+        <link rel="stylesheet" href="{% static 'rest_framework/css/bootstrap.min.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'hope/hope.css' %}" />
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
@@ -24,13 +23,13 @@
                     </button>
                     <!-- Left logo -->
                     <a class="navbar-brand" href="#">
-                        <img alt="HOPE" src="{% static 'hope/hope.jpg' %}" class="img-responsive">
+                        <img alt="HOPE" src="{% static 'hope/hope.jpg' %}" class="img-responsive" />
                     </a>
                 </div>
                 <!-- Right logo -->
                 <div class="navbar-right">
                     <a href="#">
-                        <img alt="UNICEF" src="{% static 'hope/unicef.png' %}" id="logo-unicef">
+                        <img alt="UNICEF" src="{% static 'hope/unicef.png' %}" id="logo-unicef" />
                     </a>
                 </div>
                 <!-- Navigation links -->
@@ -48,7 +47,9 @@
         <div id="content" class="container">
             {% block content %}
                 <section>
-                    <h1>HOPE Payment Gateway</h1>
+                    <h1>
+                        HOPE Payment Gateway
+                    </h1>
                     <p>
                         The Payment Gateway is a component to perform integration between MIS and FSPs, through web API. Each
                         FSP can have a different way to interact with the payment gateway though strategy pattern.
@@ -57,9 +58,11 @@
                 </section>
             {% endblock content %}
         </div>
-        <hr>
+        <hr />
         <div class="module help text-center">
-            <p>Version: {{ app.version }} | Build Date: {{ app.build_date }} | Commit: {{ app.commit }}</p>
+            <p>
+                Version: {{ app.version }} | Build Date: {{ app.build_date }} | Commit: {{ app.commit }}
+            </p>
         </div>
     </body>
 </html>

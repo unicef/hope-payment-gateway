@@ -1,5 +1,4 @@
 repos:
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -9,42 +8,60 @@ repos:
   - repo: https://github.com/djlint/djLint
     rev: v1.36.4
     hooks:
-      - id: djlint-reformat-django
-      - id: djlint-django
+      - id: djlint-reformat
+        args: ["--configuration", "djlint.toml"]
 
-  - repo: https://github.com/adamchainz/djade-pre-commit
-    rev: "1.6.0"
-    hooks:
-    -   id: djade
-        args: [--target-version, "5.2"]  # Use current Django version
+#  - repo: https://github.com/semgrep/semgrep
+#    rev: v1.145.0
+#    hooks:
+#      - id: semgrep
+#
+#        exclude: '(\.semgrep/|docs/)'
+#        exclude_types:
+#          - yaml
+#        args:
+#          - scan
+#          - --config
+#          - .semgrep/
+#          # Do not try to scan '.semgrep/' directories as they contain test files
+#          # thus they will trigger findings.
+#          - --exclude=.semgrep/
+#          - --exclude=docs/_scripts/
+#          # Set the exit code to non-zero if there are findings.
+#          - --error
+#          # Do not check for version updates, it slows down the execution.
+#          - --disable-version-check
+#          # Quiet mode in order to not pollute the pre-commit outputs.
+#          # Replace --quiet with --verbose to debug issues.
+#          - --quiet
+##          - --verbose
+##        language_version: python3.12  # glom compatibility
+##        entry: bash -c 'PYTHONWARNINGS=ignore::SyntaxWarning semgrep "$@"'  # glom compatibility
 
-  - repo: https://github.com/adamchainz/django-upgrade
-    rev: '1.29.0'
-    hooks:
-      - id: django-upgrade
-        args: ['--target-version', '5.2']
 
   - repo: https://github.com/tox-dev/tox-ini-fmt
-    rev: "1.6.0"
+    rev: "1.7.0"
     hooks:
       - id: tox-ini-fmt
         args: [ "-p", "lint" ]
 
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: "v2.6.0"
+    rev: "v2.11.0"
     hooks:
       - id: pyproject-fmt
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.1
+    rev: v0.14.2
     hooks:
       - id: ruff
       - id: ruff-format
         args:
           - --check
+          - --config
+          - ruff.toml
 
   - repo: https://github.com/saxix/pch
-    rev: '79b0c0e'
+    rev: '0.2'
     hooks:
 
       - id: check-missed-migrations

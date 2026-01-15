@@ -27,10 +27,8 @@ body:
       options:
         # begin product areas
         - 'Unknown'
-        - 'Data cleaners'
-        - 'DataCheckers/Validators'
-        - 'Import data (Aurora/Kobo/RDI)'
-        - 'Send to HOPE'
+        - 'Frontend/UI'
+        - 'Backend'
         - 'Background jobs'
         - 'Security/Permission'
         # end product areas

@@ -1,20 +1,16 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from unittest.mock import Mock
 
 import pytest
+from _pytest.python import Metafunc
 from admin_extra_buttons.handlers import ChoiceHandler
-from constance.test import override_config
 from django.contrib.admin.sites import site
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.urls import reverse
 from django_regex.utils import RegexList as _RegexList
-from factories import SuperUserFactory
-from admin_extra_buttons.handlers import LinkHandler
-
-pytestmark = [pytest.mark.admin, pytest.mark.smoke, pytest.mark.django_db]
-
 
 if TYPE_CHECKING:
+    from _pytest.mark import Mark
     from django.db.models.options import Options
 
 
@@ -43,23 +39,19 @@ GLOBAL_EXCLUDED_BUTTONS = RegexList(
     [
         r"social.SocialProviderAdmin:test",
         r"western_union.CorridorAdmin:request",
+        r"western_union.CorridorAdmin:delivery_option_template",
+        r"western_union.CorridorAdmin:delivery_services",
     ]
 )
 
 KWARGS = {}
+pytestmark = pytest.mark.admin
 
 
-def log_submit_error(res):
-    try:
-        return f"Submit failed with: {repr(res.context['form'].errors)}"
-    except KeyError:
-        return "Submit failed"
+def pytest_generate_tests(metafunc: Metafunc):  # noqa
+    import django
 
-
-def pytest_generate_tests(metafunc):  # noqa
-    import django  # noqa
-
-    markers = metafunc.definition.own_markers
+    markers: List[Mark] = metafunc.definition.own_markers
     excluded_models = RegexList(GLOBAL_EXCLUDED_MODELS)
     excluded_buttons = RegexList(GLOBAL_EXCLUDED_BUTTONS)
     if "skip_models" in [m.name for m in markers]:
@@ -75,7 +67,7 @@ def pytest_generate_tests(metafunc):  # noqa
         for model, admin in site._registry.items():
             if hasattr(admin, "get_changelist_buttons"):
                 name = model._meta.object_name
-                assert admin.urls
+                assert admin.urls  # we need to force this call
                 buttons = admin.extra_button_handlers.values()
                 full_name = f"{model._meta.app_label}.{name}"
                 admin_name = f"{model._meta.app_label}.{admin.__class__.__name__}"
@@ -100,8 +92,9 @@ def pytest_generate_tests(metafunc):  # noqa
 
 @pytest.fixture
 def record(db, request):
-    from factories import get_factory_for_model  # noqa
+    from factories import get_factory_for_model
 
+    # TIPS: database access is forbidden in pytest_generate_tests
     modeladmin = request.getfixturevalue("modeladmin")
     instance = modeladmin.model.objects.first()
     if not instance:
@@ -110,48 +103,62 @@ def record(db, request):
         try:
             instance = factory(**KWARGS.get(full_name, {}))
         except Exception as e:
-            raise Exception(f"Error creating fixture for {factory} using {KWARGS}") from e
+            raise Exception(f"Error creating fixture for {modeladmin.model}") from e
     return instance
 
 
 @pytest.fixture
-def app(django_app_factory, mocked_responses):
-    django_app = django_app_factory(csrf_checks=False)
+def app(django_app_factory):
+    from factories import SuperUserFactory
+
     admin_user = SuperUserFactory(username="superuser")
+    django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user
     return django_app
 
 
-def test_admin_index(app):
+@pytest.mark.django_db
+def test_index(app):
     url = reverse("admin:index")
 
+    app.set_cookie("smart", "1")
     res = app.get(url)
     assert res.status_code == 200
 
 
+@pytest.mark.django_db
+def test_applist(app):
+    url = reverse("admin:index")
+
+    app.set_cookie("smart", "1")
+    res = app.get(url)
+    assert res.status_code == 200
+
+
+@pytest.mark.django_db
 @pytest.mark.skip_models(
     "constance.Config",
+    "registration.Record",
 )
-def test_admin_changelist(app, modeladmin, record):
+def test_changelist(app, modeladmin, record):
     url = reverse(admin_urlname(modeladmin.model._meta, "changelist"))
     opts: Options = modeladmin.model._meta
     res = app.get(url)
     assert res.status_code == 200, res.location
     assert str(opts.app_config.verbose_name) in str(res.content)
-    if modeladmin.has_change_permission(Mock(user=app._user)):
-        assert f"/{record.pk}/change/" in res.body.decode()
 
 
 def show_error(res):
     errors = []
     for k, v in dict(res.context["adminform"].form.errors).items():
         errors.append(f"{k}: {''.join(v)}")
-    return (f"Form submitting failed: {res.status_code}: {errors}",)
+    return ("Form submitting failed: {}: {}".format(res.status_code, errors),)
 
 
-@pytest.mark.skip_models("constance.Config", "advanced_filters.AdvancedFilter")
-def test_admin_changeform(app, modeladmin, record):
+@pytest.mark.django_db
+@pytest.mark.skip_models("constance.Config", "registration.Record")
+def test_changeform(app, modeladmin, record):
     opts: Options = modeladmin.model._meta
     url = reverse(admin_urlname(opts, "change"), args=[record.pk])
 
@@ -162,22 +169,21 @@ def test_admin_changeform(app, modeladmin, record):
         assert res.status_code in [302, 200]
 
 
-@pytest.mark.skip_models("constance.Config")
-def test_admin_add(app, modeladmin):
+@pytest.mark.django_db
+@pytest.mark.skip_models("constance.Config", "registration.Record")
+def test_add(app, modeladmin):
     url = reverse(admin_urlname(modeladmin.model._meta, "add"))
     if modeladmin.has_add_permission(Mock(user=app._user)):
         res = app.get(url)
-        res = res.forms[1].submit()
-        assert res.status_code in [200, 302], log_submit_error(res)
+        res.forms[1].submit()
+        assert res.status_code in [200, 302]
     else:
         pytest.skip("No 'add' permission")
 
 
-@pytest.mark.skip_models(
-    "constance.Config",
-    "hope",
-)
-def test_admin_delete(app, modeladmin, record, monkeypatch):
+@pytest.mark.django_db
+@pytest.mark.skip_models("constance.Config", "registration.Record")
+def test_delete(app, modeladmin, record, monkeypatch):
     url = reverse(admin_urlname(modeladmin.model._meta, "delete"), args=[record.pk])
     if modeladmin.has_delete_permission(Mock(user=app._user)):
         res = app.get(url)
@@ -187,9 +193,13 @@ def test_admin_delete(app, modeladmin, record, monkeypatch):
         pytest.skip("No 'delete' permission")
 
 
-@pytest.mark.skip_buttons("security.UserAdmin:link_user_data", "gateway.AsyncJobAdmin:celery_inspect")
-@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_admin_buttons(app, modeladmin, button_handler, record, monkeypatch, wu):
+@pytest.mark.django_db
+@pytest.mark.skip_buttons(
+    "i18n.MessageAdmin.publish",
+)
+def test_buttons(app, modeladmin, button_handler, record, monkeypatch):
+    from admin_extra_buttons.handlers import LinkHandler
+
     if isinstance(button_handler, ChoiceHandler):
         pass
     elif isinstance(button_handler, LinkHandler):

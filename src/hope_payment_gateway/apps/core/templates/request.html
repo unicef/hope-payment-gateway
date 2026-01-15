@@ -14,7 +14,6 @@
     }
     </style>
 {% endblock extrahead %}
-
 {% block content %}
     <i>
         {% autoescape on %}
@@ -27,7 +26,7 @@
 {{ content_request|pprint }}{% else %}{{ content_request }}
 {% endif %}
 </pre>
-    <hr>
+    <hr />
     <pre>
 <h2>Response:</h2>
 {% if response_format == "json" %}

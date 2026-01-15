@@ -2,9 +2,17 @@
     <table id="{{ section }}">
         <thead>
             <tr>
-                <th>Term</th>
-                <th>Definition</th>
-                {% if types|length > 0 %}<th>References</th>{% endif %}
+                <th>
+                    Term
+                </th>
+                <th>
+                    Definition
+                </th>
+                {% if types|length > 0 %}
+                    <th>
+                        References
+                    </th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -13,14 +21,17 @@
                     <td>
                         {% if defs|length > 0 %}
                             {% set def = defs[0] %}
-                            <a href="{{ root }}{{ def.page.url }}#{{ def.target }}"
-                               title="{{ def.definition }}">{{ term }}</a>
+                            <a href="{{ root }}{{ def.page.url }}#{{ def.target }}" title="{{ def.definition }}">{{ term }}</a>
                         {% else %}
                             {{ term }}
                         {% endif %}
                     </td>
-                    <td>{{ term }}</td>
-                    <td>{{ glossary.definition(section, term) | safe }}</td>
+                    <td>
+                        {{ term }}
+                    </td>
+                    <td>
+                        {{ glossary.definition(section, term) | safe }}
+                    </td>
                     {% if types|length > 0 %}
                         <td>
                             <ul>

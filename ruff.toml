@@ -43,13 +43,13 @@ select = [
 ]
 extend-select = ["UP", ]
 ignore = [
-    "ANN001",
+    "ANN001", # todo
     "ANN002",
     "ANN003",
-    "ANN201",
-    "ANN202",
-    "ANN204",
-    "ANN205",
+    "ANN201", # todo
+    "ANN202", # todo
+    "ANN204", # todo
+    "ANN205", # todo
     "ANN401",
 #    "B904",  # raise-without-from-inside-except: syntax not compatible with py2
     "COM812",
@@ -84,6 +84,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [lint.per-file-ignores]
+".semgrep/**/*.py" = ["ALL"]
 "docs/**.py" = ["TC002", "U"]
 "tests/**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT006", "PLC0415", "TC002"]
 "src/**/migrations/*.py" = ["E501", ]
