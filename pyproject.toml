@@ -159,7 +159,7 @@ exclude = [
 
 [tool.hatch.build.targets.wheel]
 packages = [
-  "src/hope_api_auth/**/*.*",
+  "src/hope_api_auth",
   "src/hope_payment_gateway",
 ]
 exclude = [
