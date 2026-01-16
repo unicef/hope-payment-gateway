@@ -22,7 +22,7 @@ x-env: &env
 
 services:
   app:
-    image: {{cookiecutter.docker_organization}}/{{cookiecutter.docker_image}}:local
+    image: unicef/hope_payment_gateway:local
     <<: [ *env ]
     ports:
       - 8000:8000

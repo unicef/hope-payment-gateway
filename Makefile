@@ -39,8 +39,8 @@ i18n:  ## update translation files
 
 reset_migrations:  ## reset database migrations. WARNING!!: Use only until first deployment
 	rm -f src/hope_payment_gateway/migrations/0002*
-	dropdb --if-exists {{cookiecutter.database_name}}
-	createdb {{cookiecutter.database_name}}
+	dropdb --if-exists hope_payment_gateway
+	createdb hope_payment_gateway
 	./manage.py makemigrations hope_payment_gateway
 	git add src/hope_payment_gateway/migrations/*
 	./manage.py develop

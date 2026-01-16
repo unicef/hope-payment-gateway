@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm AS base_os
+FROM python:3.13-slim-bookworm AS base_os
 ARG VERSION
 ARG GIT_SHA
 ARG BUILD_DATE
@@ -75,7 +75,7 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     VERSION=$VERSION \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    DJANGO_SETTINGS_MODULE="{{ cookiecutter.package_name }}.config.settings" \
+    DJANGO_SETTINGS_MODULE="hope_payment_gateway.config.settings" \
     STATIC_URL="/static/" \
     PYTHONPATH=""\
     GIT_SHA=$GIT_SHA \
@@ -87,12 +87,12 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 
 
-LABEL org.opencontainers.image.authors="{{ cookiecutter.author_email }}"
+LABEL org.opencontainers.image.authors="hope@unicef.org"
 LABEL org.opencontainers.image.created="$BUILD_DATE"
-LABEL org.opencontainers.image.description="{{ cookiecutter.description }}"
-LABEL org.opencontainers.image.licenses="https://github.com/{{ cookiecutter.github_user }}/{{ cookiecutter.docker_image }}/blob/${GIT_SHA:-develop}/LICENSE.md"
+LABEL org.opencontainers.image.description="Hope Payment Gateway"
+LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${SOURCE_COMMIT:-master}/LICENSE"
 LABEL org.opencontainers.image.revision=$GIT_SHA
-LABEL org.opencontainers.image.source="https://github.com/{{ cookiecutter.github_user }}/`{{cookiecutter.docker_image}}/tree/${GIT_SHA:-develop}/"
-LABEL org.opencontainers.image.title="{{ cookiecutter.project_title }}"
+LABEL org.opencontainers.image.source="https://github.com/unicef/hope-payment-gateway/tree/${GIT_SHA:-develop}/"
+LABEL org.opencontainers.image.title="Hope Payment Gateway"
 LABEL org.opencontainers.image.version="$VERSION"
 LABEL org.opencontainers.image.vendor="UNICEF"

@@ -1,7 +1,7 @@
 # envs to set before use this script
 .ONESHELL:
 VERSION:=$(shell cd .. && uvx --with hatch-vcs hatchling metadata version)
-DOCKER_IMAGE_NAME:={{cookiecutter.docker_organization}}/{{cookiecutter.docker_image}}
+DOCKER_IMAGE_NAME:=unicef/hope_payment_gateway
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 SOURCE_COMMIT=$(shell git rev-parse --short HEAD)
 STAGE?=dist
@@ -47,10 +47,10 @@ build: ## build docker image
 			-e CELERY_BROKER_URL=redis://host.docker.internal:6379/0 \
 			-e CSRF_COOKIE_SECURE=False \
 			-e CSRF_TRUSTED_ORIGINS=http://localhost \
-			-e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/{{ cookiecutter.database_name }}" \
+			-e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/hope_payment_gateway" \
 			-e DEBUG="1" \
 			-e DJANGO_ADMIN_URL=admin/ \
-			-e DJANGO_SETTINGS_MODULE={{ cookiecutter.package_name }}.config.settings \
+			-e DJANGO_SETTINGS_MODULE=hope_payment_gateway.config.settings \
 			-e FERNET_KEY=123 \
 			-e LOGGING_LEVEL="DEBUG" \
 			-e SECRET_KEY="super-secret-key-just-for-testing" \

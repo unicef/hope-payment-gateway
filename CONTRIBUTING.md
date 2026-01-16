@@ -1,6 +1,6 @@
-# Contributing to {{ cookiecutter.project_title }}
+# Contributing to HOPE Payment Gateway
 
-First off, thank you for considering contributing to the {{ cookiecutter.project_title }}. It's people like you that make this project such a great tool.
+First off, thank you for considering contributing to the HOPE Payment Gateway. It's people like you that make this project such a great tool.
 
 ## Where do I start?
 
