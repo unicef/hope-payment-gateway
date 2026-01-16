@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from unicef_security.models import AbstractUser, SecurityMixin
+from unicef_security.models import AbstractUser, SecurityMixin, TimeStampedModel
 
 
 class Singleton(type):
@@ -12,7 +12,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-class User(SecurityMixin, AbstractUser):
+class User(TimeStampedModel, SecurityMixin, AbstractUser):
     class Meta:
         app_label = "core"
 
