@@ -1,4 +1,6 @@
 FROM python:3.13-slim-bookworm AS base_os
+ARG GOSU_VERSION=1.19
+ARG GOSU_SHA256=52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0
 ARG VERSION
 ARG GIT_SHA
 ARG BUILD_DATE
@@ -15,6 +17,9 @@ RUN set -x \
 wget \
 " \
   && apt-get update && apt-get install -y --no-install-recommends ${buildDeps} ${runtimeDeps} \
+  && wget --quiet -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
+  && echo "$GOSU_SHA256 /usr/local/bin/gosu" | sha256sum --check --status \
+  && chmod +x /usr/local/bin/gosu \
   && apt-get purge -y --auto-remove $buildDeps
 
 RUN groupadd --gid 1024 unicef \
@@ -54,8 +59,8 @@ ENV VIRTUAL_ENV=/venv \
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
-  "commit": "$GIT_SHA"
-  "date": "$BUILD_DATE"
+  "commit_sha": "$GIT_SHA"
+  "build_date": "$BUILD_DATE"
 }
 EOF
 WORKDIR /code
