@@ -6,8 +6,6 @@ export STATIC_ROOT="${STATIC_ROOT:-/var/run/app/static}"
 export UWSGI_PROCESSES="${UWSGI_PROCESSES:-"4"}"
 export DJANGO_SETTINGS_MODULE="hope_payment_gateway.config.settings"
 
-chown -R hope:unicef /app
-
 case "$1" in
     run)
       django-admin upgrade --with-check
