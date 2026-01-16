@@ -4,6 +4,7 @@ include *.py
 
 recursive-include docs *
 recursive-include src/hope_payment_gateway *
+recursive-include src/hope_api_auth *
 recursive-include tests *
 
 exclude Dockerfile*
