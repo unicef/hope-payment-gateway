@@ -59,8 +59,8 @@ ENV VIRTUAL_ENV=/venv \
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
-  "commit_sha": "$GIT_SHA"
-  "build_date": "$BUILD_DATE"
+  "commit_sha": "$GIT_SHA",
+  "date": "$BUILD_DATE"
 }
 EOF
 WORKDIR /code
@@ -82,8 +82,9 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
     PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE="hope_payment_gateway.config.settings" \
     STATIC_URL="/static/" \
-    PYTHONPATH=""\
+    PYTHONPATH="" \
     GIT_SHA=$GIT_SHA \
+    BUILD_DATE=$BUILD_DATE \
     PGSSLCERT="/tmp/postgresql.crt" \
     UWSGI_PROCESSES=4
 
