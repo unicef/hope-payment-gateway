@@ -9,6 +9,7 @@
 !.pre-commit-config.yaml
 !.envrc
 !.idea
+!.semgrep
 
 !tests/.coveragerc
 !docs/**/.pages
