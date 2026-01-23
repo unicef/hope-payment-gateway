@@ -75,7 +75,13 @@ class PaymentRecordAdmin(
         "fsp_code",
         "auth_code",
     )
-    list_filter = ("parent__fsp", ("parent", AutoCompleteFilter), "status", "success")
+    list_filter = (
+        "parent__fsp",
+        ("parent", AutoCompleteFilter),
+        ("parent__office", AutoCompleteFilter),
+        "status",
+        "success",
+    )
     search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
     readonly_fields = ("fsp_data", "extra_data", "payout_date", "payout_amount")
     formfield_overrides = {

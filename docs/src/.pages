@@ -1,7 +1,6 @@
 nav:
   - Home: index.md
   - contributing.md
-  - settings.md
   - Setup: setup
   - Western Union: wu
   - MoneyGram: mg
