@@ -1,5 +1,5 @@
-from streaming.utils import make_event
 from streaming.manager import initialize_engine
+from streaming.utils import make_event
 
 
 def notify_instruction_change(instruction_pk, status):

@@ -20,8 +20,8 @@ from django.utils.encoding import smart_str
 from django.utils.timezone import get_default_timezone
 from django.utils.translation import gettext_lazy as _
 
-from hope_payment_gateway.apps.fsp.moneygram import REFUND_CHOICES
 from hope_payment_gateway.api.moneygram.client import MoneyGramClient
+from hope_payment_gateway.apps.fsp.moneygram import REFUND_CHOICES
 from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
 

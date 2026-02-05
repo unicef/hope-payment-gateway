@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 
 import requests
 from constance import config
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
@@ -12,11 +13,10 @@ from hope_payment_gateway.apps.fsp.palpay.utils import generate_hmac_signature
 from hope_payment_gateway.apps.fsp.utils import get_phone_number
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
 from hope_payment_gateway.apps.gateway.models import (
-    PaymentRecord,
     FinancialServiceProviderConfig,
+    PaymentRecord,
     PaymentRecordState,
 )
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 

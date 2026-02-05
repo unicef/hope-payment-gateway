@@ -10,7 +10,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
-from hope_payment_gateway.apps.fsp.palpay import RECEIVED, DELIVERED
+from hope_payment_gateway.apps.fsp.palpay import DELIVERED, RECEIVED
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
 logger = logging.getLogger(__name__)

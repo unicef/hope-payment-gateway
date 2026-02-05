@@ -1,16 +1,15 @@
+import logging
 from typing import Any
+
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from flags.state import flag_enabled
 
 from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
 from hope_payment_gateway.apps.stream.handlers import (
-    notify_record_change,
     notify_instruction_change,
+    notify_record_change,
 )
-
-import logging
-
 
 logger = logging.getLogger(__name__)
 

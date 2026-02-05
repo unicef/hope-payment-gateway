@@ -8,7 +8,6 @@ from django_celery_boost.models import AsyncJobModel
 from model_utils.models import TimeStampedModel
 from strategy_field.fields import StrategyField
 
-
 from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.registry import export_registry, registry
 

@@ -7,14 +7,14 @@ from constance import config
 from django.conf import settings
 from strategy_field.utils import fqn
 
-from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.api.palpay.client import PalPayClient
+from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
 from hope_payment_gateway.apps.gateway.models import (
-    PaymentRecord,
+    AsyncJob,
     PaymentInstruction,
     PaymentInstructionState,
-    AsyncJob,
+    PaymentRecord,
 )
 from hope_payment_gateway.config.celery import app
 
