@@ -139,31 +139,25 @@ docs = [
 
 [tool.hatch]
 build.hooks.vcs.version-file = "src/hope_payment_gateway/version.py"
-version.source = "vcs"
-raw-options = { root = "../.." }
-
-[tool.hatch.version.raw-options]
-local_scheme = "no-local-version"
-
-[tool.hatch.build.targets.sdist]
-ignore-vcs = true
-include = [
+build.targets.sdist.ignore-vcs = true
+build.targets.sdist.include = [
   "src/hope_api_auth/**/*.*",
   "src/hope_payment_gateway/**/*.*",
 ]
-exclude = [
+build.targets.sdist.exclude = [
   "~*",
   "src/hope_payment_gateway/ui/theme/static_src/**/*.*",
 ]
-
-[tool.hatch.build.targets.wheel]
-packages = [
+build.targets.wheel.packages = [
   "src/hope_api_auth",
   "src/hope_payment_gateway",
 ]
-exclude = [
+build.targets.wheel.exclude = [
   "~*",
 ]
+version.source = "vcs"
+version.raw-options.local_scheme = "no-local-version"
+raw-options = { root = "../.." }
 
 [tool.uv]
 package = true

@@ -8,7 +8,15 @@ from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpResponse, StreamingHttpResponse, QueryDict
 from django.urls import reverse
-from factories import PaymentRecordFactory
+from factories import (
+    CountryFactory,
+    DeliveryMechanismFactory,
+    ExportTemplateFactory,
+    OfficeFactory,
+    PaymentInstructionFactory,
+    PaymentRecordFactory,
+    FinancialServiceProviderFactory,
+)
 from hope_payment_gateway.apps.gateway.actions import (
     TemplateExportForm,
     export_as_template_impl,
@@ -16,7 +24,12 @@ from hope_payment_gateway.apps.gateway.actions import (
     moneygram_update_status,
     moneygram_refund,
 )
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from django.contrib.admin.sites import AdminSite
+from hope_payment_gateway.apps.gateway.admin.base import (
+    PaymentInstructionAdmin,
+    PaymentRecordAdmin,
+)
+from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentInstruction
 from csv import excel_tab
 
 
@@ -28,6 +41,17 @@ def request_with_messages(request_factory):
     middleware = MessageMiddleware(lambda r: None)
     middleware.process_request(request)
     return request
+
+
+@pytest.fixture
+def mock_messages():
+    with (
+        patch("django.contrib.messages.info") as mock_info,
+        patch("django.contrib.messages.error") as mock_error,
+        patch("django.contrib.messages.warning") as mock_warning,
+        patch("django.contrib.messages.success") as mock_success,
+    ):
+        yield {"info": mock_info, "error": mock_error, "warning": mock_warning, "success": mock_success}
 
 
 @pytest.fixture
@@ -486,3 +510,50 @@ def test_refund_with_invalid_form(modeladmin, request_with_messages, mg):
                         assert render_args[2]["adminform"] == mock_admin_form
 
                         assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_payment_record_admin_fsp_method():
+    fsp = FinancialServiceProviderFactory(name="Test FSP")
+    pi = PaymentInstructionFactory(fsp=fsp)
+    pr = PaymentRecordFactory(parent=pi)
+
+    admin_site = AdminSite()
+    pr_admin = PaymentRecordAdmin(PaymentRecord, admin_site)
+
+    assert pr_admin.fsp(pr) == "Test FSP"
+
+
+@pytest.mark.django_db
+def test_payment_instruction_admin_generate_records(rf, admin_user, mock_messages):
+    fsp = FinancialServiceProviderFactory()
+    dm = DeliveryMechanismFactory()
+    office = OfficeFactory()
+    country = CountryFactory()
+    template = ExportTemplateFactory(
+        fsp=fsp, delivery_mechanism=dm, office=office, country=country, query="obj.remote_id"
+    )
+
+    pi = PaymentInstructionFactory(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
+
+    admin_site = AdminSite()
+    pi_admin = PaymentInstructionAdmin(PaymentInstruction, admin_site)
+
+    request = rf.get("/")
+    request.user = admin_user
+
+    # We need to bypass admin_extra_buttons decorator wrapper if it's causing trouble
+    # generate_records is decorated with @button
+    func = pi_admin.generate_records
+    if hasattr(func, "original_func"):
+        func = func.original_func
+
+    with (
+        patch.object(pi_admin, "get_object") as mock_get_obj,
+        patch("hope_payment_gateway.apps.gateway.admin.base.base_export") as mock_export,
+    ):
+        mock_get_obj.return_value = pi
+        func(pi_admin, request, pi.pk)
+        assert mock_export.called
+        assert request.POST["delimiter"] == template.delimiter
+        assert request.POST["columns"] == template.query

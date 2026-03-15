@@ -111,6 +111,8 @@ class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
 
 class PaymentInstructionSerializer(serializers.ModelSerializer):
     fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
+    office = serializers.PrimaryKeyRelatedField(queryset=Office.objects.all(), required=False)
+    country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), required=False)
     system = serializers.PrimaryKeyRelatedField(read_only=True)  # handled in the view
 
     class Meta:
@@ -122,6 +124,8 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "active",
             "status",
             "fsp",
+            "office",
+            "country",
             "system",
             "payload",
         )
@@ -184,7 +188,9 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
 
 class ExportTemplateSerializer(serializers.ModelSerializer):
     fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
+    office = serializers.PrimaryKeyRelatedField(queryset=Office.objects.all(), required=False)
+    country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), required=False)
 
     class Meta:
         model = ExportTemplate
-        fields = ("query", "fsp", "config_key")
+        fields = ("query", "fsp", "office", "country", "config_key")

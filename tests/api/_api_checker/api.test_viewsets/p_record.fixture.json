@@ -4,20 +4,21 @@
             "model": "gateway.paymentrecord",
             "pk": 1,
             "fields": {
-                "created": "2025-02-24T09:42:28.198Z",
-                "modified": "2025-02-24T09:42:28.198Z",
+                "created": "2026-03-15T12:25:39.900Z",
+                "modified": "2026-03-15T12:25:39.900Z",
                 "parent": 1,
-                "remote_id": "FdjYMictPZfp",
-                "record_code": "XkdkSNHhGBBg",
+                "remote_id": "kVtlQifMzPMr",
+                "record_code": "YPFujRSnBYPw",
                 "status": "PENDING",
                 "success": null,
                 "message": null,
                 "auth_code": null,
                 "fsp_code": null,
                 "payload": {},
-                "fsp_data": {},
                 "payout_amount": null,
-                "payout_date": null
+                "payout_date": null,
+                "fsp_data": {},
+                "extra_data": {}
             }
         },
         "deps": [
@@ -25,14 +26,17 @@
                 "model": "gateway.paymentinstruction",
                 "pk": 1,
                 "fields": {
-                    "created": "2025-02-24T09:42:27.960Z",
-                    "modified": "2025-02-24T09:42:27.960Z",
+                    "created": "2026-03-15T12:25:39.674Z",
+                    "modified": "2026-03-15T12:25:39.674Z",
                     "fsp": 1,
+                    "delivery_mechanism": null,
+                    "office": 1,
+                    "country": null,
+                    "export": null,
                     "system": 1,
                     "external_code": "",
-                    "remote_id": "eKNgEuzEofbx",
+                    "remote_id": "XqIgHRtIQyto",
                     "status": "DRAFT",
-                    "office": null,
                     "tag": null,
                     "payload": {},
                     "active": true
@@ -42,13 +46,28 @@
                 "model": "gateway.financialserviceprovider",
                 "pk": 1,
                 "fields": {
-                    "created": "2025-02-24T09:42:27.777Z",
-                    "modified": "2025-02-24T09:42:27.777Z",
-                    "remote_id": "scPaOjxLFkUB",
-                    "name": "QsxiyBTnkWSt",
-                    "vendor_number": "jTBrgmvmqLdx",
+                    "created": "2026-03-15T12:25:39.649Z",
+                    "modified": "2026-03-15T12:25:39.649Z",
+                    "remote_id": "biTSscsglhcO",
+                    "name": "YcIwhGyaZEOq",
+                    "vendor_number": "jDSkfBbHzMsH",
                     "strategy": "hope_payment_gateway.apps.gateway.registry.DefaultProcessor",
                     "configuration": {}
+                }
+            },
+            {
+                "model": "gateway.office",
+                "pk": 1,
+                "fields": {
+                    "created": "2026-03-15T12:25:39.672Z",
+                    "modified": "2026-03-15T12:25:39.672Z",
+                    "remote_id": null,
+                    "long_name": null,
+                    "name": null,
+                    "code": null,
+                    "slug": null,
+                    "supervised": false,
+                    "extra_fields": {}
                 }
             },
             {
@@ -67,15 +86,15 @@
                     "last_login": null,
                     "is_superuser": false,
                     "username": "user001",
-                    "first_name": "Matthew",
-                    "last_name": "Vargas",
+                    "first_name": "Jessica",
+                    "last_name": "Buckley",
                     "email": "m000@mailinator.com",
                     "is_staff": false,
                     "is_active": true,
-                    "date_joined": "2025-02-24T09:42:27.958Z",
+                    "date_joined": "2026-03-15T12:25:39.668Z",
                     "azure_id": null,
                     "job_title": null,
-                    "display_name": "Matthew Vargas:",
+                    "display_name": "Jessica Buckley:",
                     "groups": [],
                     "user_permissions": []
                 }

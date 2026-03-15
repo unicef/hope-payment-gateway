@@ -5,29 +5,39 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "283",
+        "Content-Length": "381",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
     },
     "data": [
         {
-            "id": 51,
-            "key": "CPMCzwHkasoX",
-            "office": null,
-            "country": null,
-            "label": "zhhmQJFDNEwa",
+            "id": 1,
+            "key": "pDGkIRPAxZrd",
+            "office": {
+                "id": 2,
+                "name": null,
+                "code": null,
+                "slug": null
+            },
+            "country": {
+                "id": 1,
+                "name": "oVhMtqhDFWxH",
+                "iso_code2": "YG",
+                "iso_code3": "IRW"
+            },
+            "label": "utaZnauIScrE",
             "fsp": {
                 "id": 1,
-                "name": "QsxiyBTnkWSt",
-                "vendor_number": "jTBrgmvmqLdx"
+                "name": "YcIwhGyaZEOq",
+                "vendor_number": "jDSkfBbHzMsH"
             },
             "delivery_mechanism": {
-                "id": 58,
-                "code": "dLktZTkWFLLP",
-                "name": "leTNOBXVzvVL",
+                "id": 2,
+                "code": "BVBPoVqaeYzL",
+                "name": "PrsCmINimbpF",
                 "description": null,
-                "account_type": 61,
+                "account_type": 3,
                 "transfer_type": ""
             }
         }

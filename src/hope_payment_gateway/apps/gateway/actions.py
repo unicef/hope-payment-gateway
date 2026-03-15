@@ -44,7 +44,6 @@ class TemplateExportForm(CSVConfigForm):
         widget=forms.HiddenInput({"class": "select-across"}),
     )
     action = forms.CharField(label="", required=True, initial="", widget=forms.HiddenInput())
-
     header = forms.HiddenInput()
     columns = forms.CharField(
         widget=forms.Textarea,
