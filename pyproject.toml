@@ -22,7 +22,7 @@ classifiers = [
 dependencies = [
   "celery[redis]",
   "dj-static",
-  "django",
+  "django<6",
   "django-admin-extra-buttons<2.1.2",
   "django-admin-sync",
   "django-adminactions",
