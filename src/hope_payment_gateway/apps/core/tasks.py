@@ -4,10 +4,13 @@ from typing import TYPE_CHECKING, Any
 
 import sentry_sdk
 from django.core.cache import cache
-from redis_lock import Lock
+import typing
 
 from hope_payment_gateway.apps.gateway.models import AsyncJob
 from hope_payment_gateway.config.celery import app
+
+if typing.TYPE_CHECKING:
+    from redis_lock import Lock
 
 logger = logging.getLogger(__name__)
 

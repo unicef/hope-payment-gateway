@@ -24,7 +24,7 @@ def notify_records_to_fsp(client_fqn, instruction_id):
     for record in PaymentRecord.objects.filter(parent=pi, status=PaymentRecordState.PENDING):
         try:
             client.create_transaction(record.get_payload())
-        except (TokenError, PayloadError, InvalidCorridorError):
+        except TokenError, PayloadError, InvalidCorridorError:
             logging.info(f"{record.record_code} transaction did not success")
     pi.status = PaymentInstructionState.PROCESSED
     pi.save()

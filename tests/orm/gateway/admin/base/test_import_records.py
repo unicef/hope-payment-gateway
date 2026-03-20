@@ -4,7 +4,7 @@ from django.test import RequestFactory
 from django.contrib import messages
 from django.contrib.admin.sites import AdminSite
 
-from hope_api_auth.auth import User
+
 from hope_payment_gateway.apps.gateway.admin.base import ImportCSVForm, PaymentInstructionAdmin
 from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentInstruction
 from tests.factories.payment import (
@@ -13,6 +13,10 @@ from tests.factories.payment import (
 from django.contrib.auth.models import Permission
 from django.core.exceptions import PermissionDenied
 from django.core.files.uploadedfile import SimpleUploadedFile
+import typing
+
+if typing.TYPE_CHECKING:
+    from hope_api_auth.auth import User
 
 
 @pytest.fixture

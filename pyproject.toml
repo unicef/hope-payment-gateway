@@ -14,16 +14,15 @@ license = { text = "MIT" }
 authors = [
   { name = "Domenico DiNicola", email = "dom.dinicola@gmail.com" },
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
   "celery[redis]",
   "dj-static",
-  "django",
+  "django<6",
   "django-admin-extra-buttons<2.1.2",
   "django-admin-sync",
   "django-adminactions",

@@ -1,13 +1,18 @@
 from typing import Any
 
-from django.http import HttpRequest
-from django.http.response import HttpResponseBase
+
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .auth import GrantedPermission, LoggingTokenAuthentication
 from .models import APILogEntry, Grant
+
+import typing
+
+if typing.TYPE_CHECKING:
+    from django.http import HttpRequest
+    from django.http.response import HttpResponseBase
 
 
 class LoggingAPIView(APIView):

@@ -7,9 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
+import typing
 
 from .models import APIToken
+
+if typing.TYPE_CHECKING:
+    from rest_framework.request import Request
 
 User = get_user_model()
 

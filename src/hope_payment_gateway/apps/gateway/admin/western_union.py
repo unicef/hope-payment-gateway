@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 from admin_extra_buttons.decorators import choice, view
 from constance import config
 from django.contrib import messages
-from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
-
+import typing
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidCorridorError,
@@ -17,6 +18,9 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentRecord,
 )
+
+if typing.TYPE_CHECKING:
+    from django.http import HttpRequest, HttpResponseRedirect
 
 
 class WesternUnionAdminMixin:
@@ -46,7 +50,7 @@ class WesternUnionAdminMixin:
                         destination_currency=payload.get("destination_currency"),
                     )
                     button.choices.append(self.wu_corridor)
-                except (Corridor.DoesNotExist, Corridor.MultipleObjectsReturned):
+                except Corridor.DoesNotExist, Corridor.MultipleObjectsReturned:
                     pass
             try:
                 obj.parent.fsp.configs.get(
@@ -69,9 +73,7 @@ class WesternUnionAdminMixin:
         label="Prepare Payload",
         permission="western_union.can_prepare_transaction",
     )
-    def wu_prepare_payload(
-        self, request: HttpRequest, pk: int
-    ) -> TemplateResponse | HttpResponseRedirect | HttpResponseRedirect:
+    def wu_prepare_payload(self, request: "HttpRequest", pk: int) -> "TemplateResponse" | "HttpResponseRedirect":
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
@@ -96,7 +98,7 @@ class WesternUnionAdminMixin:
         permission="western_union.can_prepare_transaction",
     )
     def wu_send_money_validation(
-        self, request: HttpRequest, pk: int
+        self, request: "HttpRequest", pk: int
     ) -> TemplateResponse | HttpResponseRedirect | HttpResponseRedirect:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
@@ -116,7 +118,7 @@ class WesternUnionAdminMixin:
         permission="western_union.can_create_transaction",
     )
     def wu_send_money(
-        self, request: HttpRequest, pk: int
+        self, request: "HttpRequest", pk: int
     ) -> TemplateResponse | HttpResponseRedirect | HttpResponseRedirect:
         obj = PaymentRecord.objects.get(pk=pk)
         context = self.get_common_context(request, pk)
@@ -132,7 +134,7 @@ class WesternUnionAdminMixin:
         label="Check Status",
         permission="western_union.can_check_status",
     )
-    def wu_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def wu_status(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
@@ -147,7 +149,7 @@ class WesternUnionAdminMixin:
         label="Status Update",
         permission="western_union.can_update_status",
     )
-    def wu_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def wu_status_update(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
@@ -162,7 +164,7 @@ class WesternUnionAdminMixin:
         label="Search Request",
         permission="western_union.can_search_request",
     )
-    def wu_search_request(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def wu_search_request(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
@@ -178,7 +180,7 @@ class WesternUnionAdminMixin:
         label="Cancel",
         permission="western_union.can_cancel_transaction",
     )
-    def wu_cancel(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def wu_cancel(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         context = self.get_common_context(request, pk)
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
@@ -191,7 +193,7 @@ class WesternUnionAdminMixin:
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Corridor",
     )
-    def wu_corridor(self, request: HttpRequest, pk: int) -> HttpResponseRedirect | HttpResponseRedirect:
+    def wu_corridor(self, request: "HttpRequest", pk: int) -> HttpResponseRedirect | HttpResponseRedirect:
         obj = self.get_object(request, pk)
         payload = obj.get_payload()
 
