@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import csv
 import logging
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from admin_extra_buttons.decorators import button, link, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
@@ -12,7 +14,7 @@ from django.contrib.admin.options import TabularInline
 from django.db.models import JSONField, QuerySet
 from django.db.utils import IntegrityError
 from django.forms import FileField, FileInput, Form
-from django.http import HttpRequest, HttpResponseRedirect
+
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -44,8 +46,7 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 if TYPE_CHECKING:
-    from django.http import HttpResponsePermanentRedirect  # pragma: no-cover
-
+    from django.http import HttpResponsePermanentRedirect, HttpRequest, HttpResponseRedirect  # pragma: no-cover
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ class PaymentRecordAdmin(
 
     actions = [export_as_template, moneygram_update_status, moneygram_refund]
 
-    def get_queryset(self, request: HttpRequest) -> QuerySet:
+    def get_queryset(self, request: "HttpRequest") -> QuerySet:
         return super().get_queryset(request).select_related("parent__fsp")
 
     def fsp(self, obj: PaymentRecord) -> str:
@@ -108,7 +109,7 @@ class PaymentRecordAdmin(
         html_attrs={"style": "background-color:#88FF88;color:black"},
         label="Config",
     )
-    def configuration(self, request: HttpRequest, pk: int) -> HttpResponseRedirect | HttpResponseRedirect:
+    def configuration(self, request: "HttpRequest", pk: int) -> "HttpResponseRedirect":
         obj = self.get_object(request, pk)
         payload = obj.get_payload()
         config = obj.parent.fsp.configs.get(
@@ -138,7 +139,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     raw_id_fields = ("fsp", "system", "office")
 
     @button(permission="gateway.can_export_records")
-    def export_records(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def export_records(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         obj = self.get_object(request, str(pk))
         queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
 
@@ -165,7 +166,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     @button(permission="gateway.can_import_records")
     def import_records(
         self, request: "HttpRequest", pk: int
-    ) -> Union["HttpResponsePermanentRedirect", "HttpResponseRedirect", TemplateResponse]:
+    ) -> "HttpResponsePermanentRedirect" | "HttpResponseRedirect" | "TemplateResponse":
         context = self.get_common_context(request, processed=False)
         if request.method == "POST":
             form = ImportCSVForm(data=request.POST, files=request.FILES)

@@ -3,17 +3,20 @@ import logging
 from admin_extra_buttons.decorators import choice, view
 from constance import config
 from django.contrib import messages
-from django.http import HttpRequest
+import typing
 from django.template.response import TemplateResponse
 
 from hope_payment_gateway.api.palpay.client import PalPayClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
+if typing.TYPE_CHECKING:
+    from django.http import HttpRequest
+
 logger = logging.getLogger(__name__)
 
 
 class PalPayAdminMixin:
-    def handle_pal_response(self, request: HttpRequest, pk: int, method: str, title: str) -> TemplateResponse:
+    def handle_pal_response(self, request: "HttpRequest", pk: int, method: str, title: str) -> TemplateResponse:
         obj = PaymentRecord.objects.get(pk=pk)
         try:
             payload, resp, endpoint = getattr(PalPayClient(), method)(obj.get_payload())
@@ -38,7 +41,7 @@ class PalPayAdminMixin:
         label="Profile",
         permission="palpay.can_check_profile",
     )
-    def pal_profile(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def pal_profile(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "get_profile", "Check Profile")
 
     @view(
@@ -46,7 +49,7 @@ class PalPayAdminMixin:
         label="Check Balance",
         permission="palpay.can_check_balance",
     )
-    def pal_balance(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def pal_balance(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "balance", "Check Balance")
 
     @view(
@@ -54,7 +57,7 @@ class PalPayAdminMixin:
         label="Check Beneficiary",
         permission="palpay.can_check_beneficiary",
     )
-    def pal_beneficiary(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def pal_beneficiary(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "beneficiary", "Check Beneficiary")
 
     @view(
@@ -62,7 +65,7 @@ class PalPayAdminMixin:
         label="Check Transactions",
         permission="palpay.can_check_transactions",
     )
-    def pal_transactions(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def pal_transactions(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "transactions", "Check Transactions")
 
     @view(
@@ -70,7 +73,7 @@ class PalPayAdminMixin:
         label="Create Transaction",
         permission="palpay.can_create_transaction",
     )
-    def pal_create_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def pal_create_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "create_transaction", "Create Transaction")
 
     @view(
@@ -78,7 +81,7 @@ class PalPayAdminMixin:
         label="Check Status",
         permission="palpay.can_check_status",
     )
-    def pal_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def pal_status(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "status", "Check Status")
 
     @view(
@@ -86,7 +89,7 @@ class PalPayAdminMixin:
         label="Update Status",
         permission="palpay.can_update_status",
     )
-    def pal_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def pal_status_update(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_pal_response(request, pk, "status_update", "Update Status")
 
     @choice(change_list=False, label="PalPay")

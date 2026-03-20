@@ -3,7 +3,8 @@ import logging
 from admin_extra_buttons.decorators import choice, view
 from constance import config
 from django.contrib import messages
-from django.http import HttpRequest
+
+
 from django.template.response import TemplateResponse
 from viewflow.fsm import TransitionNotAllowed
 
@@ -18,6 +19,11 @@ from hope_payment_gateway.apps.gateway.models import (
     FinancialServiceProviderConfig,
     PaymentRecord,
 )
+import typing
+
+if typing.TYPE_CHECKING:
+    from django.http import HttpRequest
+
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +63,7 @@ class MoneyGramAdminMixin:
         label="Draft Transaction",
         permission="moneygram.can_draft_transaction",
     )
-    def mg_draft_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_draft_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "draft_transaction", "Draft Transaction")
 
     @view(
@@ -65,7 +71,7 @@ class MoneyGramAdminMixin:
         label="Create Transaction",
         permission="moneygram.can_create_transaction",
     )
-    def mg_create_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_create_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "create_transaction", "Create Transaction")
 
     @view(
@@ -73,7 +79,7 @@ class MoneyGramAdminMixin:
         label="Commit Transaction",
         permission="moneygram.can_commit_transaction",
     )
-    def mg_commit_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_commit_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "commit_transaction", "Commit Transaction")
 
     @view(
@@ -81,7 +87,7 @@ class MoneyGramAdminMixin:
         label="Quote",
         permission="moneygram.can_quote_transaction",
     )
-    def mg_quote_transaction(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_quote_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "quote", "Quote")
 
     @view(
@@ -89,7 +95,7 @@ class MoneyGramAdminMixin:
         label="Status",
         permission="moneygram.can_check_status",
     )
-    def mg_status(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_status(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "status", "Status")
 
     @view(
@@ -97,7 +103,7 @@ class MoneyGramAdminMixin:
         label="Status Update",
         permission="moneygram.can_update_status",
     )
-    def mg_status_update(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_status_update(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "status_update", "Status Upload")
 
     @view(
@@ -105,7 +111,7 @@ class MoneyGramAdminMixin:
         label="Required Fields",
         permission="moneygram.can_quote_transaction",
     )
-    def mg_get_required_fields(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_get_required_fields(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "get_required_fields", "Required Fields")
 
     @view(
@@ -113,7 +119,7 @@ class MoneyGramAdminMixin:
         label="Service Options",
         permission="moneygram.can_quote_transaction",
     )
-    def mg_get_service_options(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_get_service_options(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "get_service_options", "Service Options")
 
     @view(
@@ -121,7 +127,7 @@ class MoneyGramAdminMixin:
         label="Refund",
         permission="moneygram.can_cancel_transaction",
     )
-    def mg_refund(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def mg_refund(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         return self.handle_mg_response(request, pk, "refund", "Refund")
 
     @choice(change_list=False, label="MoneyGram", permissions="moneygram.can_check_status")

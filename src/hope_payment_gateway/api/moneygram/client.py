@@ -435,7 +435,7 @@ def update_status(pr, status):
     }
     if status in mg_enabled_transaction[pr.status]:
         flow = PaymentRecordFlow(pr)
-        if status in [UNFUNDED]:
+        if status == UNFUNDED:
             pass
         elif status in [SENT, AVAILABLE, IN_TRANSIT]:
             flow.store()
@@ -443,10 +443,10 @@ def update_status(pr, status):
         elif status in [RECEIVED, DELIVERED]:
             pr.success = True
             flow.confirm()
-        elif status in [REJECTED]:
+        elif status == REJECTED:
             flow.purge()
-        elif status in [REFUNDED]:
+        elif status == REFUNDED:
             flow.refund()
-        elif status in [CLOSED]:
+        elif status == CLOSED:
             flow.fail()
         pr.save()

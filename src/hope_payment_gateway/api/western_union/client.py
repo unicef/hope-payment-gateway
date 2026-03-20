@@ -377,15 +377,15 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                     "CAN": PaymentRecordState.CANCELLED,
                 }.get(wu_status)
                 if pr.status != status:
-                    if status in [PaymentRecordState.TRANSFERRED_TO_FSP]:
+                    if status == PaymentRecordState.TRANSFERRED_TO_FSP:
                         pr.message = "Transferred to FSP*"
                         pr.status = status
                         pr.success = True
-                    elif status in [PaymentRecordState.TRANSFERRED_TO_BENEFICIARY]:
+                    elif status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY:
                         pr.message = "Transferred to Beneficiary*"
                         pr.status = status
                         pr.success = True
-                    elif status in [PaymentRecordState.CANCELLED]:
+                    elif status == PaymentRecordState.CANCELLED:
                         pr.message = "Cancelled*"
                         pr.status = status
                         pr.success = True
