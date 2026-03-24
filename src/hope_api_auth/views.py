@@ -47,5 +47,5 @@ class LoggingAPIView(APIView):
         return super().handle_exception(exc)
 
 
-class LoggingAPIViewSet(ModelViewSet, LoggingAPIView):
+class LoggingAPIViewSet(ModelViewSet):
     pass

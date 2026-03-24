@@ -43,7 +43,7 @@ services:
     restart: always
     platform: linux/amd64
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "auroora" ]
+      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "hope_payment_gateway" ]
       start_period: 5s
       start_interval: 1s
       interval: 5s

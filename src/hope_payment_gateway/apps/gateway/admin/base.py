@@ -124,30 +124,43 @@ class PaymentRecordAdmin(
 class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = (
         "external_code",
-        "office",
         "remote_id",
         "fsp",
+        "office",
+        "country",
         "status",
         "active",
         "tag",
     )
-    list_filter = ("fsp", "status", "active")
+    list_filter = ("fsp", "delivery_mechanism", "office", "country", "status", "active")
     search_fields = ("external_code", "remote_id", "fsp__name", "tag")
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
-    raw_id_fields = ("fsp", "system", "office")
+    raw_id_fields = ("fsp", "system", "office", "country")
 
     @button(permission="gateway.can_export_records")
-    def export_records(self, request: "HttpRequest", pk: int) -> TemplateResponse:
+    def generate_records(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         obj = self.get_object(request, str(pk))
         queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
+        export = obj.selected_export
+        template = "payment_instruction/export.html"
+        if not export:
+            self.message_user(request, "Cannot find matching export", messages.ERROR)
+            return redirect("admin:gateway_paymentinstruction_change", object_id=pk)
 
         # hack to use the action
         post_dict = request.POST.copy()
         post_dict["action"] = 0
+        post_dict["apply"] = 1
         post_dict["_selected_action"] = list
         post_dict["select_across"] = "0"
+
+        post_dict["delimiter"] = export.delimiter
+        post_dict["quotechar"] = export.quotechar
+        post_dict["quoting"] = export.quoting
+        post_dict["escapechar"] = export.escapechar
+        post_dict["columns"] = export.query
 
         request.POST = post_dict
 
@@ -159,7 +172,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             impl=export_as_template_impl,
             title=export_as_template.short_description.capitalize(),
             action_short_description=export_as_template.short_description,
-            template="payment_instruction/export.html",
+            template=template,
             form_class=TemplateExportForm,
         )
 
@@ -226,6 +239,11 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 class FinancialServiceProviderConfigInline(TabularInline):
     model = FinancialServiceProviderConfig
     extra = 1
+    raw_id_fields = (
+        "delivery_mechanism",
+        "office",
+        "country",
+    )
 
 
 @admin.register(Country)
@@ -307,9 +325,9 @@ class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
 
 @admin.register(ExportTemplate)
 class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    list_display = ("fsp", "delivery_mechanism", "config_key")
+    list_display = ("fsp", "delivery_mechanism", "office", "country", "config_key")
     search_fields = ("config_key", "delivery_mechanism__name", "fsp__name")
-    raw_id_fields = ("fsp", "delivery_mechanism")
+    raw_id_fields = ("fsp", "delivery_mechanism", "office", "country")
 
 
 @admin.register(AsyncJob)

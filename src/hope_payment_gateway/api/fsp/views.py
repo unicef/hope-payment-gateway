@@ -179,21 +179,13 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     @action(detail=True)  # , methods=["post"])
     def download(self, request, remote_id=None):
         obj = self.get_object()
-        try:
-            dm = DeliveryMechanism.objects.get(code=obj.payload.get("delivery_mechanism", None))
-            export = ExportTemplate.objects.get(
-                fsp=obj.fsp,
-                config_key=obj.payload.get("config_key", None),
-                delivery_mechanism=dm,
-            )
-            queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
-
+        export = obj.selected_export
+        if export:
             return export_as_template_impl(
-                queryset,
+                obj.records.all(),
                 export.query.split("\r\n"),
             )
-        except ExportTemplate.DoesNotExist as exc:
-            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+        return Response({"status_error": "No template found"}, status=HTTP_400_BAD_REQUEST)
 
 
 class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):

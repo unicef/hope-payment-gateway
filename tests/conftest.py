@@ -212,7 +212,7 @@ def token_user():
         user=user,
         grants=[c.name for c in user_permissions],
     )
-    return user, f"Token {token.key}"
+    return user, token
 
 
 @pytest.fixture

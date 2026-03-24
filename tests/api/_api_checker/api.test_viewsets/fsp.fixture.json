@@ -4,11 +4,11 @@
             "model": "gateway.financialserviceprovider",
             "pk": 1,
             "fields": {
-                "created": "2025-02-24T09:42:27.777Z",
-                "modified": "2025-02-24T09:42:27.777Z",
-                "remote_id": "scPaOjxLFkUB",
-                "name": "QsxiyBTnkWSt",
-                "vendor_number": "jTBrgmvmqLdx",
+                "created": "2026-03-15T12:25:39.649Z",
+                "modified": "2026-03-15T12:25:39.649Z",
+                "remote_id": "biTSscsglhcO",
+                "name": "YcIwhGyaZEOq",
+                "vendor_number": "jDSkfBbHzMsH",
                 "strategy": "hope_payment_gateway.apps.gateway.registry.DefaultProcessor",
                 "configuration": {}
             }

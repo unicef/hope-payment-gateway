@@ -73,6 +73,7 @@ class CountryFactory(AutoRegisterModelFactory):
 
     class Meta:
         model = Country
+        django_get_or_create = ("iso_code2",)
 
 
 class FinancialServiceProviderConfigFactory(AutoRegisterModelFactory):
@@ -87,11 +88,24 @@ class FinancialServiceProviderConfigFactory(AutoRegisterModelFactory):
         model = FinancialServiceProviderConfig
 
 
+class ExportTemplateFactory(AutoRegisterModelFactory):
+    fsp = factory.SubFactory(FinancialServiceProviderFactory)
+    delivery_mechanism = factory.SubFactory(DeliveryMechanismFactory)
+    strategy = fqn(WesternUnionHandler)
+    country = factory.SubFactory(CountryFactory)
+    office = factory.SubFactory(OfficeFactory)
+
+    class Meta:
+        model = ExportTemplate
+
+
 class PaymentInstructionFactory(AutoRegisterModelFactory):
     fsp = factory.SubFactory(FinancialServiceProviderFactory)
     system = factory.SubFactory(SystemFactory)
     remote_id = fuzzy.FuzzyText()
     office = factory.SubFactory(OfficeFactory)
+    country = factory.SubFactory(CountryFactory)
+    delivery_mechanism = factory.SubFactory(DeliveryMechanismFactory)
 
     class Meta:
         model = PaymentInstruction
@@ -124,12 +138,3 @@ class APILogEntryFactory(AutoRegisterModelFactory):
 
     class Meta:
         model = APILogEntry
-
-
-class ExportTemplateFactory(AutoRegisterModelFactory):
-    fsp = factory.SubFactory(FinancialServiceProviderFactory)
-    delivery_mechanism = factory.SubFactory(DeliveryMechanismFactory)
-    strategy = fqn(WesternUnionHandler)
-
-    class Meta:
-        model = ExportTemplate
