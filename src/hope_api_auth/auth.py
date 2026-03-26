@@ -7,9 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
+import typing
 
 from .models import APIToken
+
+if typing.TYPE_CHECKING:
+    from rest_framework.request import Request
 
 User = get_user_model()
 
@@ -26,8 +29,8 @@ class LoggingTokenAuthentication(TokenAuthentication):
                 .filter(Q(valid_to__gte=timezone.now()) | Q(valid_to__isnull=True))
                 .get(key=key)
             )
-        except APIToken.DoesNotExist:
-            raise exceptions.AuthenticationFailed(_("Invalid token."))
+        except APIToken.DoesNotExist as exc:
+            raise exceptions.AuthenticationFailed(_("Invalid token.")) from exc
 
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_("User inactive or deleted."))

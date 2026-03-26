@@ -1,4 +1,14 @@
-.git
+# Created by .ignore support plugin (hsz.mobi)
+.*
 ~*
-db
-docs
+!.gitignore
+!.python-version
+
+node_modules/
+dist/
+docs/
+tests/
+mypy_tools/
+
+!.git
+!src/hope_payment_gateway/version.py

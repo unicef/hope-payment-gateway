@@ -22,7 +22,7 @@ class FTPClient:
         self.client.close()
 
     def ls(self) -> list:
-        return self.client.listdir()
+        return self.client.listdir_iter()
 
     def get(self, filename: str, local_folder: str = "/") -> None:
         local_file_path = f"{local_folder}/{filename}"

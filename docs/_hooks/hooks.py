@@ -18,4 +18,3 @@ def on_page_markdown(markdown: str, page: Page, config: MkDocsConfig, files: Fil
 
 def on_page_context(context: TemplateContext, nav: Navigation, page: Page, config: MkDocsConfig) -> None:
     context["build_date"] = datetime.now().strftime("%a, %d, %b %Y - %H:%M")
-    context["config"] = config

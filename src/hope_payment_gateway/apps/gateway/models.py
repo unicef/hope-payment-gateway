@@ -3,6 +3,7 @@ import csv
 from adminactions.api import delimiters, quotes
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 from django_celery_boost.models import AsyncJobModel
 from model_utils.models import TimeStampedModel
@@ -116,6 +117,56 @@ class FinancialServiceProviderConfig(models.Model):
         return f"{self.fsp} [{self.label}]"
 
 
+class ExportTemplate(models.Model):
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.PROTECT)
+    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.PROTECT, related_name="template")
+    office = models.ForeignKey(Office, on_delete=models.PROTECT, related_name="template", null=True, blank=True)
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        related_name="template",
+        null=True,
+        blank=True,
+    )
+    config_key = models.CharField(max_length=32)
+    strategy = StrategyField(registry=export_registry, null=True, blank=True)
+    query = models.TextField()
+
+    header = models.BooleanField(default=True)
+    delimiter = models.CharField(
+        choices=list(zip(delimiters, delimiters, strict=True)),
+        default=",",
+        max_length=1,
+    )
+    quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'", max_length=1)
+    quoting = models.IntegerField(
+        choices=(
+            (csv.QUOTE_ALL, _("All")),
+            (csv.QUOTE_MINIMAL, _("Minimal")),
+            (csv.QUOTE_NONE, _("None")),
+            (csv.QUOTE_NONNUMERIC, _("Non Numeric")),
+        ),
+        default=csv.QUOTE_ALL,
+    )
+    escapechar = models.CharField(
+        choices=(("", ""), ("\\", "\\")),
+        default="",
+        null=True,
+        blank=True,
+        max_length=1,
+    )
+
+    class Meta:
+        unique_together = ("fsp", "config_key")
+        permissions = (
+            ("can_import_records", "Can Import Records"),
+            ("can_export_records", "Can Export Records"),
+        )
+
+    def __str__(self) -> str:
+        return f"{self.fsp} / {self.config_key}"
+
+
 class PaymentInstructionState(models.TextChoices):
     DRAFT = ("DRAFT", "Draft")
     OPEN = ("OPEN", "Open")
@@ -127,17 +178,26 @@ class PaymentInstructionState(models.TextChoices):
 
 
 class PaymentInstruction(TimeStampedModel):
-    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
+    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.PROTECT)
+    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.PROTECT, null=True, blank=True)
+    office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
+    export = models.ForeignKey(
+        ExportTemplate,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="this is intent to be used only to force a template for a payment instruction",
+    )
     system = models.ForeignKey(System, on_delete=models.CASCADE)
     external_code = models.CharField(max_length=255, db_index=True)
     remote_id = models.CharField(max_length=255, db_index=True, null=True, blank=True)
     status = models.CharField(
         max_length=50,
         default=PaymentInstructionState.DRAFT,
-        choices=PaymentInstructionState.choices,
+        choices=PaymentInstructionState,
         db_index=True,
     )
-    office = models.ForeignKey(Office, on_delete=models.SET_NULL, null=True, blank=True)
 
     tag = models.CharField(null=True, blank=True, max_length=128)
     payload = models.JSONField(default=dict, null=True, blank=True)
@@ -159,6 +219,34 @@ class PaymentInstruction(TimeStampedModel):
             payload.update(config_payload)
         return payload
 
+    @property
+    def configuration(self):
+        return (
+            FinancialServiceProviderConfig.objects.filter(
+                delivery_mechanism=self.delivery_mechanism,
+                fsp=self.fsp,
+                office=self.office,
+                country=self.country,
+            )
+            .order_by(F("office").asc(nulls_last=True))
+            .first()
+        )
+
+    @property
+    def selected_export(self):
+        if self.export:
+            return self.export
+        return (
+            ExportTemplate.objects.filter(
+                fsp=self.fsp,
+                delivery_mechanism=self.delivery_mechanism,
+                office=self.office,
+                country=self.country,
+            )
+            .order_by(F("office").asc(nulls_last=True))
+            .first()
+        )
+
 
 class PaymentRecordState(models.TextChoices):
     PENDING = ("PENDING", "Pending")
@@ -174,14 +262,14 @@ class PaymentRecordState(models.TextChoices):
 
 
 class PaymentRecord(TimeStampedModel):
-    parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE)
+    parent = models.ForeignKey(PaymentInstruction, on_delete=models.CASCADE, related_name="records")
     remote_id = models.CharField(max_length=255, db_index=True, unique=True, help_text="Remote system ID")
     record_code = models.CharField(max_length=64, db_index=True, unique=True, help_text="Payment record code")
 
     status = models.CharField(
         max_length=50,
         default=PaymentRecordState.PENDING,
-        choices=PaymentRecordState.choices,
+        choices=PaymentRecordState,
         db_index=True,
     )
     success = models.BooleanField(null=True, blank=True)
@@ -240,48 +328,6 @@ class PaymentRecord(TimeStampedModel):
         payload["payment_record_code"] = self.record_code
         payload["remote_id"] = self.remote_id
         return payload
-
-
-class ExportTemplate(models.Model):
-    fsp = models.ForeignKey(FinancialServiceProvider, on_delete=models.CASCADE)
-    delivery_mechanism = models.ForeignKey(DeliveryMechanism, on_delete=models.CASCADE, related_name="template")
-    config_key = models.CharField(max_length=32)
-    strategy = StrategyField(registry=export_registry)
-    query = models.TextField()
-
-    header = models.BooleanField(default=True)
-    delimiter = models.CharField(
-        choices=list(zip(delimiters, delimiters, strict=True)),
-        default=",",
-        max_length=1,
-    )
-    quotechar = models.CharField(choices=list(zip(quotes, quotes, strict=True)), default="'", max_length=1)
-    quoting = models.IntegerField(
-        choices=(
-            (csv.QUOTE_ALL, _("All")),
-            (csv.QUOTE_MINIMAL, _("Minimal")),
-            (csv.QUOTE_NONE, _("None")),
-            (csv.QUOTE_NONNUMERIC, _("Non Numeric")),
-        ),
-        default=csv.QUOTE_ALL,
-    )
-    escapechar = models.CharField(
-        choices=(("", ""), ("\\", "\\")),
-        default="",
-        null=True,
-        blank=True,
-        max_length=1,
-    )
-
-    class Meta:
-        unique_together = ("fsp", "config_key")
-        permissions = (
-            ("can_import_records", "Can Import Records"),
-            ("can_export_records", "Can Export Records"),
-        )
-
-    def __str__(self) -> str:
-        return f"{self.fsp} / {self.config_key}"
 
 
 class AsyncJob(AsyncJobModel):

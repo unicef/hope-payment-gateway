@@ -1,29 +1,24 @@
 from constance import config
 from strategy_field.utils import fqn
 
+from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
-from hope_payment_gateway.apps.gateway.models import (
-    PaymentRecord,
-)
 from hope_payment_gateway.config.celery import app
 
 
-def western_union_notify(to_process_ids: list[PaymentRecord]) -> None:
-    notify_records_to_fsp(fqn(WesternUnionClient), to_process_ids)
+def western_union_notify(instruction_id: int) -> None:
+    notify_records_to_fsp(fqn(WesternUnionClient), instruction_id)
 
 
 @app.task()  # queue="executors"
-def western_union_send_task(tag=None, threshold=10000):
+def western_union_send_task():
     """Task to trigger Western Union payments."""
     fsp = "WesternUnion"
     fsp_vendor_number = config.WESTERN_UNION_VENDOR_NUMBER
-    threshold = threshold or config.WESTERN_UNION_THREASHOLD
     action_fqn = western_union_notify
     group_key = "wu-send-instruction"
-
-    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key, threshold, tag)
+    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key)
 
 
 @app.task

@@ -24,12 +24,13 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentRecordLightSerializer,
     PaymentRecordSerializer,
 )
+from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.actions import export_as_template_impl
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
     AccountType,
+    Country,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
@@ -38,7 +39,6 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstruction,
     PaymentInstructionState,
     PaymentRecord,
-    Country,
 )
 
 
@@ -179,21 +179,13 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     @action(detail=True)  # , methods=["post"])
     def download(self, request, remote_id=None):
         obj = self.get_object()
-        try:
-            dm = DeliveryMechanism.objects.get(code=obj.payload.get("delivery_mechanism", None))
-            export = ExportTemplate.objects.get(
-                fsp=obj.fsp,
-                config_key=obj.payload.get("config_key", None),
-                delivery_mechanism=dm,
-            )
-            queryset = PaymentRecord.objects.select_related("parent__fsp").filter(parent=obj)
-
+        export = obj.selected_export
+        if export:
             return export_as_template_impl(
-                queryset,
+                obj.records.all(),
                 export.query.split("\r\n"),
             )
-        except ExportTemplate.DoesNotExist as exc:
-            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+        return Response({"status_error": "No template found"}, status=HTTP_400_BAD_REQUEST)
 
 
 class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):

@@ -4,9 +4,23 @@ on:
   push:
     branches:
       - develop
-      - master
-  schedule:
-    - cron: '37 23 * * 2'
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yaml'
+      - './.github/workflows/docs.yml'
+  pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+      - synchronize
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yaml'
+      - './.github/workflows/docs.yml'
+
+#  schedule:
+#    - cron: '37 23 * * 2'
 
 permissions:
   contents: read
@@ -28,10 +42,10 @@ jobs:
       docs: ${{ steps.changed_files.outputs.docs }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - id: changed_files
         name: Check for file changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           base: ${{ github.ref }}
           token: ${{ github.token }}
@@ -44,35 +58,23 @@ jobs:
     env:
       PYTHONPATH: src/
     steps:
-      - uses: actions/checkout@v4
-      - uses: yezz123/setup-uv@v4.1
-
-      - uses: actions/cache/restore@v4
-        id: restore-cache
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
-          path: .venv
-          key: ${{ runner.os }}-${{ hashFiles('**/uv.lock') }}
+          python-version: '3.14'
+      - run: pip install tox
+      - name: Check Python Package structure
+        run: tox -e docs -- -d docs-output
 
-      - name: Install dependencies
-        run: uv sync --group docs
-
-      - name: Build Doc
-        run: .venv/bin/mkdocs build -d ./docs-output
-
-      - uses: actions/cache/save@v4
-        id: cache
-        if: always() && steps.restore-cache.outputs.cache-hit != 'true'
-        with:
-          path: .venv
-          key: ${{ runner.os }}-${{ hashFiles('**/uv.lock') }}
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./docs-output
 
   # Deployment job
   deploy:
     needs: generate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

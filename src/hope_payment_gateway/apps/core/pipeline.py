@@ -1,5 +1,8 @@
 from django.conf import settings
-from django.contrib.auth.models import User
+import typing
+
+if typing.TYPE_CHECKING:
+    from django.contrib.auth.models import User
 
 
 def set_superusers(user: User | None = None, is_new: bool = False, **kwargs: dict) -> dict:

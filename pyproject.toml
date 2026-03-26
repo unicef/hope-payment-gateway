@@ -1,25 +1,29 @@
 [build-system]
 build-backend = "hatchling.build"
-
-requires = [ "hatchling" ]
+requires = [
+  "hatch-vcs>=0.4",
+  "hatchling>=1.25",
+]
 
 [project]
 name = "hope-payment-gateway"
-version = "1.11.0"
+version = "1.12.0"
 description = "HOPE integration with FSPs"
 readme = "README.md"
-license = "Apache-2.0 OR MIT"
-
+license = { text = "MIT" }
 authors = [
   { name = "Domenico DiNicola", email = "dom.dinicola@gmail.com" },
 ]
-requires-python = ">=3.13"
-classifiers = [ "Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.13" ]
+requires-python = ">=3.14"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.14",
+]
 dependencies = [
   "celery[redis]",
   "dj-static",
-  "django",
-  "django-admin-extra-buttons",
+  "django<6",
+  "django-admin-extra-buttons<2.1.2",
   "django-admin-sync",
   "django-adminactions",
   "django-adminfilters",
@@ -36,6 +40,7 @@ dependencies = [
   "django-environ",
   "django-extensions",
   "django-filter",
+  "django-flags>=5.1",
   "django-import-export",
   "django-jsoneditor",
   "django-model-utils",
@@ -44,6 +49,7 @@ dependencies = [
   "django-smart-env",
   "django-storages[azure]",
   "django-strategy-field",
+  "django-streaming>=0.7",
   "django-viewflow",
   "djangorestframework",
   "djangorestframework-xml",
@@ -66,6 +72,10 @@ dependencies = [
   "wheel",
   "zeep",
 ]
+urls.Documentation = "https://unicef.github.io/hope-payment-gateway/"
+urls.Homepage = "https://github.com/unicef/hope-payment-gateway"
+urls.Issues = "https://github.com/unicef/hope-payment-gateway/issues"
+urls.Repository = "https://github.com/unicef/hope-payment-gateway"
 
 [dependency-groups]
 dev = [
@@ -87,7 +97,7 @@ dev = [
   "parso",
   "pre-commit",
   "pymdown-extensions",
-  "pytest<8.4",
+  "pytest",
   "pytest-cov",
   "pytest-django",
   "pytest-echo",
@@ -127,23 +137,32 @@ docs = [
   "mkdocstrings[python]",
 ]
 
-[tool.hatch.build.targets.sdist]
-include = [
+[tool.hatch]
+build.hooks.vcs.version-file = "src/hope_payment_gateway/version.py"
+build.targets.sdist.ignore-vcs = true
+build.targets.sdist.include = [
   "src/hope_api_auth/**/*.*",
   "src/hope_payment_gateway/**/*.*",
 ]
-
-[tool.hatch.build.targets.wheel]
-packages = [
+build.targets.sdist.exclude = [
+  "~*",
+  "src/hope_payment_gateway/ui/theme/static_src/**/*.*",
+]
+build.targets.wheel.packages = [
   "src/hope_api_auth",
   "src/hope_payment_gateway",
 ]
+build.targets.wheel.exclude = [
+  "~*",
+]
+version.source = "vcs"
+version.raw-options.local_scheme = "no-local-version"
+raw-options = { root = "../.." }
+
+[tool.uv]
+package = true
 
 [tool.nitpick]
 style = [
   "github://unicef/hope-code-conventions@main/django/django.toml",
 ]
-cache = "1 day"
-
-[uv]
-package = true

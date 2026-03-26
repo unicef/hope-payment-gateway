@@ -1,7 +1,7 @@
 from constance import config
 from strategy_field.utils import fqn
 
-from hope_payment_gateway.apps.fsp.moneygram.client import MoneyGramClient
+from hope_payment_gateway.api.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
 from hope_payment_gateway.apps.gateway.models import (
     PaymentInstructionState,
@@ -11,20 +11,19 @@ from hope_payment_gateway.apps.gateway.models import (
 from hope_payment_gateway.config.celery import app
 
 
-def moneygram_notify(to_process_ids: list[PaymentRecord]) -> None:
-    notify_records_to_fsp(fqn(MoneyGramClient), to_process_ids)
+def moneygram_notify(instruction_id: int) -> None:
+    notify_records_to_fsp(fqn(MoneyGramClient), instruction_id)
 
 
 @app.task()  # queue="executors"
-def moneygram_send_money(tag=None, threshold=10000):
+def moneygram_send_money():
     """Task to trigger MoneyGram payments."""
     fsp = "MoneyGram"
     fsp_vendor_number = config.MONEYGRAM_VENDOR_NUMBER
-    threshold = threshold or config.MONEYGRAM_THREASHOLD
     action_fqn = moneygram_notify
     group_key = "mg-send-instruction"
 
-    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key, threshold, tag)
+    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key)
 
 
 @app.task
