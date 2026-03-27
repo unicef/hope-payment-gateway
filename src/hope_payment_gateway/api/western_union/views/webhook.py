@@ -18,6 +18,7 @@ from hope_payment_gateway.api.western_union import (
     REJECT_APN,
     SUCCESS,
     SUCCESS_APN,
+    UNPAY,
 )
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
@@ -63,7 +64,7 @@ class NisNotificationView(WesternUnionApi):
             )
         return Response(payload)
 
-    def post(self, request):
+    def post(self, request):  # noqa
         try:
             payload = self.get_payload(request)
         except InvalidRequestError as e:
@@ -129,6 +130,9 @@ class NisNotificationView(WesternUnionApi):
                 else:
                     flow.refund()
                     pr.message = f"Refund by FSP: {message}"
+            elif notification_type == UNPAY:
+                flow.unpay()
+                pr.message = f"Unpay by FSP: {message}"
             else:
                 pr.message = f"Error in Notification: {message}"
                 flow.fail()
