@@ -1,4 +1,27 @@
-from hope_payment_gateway.apps.fsp.utils import extrapolate_errors
+from hope_payment_gateway.apps.fsp.utils import (
+    extrapolate_errors,
+    get_account_field,
+    get_phone_number,
+)
+
+
+def test_get_phone_number_valid():
+    phone_number, country_code = get_phone_number("+34600123456")
+    assert phone_number == 600123456
+    assert country_code == 34
+
+
+def test_get_phone_number_invalid():
+    phone_number, country_code = get_phone_number("invalid")
+    assert phone_number == "invalid"
+    assert country_code is None
+
+
+def test_get_account_field():
+    payload = {"account": {"field1": "value1", "field2": "value2"}}
+    assert get_account_field(payload, "field1") == "value1"
+    assert get_account_field(payload, "field3", default="default") == "default"
+    assert get_account_field({}, "field1") is None
 
 
 def test_extrapolate_errors_with_errors_and_offending_fields():

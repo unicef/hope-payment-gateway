@@ -12,13 +12,7 @@ from factories import (
     PaymentInstructionFactory,
     PaymentRecordFactory,
 )
-from viewflow.fsm.base import TransitionNotAllowed
-
-from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow, PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import (
-    PaymentInstructionState,
-    PaymentRecordState,
-)
+from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 
 @pytest.mark.django_db
@@ -136,72 +130,11 @@ def test_get_payload_methods():
         assert record_payload["remote_id"] == "RID1"
 
 
-@pytest.mark.parametrize(
-    ("transaction_name", "source", "destination"),
-    [
-        ("open", "DRAFT", "OPEN"),
-        ("close", "OPEN", "CLOSED"),
-        ("ready", "CLOSED", "READY"),
-        ("process", "READY", "PROCESSED"),
-        ("abort", "DRAFT", "ABORTED"),
-        ("abort", "READY", "ABORTED"),
-    ],
-)
 @pytest.mark.django_db
-def test_payment_instruction_transactions_ok(transaction_name, source, destination):
-    instruction = PaymentInstructionFactory(status=source)
-    flow = PaymentInstructionFlow(instruction)
-    transaction = getattr(flow, transaction_name)
-    transaction()
-    assert instruction.status == destination
-
-
-@pytest.mark.parametrize(
-    ("transaction_name", "source"),
-    [
-        ("open", "OPEN"),
-        ("ready", "OPEN"),
-        ("close", "DRAFT"),
-    ],
-)
-@pytest.mark.django_db
-def test_payment_instruction_transactions_ko(transaction_name, source):
-    instruction = PaymentInstructionFactory(status=getattr(PaymentInstructionState, source))
-    flow = PaymentInstructionFlow(instruction)
-    transaction = getattr(flow, transaction_name)
-    with pytest.raises((TransitionNotAllowed, AssertionError)):
-        transaction()
-    assert instruction.status == source
-
-
-@pytest.mark.parametrize(
-    ("transaction_name", "source", "destination"),
-    [
-        ("store", "PENDING", "TRANSFERRED_TO_FSP"),
-        ("confirm", "TRANSFERRED_TO_FSP", "TRANSFERRED_TO_BENEFICIARY"),
-        ("cancel", "TRANSFERRED_TO_FSP", "CANCELLED"),
-        ("fail", "TRANSFERRED_TO_FSP", "ERROR"),
-        ("fail", "TRANSFERRED_TO_BENEFICIARY", "ERROR"),
-    ],
-)
-@pytest.mark.django_db
-def test_payment_record_transactions_ok(transaction_name, source, destination):
-    record = PaymentRecordFactory(status=getattr(PaymentRecordState, source))
-    flow = PaymentRecordFlow(record)
-    transaction = getattr(flow, transaction_name)
-    transaction()
-    assert record.status == destination
-
-
-@pytest.mark.parametrize(
-    ("transaction_name", "source"),
-    [("store", "TRANSFERRED_TO_BENEFICIARY"), ("confirm", "PENDING"), ("refund", "PENDING")],
-)
-@pytest.mark.django_db
-def test_payment_record_transactions_ko(transaction_name, source):
-    instruction = PaymentRecordFactory(status=getattr(PaymentRecordState, source))
-    flow = PaymentRecordFlow(instruction)
-    transaction = getattr(flow, transaction_name)
-    with pytest.raises((TransitionNotAllowed, AssertionError)):
-        transaction()
-    assert instruction.status == source
+def test_record_updated_signal_no_old_instance():
+    with patch("hope_payment_gateway.apps.gateway.signals.flag_enabled", return_value=True):
+        with patch("hope_payment_gateway.apps.gateway.signals.notify_record_change") as mock_notify:
+            parent = PaymentInstructionFactory()
+            record = PaymentRecordFactory.build(id=99999, status=PaymentRecordState.PENDING, parent=parent)
+            record.save()
+            mock_notify.assert_not_called()

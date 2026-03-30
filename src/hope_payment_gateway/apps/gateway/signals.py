@@ -32,7 +32,7 @@ def record_updated(sender: Any, instance: PaymentRecord, **kwargs: Any) -> None:
     if flag_enabled("ENABLE_STREAMING") and instance.pk:
         try:
             old_instance = PaymentRecord.objects.get(pk=instance.pk)
-        except PaymentInstruction.DoesNotExist:
+        except PaymentRecord.DoesNotExist:
             old_instance = None
 
         if old_instance and old_instance.status != instance.status:

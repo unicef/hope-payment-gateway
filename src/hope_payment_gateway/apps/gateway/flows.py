@@ -146,3 +146,11 @@ class PaymentRecordFlow:
     )
     def fail(self) -> None:
         pass
+
+    @state.transition(
+        source=PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
+        target=PaymentRecordState.TRANSFERRED_TO_FSP,
+        permission="gateway.change_paymentrecord",
+    )
+    def unpay(self) -> None:
+        pass
