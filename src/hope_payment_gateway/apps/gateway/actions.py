@@ -1,6 +1,7 @@
 import collections
 import csv
 import datetime
+import io
 import itertools
 from typing import Iterable
 
@@ -12,6 +13,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin import helpers
+from django.core.mail import EmailMessage
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template import Context, Template
@@ -23,6 +25,7 @@ from django.utils.translation import gettext_lazy as _
 from hope_payment_gateway.api.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.fsp.moneygram import REFUND_CHOICES
 from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
+from hope_payment_gateway.apps.gateway.models import PaymentInstruction
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
 
 
@@ -176,6 +179,28 @@ def export_as_template(modeladmin, request, queryset):
 
 
 export_as_template.short_description = "Export as Template"
+
+
+def export_payment_instruction_to_email(payment_instruction_id: int, send_to: str) -> str:
+    instruction = PaymentInstruction.objects.prefetch_related("records").get(pk=payment_instruction_id)
+    export = instruction.selected_export
+    if not export:
+        raise ValueError("No template found")
+
+    out = io.StringIO()
+    fields = export.query.splitlines()
+    export_as_template_impl(instruction.records.all(), fields, out=out)
+
+    filename = f"payment_instruction_{instruction.remote_id or instruction.pk}.csv"
+    email = EmailMessage(
+        subject="Payment instruction export",
+        body="Please find the requested payment instruction export attached.",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[send_to],
+    )
+    email.attach(filename, out.getvalue(), "text/csv")
+    email.send()
+    return filename
 
 
 def moneygram_update_status(modeladmin, request, queryset):

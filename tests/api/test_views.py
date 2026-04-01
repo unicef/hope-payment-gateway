@@ -263,6 +263,7 @@ def test_payment_instruction_download_fail(api_client, token_user):
 
     assert view.status_code == 400
     assert view.data.get("status_error") == "No template found"
+    assert instruction_instance.jobs.count() == 0
 
 
 @pytest.mark.django_db
@@ -287,7 +288,43 @@ def test_payment_instruction_download(api_client, token_user):
     url = reverse("rest:payment-instruction-download", args=[pr.parent.remote_id])
     api_client.force_authenticate(user=user, token=token)
     view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
-    assert view.status_code == 200
+    assert view.status_code == 202
+    assert view.json()["message"] == "Export scheduled"
+    job = pi.jobs.get()
+    assert job.type == "STANDARD_TASK"
+    assert job.owner == user
+    assert job.config["payment_instruction_id"] == pi.pk
+    assert job.config["send_to"] == user.email
+
+
+@pytest.mark.django_db
+def test_payment_instruction_download_requires_user_email(api_client, token_user):
+    user, token = token_user
+    user.email = ""
+    user.save(update_fields=["email"])
+    fsp_config = FinancialServiceProviderConfigFactory.create()
+    export_template = ExportTemplateFactory.create(
+        fsp=fsp_config.fsp,
+        config_key="123456",
+        delivery_mechanism=fsp_config.delivery_mechanism,
+        country=fsp_config.country,
+        office=fsp_config.office,
+    )
+    pi = PaymentInstructionFactory(
+        fsp=fsp_config.fsp,
+        payload={"config_key": "123456"},
+        country=fsp_config.country,
+        office=fsp_config.office,
+        delivery_mechanism=fsp_config.delivery_mechanism,
+        export=export_template,
+    )
+    pr = PaymentRecordFactory.create(parent=pi)
+    url = reverse("rest:payment-instruction-download", args=[pr.parent.remote_id])
+    api_client.force_authenticate(user=user, token=token)
+    view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
+    assert view.status_code == 400
+    assert view.json()["status_error"] == "User email is required"
+    assert pi.jobs.count() == 0
 
 
 @pytest.mark.django_db

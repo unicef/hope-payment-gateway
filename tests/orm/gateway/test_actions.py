@@ -21,6 +21,7 @@ from hope_payment_gateway.apps.gateway.actions import (
     TemplateExportForm,
     export_as_template_impl,
     export_as_template,
+    export_payment_instruction_to_email,
     moneygram_update_status,
     moneygram_refund,
 )
@@ -557,3 +558,48 @@ def test_payment_instruction_admin_generate_records(rf, admin_user, mock_message
         assert mock_export.called
         assert request.POST["delimiter"] == template.delimiter
         assert request.POST["columns"] == template.query
+
+
+@pytest.mark.django_db
+def test_export_payment_instruction_to_email():
+    fsp = FinancialServiceProviderFactory()
+    dm = DeliveryMechanismFactory()
+    office = OfficeFactory()
+    country = CountryFactory()
+    ExportTemplateFactory(
+        fsp=fsp,
+        delivery_mechanism=dm,
+        office=office,
+        country=country,
+        query="{{ obj.record_code }}\n{{ obj.remote_id }}",
+    )
+    instruction = PaymentInstructionFactory(
+        fsp=fsp,
+        delivery_mechanism=dm,
+        office=office,
+        country=country,
+    )
+    PaymentRecordFactory(parent=instruction, record_code="REC-001", remote_id="PR-001")
+
+    with patch("hope_payment_gateway.apps.gateway.actions.EmailMessage") as message_cls:
+        filename = export_payment_instruction_to_email(instruction.pk, "admin@example.com")
+
+    assert filename.startswith("payment_instruction_")
+    kwargs = message_cls.call_args.kwargs
+    assert kwargs["from_email"] == settings.DEFAULT_FROM_EMAIL
+    assert kwargs["to"] == ["admin@example.com"]
+    email_instance = message_cls.return_value
+    email_instance.attach.assert_called_once()
+    attach_args = email_instance.attach.call_args.args
+    assert attach_args[0] == filename
+    assert "REC-001" in attach_args[1]
+    assert "PR-001" in attach_args[1]
+    assert attach_args[2] == "text/csv"
+    email_instance.send.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_export_payment_instruction_to_email_without_template():
+    instruction = PaymentInstructionFactory()
+    with pytest.raises(ValueError, match="No template found"):
+        export_payment_instruction_to_email(instruction.pk, "admin@example.com")
