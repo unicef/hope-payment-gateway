@@ -263,6 +263,7 @@ def test_payment_instruction_download_fail(api_client, token_user):
 
     assert view.status_code == 400
     assert view.data.get("status_error") == "No template found"
+    assert instruction_instance.jobs.count() == 0
 
 
 @pytest.mark.django_db
@@ -287,7 +288,13 @@ def test_payment_instruction_download(api_client, token_user):
     url = reverse("rest:payment-instruction-download", args=[pr.parent.remote_id])
     api_client.force_authenticate(user=user, token=token)
     view = api_client.get(url, user=user, HTTP_AUTHORIZATION=token, expect_errors=True)
-    assert view.status_code == 200
+    assert view.status_code == 202
+    assert view.json()["message"] == "Export scheduled"
+    job = pi.jobs.get()
+    assert job.type == "STANDARD_TASK"
+    assert job.owner == user
+    assert job.config["payment_instruction_id"] == pi.pk
+    assert job.config["send_to"] == user.email
 
 
 @pytest.mark.django_db

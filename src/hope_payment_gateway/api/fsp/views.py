@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
+from strategy_field.utils import fqn
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_api_auth.views import LoggingAPIViewSet
@@ -26,10 +27,11 @@ from hope_payment_gateway.api.fsp.serializers import (
 )
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.gateway.actions import export_as_template_impl
+from hope_payment_gateway.apps.gateway.actions import export_payment_instruction_to_email
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
     AccountType,
+    AsyncJob,
     Country,
     DeliveryMechanism,
     ExportTemplate,
@@ -180,12 +182,25 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     def download(self, request, remote_id=None):
         obj = self.get_object()
         export = obj.selected_export
-        if export:
-            return export_as_template_impl(
-                obj.records.all(),
-                export.query.split("\r\n"),
-            )
-        return Response({"status_error": "No template found"}, status=HTTP_400_BAD_REQUEST)
+        if not export:
+            return Response({"status_error": "No template found"}, status=HTTP_400_BAD_REQUEST)
+
+        if not request.user.email:
+            return Response({"status_error": "User email is required"}, status=HTTP_400_BAD_REQUEST)
+
+        job = AsyncJob.objects.create(
+            description="Payment instruction export",
+            type=AsyncJob.JobType.STANDARD_TASK,
+            owner=request.user,
+            instruction=obj,
+            action=fqn(export_payment_instruction_to_email),
+            config={"payment_instruction_id": obj.pk, "send_to": request.user.email},
+        )
+        job.queue()
+        return Response(
+            {"message": "Export scheduled", "job_id": job.pk},
+            status=HTTP_202_ACCEPTED,
+        )
 
 
 class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
