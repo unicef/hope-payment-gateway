@@ -23,7 +23,7 @@ OPTIONAL = {
     "AZURE_ACCOUNT_KEY": (str, ""),
     "AZURE_ACCOUNT_NAME": (str, ""),
     "AZURE_CONTAINER": (str, ""),
-    "AZURE_CLIENT_KEY": (str, ""),
+    "AZURE_CLIENT_ID": (str, ""),
     "AZURE_CLIENT_SECRET": (str, ""),
     "AZURE_TENANT_ID": (str, ""),
     "CELERY_VISIBILITY_TIMEOUT": (int, 1800),
