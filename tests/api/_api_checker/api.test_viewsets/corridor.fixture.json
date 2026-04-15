@@ -2,7 +2,7 @@
     "corridor": {
         "master": {
             "model": "western_union.corridor",
-            "pk": 1,
+            "pk": 16,
             "fields": {
                 "description": "",
                 "destination_country": "",
