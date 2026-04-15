@@ -2,13 +2,13 @@
     "fsp": {
         "master": {
             "model": "gateway.financialserviceprovider",
-            "pk": 1,
+            "pk": 340,
             "fields": {
-                "created": "2026-03-15T12:25:39.649Z",
-                "modified": "2026-03-15T12:25:39.649Z",
-                "remote_id": "biTSscsglhcO",
-                "name": "YcIwhGyaZEOq",
-                "vendor_number": "jDSkfBbHzMsH",
+                "created": "2026-04-15T07:34:17.654Z",
+                "modified": "2026-04-15T07:34:17.654Z",
+                "remote_id": "obaZcerukNbE",
+                "name": "xZebZyHCBWsj",
+                "vendor_number": "fHAeaYtudNFd",
                 "strategy": "hope_payment_gateway.apps.gateway.registry.DefaultProcessor",
                 "configuration": {}
             }

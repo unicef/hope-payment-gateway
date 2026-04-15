@@ -2,12 +2,12 @@
     "acc_type": {
         "master": {
             "model": "gateway.accounttype",
-            "pk": 1,
+            "pk": 380,
             "fields": {
-                "created": "2026-03-15T12:25:39.537Z",
-                "modified": "2026-03-15T12:25:39.537Z",
-                "key": "AWRiAaCDSkaS",
-                "label": "OGJgrnibcSnR",
+                "created": "2026-04-15T07:34:17.465Z",
+                "modified": "2026-04-15T07:34:17.465Z",
+                "key": "oznedkfvaPkO",
+                "label": "mfBsyJpqarnQ",
                 "unique_fields": "[]"
             }
         },
