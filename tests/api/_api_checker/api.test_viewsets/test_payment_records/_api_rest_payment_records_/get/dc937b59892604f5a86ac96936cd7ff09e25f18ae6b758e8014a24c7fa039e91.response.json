@@ -1,0 +1,30 @@
+{
+    "status_code": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "Vary": "Accept, origin",
+        "Allow": "GET, POST, HEAD, OPTIONS",
+        "X-Frame-Options": "DENY",
+        "Content-Length": "290",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "same-origin",
+        "Cross-Origin-Opener-Policy": "same-origin"
+    },
+    "data": [
+        {
+            "id": 520,
+            "remote_id": "bBNTFGOKvBTP",
+            "created": "2026-04-15T02:34:18.039000-05:00",
+            "modified": "2026-04-15T02:34:18.039000-05:00",
+            "record_code": "hIJXfrsyJQUK",
+            "fsp_code": null,
+            "auth_code": null,
+            "parent": "SjDBPjJrSSMs",
+            "status": "PENDING",
+            "message": null,
+            "payout_amount": null,
+            "payout_date": null
+        }
+    ],
+    "content_type": "application/json"
+}

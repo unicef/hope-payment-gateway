@@ -1,0 +1,46 @@
+{
+    "status_code": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "Vary": "Accept, origin",
+        "Allow": "GET, POST, HEAD, OPTIONS",
+        "X-Frame-Options": "DENY",
+        "Content-Length": "392",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "same-origin",
+        "Cross-Origin-Opener-Policy": "same-origin"
+    },
+    "data": [
+        {
+            "id": 77,
+            "key": "SqphFQMPoLtS",
+            "office": {
+                "id": 378,
+                "name": null,
+                "code": null,
+                "slug": null
+            },
+            "country": {
+                "id": 378,
+                "name": "mTKMgHxxfUqJ",
+                "iso_code2": "hs",
+                "iso_code3": "hau"
+            },
+            "label": "HjHjdlPQijuT",
+            "fsp": {
+                "id": 340,
+                "name": "xZebZyHCBWsj",
+                "vendor_number": "fHAeaYtudNFd"
+            },
+            "delivery_mechanism": {
+                "id": 379,
+                "code": "wZIfckWcBrOx",
+                "name": "LVGpqnGBgvpU",
+                "description": null,
+                "account_type": 383,
+                "transfer_type": ""
+            }
+        }
+    ],
+    "content_type": "application/json"
+}

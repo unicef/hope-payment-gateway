@@ -1,0 +1,24 @@
+{
+    "status_code": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "Vary": "Accept, origin",
+        "Allow": "GET, POST, HEAD, OPTIONS",
+        "X-Frame-Options": "DENY",
+        "Content-Length": "113",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "same-origin",
+        "Cross-Origin-Opener-Policy": "same-origin"
+    },
+    "data": [
+        {
+            "id": 377,
+            "code": "PMPQfHhcftFg",
+            "name": "dScFDvedrhgd",
+            "description": null,
+            "account_type": 381,
+            "transfer_type": ""
+        }
+    ],
+    "content_type": "application/json"
+}

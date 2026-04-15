@@ -1,0 +1,22 @@
+{
+    "status_code": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "Vary": "Accept, origin",
+        "Allow": "GET, POST, HEAD, OPTIONS",
+        "X-Frame-Options": "DENY",
+        "Content-Length": "75",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "same-origin",
+        "Cross-Origin-Opener-Policy": "same-origin"
+    },
+    "data": [
+        {
+            "id": 380,
+            "key": "oznedkfvaPkO",
+            "label": "mfBsyJpqarnQ",
+            "unique_fields": []
+        }
+    ],
+    "content_type": "application/json"
+}
