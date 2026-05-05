@@ -89,6 +89,7 @@ class MoneyGramWebhook(MoneyGramApi):
 
     @staticmethod
     def update_record(pr, payload):
+        pr.add_push_notification(payload)
         update_status(pr, payload["eventPayload"]["transactionStatus"])
         if pr.status in PaymentRecordState.TRANSFERRED_TO_BENEFICIARY:
             pr.payout_date = datetime.strptime(

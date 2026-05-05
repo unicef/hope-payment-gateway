@@ -131,6 +131,26 @@ def test_get_payload_methods():
 
 
 @pytest.mark.django_db
+def test_payment_record_add_push_notification():
+    record = PaymentRecordFactory(fsp_data=None)
+    payload1 = {"event": "test1"}
+    payload2 = {"event": "test2"}
+
+    # Test initialization of None fsp_data
+    record.add_push_notification(payload1)
+    assert record.fsp_data["push_notification"] == [payload1]
+
+    # Test appending second payload
+    record.add_push_notification(payload2)
+    assert record.fsp_data["push_notification"] == [payload1, payload2]
+
+    # Test persistence
+    record.save()
+    record.refresh_from_db()
+    assert record.fsp_data["push_notification"] == [payload1, payload2]
+
+
+@pytest.mark.django_db
 def test_record_updated_signal_no_old_instance():
     with patch("hope_payment_gateway.apps.gateway.signals.flag_enabled", return_value=True):
         with patch("hope_payment_gateway.apps.gateway.signals.notify_record_change") as mock_notify:

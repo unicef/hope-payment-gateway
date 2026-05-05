@@ -25,6 +25,8 @@ def test_webhook_notification_ok(mg, api_client, admin_user):
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
     assert response.status_code == 200
+    assert "push_notification" in pr.fsp_data
+    assert pr.fsp_data["push_notification"] == [data]
 
 
 @responses.activate

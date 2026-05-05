@@ -329,6 +329,13 @@ class PaymentRecord(TimeStampedModel):
         payload["remote_id"] = self.remote_id
         return payload
 
+    def add_push_notification(self, payload):
+        if self.fsp_data is None:
+            self.fsp_data = {}
+        if "push_notification" not in self.fsp_data:
+            self.fsp_data["push_notification"] = []
+        self.fsp_data["push_notification"].append(payload)
+
 
 class AsyncJob(AsyncJobModel):
     instruction = models.ForeignKey(

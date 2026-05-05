@@ -1,3 +1,4 @@
+import copy
 import logging
 
 import sentry_sdk
@@ -72,6 +73,8 @@ class NisNotificationView(WesternUnionApi):
                 {"invalid_request": str(e)},
                 status=HTTP_400_BAD_REQUEST,
             )
+
+        push_payload = copy.deepcopy(payload)
         fsp_code = payload["transaction_id"]
         mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
@@ -97,6 +100,7 @@ class NisNotificationView(WesternUnionApi):
                 fsp_code=fsp_code,
                 parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
             )
+            pr.add_push_notification(push_payload)
             flow = PaymentRecordFlow(pr)
         except PaymentRecord.DoesNotExist:
             message = f"Cannot find payment with reference {fsp_code}"
