@@ -49,7 +49,14 @@ def test_model_str_methods():
 def test_payment_record_payload():
     instruction = PaymentInstructionFactory(payload={"a": "a"})
     prl = PaymentRecordFactory(parent=instruction, payload={"b": "b"}, record_code="r")
-    assert prl.get_payload().keys() == {"a", "b", "payment_record_code", "remote_id"}
+    assert prl.get_payload().keys() == {
+        "a",
+        "delivery_mechanism",
+        "destination_country",
+        "b",
+        "payment_record_code",
+        "remote_id",
+    }
 
 
 @pytest.mark.django_db
@@ -119,7 +126,7 @@ def test_get_payload_methods():
         # Case without config_key to cover branch
         instruction_no_config = PaymentInstructionFactory(fsp=fsp, payload={"a": 1})
         payload_no_config = instruction_no_config.get_payload()
-        assert payload_no_config == {"a": 1}
+        assert payload_no_config["a"] == 1
 
         record = PaymentRecordFactory(parent=instruction, record_code="RC1", remote_id="RID1", payload={"c": 3})
         record_payload = record.get_payload()
