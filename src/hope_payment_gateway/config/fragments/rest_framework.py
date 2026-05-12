@@ -10,6 +10,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": ["hope_api_auth.auth.LoggingTokenAuthentication"],
 }
 
 SPECTACULAR_SETTINGS = {
