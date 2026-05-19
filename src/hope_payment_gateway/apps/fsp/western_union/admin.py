@@ -3,17 +3,20 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from constance import config
 from django.contrib import admin
 from django.db.models import JSONField
-from django.http import HttpRequest
+import typing
 from django.template.response import TemplateResponse
 from jsoneditor.forms import JSONEditor
 from unicef_security.admin import is_superuser
 
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
-from hope_payment_gateway.apps.fsp.western_union.api.request import requests_request
+from hope_payment_gateway.api.western_union.client import WesternUnionClient
+from hope_payment_gateway.api.western_union.views.request import requests_request
 from hope_payment_gateway.apps.fsp.western_union.models import (
     Corridor,
     ServiceProviderCode,
 )
+
+if typing.TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 @admin.register(Corridor)
@@ -132,7 +135,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return button
 
     @button(permission="western_union.das_delivery_services")
-    def delivery_services(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def delivery_services(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         obj = self.model.objects.get(pk=pk)
         destination_country = request.GET.get("destination_country", obj.destination_country)
         destination_currency = request.GET.get("destination_currency", obj.destination_currency)
@@ -181,7 +184,7 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return TemplateResponse(request, "request.html", context)
 
     @button(permission="western_union.das_delivery_option_template")
-    def delivery_option_template(self, request: HttpRequest, pk: int) -> TemplateResponse:
+    def delivery_option_template(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         identifier = request.GET.get("identifier", config.WESTERN_UNION_DAS_IDENTIFIER)
         counter_id = request.GET.get("counter_id", config.WESTERN_UNION_DAS_COUNTER)
         obj = self.model.objects.get(pk=pk)

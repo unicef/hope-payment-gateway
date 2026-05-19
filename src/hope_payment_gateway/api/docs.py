@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import path
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -8,11 +8,11 @@ from drf_spectacular.views import (
 app_name = "docs"
 
 urlpatterns = [
-    re_path("^$", SpectacularAPIView.as_view(), name="schema"),
-    re_path(
-        "^swagger/$",
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "swagger/",
         SpectacularSwaggerView.as_view(url_name="docs:schema"),
         name="swagger-ui",
     ),
-    re_path("^redoc/$", SpectacularRedocView.as_view(url_name="docs:schema"), name="redoc"),
+    path("redoc/", SpectacularRedocView.as_view(url_name="docs:schema"), name="redoc"),
 ]

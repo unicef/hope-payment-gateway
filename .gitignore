@@ -1,29 +1,30 @@
-*.pyc
+.*
+~*
+!.dockerignore
+!.dockerignoredo
+!.git
+!.python-version
+!.github/
+!.gitignore
+!.pre-commit-config.yaml
+!.envrc
+!.idea
+!.semgrep
 
-build
-~build
-/dist
-static/*
-media
-*.egg*
-celerybeat-schedule
+!tests/.coveragerc
+!docs/**/.pages
 
-.tox
-.pytest_cache
-.coverage
+junit.xml
 coverage.xml
 
-.idea/
-.env
-.envrc
-.venv/
-src/hope_payment_gateway/static
-.DS_Store
-
-.vscode
-.cache
-
-/__pypackages__
-/docker/Makefile
+*.egg-info
 
 src/hope_payment_gateway/version.py
+src/hope_payment_gateway/static
+
+node_modules/
+dist/
+
+__pycache__
+.idea
+/.envrc

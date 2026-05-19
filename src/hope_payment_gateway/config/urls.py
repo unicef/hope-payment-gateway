@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.conf.urls import include
 from django.contrib import admin
 from django.http import HttpResponse
-from django.urls import path
+from django.urls import include, path
 from django.views.generic import TemplateView
 
 root_patterns = [
@@ -17,15 +16,15 @@ api_patterns = [
     path(r"adminactions/", include("adminactions.urls")),
     path(
         r"wu/",
-        include("hope_payment_gateway.apps.fsp.western_union.urls", namespace="wu"),
+        include("hope_payment_gateway.api.western_union.urls", namespace="wu"),
     ),
     path(
         r"moneygram/",
-        include("hope_payment_gateway.apps.fsp.moneygram.urls", namespace="mg"),
+        include("hope_payment_gateway.api.moneygram.urls", namespace="mg"),
     ),
     path(
         r"palpay/",
-        include("hope_payment_gateway.apps.fsp.palpay.urls", namespace="pal"),
+        include("hope_payment_gateway.api.palpay.urls", namespace="pal"),
     ),
     path(r"rest/", include("hope_payment_gateway.api.docs", namespace="docs")),
     path(r"rest/", include("hope_payment_gateway.api.urls", namespace="rest")),

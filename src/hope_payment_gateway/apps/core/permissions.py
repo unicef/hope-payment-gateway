@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 
 def get_client_ip(request):
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    x_forwarded_for = request.headers.get("x-forwarded-for")
     if x_forwarded_for:
         ip = x_forwarded_for.split(",")[0].split(":")[0]
     else:
@@ -18,3 +18,16 @@ class WhitelistPermission(permissions.BasePermission):
         if config.WHITELIST_ENABLED:
             return get_client_ip(request) in config.WHITELISTED_IPS.split(";")
         return True
+
+
+class HasAnyPermission(permissions.BasePermission):
+    """Permission that checks if a user has *at least one* of the given Django permissions."""
+
+    required_permissions = []
+
+    def has_permission(self, request, view):
+        perms = getattr(view, "required_permissions", self.required_permissions)
+        if not perms:
+            return False
+
+        return any(request.user.has_perm(p) for p in perms)

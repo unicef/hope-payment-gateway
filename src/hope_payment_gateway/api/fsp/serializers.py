@@ -2,14 +2,14 @@ from rest_framework import serializers
 
 from hope_payment_gateway.apps.gateway.models import (
     AccountType,
+    Country,
     DeliveryMechanism,
     ExportTemplate,
     FinancialServiceProvider,
     FinancialServiceProviderConfig,
+    Office,
     PaymentInstruction,
     PaymentRecord,
-    Office,
-    Country,
 )
 
 
@@ -111,6 +111,8 @@ class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
 
 class PaymentInstructionSerializer(serializers.ModelSerializer):
     fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
+    office = serializers.SlugRelatedField(queryset=Office.objects.all(), slug_field="slug", required=False)
+    country = serializers.SlugRelatedField(queryset=Country.objects.all(), slug_field="iso_code3", required=False)
     system = serializers.PrimaryKeyRelatedField(read_only=True)  # handled in the view
 
     class Meta:
@@ -122,11 +124,13 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "active",
             "status",
             "fsp",
+            "office",
+            "country",
             "system",
             "payload",
         )
 
-    def create(self, validated_data):
+    def create(self, validated_data) -> PaymentInstruction | None:
         try:
             instance = PaymentInstruction.objects.get(
                 remote_id=validated_data["remote_id"], system=validated_data["system"]
@@ -184,7 +188,9 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
 
 class ExportTemplateSerializer(serializers.ModelSerializer):
     fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
+    office = serializers.PrimaryKeyRelatedField(queryset=Office.objects.all(), required=False)
+    country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), required=False)
 
     class Meta:
         model = ExportTemplate
-        fields = ("query", "fsp", "config_key")
+        fields = ("query", "fsp", "office", "country", "config_key")

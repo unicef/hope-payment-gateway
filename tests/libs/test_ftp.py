@@ -26,12 +26,12 @@ def test_disconnect(ftp_client, mock_sftp_client):
 
 def test_ls(ftp_client, mock_sftp_client):
     expected_files = ["file1.txt", "file2.txt"]
-    mock_sftp_client.listdir.return_value = expected_files
+    mock_sftp_client.listdir_iter.return_value = expected_files
 
     result = ftp_client.ls()
 
     assert result == expected_files
-    mock_sftp_client.listdir.assert_called_once()
+    mock_sftp_client.listdir_iter.assert_called_once()
 
 
 def test_get_existing_file(ftp_client, mock_sftp_client):

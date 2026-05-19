@@ -6,7 +6,7 @@ export STATIC_ROOT="${STATIC_ROOT:-/var/run/app/static}"
 export UWSGI_PROCESSES="${UWSGI_PROCESSES:-"4"}"
 export DJANGO_SETTINGS_MODULE="hope_payment_gateway.config.settings"
 
-chown -R hope:unicef /app
+chown -R hope:unicef /var
 
 case "$1" in
     run)
@@ -32,7 +32,7 @@ case "$1" in
       ;;
     worker)
       set -- tini -- "$@"
-      set -- gosu hope:unicef celery -A hope_payment_gateway.config.celery worker --statedb /app/worker --concurrency=4 -E --loglevel=ERROR
+      set -- gosu hope:unicef celery -A hope_payment_gateway.config.celery worker --statedb /var/worker --concurrency=4 -E --loglevel=ERROR
       ;;
     beat)
       set -- tini -- "$@"

@@ -53,6 +53,8 @@ class FinancialServiceProviderConfigFilter(filters.FilterSet):
             "key": ["exact"],
             "fsp": ["exact"],
             "delivery_mechanism": ["exact"],
+            "office": ["exact"],
+            "country": ["exact"],
         }
 
 
@@ -63,6 +65,9 @@ class PaymentInstructionFilter(filters.FilterSet):
             "remote_id": ["exact"],
             "external_code": ["exact", "in"],
             "status": ["exact", "in"],
+            "fsp": ["exact"],
+            "office": ["exact"],
+            "country": ["exact"],
         }
 
 
@@ -84,5 +89,7 @@ class ExportTemplateFilter(filters.FilterSet):
         model = ExportTemplate
         fields = {
             "fsp": ["exact"],
+            "office": ["exact"],
+            "country": ["exact"],
             "config_key": ["exact"],
         }

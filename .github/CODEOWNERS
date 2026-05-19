@@ -1,0 +1,5 @@
+*
+docker/*.*                              @unicef/hope-arch
+
+pyproject.toml                          @domdinicola @unicef/hope-arch
+uv.lock                                 @domdinicola @unicef/hope-arch

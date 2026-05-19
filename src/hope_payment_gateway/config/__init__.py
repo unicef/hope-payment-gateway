@@ -23,7 +23,7 @@ OPTIONAL = {
     "AZURE_ACCOUNT_KEY": (str, ""),
     "AZURE_ACCOUNT_NAME": (str, ""),
     "AZURE_CONTAINER": (str, ""),
-    "AZURE_CLIENT_KEY": (str, ""),
+    "AZURE_CLIENT_ID": (str, ""),
     "AZURE_CLIENT_SECRET": (str, ""),
     "AZURE_TENANT_ID": (str, ""),
     "CELERY_VISIBILITY_TIMEOUT": (int, 1800),
@@ -78,6 +78,7 @@ OPTIONAL = {
     "SESSION_COOKIE_SECURE": (bool, True),
     "STATIC_URL": (str, "/static/"),
     "STATIC_ROOT": (str, "/tmp/static/"),  # noqa
+    "STREAMING_BROKER_URL": (str, "", ""),
     "SUPERUSERS": (str, ""),
     "TIME_ZONE": (str, "UTC"),
     "WESTERN_UNION_BASE_URL": (str, ""),

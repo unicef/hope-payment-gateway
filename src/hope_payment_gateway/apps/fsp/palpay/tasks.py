@@ -7,20 +7,20 @@ from constance import config
 from django.conf import settings
 from strategy_field.utils import fqn
 
+from hope_payment_gateway.api.palpay.client import PalPayClient
 from hope_payment_gateway.apps.core.tasks import lock_job
-from hope_payment_gateway.apps.fsp.palpay.client import PalPayClient
 from hope_payment_gateway.apps.fsp.tasks_utils import notify_records_to_fsp, send_to_fsp
 from hope_payment_gateway.apps.gateway.models import (
-    PaymentRecord,
+    AsyncJob,
     PaymentInstruction,
     PaymentInstructionState,
-    AsyncJob,
+    PaymentRecord,
 )
 from hope_payment_gateway.config.celery import app
 
 
-def palpay_notify(to_process_ids: list[PaymentRecord]) -> None:
-    notify_records_to_fsp(fqn(PalPayClient), to_process_ids)
+def palpay_notify(instruction_id: int) -> None:
+    notify_records_to_fsp(fqn(PalPayClient), instruction_id)
 
 
 def palpay_money_transfer(pk: int) -> None:
@@ -55,7 +55,7 @@ def palpay_money_transfer(pk: int) -> None:
         )
     }
     try:
-        response = requests.post(settings.PALPAY_INSTRUCTION_POST, files=files, timeout=30)
+        response = requests.post(settings.PALPAY_INSTRUCTION_POST, files=files, timeout=60)
         response.raise_for_status()
         return {"status": "success", "code": response.status_code}
     except requests.RequestException as e:
@@ -67,11 +67,10 @@ def palpay_send_money(tag=None, threshold=10000):
     """Task to trigger PalPay payments."""
     fsp = "PalPay"
     fsp_vendor_number = config.PALPAY_VENDOR_NUMBER
-    threshold = threshold or config.PALPAY_THREASHOLD
     action_fqn = palpay_notify
     group_key = "pal-send-instruction"
 
-    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key, threshold, tag)
+    send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key)
 
 
 @app.task()  # queue="executors"

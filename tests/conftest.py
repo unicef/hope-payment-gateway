@@ -8,7 +8,7 @@ from django.test import RequestFactory
 from hope_api_auth.models import Grant
 from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
 from hope_payment_gateway.apps.fsp.palpay.handlers import PalPayHandler
-from hope_payment_gateway.apps.fsp.western_union.api.client import WesternUnionClient
+from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 from strategy_field.utils import fqn
 from unittest.mock import MagicMock
@@ -212,7 +212,7 @@ def token_user():
         user=user,
         grants=[c.name for c in user_permissions],
     )
-    return user, f"Token {token.key}"
+    return user, token
 
 
 @pytest.fixture

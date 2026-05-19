@@ -34,12 +34,12 @@ def get_group(name=None, permissions=None):
     for permission_name in permission_names:
         try:
             app_label, codename = permission_name.split(".")
-        except ValueError:
-            raise ValueError("Invalid permission name `{0}`".format(permission_name))
+        except ValueError as e:
+            raise ValueError("Invalid permission name `{0}`".format(permission_name)) from e
         try:
             permission = Permission.objects.get(content_type__app_label=app_label, codename=codename)
-        except Permission.DoesNotExist:
-            raise Permission.DoesNotExist("Permission `{0}` does not exists", permission_name)
+        except Permission.DoesNotExist as e:
+            raise Permission.DoesNotExist("Permission `{0}` does not exists", permission_name) from e
 
         group.permissions.add(permission)
     return group
