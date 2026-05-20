@@ -126,6 +126,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         "external_code",
         "remote_id",
         "fsp",
+        "delivery_mechanism",
         "office",
         "country",
         "status",

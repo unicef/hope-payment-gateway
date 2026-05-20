@@ -35,14 +35,14 @@ def req(user):
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 def test_moneygram_button_visibility_for_mg_fsp(req, payment_record, payment_record_admin_instance):
     req.original = payment_record
-    payment_record_admin_instance.moneygram(payment_record_admin_instance, req)
+    payment_record_admin_instance.moneygram.func(payment_record_admin_instance, req)
     assert len(req.choices) >= 7
 
 
 @pytest.mark.django_db
 def test_moneygram_button_visibility_for_non_mg_fsp(req, payment_record, payment_record_admin_instance):
     req.original = payment_record
-    payment_record_admin_instance.moneygram(payment_record_admin_instance, req)
+    payment_record_admin_instance.moneygram.func(payment_record_admin_instance, req)
     assert req.visible is False
 
 
@@ -56,7 +56,7 @@ def test_moneygram_button_with_configuration(mg, req, payment_record_admin_insta
     payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
     req.original = payment_record
 
-    payment_record_admin_instance.moneygram(payment_record_admin_instance, req)
+    payment_record_admin_instance.moneygram.func(payment_record_admin_instance, req)
     assert any(choice.name == "configuration" for choice in req.choices)
 
 
@@ -66,5 +66,5 @@ def test_moneygram_button_without_configuration(req, payment_record, payment_rec
     payment_record.payload = {"delivery_mechanism": "CASH"}
     req.original = payment_record
 
-    payment_record_admin_instance.moneygram(payment_record_admin_instance, req)
+    payment_record_admin_instance.moneygram.func(payment_record_admin_instance, req)
     assert not any(choice.name == "configuration" for choice in req.choices)

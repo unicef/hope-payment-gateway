@@ -23,7 +23,7 @@ dependencies = [
   "celery[redis]",
   "dj-static",
   "django<6",
-  "django-admin-extra-buttons<2.1.2",
+  "django-admin-extra-buttons",
   "django-admin-sync",
   "django-adminactions",
   "django-adminfilters",
