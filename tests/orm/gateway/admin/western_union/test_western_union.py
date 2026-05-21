@@ -38,7 +38,7 @@ def req(user):
 def test_western_union_button_visibility_for_wu_fsp(req, payment_record, payment_record_admin_instance):
     req.original = payment_record
     with user_grant_permissions(req.user, "western_union.can_check_status"):
-        payment_record_admin_instance.western_union(payment_record_admin_instance, req)
+        payment_record_admin_instance.western_union.func(payment_record_admin_instance, req)
         assert len(req.choices) >= 7
 
 
@@ -46,7 +46,7 @@ def test_western_union_button_visibility_for_wu_fsp(req, payment_record, payment
 def test_western_union_button_visibility_for_non_wu_fsp(req, payment_record, payment_record_admin_instance):
     with user_grant_permissions(req.user, "western_union.can_check_status"):
         req.original = payment_record
-        payment_record_admin_instance.western_union(payment_record_admin_instance, req)
+        payment_record_admin_instance.western_union.func(payment_record_admin_instance, req)
         assert req.visible is False
 
 
@@ -64,7 +64,7 @@ def test_western_union_button_with_corridor(req, payment_record, payment_record_
     CorridorFactory(destination_country="US", destination_currency="USD")
 
     with user_grant_permissions(req.user, "western_union.can_check_status"):
-        payment_record_admin_instance.western_union(payment_record_admin_instance, req)
+        payment_record_admin_instance.western_union.func(payment_record_admin_instance, req)
         assert any(choice.name == "wu_corridor" for choice in req.choices)
 
 
@@ -79,7 +79,7 @@ def test_western_union_button_with_configuration(wu, req, payment_record_admin_i
     req.original = payment_record
 
     with user_grant_permissions(req.user, "western_union.can_check_status"):
-        payment_record_admin_instance.western_union(payment_record_admin_instance, req)
+        payment_record_admin_instance.western_union.func(payment_record_admin_instance, req)
         assert any(choice.name == "configuration" for choice in req.choices)
 
 
@@ -95,5 +95,5 @@ def test_western_union_button_without_corridor(req, payment_record, payment_reco
     req.original = payment_record
 
     with user_grant_permissions(req.user, "western_union.can_check_status"):
-        payment_record_admin_instance.western_union(payment_record_admin_instance, req)
+        payment_record_admin_instance.western_union.func(payment_record_admin_instance, req)
         assert not any(choice.name == "wu_corridor" for choice in req.choices)
