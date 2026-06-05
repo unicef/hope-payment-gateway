@@ -164,3 +164,60 @@ def test_record_updated_signal_no_old_instance():
             record = PaymentRecordFactory.build(id=99999, status=PaymentRecordState.PENDING, parent=parent)
             record.save()
             mock_notify.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_get_payload_without_delivery_mechanism():
+    fsp = FinancialServiceProviderFactory()
+    country = CountryFactory()
+    instruction = PaymentInstructionFactory(
+        fsp=fsp,
+        delivery_mechanism=None,
+        country=country,
+        payload={"a": 1},
+    )
+    payload = instruction.get_payload()
+    assert payload["a"] == 1
+    assert "delivery_mechanism" not in payload
+
+
+@pytest.mark.django_db
+def test_get_payload_without_country():
+    fsp = FinancialServiceProviderFactory()
+    dm = DeliveryMechanismFactory(code="CASH")
+    instruction = PaymentInstructionFactory(
+        fsp=fsp,
+        delivery_mechanism=dm,
+        country=None,
+        payload={"a": 1},
+    )
+    payload = instruction.get_payload()
+    assert payload["a"] == 1
+    assert payload["delivery_mechanism"] == "CASH"
+
+
+@pytest.mark.django_db
+def test_get_payload_with_real_configuration():
+    fsp = FinancialServiceProviderFactory()
+    country = CountryFactory()
+    dm = DeliveryMechanismFactory(code="cash_over_the_counter")
+
+    FinancialServiceProviderConfigFactory(
+        fsp=fsp,
+        country=country,
+        delivery_mechanism=dm,
+        configuration={"extra_key": "extra_value"},
+    )
+
+    instruction = PaymentInstructionFactory(
+        fsp=fsp,
+        country=country,
+        delivery_mechanism=dm,
+        payload={"a": 1},
+    )
+
+    payload = instruction.get_payload()
+
+    assert payload["a"] == 1
+    assert payload["delivery_mechanism"] == "cash_over_the_counter"
+    assert payload["extra_key"] == "extra_value"
