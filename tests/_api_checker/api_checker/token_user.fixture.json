@@ -31,7 +31,8 @@
                     "allowed_ips": "",
                     "valid_from": "2024-04-30",
                     "valid_to": null,
-                    "grants": "[\"API_READ_ONLY\", \"API_PLAN_UPLOAD\", \"API_PLAN_MANAGE\"]"
+                    "grants": "[\"API_READ_ONLY\", \"API_PLAN_UPLOAD\", \"API_PLAN_MANAGE\"]",
+                    "created": "2024-04-30T13:26:18.524Z"
                 }
             }
         ],
