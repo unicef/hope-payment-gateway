@@ -15,7 +15,6 @@ from hope_payment_gateway.apps.fsp.exceptions import (
 )
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor
 from hope_payment_gateway.apps.gateway.models import (
-    FinancialServiceProviderConfig,
     PaymentRecord,
 )
 
@@ -52,18 +51,8 @@ class WesternUnionAdminMixin:
                     button.choices.append(self.wu_corridor)
                 except Corridor.DoesNotExist, Corridor.MultipleObjectsReturned:
                     pass
-            try:
-                obj.parent.fsp.configs.get(
-                    key=obj.parent.payload.get("config_key"),
-                    delivery_mechanism__code=payload.get("delivery_mechanism"),
-                    fsp=obj.parent.fsp,
-                )
+            if obj.parent.configuration:
                 button.choices.append(self.configuration)
-            except (
-                FinancialServiceProviderConfig.DoesNotExist,
-                FinancialServiceProviderConfig.MultipleObjectsReturned,
-            ):
-                pass
         else:
             button.visible = False
         return button

@@ -20,6 +20,7 @@ class FSPProcessor:
                 delivery_mechanism__code=delivery_mechanism,
             ).configuration
             payload["delivery_mechanism"] = delivery_mechanism
+            payload["destination_country"] = destination_country.iso_code2
             payload.update(config)
         except ObjectDoesNotExist:
             config = self.fsp.configuration
