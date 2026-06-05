@@ -12,11 +12,15 @@ class FSPProcessor:
     def notify(self) -> None:
         pass  # pragma: no-cover
 
-    def get_configuration(self, config_key, delivery_mechanism):
+    def get_configuration(self, destination_country, delivery_mechanism):
         payload = self.fsp.configuration or {}
         try:
-            config = self.fsp.configs.get(key=config_key, delivery_mechanism__code=delivery_mechanism).configuration
+            config = self.fsp.configs.get(
+                country=destination_country,
+                delivery_mechanism__code=delivery_mechanism,
+            ).configuration
             payload["delivery_mechanism"] = delivery_mechanism
+            payload["destination_country"] = destination_country.iso_code2
             payload.update(config)
         except ObjectDoesNotExist:
             config = self.fsp.configuration

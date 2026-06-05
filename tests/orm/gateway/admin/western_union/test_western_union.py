@@ -73,8 +73,14 @@ def test_western_union_button_with_corridor(req, payment_record, payment_record_
 def test_western_union_button_with_configuration(wu, req, payment_record_admin_instance):
     delivery_mechanism = DeliveryMechanismFactory(code="CASH")
 
-    FinancialServiceProviderConfigFactory(key="test_config", fsp=wu, delivery_mechanism=delivery_mechanism)
-    instruction = PaymentInstructionFactory(fsp=wu, payload={"config_key": "test_config"})
+    config = FinancialServiceProviderConfigFactory(key="test_config", fsp=wu, delivery_mechanism=delivery_mechanism)
+    instruction = PaymentInstructionFactory(
+        fsp=wu,
+        payload={"config_key": "test_config"},
+        delivery_mechanism=delivery_mechanism,
+        office=config.office,
+        country=config.country,
+    )
     payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
     req.original = payment_record
 
