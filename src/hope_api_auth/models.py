@@ -35,6 +35,7 @@ class AbstractAPIToken(models.Model):
     valid_to = models.DateField(blank=True, null=True)
 
     grants = ChoiceArrayField(models.CharField(choices=Grant.choices(), max_length=255))
+    created = models.DateTimeField(_("Created"), auto_now_add=True)
 
     class Meta:
         abstract = True
@@ -59,8 +60,8 @@ class APIToken(AbstractAPIToken):
 
 class APILogEntry(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
-    token = models.ForeignKey(APIToken, on_delete=models.PROTECT)
-    token_new = models.ForeignKey(
+    token_old = models.ForeignKey(APIToken, on_delete=models.PROTECT)
+    token = models.ForeignKey(
         APIToken, to_field="key", db_column="token_key", null=True, on_delete=models.PROTECT, related_name="+"
     )
     url = models.URLField()
