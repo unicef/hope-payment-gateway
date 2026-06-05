@@ -52,7 +52,6 @@ def test_payment_record_payload():
     assert prl.get_payload().keys() == {
         "a",
         "delivery_mechanism",
-        "destination_country",
         "b",
         "payment_record_code",
         "remote_id",

@@ -213,13 +213,9 @@ class PaymentInstruction(TimeStampedModel):
         payload = self.payload.copy()
         if self.delivery_mechanism:
             payload["delivery_mechanism"] = self.delivery_mechanism.code
-        payload["destination_country"] = (
-            self.country.iso_code2 if self.country else self.payload.get("destination_country_iso_code2", None)
-        )
-        destination_country = self.country.iso_code2 if self.country else self.payload.get("destination_country", None)
-        if destination_country:
+        if self.country:
             config_payload = self.fsp.strategy.get_configuration(
-                destination_country,
+                self.country,
                 self.payload.get("delivery_mechanism", "cash_over_the_counter"),
             )
             payload.update(config_payload)

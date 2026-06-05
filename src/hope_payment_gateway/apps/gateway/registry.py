@@ -16,7 +16,7 @@ class FSPProcessor:
         payload = self.fsp.configuration or {}
         try:
             config = self.fsp.configs.get(
-                country__iso_code2=destination_country,
+                country=destination_country,
                 delivery_mechanism__code=delivery_mechanism,
             ).configuration
             payload["delivery_mechanism"] = delivery_mechanism
