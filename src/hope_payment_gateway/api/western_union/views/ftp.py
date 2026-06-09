@@ -2,6 +2,7 @@ import socket
 
 from django.http import FileResponse
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -17,6 +18,7 @@ class FileViewset(ViewSet):
     lookup_field = "filename"
     lookup_value_regex = r".*\..*"
 
+    authentication_classes = (SessionAuthentication,)
     permission_classes = (HasAnyPermission,)
     required_permissions = ["core.can_access_ftp"]
 
