@@ -7,7 +7,7 @@ requires = [
 
 [project]
 name = "hope-payment-gateway"
-version = "1.13.0"
+version = "1.14.0"
 description = "HOPE integration with FSPs"
 readme = "README.md"
 license = { text = "MIT" }
@@ -138,8 +138,16 @@ docs = [
 ]
 
 [tool.hatch]
+version.source = "vcs"
+version.raw-options.local_scheme = "no-local-version"
 build.hooks.vcs.version-file = "src/hope_payment_gateway/version.py"
-build.targets.sdist.ignore-vcs = true
+build.targets.wheel.packages = [
+  "src/hope_api_auth",
+  "src/hope_payment_gateway",
+]
+build.targets.wheel.exclude = [
+  "~*",
+]
 build.targets.sdist.include = [
   "src/hope_api_auth/**/*.*",
   "src/hope_payment_gateway/**/*.*",
@@ -148,15 +156,7 @@ build.targets.sdist.exclude = [
   "~*",
   "src/hope_payment_gateway/ui/theme/static_src/**/*.*",
 ]
-build.targets.wheel.packages = [
-  "src/hope_api_auth",
-  "src/hope_payment_gateway",
-]
-build.targets.wheel.exclude = [
-  "~*",
-]
-version.source = "vcs"
-version.raw-options.local_scheme = "no-local-version"
+build.targets.sdist.ignore-vcs = true
 raw-options = { root = "../.." }
 
 [tool.uv]
