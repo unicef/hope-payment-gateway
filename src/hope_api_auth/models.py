@@ -60,7 +60,6 @@ class APIToken(AbstractAPIToken):
 
 class APILogEntry(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
-    token_old = models.ForeignKey(APIToken, on_delete=models.PROTECT)
     token = models.ForeignKey(
         APIToken, to_field="key", db_column="token_key", null=True, on_delete=models.PROTECT, related_name="+"
     )
