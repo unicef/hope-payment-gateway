@@ -115,3 +115,16 @@ def test_import_records_duplicates(user_with_permissions, payment_instruction_ad
     user_messages = list(response.wsgi_request._messages)
     assert len(user_messages) == 1
     assert user_messages[0].level == messages.ERROR
+
+
+@pytest.mark.django_db
+def test_import_records_invalid_form(user_with_permissions, payment_instruction_admin_instance, client):
+    instruction = PaymentInstructionFactory()
+
+    client.force_login(user_with_permissions)
+    url = reverse("admin:gateway_paymentinstruction_import_records", args=[instruction.pk])
+    response = client.post(url, {})
+
+    assert response.status_code == 200
+    assert "form" in response.context_data
+    assert isinstance(response.context_data["form"], ImportCSVForm)

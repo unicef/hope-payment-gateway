@@ -111,12 +111,10 @@ class PaymentRecordAdmin(
     )
     def configuration(self, request: "HttpRequest", pk: int) -> "HttpResponseRedirect":
         obj = self.get_object(request, pk)
-        payload = obj.get_payload()
-        config = obj.parent.fsp.configs.get(
-            key=obj.parent.payload.get("config_key"),
-            delivery_mechanism__code=payload.get("delivery_mechanism"),
-            fsp=obj.parent.fsp,
-        )
+        config = obj.parent.configuration
+        if not config:
+            self.message_user(request, "No configuration found", messages.ERROR)
+            return redirect("admin:gateway_paymentrecord_change", object_id=pk)
         return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
 
 
@@ -126,6 +124,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         "external_code",
         "remote_id",
         "fsp",
+        "delivery_mechanism",
         "office",
         "country",
         "status",
@@ -234,6 +233,18 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         else:
             button.visible = False
         return None
+
+    @view(
+        html_attrs={"style": "background-color:#88FF88;color:black"},
+        label="Config",
+    )
+    def configuration(self, request: "HttpRequest", pk: int) -> "HttpResponseRedirect":
+        obj = self.get_object(request, pk)
+        config = obj.configuration
+        if not config:
+            self.message_user(request, "No configuration found", messages.ERROR)
+            return redirect("admin:gateway_paymentinstruction_change", object_id=pk)
+        return redirect(reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk]))
 
 
 class FinancialServiceProviderConfigInline(TabularInline):
