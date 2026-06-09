@@ -2,14 +2,14 @@
     "configuration": {
         "master": {
             "model": "gateway.financialserviceproviderconfig",
-            "pk": 77,
+            "pk": 9,
             "fields": {
-                "label": "HjHjdlPQijuT",
-                "key": "SqphFQMPoLtS",
-                "delivery_mechanism": 379,
-                "office": 378,
-                "country": 378,
-                "fsp": 340,
+                "label": "kMOnKcyjOGHy",
+                "key": "yjwMNbTPTjhs",
+                "delivery_mechanism": 29,
+                "office": 33,
+                "country": 31,
+                "fsp": 28,
                 "required_fields": "[]",
                 "configuration": {}
             }
@@ -17,34 +17,34 @@
         "deps": [
             {
                 "model": "gateway.deliverymechanism",
-                "pk": 379,
+                "pk": 29,
                 "fields": {
-                    "created": "2026-04-15T07:34:18.157Z",
-                    "modified": "2026-04-15T07:34:18.157Z",
-                    "code": "wZIfckWcBrOx",
-                    "name": "LVGpqnGBgvpU",
+                    "created": "2026-06-02T19:48:23.548Z",
+                    "modified": "2026-06-02T19:48:23.548Z",
+                    "code": "ALHVKbVYPCNK",
+                    "name": "ngqVdsHtwkdI",
                     "description": null,
-                    "account_type": 383,
+                    "account_type": 30,
                     "transfer_type": ""
                 }
             },
             {
                 "model": "gateway.accounttype",
-                "pk": 383,
+                "pk": 30,
                 "fields": {
-                    "created": "2026-04-15T07:34:18.157Z",
-                    "modified": "2026-04-15T07:34:18.157Z",
-                    "key": "PATvZsaqnxsz",
-                    "label": "NwxFFLvmQkyk",
+                    "created": "2026-06-02T19:48:23.547Z",
+                    "modified": "2026-06-02T19:48:23.547Z",
+                    "key": "stmndAzWSJVG",
+                    "label": "pfUmabXEkkvk",
                     "unique_fields": "[]"
                 }
             },
             {
                 "model": "gateway.office",
-                "pk": 378,
+                "pk": 33,
                 "fields": {
-                    "created": "2026-04-15T07:34:18.155Z",
-                    "modified": "2026-04-15T07:34:18.155Z",
+                    "created": "2026-06-02T19:48:23.545Z",
+                    "modified": "2026-06-02T19:48:23.545Z",
                     "remote_id": null,
                     "long_name": null,
                     "name": null,
@@ -56,26 +56,26 @@
             },
             {
                 "model": "gateway.country",
-                "pk": 378,
+                "pk": 31,
                 "fields": {
-                    "created": "2026-04-15T07:34:18.156Z",
-                    "modified": "2026-04-15T07:34:18.156Z",
-                    "name": "mTKMgHxxfUqJ",
+                    "created": "2026-06-02T19:48:23.547Z",
+                    "modified": "2026-06-02T19:48:23.547Z",
+                    "name": "npDmkInnBuSj",
                     "short_name": "",
-                    "iso_code2": "hs",
-                    "iso_code3": "hau",
-                    "iso_num": "jWZ"
+                    "iso_code2": "Wt",
+                    "iso_code3": "ySS",
+                    "iso_num": "lVX"
                 }
             },
             {
                 "model": "gateway.financialserviceprovider",
-                "pk": 340,
+                "pk": 28,
                 "fields": {
-                    "created": "2026-04-15T07:34:17.654Z",
-                    "modified": "2026-04-15T07:34:17.654Z",
-                    "remote_id": "obaZcerukNbE",
-                    "name": "xZebZyHCBWsj",
-                    "vendor_number": "fHAeaYtudNFd",
+                    "created": "2026-06-02T19:48:23.352Z",
+                    "modified": "2026-06-02T19:48:23.352Z",
+                    "remote_id": "ZoOidpuGeaON",
+                    "name": "IfWnrEsSLLpz",
+                    "vendor_number": "UPyncrjRSjex",
                     "strategy": "hope_payment_gateway.apps.gateway.registry.DefaultProcessor",
                     "configuration": {}
                 }

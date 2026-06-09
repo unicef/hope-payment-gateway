@@ -1,10 +1,11 @@
 from rest_framework.decorators import action
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
 from strategy_field.utils import fqn
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_api_auth.views import LoggingAPIViewSet
+from hope_api_auth.views import TokenRequiredView
 from hope_payment_gateway.api.fsp.filters import (
     AccountTypeFilter,
     DeliveryMechanismFilter,
@@ -48,7 +49,7 @@ class ProtectedMixin:
         raise NotImplementedError
 
 
-class AccountTypeViewSet(ProtectedMixin, LoggingAPIViewSet):
+class AccountTypeViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = AccountTypeSerializer
     queryset = AccountType.objects.all()
 
@@ -56,7 +57,7 @@ class AccountTypeViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["key", "label"]
 
 
-class DeliveryMechanismViewSet(ProtectedMixin, LoggingAPIViewSet):
+class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = DeliveryMechanismSerializer
     queryset = DeliveryMechanism.objects.select_related("account_type")
 
@@ -64,7 +65,7 @@ class DeliveryMechanismViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["code", "name"]
 
 
-class FinancialServiceProviderViewSet(ProtectedMixin, LoggingAPIViewSet):
+class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = FinancialServiceProviderSerializer
     queryset = FinancialServiceProvider.objects.prefetch_related("configs")
 
@@ -72,7 +73,7 @@ class FinancialServiceProviderViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["name", "vendor_number", "remote_id"]
 
 
-class ConfigurationViewSet(ProtectedMixin, LoggingAPIViewSet):
+class ConfigurationViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = FinancialServiceProviderConfigSerializer
     queryset = FinancialServiceProviderConfig.objects.all()
 
@@ -80,7 +81,7 @@ class ConfigurationViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["description"]
 
 
-class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
+class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = PaymentInstructionSerializer
     queryset = PaymentInstruction.objects.all()
 
@@ -202,7 +203,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
         )
 
 
-class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
+class PaymentRecordViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = PaymentRecordSerializer
     queryset = PaymentRecord.objects.select_related("parent")
     lookup_field = "remote_id"
@@ -224,7 +225,7 @@ class PaymentRecordViewSet(ProtectedMixin, LoggingAPIViewSet):
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
 
 
-class ExportTemplateViewSet(ProtectedMixin, LoggingAPIViewSet):
+class ExportTemplateViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = ExportTemplateSerializer
     queryset = ExportTemplate.objects.select_related("fsp")
     filterset_class = ExportTemplateFilter

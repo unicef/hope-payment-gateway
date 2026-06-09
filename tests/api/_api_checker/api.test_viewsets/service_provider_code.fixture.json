@@ -2,7 +2,7 @@
     "service_provider_code": {
         "master": {
             "model": "western_union.serviceprovidercode",
-            "pk": 5,
+            "pk": 1,
             "fields": {
                 "description": "",
                 "code": "",

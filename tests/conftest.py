@@ -5,7 +5,7 @@ import pytest
 import responses
 from django.contrib.admin.sites import AdminSite
 from django.test import RequestFactory
-from hope_api_auth.models import Grant
+from hope_payment_gateway.apps.core.grant import Grant
 from hope_payment_gateway.apps.fsp.moneygram.handlers import MoneyGramHandler
 from hope_payment_gateway.apps.fsp.palpay.handlers import PalPayHandler
 from hope_payment_gateway.api.western_union.client import WesternUnionClient

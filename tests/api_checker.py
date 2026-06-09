@@ -5,11 +5,12 @@ from functools import wraps
 import pytest
 from drf_api_checker.pytest import default_fixture_name
 from drf_api_checker.recorder import BASE_DATADIR, Recorder
+from hope_payment_gateway.apps.core.grant import Grant
+
 from factories import APITokenFactory, UserFactory
 from rest_framework.response import Response
 from rest_framework.test import APIClient
 
-from hope_api_auth.models import Grant
 from drf_api_checker.fs import mktree
 from drf_api_checker.utils import dump_fixtures, load_fixtures
 

@@ -5,18 +5,18 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "113",
+        "Content-Length": "111",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
     },
     "data": [
         {
-            "id": 377,
-            "code": "PMPQfHhcftFg",
-            "name": "dScFDvedrhgd",
+            "id": 27,
+            "code": "EfUYPJWEzwEX",
+            "name": "ksBUvorhWqDz",
             "description": null,
-            "account_type": 381,
+            "account_type": 28,
             "transfer_type": ""
         }
     ],
