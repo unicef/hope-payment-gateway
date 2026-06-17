@@ -2,8 +2,8 @@ web = {"type": "WEB"}
 agent = {"type": "AGENT"}
 
 
-WMF = "WMF"  # fixed money transfer
-WMN = "WMN"  # money transfer
+WMF = "WMF"  # fixed money transfer / default
+WMN = "WMN"  # money transfer / special case
 
 WIC = "WIC"  # system
 
