@@ -54,7 +54,9 @@ RUN pip install uwsgi uv
 # ------- builder -------
 FROM deps AS builder
 ENV VIRTUAL_ENV=/venv \
-    UV_PROJECT_ENVIRONMENT=/venv
+    UV_PROJECT_ENVIRONMENT=/venv \
+    HATCH_VCS_VERSION=${VERSION} \
+    SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
 
 RUN <<EOF cat> /RELEASE
 {"version": "$VERSION",
