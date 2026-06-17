@@ -5,7 +5,7 @@
         "Vary": "Accept, origin",
         "Allow": "GET, POST, HEAD, OPTIONS",
         "X-Frame-Options": "DENY",
-        "Content-Length": "155",
+        "Content-Length": "191",
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "same-origin",
         "Cross-Origin-Opener-Policy": "same-origin"
@@ -13,13 +13,14 @@
     "data": [
         {
             "id": 303,
-            "remote_id": "LakdGRrnjIPW",
+            "remote_id": "hwHTSGjnbzNC",
             "external_code": "",
             "active": true,
             "status": "DRAFT",
             "fsp": 340,
+            "delivery_mechanism": "aATydCsLpKDM",
             "office": null,
-            "country": "Qub",
+            "country": "AGC",
             "system": 305,
             "payload": {}
         }

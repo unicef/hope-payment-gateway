@@ -113,6 +113,9 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
     fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
     office = serializers.SlugRelatedField(queryset=Office.objects.all(), slug_field="slug", required=False)
     country = serializers.SlugRelatedField(queryset=Country.objects.all(), slug_field="iso_code3", required=False)
+    delivery_mechanism = serializers.SlugRelatedField(
+        slug_field="code", queryset=DeliveryMechanism.objects.all(), required=False
+    )
     system = serializers.PrimaryKeyRelatedField(read_only=True)  # handled in the view
 
     class Meta:
@@ -124,6 +127,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "active",
             "status",
             "fsp",
+            "delivery_mechanism",
             "office",
             "country",
             "system",
