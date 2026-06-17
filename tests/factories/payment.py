@@ -134,7 +134,6 @@ class APITokenFactory(AutoRegisterModelFactory):
 
 class APILogEntryFactory(AutoRegisterModelFactory):
     token = factory.SubFactory(APITokenFactory)
-    token_old = factory.SubFactory(APITokenFactory)
     status_code = fuzzy.FuzzyDecimal(200, 599)
 
     class Meta:
