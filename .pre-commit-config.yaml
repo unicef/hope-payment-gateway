@@ -6,13 +6,13 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/djlint/djLint
-    rev: v1.36.4
+    rev: v1.39.4
     hooks:
       - id: djlint-reformat
         args: ["--configuration", "djlint.toml"]
 
   - repo: https://github.com/semgrep/semgrep
-    rev: v1.156.0
+    rev: v1.167.0
     hooks:
       - id: semgrep
 
@@ -43,12 +43,12 @@ repos:
         args: [ "-p", "lint" ]
 
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: "v2.23.0"
+    rev: "v2.25.0"
     hooks:
       - id: pyproject-fmt
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.7
+    rev: v0.15.20
     hooks:
       - id: ruff
       - id: ruff-format

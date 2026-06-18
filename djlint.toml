@@ -1,6 +1,6 @@
 profile = "django"
 include = "**/src/**/templates/*.html"
-extend_exclude = "docker/**,"
+extend_exclude = "docker/"
 ignore = "H006,H030"
 indent = 4
 max_line_length = 120
