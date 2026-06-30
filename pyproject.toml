@@ -68,7 +68,7 @@ dependencies = [
   "redis",
   "sentry-sdk",
   "social-auth-app-django",
-  "social-auth-core<5",
+  "social-auth-core",
   "swapper",
   "tablib",
   "unicef-security",

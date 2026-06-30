@@ -24,15 +24,15 @@
             },
             {
                 "model": "hope_api_auth.apitoken",
-                "pk": "ecd85e9d4622deab30b78867b534a001ffa19191",
+                "pk": 1,
                 "fields": {
                     "user": 45,
+                    "key": "ecd85e9d4622deab30b78867b534a001ffa19191",
                     "created": "2026-06-02T19:48:23.261Z",
                     "allowed_ips": "",
                     "valid_from": "2026-06-02",
                     "valid_to": null,
-                    "grants": "[\"API_READ_ONLY\", \"API_PLAN_UPLOAD\", \"API_PLAN_MANAGE\"]",
-                    "created": "2024-04-30T13:26:18.524Z"
+                    "grants": "[\"API_READ_ONLY\", \"API_PLAN_UPLOAD\", \"API_PLAN_MANAGE\"]"
                 }
             }
         ],
