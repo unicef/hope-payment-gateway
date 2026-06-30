@@ -1,9 +1,10 @@
 import factory
 from django.utils import timezone
 from factory import fuzzy
+from hope_payment_gateway.apps.core.grant import Grant
 from strategy_field.utils import fqn
 
-from hope_api_auth.models import APILogEntry, APIToken, Grant
+from hope_api_auth.models import APILogEntry, APIToken
 from hope_payment_gateway.apps.fsp.western_union.handlers import WesternUnionHandler
 from hope_payment_gateway.apps.fsp.western_union.models import Corridor, ServiceProviderCode
 from hope_payment_gateway.apps.gateway.models import (
@@ -126,6 +127,7 @@ class APITokenFactory(AutoRegisterModelFactory):
     grants = [Grant.API_READ_ONLY]
     valid_from = timezone.now
     valid_to = None
+    created = factory.LazyFunction(timezone.now)
 
     class Meta:
         model = APIToken

@@ -1095,15 +1095,15 @@ wheels = [
 
 [[package]]
 name = "django-viewflow"
-version = "2.3.0"
+version = "2.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "django-filter" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c1/cb/f342ad4d1a119c6f564350be9233a0d729228608a0fa17206ef09934fc1c/django_viewflow-2.3.0.tar.gz", hash = "sha256:7f65a7c2cbea9b6277cb695e92167738688a5d9d0485eadc8be72192658e47a9", size = 24619060, upload-time = "2026-06-30T08:13:51.478Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ba/af/c12bb0d4206d0ad54828e356018f3b529f89080de5f6a49ec2f35ef80b84/django_viewflow-2.3.1.tar.gz", hash = "sha256:05911179bd8d0b1d335830bf1148e0680da49e20e08cb87cd322e88e3b4a3aa0", size = 24619263, upload-time = "2026-06-30T13:23:47.983Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/24/34/0582441b78ba3b008c00a52c521be59ff54424176985a9341925e9c2ef62/django_viewflow-2.3.0-py3-none-any.whl", hash = "sha256:2c94090be736b603810328bde3fb2bec34f8e582bb3f9254bf5fda1809c6fa28", size = 24794224, upload-time = "2026-06-30T08:13:41.023Z" },
+    { url = "https://files.pythonhosted.org/packages/71/9f/2e13c890cb6ab957afa0fcf36b216aacc57d2b891c5d1291fec64931cb8d/django_viewflow-2.3.1-py3-none-any.whl", hash = "sha256:188f148636906ccc73d570f8b9889e5e6ee0272ea3f4b30d3f3390ac8c077f66", size = 24794643, upload-time = "2026-06-30T13:23:41.845Z" },
 ]
 
 [[package]]
@@ -1231,14 +1231,14 @@ wheels = [
 
 [[package]]
 name = "faker"
-version = "40.23.0"
+version = "40.24.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/d6/fc071e5754815d9058e12ab549cc88e90f8f4ecf4dc33b6b750cdf4b622d/faker-40.23.0.tar.gz", hash = "sha256:f135e563f1f95f19346bb680bc2e43570bc43b7893e566023746f51f32c69dfc", size = 1972975, upload-time = "2026-06-10T20:53:21.611Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4d/e6/2bb55cd95308ea733d21c2c5c2de1f12f30d4d281ea19d8d8249c3c5d0bf/faker-40.24.0.tar.gz", hash = "sha256:69c1b67bb7de65958ff18485596f82aee2eed46bbfa102202c14b545cbd57ee5", size = 1991593, upload-time = "2026-06-30T15:15:37.595Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/5f/824e6fb3e9d63408151dc9173994fa65bde620a67dde3a59354f5aecd497/faker-40.23.0-py3-none-any.whl", hash = "sha256:775922453e54afa42eaf60eac478fa3a969357f224d09a8022b93e3ad88f18ae", size = 2013046, upload-time = "2026-06-10T20:53:19.226Z" },
+    { url = "https://files.pythonhosted.org/packages/40/99/573b8eb9119b6118d10458d7763b49ac59bb7c4d1466ce5811d1bfa53543/faker-40.24.0-py3-none-any.whl", hash = "sha256:5a62440d599e42f03dd52a617f1eca0fd1bf077379a50f359404b59099f4dd2d", size = 2030678, upload-time = "2026-06-30T15:15:35.631Z" },
 ]
 
 [[package]]
@@ -1390,6 +1390,24 @@ wheels = [
 ]
 
 [[package]]
+name = "hope-api-auth"
+version = "0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-admin-extra-buttons" },
+    { name = "django-adminfilters" },
+    { name = "django-smart-admin" },
+    { name = "djangorestframework" },
+    { name = "psycopg2-binary" },
+    { name = "swapper" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/dc/4c/e4d397b8718f717a551be5e08292ad74c15227036036f448c0fd80af91e1/hope_api_auth-0.2.tar.gz", hash = "sha256:1996e44f3d798021397a0e2a2c2c0eb2234d1ca355c38019ae765921a2caace2", size = 5991, upload-time = "2026-06-23T11:51:47.091Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8b/c4/93d8cc766703bb9f22e0d4c02e7973965457b23a62812df666bd667e39e2/hope_api_auth-0.2-py2.py3-none-any.whl", hash = "sha256:62700507a36cac4d3bbc2b5b2797e2a0fdec60c66e281bd409b2905b09e7ccc6", size = 8244, upload-time = "2026-06-23T11:51:45.991Z" },
+]
+
+[[package]]
 name = "hope-payment-gateway"
 source = { editable = "." }
 dependencies = [
@@ -1429,6 +1447,7 @@ dependencies = [
     { name = "drf-spectacular", extra = ["sidecar"] },
     { name = "flower" },
     { name = "gunicorn" },
+    { name = "hope-api-auth" },
     { name = "natural-keys" },
     { name = "newrelic" },
     { name = "paramiko" },
@@ -1544,6 +1563,7 @@ requires-dist = [
     { name = "drf-spectacular", extras = ["sidecar"] },
     { name = "flower" },
     { name = "gunicorn" },
+    { name = "hope-api-auth" },
     { name = "natural-keys" },
     { name = "newrelic" },
     { name = "paramiko" },
@@ -1553,7 +1573,7 @@ requires-dist = [
     { name = "redis" },
     { name = "sentry-sdk" },
     { name = "social-auth-app-django" },
-    { name = "social-auth-core", specifier = "<5" },
+    { name = "social-auth-core" },
     { name = "swapper" },
     { name = "tablib" },
     { name = "unicef-security" },
@@ -2711,6 +2731,25 @@ wheels = [
 ]
 
 [[package]]
+name = "psycopg2-binary"
+version = "2.9.12"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2a/60/a3624f79acea344c16fbef3a94d28b89a8042ddfb8f3e4ca83f538671409/psycopg2_binary-2.9.12.tar.gz", hash = "sha256:5ac9444edc768c02a6b6a591f070b8aae28ff3a99be57560ac996001580f294c", size = 379686, upload-time = "2026-04-21T09:40:34.304Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/1b/708c0dca874acfad6d65314271859899a79007686f3a1f74e82a2ed4b645/psycopg2_binary-2.9.12-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:6f3b3de8a74ef8db215f22edffb19e32dc6fa41340456de7ec99efdc8a7b3ec2", size = 3712428, upload-time = "2026-04-20T23:35:23.453Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/39/ddbea9d4b4de6aca9431b6ed253f530f8a02d3b8f9bcfd0dbfe2b3de6fe4/psycopg2_binary-2.9.12-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:1006fb62f0f0bc5ce256a832356c6262e91be43f5e4eb15b5eaf38079464caf2", size = 3823184, upload-time = "2026-04-20T23:35:25.92Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/a0/bc2fef74b106fa345567122a0659e6d94512ed7dc0131ec44c9e5aba3725/psycopg2_binary-2.9.12-cp314-cp314-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:840066105706cd2eb29b9a1c2329620056582a4bf3e8169dec5c447042d0869f", size = 4579157, upload-time = "2026-04-20T23:35:28.542Z" },
+    { url = "https://files.pythonhosted.org/packages/57/d7/d4e3b2005d3de607ca4fbb0e8742e248056e52184a6b94ebda3c1c2c329b/psycopg2_binary-2.9.12-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:863f5d12241ebe1c76a72a04c2113b6dc905f90b9cef0e9be0efd994affd9354", size = 4274970, upload-time = "2026-04-20T23:35:30.418Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/42/c9853f8db3967fe08bcde11f53d53b85d351750cae726ce001cb68afa9c1/psycopg2_binary-2.9.12-cp314-cp314-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a99eaab34a9010f1a086b126de467466620a750634d114d20455f3a824aae033", size = 5895175, upload-time = "2026-04-20T23:35:33.584Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/fd/b82b5601a97630308bef079f545ffec481bbbc795c2ba5ec416a01d03f60/psycopg2_binary-2.9.12-cp314-cp314-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:ffdd7dc5463ccd61845ac37b7012d0f35a1548df9febe14f8dd549be4a0bc81e", size = 4110658, upload-time = "2026-04-20T23:35:35.638Z" },
+    { url = "https://files.pythonhosted.org/packages/62/8c/32ca69b0389ef25dd22937bf9e8fbe2ce27aea20b05ded48c4ce4cb42475/psycopg2_binary-2.9.12-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:54a0dfecab1b48731f934e06139dfe11e24219fb6d0ceb32177cf0375f14c7b5", size = 3656251, upload-time = "2026-04-20T23:35:37.854Z" },
+    { url = "https://files.pythonhosted.org/packages/c4/29/96992a2b59e3b9d730fcf9612d0a387305025dc867a9fc490a9e496e074e/psycopg2_binary-2.9.12-cp314-cp314-musllinux_1_2_ppc64le.whl", hash = "sha256:96937c9c5d891f772430f418a7a8b4691a90c3e6b93cf72b5bd7cad8cbca32a5", size = 3301810, upload-time = "2026-04-20T23:35:39.927Z" },
+    { url = "https://files.pythonhosted.org/packages/56/ad/44b06659949b243ae10112cd3b20a197f9bf3e81d5651379b9eb889bfaad/psycopg2_binary-2.9.12-cp314-cp314-musllinux_1_2_riscv64.whl", hash = "sha256:77b348775efd4cdab410ec6609d81ccecd1139c90265fa583a7255c8064bc03d", size = 3048977, upload-time = "2026-04-20T23:35:41.806Z" },
+    { url = "https://files.pythonhosted.org/packages/1d/f2/10a1bcebadb6aa55e280e1f58975c36a7b560ea525184c7aa4064c466633/psycopg2_binary-2.9.12-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:527e6342b3e44c2f0544f6b8e927d60de7f163f5723b8f1dfa7d2a84298738cd", size = 3351466, upload-time = "2026-04-20T23:35:43.993Z" },
+    { url = "https://files.pythonhosted.org/packages/20/be/b732c8418ffa5bcfda002890f5dc4c869fc17db66ff11f53b17cfe44afc0/psycopg2_binary-2.9.12-cp314-cp314-win_amd64.whl", hash = "sha256:f12ae41fcafadb39b2785e64a40f9db05d6de2ac114077457e0e7c597f3af980", size = 2848762, upload-time = "2026-04-20T23:35:46.421Z" },
+]
+
+[[package]]
 name = "ptyprocess"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3282,21 +3321,21 @@ wheels = [
 
 [[package]]
 name = "social-auth-app-django"
-version = "5.9.0"
+version = "6.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "django" },
     { name = "social-auth-core" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/f9/c761cf93cb0a102ddd59498ea560b398be6bd14b8d6a4c493cc011b4bb80/social_auth_app_django-5.9.0.tar.gz", hash = "sha256:5b79c53321f9528334d53ddb154452a3b7e598b7ff4c2c1302be9a76b1349e8d", size = 29751, upload-time = "2026-04-29T14:52:50.715Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/8e/60593750bf1e2734e9b2b3ff85b685038fcc35446c5541e08fa4cdec17b9/social_auth_app_django-6.0.0.tar.gz", hash = "sha256:421916bf136c77a8683cac7505a3b2ecf7d5c8ec18455ffa883f2cb5161847b1", size = 31297, upload-time = "2026-06-23T15:35:44.429Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f0/8c/5a06761549ea5e7e3c6e87d25ed2029ed5ba9ba39c493bc8a591548d6575/social_auth_app_django-5.9.0-py3-none-any.whl", hash = "sha256:80edf5c207d871f2225a0fc6bb414004c0342c30deb3a217eb38a63b66e749bb", size = 28568, upload-time = "2026-04-29T14:52:49.473Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/79/5ae902ba623c906cfd172a2ed21d2e481f7cb1752f89fb5ce305f387d40a/social_auth_app_django-6.0.0-py3-none-any.whl", hash = "sha256:6974cb00bb462149b8384448c0aff6fb8e6c2b00efacca40d0270695d416cceb", size = 29464, upload-time = "2026-06-23T15:35:43.462Z" },
 ]
 
 [[package]]
 name = "social-auth-core"
-version = "4.9.1"
+version = "5.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
@@ -3307,9 +3346,9 @@ dependencies = [
     { name = "requests" },
     { name = "requests-oauthlib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/32/2e/15fd3e5bfd7eba91b04e3ebf2dac8a2d1237ba69e63752567b0dc2586a4a/social_auth_core-4.9.1.tar.gz", hash = "sha256:34ee16bddc10b8bf5d6a90c3a033f6e5bb1300197984ad66a4d363783f23bcd8", size = 252961, upload-time = "2026-04-30T07:16:18.62Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/b7/f2878b7ce6a5195aa2f14eef8337f2734940b11d68e14a36308770b633d7/social_auth_core-5.0.2.tar.gz", hash = "sha256:f53930c9b2a86ee0fc8e8fb0eac79221cfc2f017d9efb578691e5a3e2cf36784", size = 260859, upload-time = "2026-06-26T07:25:19.522Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ff/f2/0cb91ff294282800cc5ec7cefdfa3d87068c805d30920e3842fc859853ac/social_auth_core-4.9.1-py3-none-any.whl", hash = "sha256:2eca8a6ae678bae7e24e5aa3c72f99c77983012a09b8916ce9791dcfccade725", size = 457143, upload-time = "2026-04-30T07:16:17.235Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/04/7530b56a1eaa33bac6595739b19e4ebe3fe9d35a5c5f188790de9d3c26de/social_auth_core-5.0.2-py3-none-any.whl", hash = "sha256:c7250f0c1d539bb1420a7d165b240f066d866ec19d9b829e660260f024f0e2d3", size = 459405, upload-time = "2026-06-26T07:25:18.009Z" },
 ]
 
 [[package]]
@@ -3608,7 +3647,7 @@ wheels = [
 
 [[package]]
 name = "unicef-security"
-version = "1.9.2"
+version = "1.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "celery" },
@@ -3622,9 +3661,9 @@ dependencies = [
     { name = "requests" },
     { name = "social-auth-app-django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0a/14/69f63043bbeccf32ef72166969fb155cdd6c81b0ebc0f374718b5a4909c2/unicef_security-1.9.2.tar.gz", hash = "sha256:be17f6f50564337911eb68f83dc16bcf2a0030867617df6364784f13c9cfda7a", size = 14450, upload-time = "2026-01-20T13:07:24.394Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/7a/b84a40197750aaabda1f9f4eb7e4c9845b28db44e1561917a396f926911f/unicef_security-1.10.0.tar.gz", hash = "sha256:6df9c18914b192670fa885e6ccb0ece06783f447cd0094010f3fc66338ed2227", size = 14392, upload-time = "2026-06-30T15:11:32.868Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1e/d6/eace713a7d9b0ae4f92dc1bbc063eb6b3681654a030321c55f262efea023/unicef_security-1.9.2-py2.py3-none-any.whl", hash = "sha256:8f22858cd035df021d784b58557b5cf1892b099824700498786bc9f4631d6a3b", size = 23310, upload-time = "2026-01-20T13:07:22.333Z" },
+    { url = "https://files.pythonhosted.org/packages/63/7f/757df777aaa82320175a46015d67b5f074ba47e73c031e1226a931cf5cbf/unicef_security-1.10.0-py2.py3-none-any.whl", hash = "sha256:1a5751024a10694b55f8963201c6c6f6045fb43e84a3036a41f73fe2f8ce9a66", size = 23321, upload-time = "2026-06-30T15:11:31.651Z" },
 ]
 
 [[package]]

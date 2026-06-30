@@ -58,6 +58,7 @@ dependencies = [
   "drf-spectacular[sidecar]",
   "flower",
   "gunicorn",
+  "hope-api-auth",
   "natural-keys",
   "newrelic",
   "paramiko",
@@ -67,7 +68,7 @@ dependencies = [
   "redis",
   "sentry-sdk",
   "social-auth-app-django",
-  "social-auth-core<5",
+  "social-auth-core",
   "swapper",
   "tablib",
   "unicef-security",
@@ -144,14 +145,12 @@ version.source = "vcs"
 version.raw-options.local_scheme = "no-local-version"
 build.hooks.vcs.version-file = "src/hope_payment_gateway/version.py"
 build.targets.wheel.packages = [
-  "src/hope_api_auth",
   "src/hope_payment_gateway",
 ]
 build.targets.wheel.exclude = [
   "~*",
 ]
 build.targets.sdist.include = [
-  "src/hope_api_auth/**/*.*",
   "src/hope_payment_gateway/**/*.*",
 ]
 build.targets.sdist.exclude = [

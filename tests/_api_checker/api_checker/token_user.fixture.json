@@ -3,57 +3,57 @@
         "master": [
             {
                 "model": "core.user",
-                "pk": 1096,
+                "pk": 45,
                 "fields": {
-                    "password": "password",
+                    "password": "pbkdf2_sha256$1000000$XdKYe7aM7uKpnN5cRTqWpY$0Vkk0ujB3fRYIgiDyFAed7RDaRixN9mAhhVzQMobTaA=",
                     "last_login": null,
                     "is_superuser": false,
-                    "username": "user000",
-                    "first_name": "Tiffany",
-                    "last_name": "Hunter",
-                    "email": "m000@mailinator.com",
+                    "username": "m026@example.com",
+                    "first_name": "",
+                    "last_name": "",
+                    "email": "m026@example.com",
                     "is_staff": false,
                     "is_active": true,
-                    "date_joined": "2024-04-30T13:26:18.524Z",
+                    "date_joined": "2026-06-02T19:48:23.260Z",
                     "azure_id": null,
                     "job_title": null,
-                    "display_name": "Tiffany Hunter:",
+                    "display_name": "m026@example.com",
                     "groups": [],
                     "user_permissions": []
                 }
             },
             {
                 "model": "hope_api_auth.apitoken",
-                "pk": 134,
+                "pk": 1,
                 "fields": {
-                    "user": 1096,
-                    "key": "9e98393930c52ebdf76fd837f5a743f576ec60c6",
+                    "user": 45,
+                    "key": "ecd85e9d4622deab30b78867b534a001ffa19191",
+                    "created": "2026-06-02T19:48:23.261Z",
                     "allowed_ips": "",
-                    "valid_from": "2024-04-30",
+                    "valid_from": "2026-06-02",
                     "valid_to": null,
-                    "grants": "[\"API_READ_ONLY\", \"API_PLAN_UPLOAD\", \"API_PLAN_MANAGE\"]",
-                    "created": "2024-04-30T13:26:18.524Z"
+                    "grants": "[\"API_READ_ONLY\", \"API_PLAN_UPLOAD\", \"API_PLAN_MANAGE\"]"
                 }
             }
         ],
         "deps": [
             {
                 "model": "core.user",
-                "pk": 1096,
+                "pk": 45,
                 "fields": {
-                    "password": "password",
+                    "password": "pbkdf2_sha256$1000000$XdKYe7aM7uKpnN5cRTqWpY$0Vkk0ujB3fRYIgiDyFAed7RDaRixN9mAhhVzQMobTaA=",
                     "last_login": null,
                     "is_superuser": false,
-                    "username": "user000",
-                    "first_name": "Tiffany",
-                    "last_name": "Hunter",
-                    "email": "m000@mailinator.com",
+                    "username": "m026@example.com",
+                    "first_name": "",
+                    "last_name": "",
+                    "email": "m026@example.com",
                     "is_staff": false,
                     "is_active": true,
-                    "date_joined": "2024-04-30T13:26:18.524Z",
+                    "date_joined": "2026-06-02T19:48:23.260Z",
                     "azure_id": null,
                     "job_title": null,
-                    "display_name": "Tiffany Hunter:",
+                    "display_name": "m026@example.com",
                     "groups": [],
                     "user_permissions": []
                 }
