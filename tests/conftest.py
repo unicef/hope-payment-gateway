@@ -222,8 +222,8 @@ def api_client():
 
 @pytest.fixture
 def api_client_with_credentials(db, token_user, api_client):
-    token = token_user.apitoken_set.first()
-    api_client.force_authenticate(user=token_user, token=token)
+    user, token = token_user
+    api_client.force_authenticate(user=user, token=token)
     yield api_client
     api_client.force_authenticate(user=None)
 

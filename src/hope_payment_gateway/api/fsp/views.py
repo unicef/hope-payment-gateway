@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
@@ -90,7 +89,7 @@ class PaymentInstructionViewSet(ProtectedMixin, LoggingAPIViewSet):
     search_fields = ["external_code", "remote_id"]
 
     def perform_create(self, serializer) -> None:
-        owner = get_user_model().objects.filter(apitoken=self.request.auth).first()
+        owner = self.request.user
         system = System.objects.get(owner=owner)
         obj = serializer.save(system=system)
         config_key = obj.payload.get("config_key", None)

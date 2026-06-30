@@ -4,11 +4,10 @@ from enum import Enum, auto, unique
 from typing import Any
 
 import swapper
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
+from django.conf import settings
 from .fields import ChoiceArrayField
 
 
@@ -27,8 +26,10 @@ class Grant(Enum):
 
 
 class AbstractAPIToken(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    key = models.CharField(_("Key"), max_length=40, unique=True, blank=True)  # token
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, related_name="auth_token", on_delete=models.CASCADE, verbose_name=_("User")
+    )
+    key = models.CharField(_("Key"), max_length=40, unique=True)  # token
     allowed_ips = models.CharField(_("IPs"), max_length=200, blank=True, null=True)
 
     valid_from = models.DateField(default=timezone.now)
@@ -61,7 +62,10 @@ class APIToken(AbstractAPIToken):
 class APILogEntry(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     token = models.ForeignKey(
-        APIToken, to_field="key", db_column="token_key", null=True, on_delete=models.PROTECT, related_name="+"
+        APIToken,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
     )
     url = models.URLField()
     method = models.CharField(max_length=10)
