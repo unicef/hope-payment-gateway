@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import patch
 import pytest
 import responses
@@ -38,7 +39,45 @@ def test_status(wu, wu_client):
     resp = wu_client.status(pr.fsp_code, True)
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
+    assert pr.payout_amount == 1000.00
+    assert pr.payout_date == date(2024, 12, 18)
     assert (resp["title"], resp["code"]) == ("PayStatus", 200)
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_status_paid_without_payout_fields(wu, wu_client):
+    ref_no, mtcn, frm = (
+        "Y3snz233UkGt1Gw4",
+        "8560724095",
+        {
+            "identifier": "IDENTIFIER",
+            "reference_no": "REFNO",
+            "counter_id": "COUNTER",
+        },
+    )
+    pr = PaymentRecordFactory(
+        fsp_code=mtcn,
+        record_code=ref_no,
+        fsp_data={
+            "mtcn": mtcn,
+            "foreign_remote_system": frm,
+            "channel": {"type": "H2H", "name": "TEST", "version": "9500"},
+        },
+        parent__fsp=wu,
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+    )
+    mock_response = {
+        "content_response": {"payment_transactions": {"payment_transaction": [{"pay_status_description": "PAID"}]}}
+    }
+    with patch.object(wu_client, "response_context", return_value=mock_response):
+        resp = WesternUnionClient().status(pr.fsp_code, True)
+        pr.refresh_from_db()
+        assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
+        assert pr.message == "Transferred to Beneficiary*"
+        assert pr.payout_amount is None
+        assert pr.payout_date is None
+        assert resp == mock_response
 
 
 @pytest.mark.parametrize(

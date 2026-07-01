@@ -1,5 +1,7 @@
+import contextlib
 import logging
 import random
+from datetime import datetime
 from pathlib import Path
 
 import sentry_sdk
@@ -385,6 +387,20 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                         pr.message = "Transferred to Beneficiary*"
                         pr.status = status
                         pr.success = True
+                        payment_transaction = response["content_response"]["payment_transactions"][
+                            "payment_transaction"
+                        ][0]
+                        with contextlib.suppress(KeyError, TypeError):
+                            pr.payout_amount = payment_transaction["financials"]["originators_principal_amount"] / 100
+                        try:
+                            date_str = str(payment_transaction["paid_date"]).strip()
+                            pr.payout_date = datetime.strptime(date_str, "%m/%d/%y").date()
+                        except KeyError, TypeError, ValueError:
+                            try:
+                                date_str = str(payment_transaction["filing_date"]).strip()
+                                pr.payout_date = datetime.strptime(date_str, "%m/%d/%y").date()
+                            except KeyError, TypeError, ValueError:
+                                pass
                     elif status == PaymentRecordState.CANCELLED:
                         pr.message = "Cancelled*"
                         pr.status = status
