@@ -354,3 +354,49 @@ def test_nis_notification_xml_post_overridden_unpay(mock_flow, wu, api_client, a
     payment_record.refresh_from_db()
     assert payment_record.success is False
     assert "Unpay by FSP:" in payment_record.message
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
+def test_nis_notification_xml_post_transfer_to_fsp(mock_flow, wu, api_client, admin_user):
+    url = reverse("western_union:nis-notification-xml-view")
+    payment_record = PaymentRecordFactory(fsp_code="2323589126420060", status="PENDING", parent__fsp=wu)
+
+    mock_instance = MagicMock()
+    mock_flow.return_value = mock_instance
+
+    with open(Path(__file__).parent / "push_notification_transfer_to_fsp.xml", "r") as xml:
+        response = api_client.generic(
+            method="POST", path=url, data=xml.read(), content_type="application/xml", user=admin_user
+        )
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/xml"
+    mock_instance.store.assert_called_once()
+
+    payment_record.refresh_from_db()
+    assert payment_record.success is False
+    assert "Store by FSP:" in payment_record.message
+    assert "push_notification" in payment_record.fsp_data
+    assert len(payment_record.fsp_data["push_notification"]) == 1
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
+def test_nis_notification_xml_post_transfer_to_fsp_not_pending(mock_flow, wu, api_client, admin_user):
+    url = reverse("western_union:nis-notification-xml-view")
+    PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+
+    mock_instance = MagicMock()
+    mock_flow.return_value = mock_instance
+
+    with open(Path(__file__).parent / "push_notification_transfer_to_fsp.xml", "r") as xml:
+        response = api_client.generic(
+            method="POST", path=url, data=xml.read(), content_type="application/xml", user=admin_user
+        )
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/xml"
+    mock_instance.store.assert_not_called()
