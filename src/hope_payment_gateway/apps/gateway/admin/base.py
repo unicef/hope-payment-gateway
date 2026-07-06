@@ -78,11 +78,11 @@ class PaymentRecordAdmin(
         "auth_code",
     )
     list_filter = (
-        "parent__fsp",
-        ("parent", AutoCompleteFilter),
-        ("parent__office", AutoCompleteFilter),
         "status",
         "success",
+        ("parent__fsp", AutoCompleteFilter),
+        ("parent", AutoCompleteFilter),
+        ("parent__office", AutoCompleteFilter),
     )
     search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
     readonly_fields = ("fsp_data", "extra_data", "payout_date", "payout_amount")
