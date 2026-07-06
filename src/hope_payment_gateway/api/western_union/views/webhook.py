@@ -19,13 +19,14 @@ from hope_payment_gateway.api.western_union import (
     REJECT_APN,
     SUCCESS,
     SUCCESS_APN,
+    TRANSFER_TO_FSP,
     UNPAY,
 )
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.core.permissions import WhitelistPermission
 from hope_payment_gateway.apps.fsp.exceptions import InvalidRequestError
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
-from hope_payment_gateway.apps.gateway.models import PaymentRecord
+from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentRecordState
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +138,10 @@ class NisNotificationView(WesternUnionApi):
             elif notification_type == UNPAY:
                 flow.unpay()
                 pr.message = f"Unpay by FSP: {message}"
+            elif notification_type == TRANSFER_TO_FSP:
+                if pr.status == PaymentRecordState.PENDING:
+                    flow.store()
+                    pr.message = f"Store by FSP: {message}"
             else:
                 pr.message = f"Error in Notification: {message}"
                 flow.fail()
