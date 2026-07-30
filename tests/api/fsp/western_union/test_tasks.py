@@ -60,11 +60,10 @@ def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.apps.fsp.western_union.tasks.WesternUnionClient")
 def test_western_union_update_status(mock_client, wu):
-    instruction = PaymentInstructionFactory(fsp=wu, status=PaymentInstructionState.PROCESSED)
+    instruction = PaymentInstructionFactory(fsp=wu)
     records = PaymentRecordFactory.create_batch(
         3,
         parent=instruction,
-        status=PaymentRecordState.TRANSFERRED_TO_FSP,
         fsp_code="MTCN123",
     )
 
@@ -80,11 +79,10 @@ def test_western_union_update_status(mock_client, wu):
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.apps.fsp.western_union.tasks.WesternUnionClient")
 def test_western_union_update_status_filtered_by_ids(mock_client, wu):
-    instruction = PaymentInstructionFactory(fsp=wu, status=PaymentInstructionState.PROCESSED)
+    instruction = PaymentInstructionFactory(fsp=wu)
     records = PaymentRecordFactory.create_batch(
         3,
         parent=instruction,
-        status=PaymentRecordState.TRANSFERRED_TO_FSP,
         fsp_code="MTCN123",
     )
     ids = [records[0].id, records[1].id]
