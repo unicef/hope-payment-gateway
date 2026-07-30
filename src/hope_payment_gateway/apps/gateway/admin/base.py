@@ -28,6 +28,7 @@ from hope_payment_gateway.apps.gateway.actions import (
     export_as_template_impl,
     moneygram_refund,
     moneygram_update_status,
+    western_union_update_status_action,
 )
 from hope_payment_gateway.apps.gateway.admin.moneygram import MoneyGramAdminMixin
 from hope_payment_gateway.apps.gateway.admin.palpay import PalPayAdminMixin
@@ -91,7 +92,7 @@ class PaymentRecordAdmin(
     }
     raw_id_fields = ("parent",)
 
-    actions = [export_as_template, moneygram_update_status, moneygram_refund]
+    actions = [export_as_template, moneygram_update_status, moneygram_refund, western_union_update_status_action]
 
     def get_queryset(self, request: "HttpRequest") -> QuerySet:
         return super().get_queryset(request).select_related("parent__fsp")

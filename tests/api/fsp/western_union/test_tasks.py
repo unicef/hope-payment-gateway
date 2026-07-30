@@ -7,6 +7,7 @@ from factories import PaymentInstructionFactory, PaymentRecordFactory
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.western_union.tasks import (
     western_union_send_task,
+    western_union_update_status,
     update_corridors,
     update_templates,
     western_union_notify,
@@ -52,6 +53,45 @@ def test_send_money_task(mock_class, wu, rec_a, rec_b, total):
 
     western_union_send_task()
     assert len(mock_class.mock_calls) == total
+
+
+@pytest.mark.django_db
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@patch("hope_payment_gateway.apps.fsp.western_union.tasks.WesternUnionClient")
+def test_western_union_update_status(mock_client, wu):
+    instruction = PaymentInstructionFactory(fsp=wu)
+    records = PaymentRecordFactory.create_batch(
+        3,
+        parent=instruction,
+        fsp_code="MTCN123",
+    )
+
+    western_union_update_status()
+
+    assert mock_client.return_value.status.call_count == 3
+    for record in records:
+        mock_client.return_value.status.assert_any_call(record.fsp_code, True)
+
+
+@pytest.mark.django_db
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@patch("hope_payment_gateway.apps.fsp.western_union.tasks.WesternUnionClient")
+def test_western_union_update_status_filtered_by_ids(mock_client, wu):
+    instruction = PaymentInstructionFactory(fsp=wu)
+    records = PaymentRecordFactory.create_batch(
+        3,
+        parent=instruction,
+        fsp_code="MTCN123",
+    )
+    ids = [records[0].id, records[1].id]
+
+    western_union_update_status(ids=ids)
+
+    assert mock_client.return_value.status.call_count == 2
+    mock_client.return_value.status.assert_any_call(records[0].fsp_code, True)
+    mock_client.return_value.status.assert_any_call(records[1].fsp_code, True)
 
 
 @pytest.mark.django_db
