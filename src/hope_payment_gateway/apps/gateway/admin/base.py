@@ -139,6 +139,9 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     }
     raw_id_fields = ("fsp", "system", "office", "country")
 
+    def get_queryset(self, request: "HttpRequest") -> QuerySet:
+        return super().get_queryset(request).select_related("fsp", "delivery_mechanism", "office", "country")
+
     @button(permission="gateway.can_export_records")
     def generate_records(self, request: "HttpRequest", pk: int) -> TemplateResponse:
         obj = self.get_object(request, str(pk))
