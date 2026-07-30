@@ -26,7 +26,7 @@ def western_union_send_task():
 def western_union_update_status(ids=None) -> None:
     client = WesternUnionClient()
     qs = PaymentRecord.objects.select_related("parent__fsp").filter(
-        parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
+        parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
     )
     if ids:
         qs = qs.filter(id__in=ids)
