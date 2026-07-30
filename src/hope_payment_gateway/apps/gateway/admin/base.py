@@ -321,6 +321,9 @@ class FinancialServiceProviderConfigAdmin(AdminFiltersMixin, ExtraButtonsMixin, 
         ("office", AutoCompleteFilter),
     )
 
+    def get_queryset(self, request: "HttpRequest") -> QuerySet:
+        return super().get_queryset(request).select_related("office", "country", "fsp", "delivery_mechanism")
+
 
 @admin.register(AccountType)
 class AccountTypeAdmin(admin.ModelAdmin):
@@ -337,12 +340,18 @@ class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     }
     list_filter = ("transfer_type",)
 
+    def get_queryset(self, request: "HttpRequest") -> QuerySet:
+        return super().get_queryset(request).select_related("account_type")
+
 
 @admin.register(ExportTemplate)
 class ExportTemplateAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("fsp", "delivery_mechanism", "office", "country", "config_key")
     search_fields = ("config_key", "delivery_mechanism__name", "fsp__name")
     raw_id_fields = ("fsp", "delivery_mechanism", "office", "country")
+
+    def get_queryset(self, request: "HttpRequest") -> QuerySet:
+        return super().get_queryset(request).select_related("fsp", "delivery_mechanism", "office", "country")
 
 
 @admin.register(AsyncJob)
@@ -354,6 +363,9 @@ class AsyncJobAdmin(AdminFiltersMixin, CeleryTaskModelAdmin, admin.ModelAdmin):
         "type",
         "action",
     )
+
+    def get_queryset(self, request: "HttpRequest") -> QuerySet:
+        return super().get_queryset(request).select_related("instruction", "owner")
 
     def get_readonly_fields(self, request: "HttpRequest", obj: AsyncJob | None = None):
         if obj:
