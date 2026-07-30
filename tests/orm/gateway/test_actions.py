@@ -24,6 +24,7 @@ from hope_payment_gateway.apps.gateway.actions import (
     export_payment_instruction_to_email,
     moneygram_update_status,
     moneygram_refund,
+    western_union_update_status_action,
 )
 from django.contrib.admin.sites import AdminSite
 from hope_payment_gateway.apps.gateway.admin.base import (
@@ -351,6 +352,18 @@ def test_export_with_custom_template(modeladmin, request_with_data):
                 )
                 assert call_kwargs["template"] == "payment_instruction/export.html"
                 assert call_kwargs["form_class"]._mock_name == "TemplateExportForm"
+
+
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@pytest.mark.django_db
+def test_western_union_update_status_action(modeladmin, request_with_messages, wu):
+    records = PaymentRecordFactory.create_batch(2, parent__fsp=wu)
+    record_ids = [record.id for record in records]
+    queryset = PaymentRecord.objects.filter(id__in=record_ids).values_list("id", flat=True)
+
+    with patch("hope_payment_gateway.apps.gateway.actions.western_union_update_status") as mock_update:
+        western_union_update_status_action(modeladmin, request_with_messages, queryset)
+        mock_update.assert_called_once()
 
 
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
