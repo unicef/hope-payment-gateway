@@ -38,9 +38,5 @@ def trigger_event(event_name: str, payload: dict[str, Any]) -> None:
     if client is None:
         return
     future = client.trigger_event(event_name, context=payload)
-
-    def _on_done(f: Any) -> None:
-        if f.exception():
-            logger.warning("Bitcaster event failed: %s — %s", event_name, f.exception())
-
-    future.add_done_callback(_on_done)
+    if future.done() and future.exception():
+        logger.warning("Bitcaster event dropped (queue full): %s", event_name)
