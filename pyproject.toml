@@ -22,7 +22,7 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "bitcaster-sdk>=0.3,<1",
+  "bitcaster-sdk>=0.4,<1",
   "celery[redis]",
   "dj-static",
   "django<6",
