@@ -22,6 +22,7 @@ INSTALLED_APPS = (
     "hope_payment_gateway.apps.fsp.moneygram.apps.AppConfig",
     "hope_payment_gateway.apps.fsp.palpay.apps.AppConfig",
     "hope_payment_gateway.apps.stream.apps.AppConfig",
+    "hope_payment_gateway.apps.bitcaster.apps.AppConfig",
     "streaming",
     "hope_api_auth",
     "unicef_security",
@@ -184,4 +185,12 @@ LOGIN_ENABLED = env("LOGIN_ENABLED")
 MAX_CSV_UPLOAD_ROWS = env.int("MAX_CSV_UPLOAD_ROWS")
 
 SUPERUSERS = env("SUPERUSERS").split(",")
+
+BITCASTER_API_URL = env("BITCASTER_API_URL")
+BITCASTER_API_KEY = env("BITCASTER_API_KEY")
+BITCASTER_ENABLED = env("BITCASTER_ENABLED")
+BITCASTER_ORGANIZATION_SLUG = env("BITCASTER_ORGANIZATION_SLUG")
+BITCASTER_PROJECT_SLUG = env("BITCASTER_PROJECT_SLUG")
+BITCASTER_APPLICATION_SLUG = env("BITCASTER_APPLICATION_SLUG")
+
 from .fragments import *  # noqa

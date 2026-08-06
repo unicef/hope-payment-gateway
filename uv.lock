@@ -242,6 +242,20 @@ wheels = [
 ]
 
 [[package]]
+name = "bitcaster-sdk"
+version = "0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "humanfriendly" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/63/9c/686581e3c7da198c0bcfaed325e76bd173f0a3dc5de513d0214800a2bbce/bitcaster_sdk-0.3.tar.gz", hash = "sha256:4973c4078dff514a88d5791b386f896ba9eb505ad5ae4f71497e607d40add0c7", size = 13191, upload-time = "2026-07-29T18:43:11.312Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2f/72/3b66088360ece24af6c656c81f6bebef1d35760440d14c8a044a6617ab29/bitcaster_sdk-0.3-py3-none-any.whl", hash = "sha256:8880f54df93dba9ee20ba4aeea29c271b7ac4d7ab2a3fbfb2b7eab072a59d394", size = 19578, upload-time = "2026-07-29T18:43:10.05Z" },
+]
+
+[[package]]
 name = "bracex"
 version = "3.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1544,6 +1558,7 @@ wheels = [
 name = "hope-payment-gateway"
 source = { editable = "." }
 dependencies = [
+    { name = "bitcaster-sdk" },
     { name = "celery", extra = ["redis"] },
     { name = "dj-static" },
     { name = "django" },
@@ -1660,6 +1675,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bitcaster-sdk", specifier = ">=0.1" },
     { name = "celery", extras = ["redis"] },
     { name = "dj-static" },
     { name = "django", specifier = "<6" },
@@ -1781,6 +1797,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e8/80/9b76801b26cdf549d49d9daa93ed5df069de3bd0cd3938a7780aa0741197/html-json-forms-1.1.1.tar.gz", hash = "sha256:16dc413dc858fcc53602ad509c1aef735534838e1bae888bf429e210a9c48f6b", size = 9821, upload-time = "2020-01-15T00:57:49.97Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/83/dd/58fad0d2d018a4794b7b0f97d6a55f6da63d768e4ed905f94cb0a894679a/html_json_forms-1.1.1-py3-none-any.whl", hash = "sha256:51e7e9088bc88e324027144ca25d8bcdd37da28f311a8436bfd88944138ed409", size = 7158, upload-time = "2020-01-15T00:57:48.366Z" },
+]
+
+[[package]]
+name = "humanfriendly"
+version = "10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyreadline3", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/3f/2c29224acb2e2df4d2046e4c73ee2662023c58ff5b113c4c1adac0886c43/humanfriendly-10.0.tar.gz", hash = "sha256:6b0b831ce8f15f7300721aa49829fc4e83921a9a301cc7f606be6686a2288ddc", size = 360702, upload-time = "2021-09-17T21:40:43.31Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f0/0f/310fb31e39e2d734ccaa2c0fb981ee41f7bd5056ce9bc29b2248bd569169/humanfriendly-10.0-py2.py3-none-any.whl", hash = "sha256:1697e1a8a8f550fd43c2865cd84542fc175a61dcb779b6fee18cf6b6ccba1477", size = 86794, upload-time = "2021-09-17T21:40:39.897Z" },
 ]
 
 [[package]]
@@ -3090,6 +3118,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ab/bd/2f985c12bf33fdd8637e3a8f9418d6806f177601dee7c4924d0b2bb28650/pyproject_api-1.11.0.tar.gz", hash = "sha256:b8807d85a293e6c9f133e6575946fed45f1d42b22d58c780b33aa2421a799549", size = 23787, upload-time = "2026-07-21T13:09:33.744Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a3/6a/2822ee12bafe87af8f6cc620f7d1f126e77f82ce56ba888b94a9af5a979c/pyproject_api-1.11.0-py3-none-any.whl", hash = "sha256:860060c8832dce983b5eec6f41c4c43eb3ec06ff7332387a63acdf5ca27b68d8", size = 13275, upload-time = "2026-07-21T13:09:32.559Z" },
+]
+
+[[package]]
+name = "pyreadline3"
+version = "3.5.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b6/6d/f94028646d7bbe6d9d873c47ee7c246f2d29129d253f0d96cb6fcab70733/pyreadline3-3.5.6.tar.gz", hash = "sha256:61e53218b99656091ddb077df9e71f25850e72e030b6183b39c9b7e6e4f4a9bf", size = 100368, upload-time = "2026-05-14T17:55:04.471Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f7/5e/35c856e186b74678c24927847ad9895a51f1bc02a0c6126477a6c6040064/pyreadline3-3.5.6-py3-none-any.whl", hash = "sha256:8449b734232e42a5dcd74048e39b60db2839a4c38cf3ae2bf7707d58b5389c0d", size = 85243, upload-time = "2026-05-14T17:55:03.262Z" },
 ]
 
 [[package]]

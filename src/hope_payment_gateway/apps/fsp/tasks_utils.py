@@ -16,6 +16,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentRecord,
     PaymentRecordState,
 )
+from hope_payment_gateway.signals import payment_instruction_sent_to_fsp
 
 
 def notify_records_to_fsp(client_fqn, instruction_id):
@@ -56,5 +57,6 @@ def send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key):
         )
         with lock_job(job):
             job.queue()
+        payment_instruction_sent_to_fsp.send(sender=pi,)
 
     logging.info(f"{fsp} Task completed")
