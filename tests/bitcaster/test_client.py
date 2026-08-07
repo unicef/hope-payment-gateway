@@ -50,14 +50,14 @@ def test_get_client_returns_async_client(settings):
     settings.BITCASTER_PROJECT_SLUG = "project"
     settings.BITCASTER_APPLICATION_SLUG = "app"
 
-    with patch("hope_payment_gateway.apps.bitcaster.client.AsyncClient") as MockClient:
+    with patch("hope_payment_gateway.apps.bitcaster.client.AsyncClient") as mock_client:
         mock_instance = MagicMock()
-        MockClient.return_value = mock_instance
+        mock_client.return_value = mock_instance
 
         result = get_client()
 
         assert result is mock_instance
-        MockClient.assert_called_once_with(
+        mock_client.assert_called_once_with(
             bae="https://testkey@bitcaster.example.com/api/o/org/",
             project="project",
             application="app",
@@ -72,13 +72,13 @@ def test_get_client_caches_singleton(settings):
     settings.BITCASTER_PROJECT_SLUG = "project"
     settings.BITCASTER_APPLICATION_SLUG = "app"
 
-    with patch("hope_payment_gateway.apps.bitcaster.client.AsyncClient") as MockClient:
-        MockClient.return_value = MagicMock()
+    with patch("hope_payment_gateway.apps.bitcaster.client.AsyncClient") as mock_client:
+        mock_client.return_value = MagicMock()
         first = get_client()
         second = get_client()
 
         assert first is second
-        MockClient.assert_called_once()
+        mock_client.assert_called_once()
 
 
 def test_trigger_event_skips_when_no_client():
@@ -94,9 +94,7 @@ def test_trigger_event_calls_client():
     with patch("hope_payment_gateway.apps.bitcaster.client.get_client", return_value=mock_client):
         trigger_event("payment_instruction_sent_to_fsp", {"pk": 1})
 
-    mock_client.trigger_event.assert_called_once_with(
-        "payment_instruction_sent_to_fsp", context={"pk": 1}
-    )
+    mock_client.trigger_event.assert_called_once_with("payment_instruction_sent_to_fsp", context={"pk": 1})
 
 
 def test_trigger_event_logs_on_failure(caplog):
