@@ -5,8 +5,8 @@ from hope_payment_gateway.signals import payment_instruction_sent_to_fsp
 
 
 @receiver(payment_instruction_sent_to_fsp)
-def handle_payment_instruction_sent_to_fsp(sender, **kwargs):
-    pi = sender  # sender is a PaymentInstruction instance
+def handle_payment_instruction_sent_to_fsp(sender, instance, **kwargs):
+    pi = instance
     trigger_event(
         "payment_instruction_sent_to_fsp",
         {

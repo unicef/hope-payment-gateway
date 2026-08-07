@@ -27,18 +27,7 @@ def test_get_client_disabled(settings):
     assert get_client() is None
 
 
-def test_get_client_missing_setting_returns_none(settings):
-    settings.BITCASTER_ENABLED = True
-    settings.BITCASTER_API_URL = ""
-    settings.BITCASTER_API_KEY = "key"
-    settings.BITCASTER_ORGANIZATION_SLUG = "org"
-    settings.BITCASTER_PROJECT_SLUG = "project"
-    settings.BITCASTER_APPLICATION_SLUG = "app"
-
-    assert get_client() is None
-
-
-def test_get_client_missing_setting_logs_warning(settings, caplog):
+def test_get_client_missing_setting_returns_none_and_logs_warning(settings, caplog):
     settings.BITCASTER_ENABLED = True
     settings.BITCASTER_API_URL = ""
     settings.BITCASTER_API_KEY = "key"
@@ -47,8 +36,9 @@ def test_get_client_missing_setting_logs_warning(settings, caplog):
     settings.BITCASTER_APPLICATION_SLUG = "app"
 
     with caplog.at_level(logging.WARNING):
-        get_client()
+        result = get_client()
 
+    assert result is None
     assert "Bitcaster not fully configured" in caplog.text
 
 
@@ -99,7 +89,6 @@ def test_trigger_event_skips_when_no_client():
 def test_trigger_event_calls_client():
     mock_client = MagicMock()
     mock_future = MagicMock()
-    mock_future.done.return_value = False
     mock_client.trigger_event.return_value = mock_future
 
     with patch("hope_payment_gateway.apps.bitcaster.client.get_client", return_value=mock_client):
@@ -110,16 +99,20 @@ def test_trigger_event_calls_client():
     )
 
 
-def test_trigger_event_logs_on_queue_full(caplog):
+def test_trigger_event_logs_on_failure(caplog):
     mock_client = MagicMock()
     mock_future = MagicMock()
-    mock_future.done.return_value = True
-    mock_future.exception.return_value = Exception("queue full")
+    mock_future.exception.return_value = Exception("something went wrong")
+
+    def call_callback(fn):
+        fn(mock_future)
+
+    mock_future.add_done_callback.side_effect = call_callback
     mock_client.trigger_event.return_value = mock_future
 
     with patch("hope_payment_gateway.apps.bitcaster.client.get_client", return_value=mock_client):
         with caplog.at_level(logging.WARNING):
             trigger_event("some_event", {})
 
-    assert "Bitcaster event dropped" in caplog.text
+    assert "Bitcaster event failed" in caplog.text
     assert "some_event" in caplog.text

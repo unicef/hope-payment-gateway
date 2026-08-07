@@ -8,6 +8,7 @@ from hope_payment_gateway.apps.fsp.tasks_utils import (
 )
 from hope_payment_gateway.apps.gateway.models import (
     AsyncJob,
+    PaymentInstruction,
     PaymentInstructionState,
 )
 from hope_payment_gateway.apps.fsp.exceptions import PayloadError, TokenError
@@ -106,4 +107,4 @@ def test_send_to_fsp_fires_signal():
 
         send_to_fsp("TestFSP", "V123", "some.action", "group_key")
 
-        mock_send.assert_called_once_with(sender=pi)
+        mock_send.assert_called_once_with(sender=PaymentInstruction, instance=pi)
