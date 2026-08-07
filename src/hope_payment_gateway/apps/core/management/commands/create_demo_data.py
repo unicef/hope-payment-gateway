@@ -1,7 +1,7 @@
 import uuid
 
 from django.conf import settings
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, CommandError
 
 from hope_payment_gateway.apps.core.models import System, User
 from hope_payment_gateway.apps.gateway.models import (
@@ -23,8 +23,7 @@ class Command(BaseCommand):
         echo = self.stdout.write
 
         if not settings.DEBUG:
-            echo("Demo data can only be populated when in debug mode")
-            return
+            raise CommandError("Demo data can only be created when DEBUG=True")
 
         owner, _ = User.objects.get_or_create(
             username="demo-user",
