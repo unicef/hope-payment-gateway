@@ -7,7 +7,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-_client: AsyncClient | None = None
+_state: dict[str, AsyncClient | None] = {"client": None}
 
 
 def _build_bae(api_url: str, api_key: str, organization_slug: str) -> str:
@@ -16,9 +16,8 @@ def _build_bae(api_url: str, api_key: str, organization_slug: str) -> str:
 
 
 def get_client() -> AsyncClient | None:
-    global _client
-    if _client is not None:
-        return _client
+    if _state["client"] is not None:
+        return _state["client"]
     if not getattr(settings, "BITCASTER_ENABLED", False):
         return None
     api_url = settings.BITCASTER_API_URL
@@ -29,12 +28,12 @@ def get_client() -> AsyncClient | None:
     if not all([api_url, api_key, org, project, application]):
         logger.warning("Bitcaster not fully configured — notifications disabled")
         return None
-    _client = AsyncClient(
+    _state["client"] = AsyncClient(
         bae=_build_bae(api_url, api_key, org),
         project=project,
         application=application,
     )
-    return _client
+    return _state["client"]
 
 
 def trigger_event(event_name: str, payload: dict[str, Any]) -> None:
