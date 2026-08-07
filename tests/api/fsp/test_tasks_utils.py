@@ -101,8 +101,10 @@ def test_send_to_fsp_fires_signal():
     fsp = FinancialServiceProviderFactory(vendor_number="V123")
     pi = PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=True)
 
-    with patch("hope_payment_gateway.apps.fsp.tasks_utils.lock_job") as mock_lock, \
-         patch.object(payment_instruction_sent_to_fsp, "send") as mock_send:
+    with (
+        patch("hope_payment_gateway.apps.fsp.tasks_utils.lock_job") as mock_lock,
+        patch.object(payment_instruction_sent_to_fsp, "send") as mock_send,
+    ):
         mock_lock.return_value.__enter__.return_value = MagicMock()
 
         send_to_fsp("TestFSP", "V123", "some.action", "group_key")

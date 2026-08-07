@@ -1675,7 +1675,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bitcaster-sdk", specifier = ">=0.1" },
+    { name = "bitcaster-sdk", specifier = ">=0.3,<1" },
     { name = "celery", extras = ["redis"] },
     { name = "dj-static" },
     { name = "django", specifier = "<6" },
