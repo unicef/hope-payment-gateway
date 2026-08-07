@@ -57,6 +57,6 @@ def send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key):
         )
         with lock_job(job):
             job.queue()
-        payment_instruction_sent_to_fsp.send(sender=pi,)
+        payment_instruction_sent_to_fsp.send(sender=pi)
 
     logging.info(f"{fsp} Task completed")

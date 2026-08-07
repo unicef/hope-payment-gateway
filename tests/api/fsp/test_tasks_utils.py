@@ -11,6 +11,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstructionState,
 )
 from hope_payment_gateway.apps.fsp.exceptions import PayloadError, TokenError
+from hope_payment_gateway.signals import payment_instruction_sent_to_fsp
 from tests.factories import PaymentRecordFactory
 
 
@@ -92,3 +93,17 @@ def test_send_to_fsp():
         assert job.instruction == pi
         assert job.group_key == "group_key"
         assert job.config == {"instruction_id": pi.id}
+
+
+@pytest.mark.django_db
+def test_send_to_fsp_fires_signal():
+    fsp = FinancialServiceProviderFactory(vendor_number="V123")
+    pi = PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=True)
+
+    with patch("hope_payment_gateway.apps.fsp.tasks_utils.lock_job") as mock_lock, \
+         patch.object(payment_instruction_sent_to_fsp, "send") as mock_send:
+        mock_lock.return_value.__enter__.return_value = MagicMock()
+
+        send_to_fsp("TestFSP", "V123", "some.action", "group_key")
+
+        mock_send.assert_called_once_with(sender=pi)
