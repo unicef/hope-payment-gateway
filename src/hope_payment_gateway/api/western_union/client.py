@@ -391,7 +391,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                             "payment_transaction"
                         ][0]
                         with contextlib.suppress(KeyError, TypeError):
-                            pr.payout_amount = payment_transaction["financials"]["originators_principal_amount"] / 100
+                            pr.payout_amount = payment_transaction["financials"]["originators_principal_amount"]
                         try:
                             date_str = str(payment_transaction["paid_date"]).strip()
                             pr.payout_date = datetime.strptime(date_str, "%m/%d/%y").date()

@@ -39,7 +39,7 @@ def test_status(wu, wu_client):
     resp = wu_client.status(pr.fsp_code, True)
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
-    assert pr.payout_amount == 1000.00
+    assert pr.payout_amount == 100000.00
     assert pr.payout_date == date(2024, 12, 18)
     assert (resp["title"], resp["code"]) == ("PayStatus", 200)
 
