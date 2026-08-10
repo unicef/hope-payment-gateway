@@ -19,7 +19,7 @@ from hope_payment_gateway.apps.gateway.models import (
 from hope_payment_gateway.signals import payment_instruction_sent_to_fsp
 
 
-def notify_records_to_fsp(client_fqn, instruction_id):
+def notify_records_to_fsp(client_fqn: str, instruction_id: int) -> None:
     client = import_string(client_fqn)()
     pi = PaymentInstruction.objects.get(id=instruction_id)
     total = 0
@@ -36,7 +36,7 @@ def notify_records_to_fsp(client_fqn, instruction_id):
         pi.save()
 
 
-def send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key):
+def send_to_fsp(fsp: str, fsp_vendor_number: str, action_fqn: str, group_key: str) -> None:
     logging.info(f"{fsp} Task started")
 
     qs = PaymentInstruction.objects.select_related("fsp").filter(

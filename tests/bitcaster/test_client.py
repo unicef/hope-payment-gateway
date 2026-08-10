@@ -3,7 +3,6 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from hope_payment_gateway.apps.bitcaster.client import (
-    _build_bae,
     _state,
     get_client,
     trigger_event,
@@ -17,11 +16,6 @@ def reset_client_state():
     _state["client"] = None
 
 
-def test_build_bae():
-    result = _build_bae("https://example.com/path", "mykey", "myorg")
-    assert result == "https://mykey@example.com/api/o/myorg/"
-
-
 def test_get_client_disabled(settings):
     settings.BITCASTER_ENABLED = False
     assert get_client() is None
@@ -29,8 +23,7 @@ def test_get_client_disabled(settings):
 
 def test_get_client_missing_setting_returns_none_and_logs_warning(settings, caplog):
     settings.BITCASTER_ENABLED = True
-    settings.BITCASTER_API_URL = ""
-    settings.BITCASTER_API_KEY = "key"
+    settings.BITCASTER_BAE = ""
     settings.BITCASTER_ORGANIZATION_SLUG = "org"
     settings.BITCASTER_PROJECT_SLUG = "project"
     settings.BITCASTER_APPLICATION_SLUG = "app"
@@ -42,43 +35,34 @@ def test_get_client_missing_setting_returns_none_and_logs_warning(settings, capl
     assert "Bitcaster not fully configured" in caplog.text
 
 
-def test_get_client_returns_async_client(settings):
-    settings.BITCASTER_ENABLED = True
-    settings.BITCASTER_API_URL = "https://bitcaster.example.com/"
-    settings.BITCASTER_API_KEY = "testkey"
-    settings.BITCASTER_ORGANIZATION_SLUG = "org"
-    settings.BITCASTER_PROJECT_SLUG = "project"
-    settings.BITCASTER_APPLICATION_SLUG = "app"
-
-    with patch("hope_payment_gateway.apps.bitcaster.client.AsyncClient") as mock_client:
+def test_get_client_returns_async_client(bitcaster_settings):
+    with patch("hope_payment_gateway.apps.bitcaster.client.import_string") as mock_import:
+        mock_class = MagicMock()
         mock_instance = MagicMock()
-        mock_client.return_value = mock_instance
+        mock_class.return_value = mock_instance
+        mock_import.return_value = mock_class
 
         result = get_client()
 
         assert result is mock_instance
-        mock_client.assert_called_once_with(
+        mock_class.assert_called_once_with(
             bae="https://testkey@bitcaster.example.com/api/o/org/",
             project="project",
             application="app",
         )
 
 
-def test_get_client_caches_singleton(settings):
-    settings.BITCASTER_ENABLED = True
-    settings.BITCASTER_API_URL = "https://bitcaster.example.com/"
-    settings.BITCASTER_API_KEY = "testkey"
-    settings.BITCASTER_ORGANIZATION_SLUG = "org"
-    settings.BITCASTER_PROJECT_SLUG = "project"
-    settings.BITCASTER_APPLICATION_SLUG = "app"
+def test_get_client_caches_singleton(bitcaster_settings):
+    with patch("hope_payment_gateway.apps.bitcaster.client.import_string") as mock_import:
+        mock_class = MagicMock()
+        mock_class.return_value = MagicMock()
+        mock_import.return_value = mock_class
 
-    with patch("hope_payment_gateway.apps.bitcaster.client.AsyncClient") as mock_client:
-        mock_client.return_value = MagicMock()
         first = get_client()
         second = get_client()
 
         assert first is second
-        mock_client.assert_called_once()
+        mock_class.assert_called_once()
 
 
 def test_trigger_event_skips_when_no_client():
