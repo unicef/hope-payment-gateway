@@ -62,6 +62,16 @@ def use_override_settings(settings):
 
 
 @pytest.fixture
+def bitcaster_settings(settings):
+    settings.BITCASTER_ENABLED = True
+    settings.BITCASTER_BAE = "https://testkey@bitcaster.example.com/api/o/org/"
+    settings.BITCASTER_ORGANIZATION_SLUG = "org"
+    settings.BITCASTER_PROJECT_SLUG = "project"
+    settings.BITCASTER_APPLICATION_SLUG = "app"
+    return settings
+
+
+@pytest.fixture
 def mocked_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         yield rsps
