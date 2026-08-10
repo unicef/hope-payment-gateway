@@ -81,6 +81,21 @@ def test_trigger_event_calls_client():
     mock_client.trigger_event.assert_called_once_with("payment_instruction_sent_to_fsp", context={"pk": 1})
 
 
+def test_trigger_event_callback_no_exception():
+    mock_client = MagicMock()
+    mock_future = MagicMock()
+    mock_future.exception.return_value = None
+
+    def call_callback(fn):
+        fn(mock_future)
+
+    mock_future.add_done_callback.side_effect = call_callback
+    mock_client.trigger_event.return_value = mock_future
+
+    with patch("hope_payment_gateway.apps.bitcaster.client.get_client", return_value=mock_client):
+        trigger_event("some_event", {})
+
+
 def test_trigger_event_logs_on_failure(caplog):
     mock_client = MagicMock()
     mock_future = MagicMock()

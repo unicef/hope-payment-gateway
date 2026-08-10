@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 from django.conf import settings
 from django.utils.module_loading import import_string
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bitcaster_sdk.abstract_client import AbstractClient
 
 logger = logging.getLogger(__name__)

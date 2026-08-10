@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from hope_payment_gateway.apps.bitcaster.client import trigger_event
 from hope_payment_gateway.signals import payment_instruction_sent_to_fsp
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from hope_payment_gateway.apps.gateway.models import PaymentInstruction
 
 
