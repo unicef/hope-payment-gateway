@@ -1,3 +1,8 @@
+1.18
+====
+* Western Union: Store raw expected_payout_amount from NIS push notification
+
+
 1.17
 ===
 * Western Union: Added status update admin action (#279)
