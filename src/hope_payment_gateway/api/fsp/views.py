@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -67,7 +68,16 @@ class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
 
 class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = FinancialServiceProviderSerializer
-    queryset = FinancialServiceProvider.objects.prefetch_related("configs")
+    queryset = FinancialServiceProvider.objects.prefetch_related(
+        Prefetch(
+            "configs",
+            queryset=FinancialServiceProviderConfig.objects.select_related(
+                "country",
+                "office",
+                "delivery_mechanism",
+            ),
+        )
+    )
 
     filterset_class = FinancialServiceProviderFilter
     search_fields = ["name", "vendor_number", "remote_id"]
@@ -75,7 +85,12 @@ class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet, TokenRequire
 
 class ConfigurationViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = FinancialServiceProviderConfigSerializer
-    queryset = FinancialServiceProviderConfig.objects.all()
+    queryset = FinancialServiceProviderConfig.objects.select_related(
+        "fsp",
+        "delivery_mechanism",
+        "office",
+        "country",
+    )
 
     filterset_class = FinancialServiceProviderConfigFilter
     search_fields = ["description"]
@@ -83,7 +98,7 @@ class ConfigurationViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
 
 class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     serializer_class = PaymentInstructionSerializer
-    queryset = PaymentInstruction.objects.all()
+    queryset = PaymentInstruction.objects.select_related("fsp", "delivery_mechanism", "office", "country")
 
     lookup_field = "remote_id"
     filterset_class = PaymentInstructionFilter
