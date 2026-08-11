@@ -8,6 +8,7 @@ from hope_payment_gateway.apps.fsp.tasks_utils import (
 )
 from hope_payment_gateway.apps.gateway.models import (
     AsyncJob,
+    FinancialServiceProvider,
     PaymentInstruction,
     PaymentInstructionState,
 )
@@ -23,6 +24,16 @@ def mock_client():
         mock_class = MagicMock(return_value=mock_instance)
         mock_import.return_value = mock_class
         yield mock_instance
+
+
+@pytest.fixture
+def fsp() -> FinancialServiceProvider:
+    return FinancialServiceProviderFactory.create(vendor_number="V123")
+
+
+@pytest.fixture
+def instructions(fsp: FinancialServiceProvider) -> PaymentInstruction:
+    return PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.READY, active=True)
 
 
 @pytest.mark.django_db
@@ -74,13 +85,11 @@ def test_notify_records_to_fsp_with_invalid_ids(mock_client):
 
 
 @pytest.mark.django_db
-def test_send_to_fsp():
-    fsp = FinancialServiceProviderFactory(vendor_number="V123")
-    pi = PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=True)
-    PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.DRAFT, active=True)
-    PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=False)
-    fsp2 = FinancialServiceProviderFactory(vendor_number="V456")
-    PaymentInstructionFactory(fsp=fsp2, status=PaymentInstructionState.READY, active=True)
+def test_send_to_fsp(fsp, instructions):
+    PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.DRAFT, active=True)
+    PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.READY, active=False)
+    fsp2 = FinancialServiceProviderFactory.create(vendor_number="V456")
+    PaymentInstructionFactory.create(fsp=fsp2, status=PaymentInstructionState.READY, active=True)
 
     with patch("hope_payment_gateway.apps.fsp.tasks_utils.lock_job") as mock_lock:
         mock_job_instance = MagicMock()
@@ -88,19 +97,15 @@ def test_send_to_fsp():
 
         send_to_fsp("TestFSP", "V123", "some.action", "group_key")
 
-        # Check if only one AsyncJob was created for the READY and active PI
         assert AsyncJob.objects.count() == 1
         job = AsyncJob.objects.first()
-        assert job.instruction == pi
+        assert job.instruction == instructions
         assert job.group_key == "group_key"
-        assert job.config == {"instruction_id": pi.id}
+        assert job.config == {"instruction_id": instructions.id}
 
 
 @pytest.mark.django_db
-def test_send_to_fsp_fires_signal():
-    fsp = FinancialServiceProviderFactory(vendor_number="V123")
-    pi = PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=True)
-
+def test_send_to_fsp_fires_signal(fsp, instructions):
     with (
         patch("hope_payment_gateway.apps.fsp.tasks_utils.lock_job") as mock_lock,
         patch.object(payment_instruction_sent_to_fsp, "send") as mock_send,
@@ -109,4 +114,4 @@ def test_send_to_fsp_fires_signal():
 
         send_to_fsp("TestFSP", "V123", "some.action", "group_key")
 
-        mock_send.assert_called_once_with(sender=PaymentInstruction, instance=pi)
+        mock_send.assert_called_once_with(sender=PaymentInstruction, instance=instructions)

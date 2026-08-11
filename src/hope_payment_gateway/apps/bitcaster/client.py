@@ -15,7 +15,7 @@ _state: dict[str, AbstractClient | None] = {"client": None}
 def get_client() -> AbstractClient | None:
     if _state["client"] is not None:
         return _state["client"]
-    if not getattr(settings, "BITCASTER_ENABLED", False):
+    if not settings.BITCASTER_ENABLED:
         return None
     bae = settings.BITCASTER_BAE
     org = settings.BITCASTER_ORGANIZATION_SLUG
@@ -24,7 +24,7 @@ def get_client() -> AbstractClient | None:
     if not all([bae, org, project, application]):
         logger.warning("Bitcaster not fully configured — notifications disabled")
         return None
-    client_class = import_string(getattr(settings, "BITCASTER_CLIENT_CLASS", "bitcaster_sdk.async_client.AsyncClient"))
+    client_class = import_string(settings.BITCASTER_CLIENT_CLASS)
     _state["client"] = client_class(
         bae=bae,
         project=project,
