@@ -16,17 +16,12 @@ def reset_client_state():
     _state["client"] = None
 
 
-def test_get_client_disabled(settings):
-    settings.BITCASTER_ENABLED = False
+def test_get_client_disabled():
     assert get_client() is None
 
 
-def test_get_client_missing_setting_returns_none_and_logs_warning(settings, caplog):
-    settings.BITCASTER_ENABLED = True
-    settings.BITCASTER_BAE = ""
-    settings.BITCASTER_ORGANIZATION_SLUG = "org"
-    settings.BITCASTER_PROJECT_SLUG = "project"
-    settings.BITCASTER_APPLICATION_SLUG = "app"
+def test_get_client_missing_setting_returns_none_and_logs_warning(bitcaster_settings, caplog):
+    bitcaster_settings.BITCASTER_BAE = ""
 
     with caplog.at_level(logging.WARNING):
         result = get_client()
