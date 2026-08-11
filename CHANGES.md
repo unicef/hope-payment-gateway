@@ -1,6 +1,6 @@
 1.18.1
 ======
-* Western Union: Store payout_amount in major currency units (converted from cents) for NIS push notifications; store raw originators_principal_amount for status updates
+* Western Union: Store payout_amount in major currency units (converted from cents) for NIS push notifications and status updates
 
 
 1.17
