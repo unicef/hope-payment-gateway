@@ -22,11 +22,13 @@ from django.utils.encoding import smart_str
 from django.utils.timezone import get_default_timezone
 from django.utils.translation import gettext_lazy as _
 
+from strategy_field.utils import fqn
+
 from hope_payment_gateway.api.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.fsp.moneygram import REFUND_CHOICES
 from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
 from hope_payment_gateway.apps.fsp.western_union.tasks import western_union_update_status
-from hope_payment_gateway.apps.gateway.models import PaymentInstruction
+from hope_payment_gateway.apps.gateway.models import AsyncJob, PaymentInstruction
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
 
 
@@ -257,9 +259,20 @@ def moneygram_refund(modeladmin, request, queryset):
 
 
 def western_union_update_status_action(modeladmin, request, queryset):
+    if not request.user.has_perm("western_union.can_update_status"):
+        messages.error(request, _("Sorry you do not have rights to execute this action"))
+        return
     qs = queryset.filter(parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER)
-    messages.info(request, _(f"Updating {qs.count()}"))
-    western_union_update_status(qs.values_list("id", flat=True))
+    ids = list(qs.values_list("id", flat=True))
+    job = AsyncJob.objects.create(
+        description="Western Union update status",
+        type=AsyncJob.JobType.STANDARD_TASK,
+        owner=request.user,
+        action=fqn(western_union_update_status),
+        config={"ids": ids},
+    )
+    job.queue()
+    messages.info(request, _(f"Scheduled Western Union status update for {len(ids)} record(s)"))
 
 
 moneygram_update_status.short_description = "MoneyGram: update status"

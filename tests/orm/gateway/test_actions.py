@@ -27,12 +27,14 @@ from hope_payment_gateway.apps.gateway.actions import (
     western_union_update_status_action,
 )
 from django.contrib.admin.sites import AdminSite
+from hope_payment_gateway.apps.fsp.western_union.tasks import western_union_update_status
 from hope_payment_gateway.apps.gateway.admin.base import (
     PaymentInstructionAdmin,
     PaymentRecordAdmin,
 )
-from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentInstruction
+from hope_payment_gateway.apps.gateway.models import AsyncJob, PaymentRecord, PaymentInstruction
 from csv import excel_tab
+from strategy_field.utils import fqn
 
 
 @pytest.fixture
@@ -356,14 +358,37 @@ def test_export_with_custom_template(modeladmin, request_with_data):
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @pytest.mark.django_db
-def test_western_union_update_status_action(modeladmin, request_with_messages, wu):
+@patch("hope_payment_gateway.apps.gateway.actions.AsyncJob.queue")
+def test_western_union_update_status_action(mock_queue, request_with_data, wu, mock_messages):
     records = PaymentRecordFactory.create_batch(2, parent__fsp=wu)
     record_ids = [record.id for record in records]
-    queryset = PaymentRecord.objects.filter(id__in=record_ids).values_list("id", flat=True)
+    queryset = PaymentRecord.objects.filter(id__in=record_ids)
 
-    with patch("hope_payment_gateway.apps.gateway.actions.western_union_update_status") as mock_update:
-        western_union_update_status_action(modeladmin, request_with_messages, queryset)
-        mock_update.assert_called_once()
+    western_union_update_status_action(None, request_with_data, queryset)
+
+    job = AsyncJob.objects.get()
+    assert job.owner == request_with_data.user
+    assert job.action == fqn(western_union_update_status)
+    assert job.config == {"ids": record_ids}
+    mock_queue.assert_called_once_with()
+    mock_messages["info"].assert_called_once_with(
+        request_with_data, "Scheduled Western Union status update for 2 record(s)"
+    )
+
+
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@pytest.mark.django_db
+def test_western_union_update_status_action_no_permission(request_with_messages, user, wu, mock_messages):
+    request_with_messages.user = user
+    records = PaymentRecordFactory.create_batch(2, parent__fsp=wu)
+    queryset = PaymentRecord.objects.filter(id__in=[record.id for record in records])
+
+    western_union_update_status_action(None, request_with_messages, queryset)
+
+    assert AsyncJob.objects.count() == 0
+    mock_messages["error"].assert_called_once_with(
+        request_with_messages, "Sorry you do not have rights to execute this action"
+    )
 
 
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")

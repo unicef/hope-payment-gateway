@@ -1,3 +1,8 @@
+1.19.0
+======
+* Western Union: Status update admin action runs as an async job and requires the `western_union.can_update_status` permission
+
+
 1.18.1
 ======
 * Western Union: Store payout_amount in major currency units (converted from cents) for NIS push notifications and status updates
