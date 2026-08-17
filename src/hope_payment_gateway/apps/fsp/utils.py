@@ -40,4 +40,8 @@ def extrapolate_errors(data):
 def ascii_name(value):
     """Remove accents and non-ASCII characters from a name string."""
     nfkd = unicodedata.normalize("NFD", value)
-    return "".join(c for c in nfkd if unicodedata.category(c) != "Mn").encode("ascii", "ignore").decode("ascii")
+    return (
+        "".join(c for c in nfkd if unicodedata.category(c) != "Mn" and c != "'")
+        .encode("ascii", "ignore")
+        .decode("ascii")
+    )
