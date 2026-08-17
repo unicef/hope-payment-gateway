@@ -1,3 +1,5 @@
+import unicodedata
+
 import phonenumbers
 from phonenumbers.phonenumberutil import NumberParseException
 
@@ -33,3 +35,9 @@ def extrapolate_errors(data):
     else:
         msgs = ["Error"]
     return msgs
+
+
+def ascii_name(value):
+    """Remove accents and non-ASCII characters from a name string."""
+    nfkd = unicodedata.normalize("NFD", value)
+    return "".join(c for c in nfkd if unicodedata.category(c) != "Mn").encode("ascii", "ignore").decode("ascii")

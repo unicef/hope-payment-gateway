@@ -1,4 +1,7 @@
+import pytest
+
 from hope_payment_gateway.apps.fsp.utils import (
+    ascii_name,
     extrapolate_errors,
     get_account_field,
     get_phone_number,
@@ -66,3 +69,23 @@ def test_extrapolate_errors_with_invalid_data():
     data = {"some_key": "some_value"}
     expected = ["Error"]
     assert extrapolate_errors(data) == expected
+
+
+@pytest.mark.parametrize(
+    ("input_name", "expected"),
+    [
+        ("Jose", "Jose"),
+        ("José", "Jose"),
+        ("François", "Francois"),
+        ("Über", "Uber"),
+        ("Ça va", "Ca va"),
+        ("Ñoño", "Nono"),
+        ("Müller", "Muller"),
+        ("naïve", "naive"),
+        ("", ""),
+        ("Alice", "Alice"),
+        ("O'Connor", "OConnor"),
+    ],
+)
+def test_ascii_name(input_name, expected):
+    assert ascii_name(input_name) == expected

@@ -28,6 +28,7 @@ from hope_payment_gateway.api.western_union import (
 from hope_payment_gateway.api.western_union.utils import integrate_payload
 from hope_payment_gateway.apps.core.models import Singleton
 from hope_payment_gateway.apps.fsp.client import FSPClient
+from hope_payment_gateway.apps.fsp.utils import ascii_name
 from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidCorridorError,
     PayloadError,
@@ -172,9 +173,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
             receiver = {
                 "name": {
-                    "first_name": base_payload["first_name"],
-                    "last_name": base_payload["last_name"],
-                    "middle_name": base_payload.get("middle_name", ""),
+                    "first_name": ascii_name(base_payload["first_name"]),
+                    "last_name": ascii_name(base_payload["last_name"]),
+                    "middle_name": ascii_name(base_payload.get("middle_name", "")),
                     "name_type": "D",
                 },
                 "contact_phone": contact_no,
