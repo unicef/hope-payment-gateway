@@ -3,6 +3,11 @@
 * Western Union: Status update admin action runs as an async job and requires the `western_union.can_update_status` permission
 
 
+1.18.2
+======
+* Western Union: Normalize names to ASCII before sending to WU API (strip accents and non-ASCII characters)
+
+
 1.18.1
 ======
 * Western Union: Store payout_amount in major currency units (converted from cents) for NIS push notifications and status updates
