@@ -13,7 +13,7 @@ class FSPProcessor:
         pass  # pragma: no-cover
 
     def get_configuration(self, destination_country, delivery_mechanism):
-        payload = self.fsp.configuration or {}
+        payload = dict(self.fsp.configuration or {})
         try:
             config = self.fsp.configs.get(
                 country=destination_country,
@@ -21,10 +21,10 @@ class FSPProcessor:
             ).configuration
             payload["delivery_mechanism"] = delivery_mechanism
             payload["destination_country"] = destination_country.iso_code2
-            payload.update(config)
+            payload.update(config or {})
         except ObjectDoesNotExist:
-            config = self.fsp.configuration
-        return config
+            pass
+        return payload
 
 
 class DefaultProcessor(FSPProcessor):

@@ -9,6 +9,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.fsp.client import FSPClient
+from hope_payment_gateway.apps.fsp.exceptions import PayloadMissingKeyError
 from hope_payment_gateway.apps.fsp.palpay.utils import generate_hmac_signature
 from hope_payment_gateway.apps.fsp.utils import get_phone_number
 from hope_payment_gateway.apps.gateway.flows import PaymentRecordFlow
@@ -19,18 +20,6 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class PayloadMissingKeyError(Exception):
-    pass
-
-
-class InvalidTokenError(Exception):
-    pass
-
-
-class ExpiredTokenError(Exception):
-    pass
 
 
 class PalPayClient(FSPClient):
