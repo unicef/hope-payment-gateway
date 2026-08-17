@@ -23,6 +23,7 @@ def palpay_notify(instruction_id: int) -> None:
     notify_records_to_fsp(fqn(PalPayClient), instruction_id)
 
 
+@app.task()
 def palpay_money_transfer(pk: int) -> None:
     instruction = PaymentInstruction.objects.get(pk=pk)
 

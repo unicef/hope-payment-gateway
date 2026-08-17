@@ -21,13 +21,16 @@ from hope_payment_gateway.apps.gateway.models import (
 def notify_records_to_fsp(client_fqn, instruction_id):
     client = import_string(client_fqn)()
     pi = PaymentInstruction.objects.get(id=instruction_id)
+    success_count = 0
     for record in PaymentRecord.objects.filter(parent=pi, status=PaymentRecordState.PENDING):
         try:
             client.create_transaction(record.get_payload())
+            success_count += 1
         except TokenError, PayloadError, InvalidCorridorError:
-            logging.info(f"{record.record_code} transaction did not success")
-    pi.status = PaymentInstructionState.PROCESSED
-    pi.save()
+            logging.info(f"{record.record_code} transaction did not succeed")
+    if success_count > 0:
+        pi.status = PaymentInstructionState.PROCESSED
+        pi.save()
 
 
 def send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key):

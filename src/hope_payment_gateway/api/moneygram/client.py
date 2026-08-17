@@ -49,11 +49,10 @@ logger = logging.getLogger(__name__)
 
 
 class MoneyGramClient(FSPClient, metaclass=Singleton):
-    token = None
-    expires_in = None
-    sender = None
-
     def __init__(self):
+        self.token = None
+        self.expires_in = None
+        self.sender = None
         self.set_token()
         self.sender = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER).configuration
 

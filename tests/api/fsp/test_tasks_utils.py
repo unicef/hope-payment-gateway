@@ -10,7 +10,7 @@ from hope_payment_gateway.apps.gateway.models import (
     AsyncJob,
     PaymentInstructionState,
 )
-from hope_payment_gateway.apps.fsp.exceptions import TokenError
+from hope_payment_gateway.apps.fsp.exceptions import PayloadError, TokenError
 from tests.factories import PaymentRecordFactory
 
 
@@ -42,6 +42,23 @@ def test_notify_records_to_fsp_exception(mock_client):
     notify_records_to_fsp("client_path", pi.id)
 
     assert mock_client.create_transaction.call_count == 2
+    pi.refresh_from_db()
+    assert pi.status == PaymentInstructionState.DRAFT
+
+
+@pytest.mark.django_db
+def test_notify_records_to_fsp_partial_success(mock_client):
+    pi = PaymentInstructionFactory()
+    PaymentRecordFactory.create_batch(3, parent=pi)
+    mock_client.create_transaction.side_effect = [
+        None,
+        PayloadError("fail"),
+        None,
+    ]
+
+    notify_records_to_fsp("client_path", pi.id)
+
+    assert mock_client.create_transaction.call_count == 3
     pi.refresh_from_db()
     assert pi.status == PaymentInstructionState.PROCESSED
 
