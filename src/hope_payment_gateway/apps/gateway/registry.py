@@ -1,5 +1,9 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 from strategy_field.registry import Registry
+
+logger = logging.getLogger(__name__)
 
 
 class FSPProcessor:
@@ -13,6 +17,10 @@ class FSPProcessor:
         pass  # pragma: no-cover
 
     def get_configuration(self, destination_country, delivery_mechanism):
+        """Retrieve FSP configuration for a given country and delivery mechanism.
+
+        Falls back to the base FSP configuration if no country-specific config exists.
+        """
         payload = dict(self.fsp.configuration or {})
         try:
             config = self.fsp.configs.get(
@@ -23,7 +31,11 @@ class FSPProcessor:
             payload["destination_country"] = destination_country.iso_code2
             payload.update(config or {})
         except ObjectDoesNotExist:
-            pass
+            logger.warning(
+                "No FSP config found for %s / %s, using base configuration",
+                self.fsp,
+                destination_country,
+            )
         return payload
 
 

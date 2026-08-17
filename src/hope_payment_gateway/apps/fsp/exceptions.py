@@ -1,42 +1,46 @@
-class InvalidCorridorError(Exception):
-    pass
+class FSPError(Exception):
+    """Base exception for all FSP-related errors."""
 
 
-class PayloadError(Exception):
-    pass
+class InvalidCorridorError(FSPError):
+    """Raised when a payment corridor (country/currency pair) is not supported."""
+
+
+class PayloadError(FSPError):
+    """Raised when a payload fails validation before sending to the FSP."""
 
 
 class PayloadMissingKeyError(PayloadError):
-    pass
+    """Raised when a required key is missing from the payment payload."""
 
 
 class MissingValueInCorridorError(PayloadError):
-    pass
+    """Raised when a required value is missing from the corridor configuration."""
 
 
 class InvalidChoiceFromCorridorError(PayloadError):
-    pass
+    """Raised when an invalid choice is provided for a corridor field."""
 
 
 class PayloadIncompatibleError(PayloadError):
-    pass
+    """Raised when the payload is incompatible with the selected FSP/corridor."""
 
 
-class TokenError(Exception):
-    pass
+class TokenError(FSPError):
+    """Raised when there is an authentication/token issue with the FSP API."""
 
 
 class InvalidTokenError(TokenError):
-    pass
+    """Raised when the API token is invalid or rejected by the FSP."""
 
 
 class ExpiredTokenError(TokenError):
-    pass
+    """Raised when the API token has expired."""
 
 
-class InvalidRequestError(Exception):
-    pass
+class InvalidRequestError(FSPError):
+    """Raised when the FSP API rejects the request as invalid."""
 
 
-class PotentialDuplicateError(Exception):
-    pass
+class PotentialDuplicateError(FSPError):
+    """Raised when a transaction may already exist (duplicate detection)."""  # noqa: E501

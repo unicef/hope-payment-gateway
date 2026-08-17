@@ -40,7 +40,7 @@ def palpay_money_transfer(pk: int) -> None:
                 record.id,
                 " ".join(payload[value] for value in ["first_name", "middle_name", "last_name"] if payload.get(value)),
                 payload["mobile"],
-                payload["mobile"],
+                payload["amount"],
             ]
         )
 

@@ -86,6 +86,15 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         self.notification_client = Client(nis_wsdl, transport=transport, settings=settings)
         self.notification_client.set_ns_prefix("xrsi", "http://www.westernunion.com/schema/xrsi")
 
+    def _get_wu_config(self, pop_sender: bool = False) -> dict:
+        """Load base Western Union FSP configuration."""
+        payload = FinancialServiceProvider.objects.get(
+            vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
+        ).configuration.copy()
+        if pop_sender:
+            payload.pop("sender", None)
+        return payload
+
     @staticmethod
     def response_context(client, service_name, payload, wsdl_name=None, port=None):
         response = dict
@@ -150,8 +159,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         dom = parseString(data)
         return node, dom.toprettyxml()
 
-    @staticmethod
-    def create_validation_payload(base_payload):
+    def create_validation_payload(self, base_payload):
         try:
             counter_ids = base_payload.get("counter_id", "N/A")
             counter_id = (
@@ -218,9 +226,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             delivery_services = {"code": base_payload.get("delivery_services_code", MONEY_IN_TIME)}
             partner_notification = {"partner_notification": {"notification_requested": "Y"}}
 
-            payload = FinancialServiceProvider.objects.get(
-                vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
-            ).configuration.copy()
+            payload = self._get_wu_config()
             payload.update(
                 {
                     "device": web,
@@ -410,12 +416,9 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         return response
 
     def search_request(self, frm, mtcn):
-        payload = FinancialServiceProvider.objects.get(
-            vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
-        ).configuration.copy()
+        payload = self._get_wu_config(pop_sender=True)
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
         partner_notification = {"partner_notification": {"notification_requested": "Y"}}
-        payload.pop("sender", None)
         payload.update(
             {
                 "device": agent,
@@ -440,10 +443,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     def cancel_request(self, frm, mtcn, database_key, reason=WIC):
         wu_env = config.WESTERN_UNION_WHITELISTED_ENV
-        payload = FinancialServiceProvider.objects.get(
-            vendor_number=config.WESTERN_UNION_VENDOR_NUMBER
-        ).configuration.copy()
-        payload.pop("sender", None)
+        payload = self._get_wu_config(pop_sender=True)
         payload.update(
             {
                 "device": agent,

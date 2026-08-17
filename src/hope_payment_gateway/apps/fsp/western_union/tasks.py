@@ -33,12 +33,12 @@ def western_union_update_status(ids: list[int] | None = None) -> None:
         client.status(record.fsp_code, True)
 
 
-@app.task
+@app.task()
 def update_corridors():
     WesternUnionClient().das_countries_currencies(create_corridors=True)
 
 
-@app.task
+@app.task()
 def update_templates():
     client = WesternUnionClient()
     for corridor in Corridor.objects.all():

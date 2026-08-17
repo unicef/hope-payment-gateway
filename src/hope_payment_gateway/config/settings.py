@@ -181,6 +181,7 @@ AUTH_USER_MODEL = "core.User"
 HOST = env("HOST")
 
 LOGIN_ENABLED = env("LOGIN_ENABLED")
+MAX_CSV_UPLOAD_ROWS = env.int("MAX_CSV_UPLOAD_ROWS")
 
 SUPERUSERS = env("SUPERUSERS").split(",")
 from .fragments import *  # noqa

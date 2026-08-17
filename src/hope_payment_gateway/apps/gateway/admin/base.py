@@ -9,6 +9,7 @@ from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminactions.export import base_export
 from adminfilters.autocomplete import AutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
+from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
 from django.db.models import JSONField, QuerySet
@@ -156,7 +157,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         post_dict = request.POST.copy()
         post_dict["action"] = 0
         post_dict["apply"] = 1
-        post_dict["_selected_action"] = list
+        post_dict["_selected_action"] = []
         post_dict["select_across"] = "0"
 
         post_dict["delimiter"] = export.delimiter
@@ -191,10 +192,20 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                 data_set = csv_file.read().decode("utf-8-sig").splitlines()
                 reader = csv.DictReader(data_set)
                 try:
-                    instruction = None
+                    instruction = self.model.objects.get(pk=pk)
+
+                    rows = list(reader)
+                    if len(rows) > settings.MAX_CSV_UPLOAD_ROWS:
+                        self.message_user(
+                            request,
+                            f"File exceeds maximum of {settings.MAX_CSV_UPLOAD_ROWS} rows ({len(rows)} found)",
+                            messages.ERROR,
+                        )
+                        context["form"] = form
+                        return TemplateResponse(request, "admin/gateway/import_records_csv.html", context)
 
                     n = 0
-                    for row in reader:
+                    for row in rows:
                         parent = self.model.objects.get(pk=pk)
                         payload = {
                             key: value

@@ -1,3 +1,5 @@
+import logging
+
 from constance import config
 from strategy_field.utils import fqn
 
@@ -10,12 +12,14 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 from hope_payment_gateway.config.celery import app
 
+logger = logging.getLogger(__name__)
+
 
 def moneygram_notify(instruction_id: int) -> None:
     notify_records_to_fsp(fqn(MoneyGramClient), instruction_id)
 
 
-@app.task()  # queue="executors"
+@app.task()
 def moneygram_send_money():
     """Task to trigger MoneyGram payments."""
     fsp = "MoneyGram"
@@ -26,7 +30,7 @@ def moneygram_send_money():
     send_to_fsp(fsp, fsp_vendor_number, action_fqn, group_key)
 
 
-@app.task
+@app.task()
 def moneygram_update(ids=None) -> None:
     client = MoneyGramClient()
     qs = PaymentRecord.objects.select_related("parent__fsp").filter(
@@ -37,4 +41,7 @@ def moneygram_update(ids=None) -> None:
     if ids:
         qs = qs.filter(id__in=ids)
     for record in qs:
-        client.status_update(record.get_payload())
+        try:
+            client.status_update(record.get_payload())
+        except Exception:
+            logger.exception("Failed to update status for record %s", record.record_code)

@@ -1,9 +1,13 @@
+from abc import ABCMeta
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from unicef_security.models import AbstractUser, SecurityMixin, TimeStampedModel
 
 
-class Singleton(type):
+class Singleton(ABCMeta):
+    """Metaclass that ensures only one instance exists per class."""
+
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
