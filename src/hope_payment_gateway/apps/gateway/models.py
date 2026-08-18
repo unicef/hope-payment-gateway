@@ -4,7 +4,6 @@ from adminactions.api import delimiters, quotes
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import F, UniqueConstraint
-from functools import cached_property
 from django.utils.translation import gettext_lazy as _
 from django_celery_boost.models import AsyncJobModel
 from model_utils.models import TimeStampedModel
@@ -228,7 +227,7 @@ class PaymentInstruction(TimeStampedModel):
             payload.update(config_payload)
         return payload
 
-    @cached_property
+    @property
     def configuration(self):
         return (
             FinancialServiceProviderConfig.objects.filter(

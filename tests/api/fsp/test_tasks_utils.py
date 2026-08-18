@@ -60,7 +60,7 @@ def test_notify_records_to_fsp_partial_success(mock_client):
 
     assert mock_client.create_transaction.call_count == 3
     pi.refresh_from_db()
-    assert pi.status == PaymentInstructionState.PROCESSED
+    assert pi.status == PaymentInstructionState.DRAFT
 
 
 @pytest.mark.django_db

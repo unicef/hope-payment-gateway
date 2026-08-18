@@ -37,7 +37,7 @@ def test_send_money_validation(django_app, admin_user, wu, wu_client):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = WesternUnionClient.create_validation_payload(payload)
+    payload = WesternUnionClient().create_validation_payload(payload)
     resp = wu_client.send_money_validation(payload)
     assert (resp["title"], resp["code"]) == ("sendmoneyValidation", 200)
 
@@ -64,7 +64,7 @@ def test_send_money_validation_ko(django_app, admin_user, wu, wu_client):
         "amount": 1200,
         "delivery_services_code": "000",
     }
-    payload = WesternUnionClient.create_validation_payload(payload)
+    payload = WesternUnionClient().create_validation_payload(payload)
     resp = wu_client.send_money_validation(payload)
     assert (resp["title"], resp["code"]) == (
         "business exception [xrsi:error-reply]",
