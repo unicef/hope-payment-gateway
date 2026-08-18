@@ -4,11 +4,17 @@ from unittest.mock import patch
 import pytest
 from django.urls import reverse
 from rest_framework import status
-from factories import FinancialServiceProviderConfigFactory, PaymentRecordFactory
+from factories import (
+    FinancialServiceProviderConfigFactory,
+    PaymentRecordFactory,
+    CorridorFactory,
+    ServiceProviderCodeFactory,
+)
 from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, PaymentInstruction
 from tests.factories import (
+    AccountTypeFactory,
     DeliveryMechanismFactory,
     ExportTemplateFactory,
     OfficeFactory,
@@ -430,3 +436,171 @@ def test_payment_instruction_perform_create_no_destination_country(api_client, t
     instruction = PaymentInstruction.objects.get(remote_id="new_remote_id_3", system=system)
     assert instruction.office.code == "office_only"
     assert instruction.country is None
+
+
+# ──────────────────────────────────────────────
+# PATCH (partial_update) tests
+# ──────────────────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_account_type_patch(api_client, token_user):
+    user, token = token_user
+    obj = AccountTypeFactory(key="old_key", label="old_label")
+    url = reverse("rest:account-type-detail", args=[obj.pk])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"label": "new_label"}, format="json")
+    assert resp.status_code == 200
+    obj.refresh_from_db()
+    assert obj.label == "new_label"
+    assert obj.key == "old_key"
+
+
+@pytest.mark.django_db
+def test_delivery_mechanism_patch(api_client, token_user):
+    user, token = token_user
+    obj = DeliveryMechanismFactory(code="DM_OLD", name="old")
+    url = reverse("rest:delivery-mechanism-detail", args=[obj.pk])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"name": "new"}, format="json")
+    assert resp.status_code == 200
+    obj.refresh_from_db()
+    assert obj.name == "new"
+
+
+@pytest.mark.django_db
+def test_fsp_patch(api_client, token_user):
+    user, token = token_user
+    obj = FinancialServiceProviderFactory(name="old_name")
+    url = reverse("rest:fsp-detail", args=[obj.pk])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"name": "new_name"}, format="json")
+    assert resp.status_code == 200
+    obj.refresh_from_db()
+    assert obj.name == "new_name"
+
+
+@pytest.mark.django_db
+def test_configuration_patch(api_client, token_user):
+    user, token = token_user
+    obj = FinancialServiceProviderConfigFactory()
+    url = reverse("rest:config-detail", args=[obj.pk])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"label": "updated_label"}, format="json")
+    assert resp.status_code == 200
+    obj.refresh_from_db()
+    assert obj.label == "updated_label"
+
+
+@pytest.mark.django_db
+def test_payment_instruction_patch(api_client, token_user):
+    user, token = token_user
+    pr = PaymentRecordFactory()
+    pi = pr.parent
+    url = reverse("rest:payment-instruction-detail", args=[pi.remote_id])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"active": False}, format="json")
+    assert resp.status_code == 200
+    pi.refresh_from_db()
+    assert pi.active is False
+
+
+@pytest.mark.django_db
+def test_payment_record_patch(api_client, token_user):
+    user, token = token_user
+    pr = PaymentRecordFactory(message="old_msg")
+    url = reverse("rest:payment-record-detail", args=[pr.remote_id])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"message": "new_msg"}, format="json")
+    assert resp.status_code == 200
+    pr.refresh_from_db()
+    assert pr.message == "new_msg"
+
+
+@pytest.mark.django_db
+def test_export_template_patch(api_client, token_user):
+    user, token = token_user
+    obj = ExportTemplateFactory(config_key="old_key")
+    url = reverse("rest:export-template-detail", args=[obj.pk])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"config_key": "new_key"}, format="json")
+    assert resp.status_code == 200
+    obj.refresh_from_db()
+    assert obj.config_key == "new_key"
+
+
+@pytest.mark.django_db
+def test_corridor_patch(api_client, token_user):
+    user, token = token_user
+    obj = CorridorFactory(description="old")
+    url = reverse("rest:wu-corridor-detail", args=[obj.pk])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"description": "new"}, format="json")
+    assert resp.status_code == 200
+    obj.refresh_from_db()
+    assert obj.description == "new"
+
+
+@pytest.mark.django_db
+def test_service_provider_code_patch(api_client, token_user):
+    user, token = token_user
+    obj = ServiceProviderCodeFactory(description="old")
+    url = reverse("rest:wu-service-provider-code-detail", args=[obj.pk])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"description": "new"}, format="json")
+    assert resp.status_code == 200
+    obj.refresh_from_db()
+    assert obj.description == "new"
+
+
+@pytest.mark.django_db
+def test_payment_instruction_patch_validation_error(api_client, token_user):
+    user, token = token_user
+    pr = PaymentRecordFactory()
+    pi = pr.parent
+    url = reverse("rest:payment-instruction-detail", args=[pi.remote_id])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"fsp": -999}, format="json")
+    assert resp.status_code == 400
+
+
+@pytest.mark.django_db
+def test_payment_record_patch_validation_error(api_client, token_user):
+    user, token = token_user
+    pr = PaymentRecordFactory()
+    url = reverse("rest:payment-record-detail", args=[pr.remote_id])
+    api_client.force_authenticate(user=user, token=token)
+    resp = api_client.patch(url, {"parent": "nonexistent"}, format="json")
+    assert resp.status_code == 400
+
+
+@pytest.mark.django_db
+def test_add_records_list_error_branch(api_client, token_user):
+    user, token = token_user
+    pr = PaymentRecordFactory(parent__status=PaymentInstructionState.OPEN)
+    url = reverse("rest:payment-instruction-add-records", args=[pr.parent.remote_id])
+    payload = [
+        {
+            "record_code": "valid",
+            "remote_id": "valid",
+            "payload": {"key": "value"},
+        },
+        {
+            "record_code": None,
+            "remote_id": "also_valid",
+            "payload": {"key": "value"},
+        },
+    ]
+    api_client.force_authenticate(user=user, token=token)
+    view = api_client.post(
+        url,
+        json.dumps(payload),
+        content_type="application/json",
+        user=user,
+        HTTP_AUTHORIZATION=token,
+        expect_errors=True,
+    )
+    assert view.status_code == 400
+    errors = view.json()["errors"]
+    assert "1" in errors
+    assert "record_code" in errors["1"]
