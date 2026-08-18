@@ -185,7 +185,11 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
                 },
                 status=HTTP_201_CREATED,
             )
-        error_dict = {str(i): v for i, v in enumerate(serializer.errors) if v}
+        errors = serializer.errors
+        if isinstance(errors, list):
+            error_dict = {str(i): v for i, v in enumerate(errors) if v}
+        else:
+            error_dict = {k: v for k, v in errors.items() if v}
         return Response(
             {"remote_id": obj.remote_id, "errors": error_dict},
             status=HTTP_400_BAD_REQUEST,
