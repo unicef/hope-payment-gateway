@@ -1,4 +1,5 @@
 import logging
+from concurrent.futures import Future
 from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
@@ -40,3 +41,39 @@ def trigger_event(event_name: str, payload: dict[str, Any]) -> None:
     future = client.trigger_event(event_name, context=payload)
     if future.done() and future.exception():
         logger.warning("Bitcaster event dropped (queue full): %s", event_name)
+
+
+def register_member(
+    username: str,
+    email: str,
+    first_name: str,
+    last_name: str,
+    is_active: bool = True,
+) -> None:
+    client = get_client()
+    if client is None:
+        return
+    result = client.register_user(
+        project=settings.BITCASTER_PROJECT_SLUG,
+        application=settings.BITCASTER_APPLICATION_SLUG,
+        username=username,
+        email=email,
+        first_name=first_name or "",
+        last_name=last_name or "",
+        active=is_active,
+    )
+    if isinstance(result, Future):
+        result.result()
+
+
+def unregister_member(username: str) -> None:
+    client = get_client()
+    if client is None:
+        return
+    result = client.unregister_user(
+        project=settings.BITCASTER_PROJECT_SLUG,
+        application=settings.BITCASTER_APPLICATION_SLUG,
+        username=username,
+    )
+    if isinstance(result, Future):
+        result.result()

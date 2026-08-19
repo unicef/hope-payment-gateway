@@ -243,16 +243,16 @@ wheels = [
 
 [[package]]
 name = "bitcaster-sdk"
-version = "0.3"
+version = "0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "humanfriendly" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/63/9c/686581e3c7da198c0bcfaed325e76bd173f0a3dc5de513d0214800a2bbce/bitcaster_sdk-0.3.tar.gz", hash = "sha256:4973c4078dff514a88d5791b386f896ba9eb505ad5ae4f71497e607d40add0c7", size = 13191, upload-time = "2026-07-29T18:43:11.312Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/bb/1127ba4dff32c5374209f7e99f3632297dc90b62d16ac894a3482c3f22cb/bitcaster_sdk-0.4.tar.gz", hash = "sha256:a2eceb4f638580b416817a4ce78305de7b3f381d50dc14d44cc63fca73e2c872", size = 16994, upload-time = "2026-08-15T14:59:27.646Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2f/72/3b66088360ece24af6c656c81f6bebef1d35760440d14c8a044a6617ab29/bitcaster_sdk-0.3-py3-none-any.whl", hash = "sha256:8880f54df93dba9ee20ba4aeea29c271b7ac4d7ab2a3fbfb2b7eab072a59d394", size = 19578, upload-time = "2026-07-29T18:43:10.05Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/73/ca9c0ae57a0f50e8f7a8e100e4e1ab4285370fc981a1a149bd8b763e3c3b/bitcaster_sdk-0.4-py3-none-any.whl", hash = "sha256:cb2f34d472ddcb642dda7d557a889dafacdfb266500d9ff775c6177ca9131814", size = 24268, upload-time = "2026-08-15T14:59:26.641Z" },
 ]
 
 [[package]]
