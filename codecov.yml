@@ -1,0 +1,20 @@
+coverage:
+  status:
+    patch:
+      default:
+        target: 85%
+        flags:
+          - unittests
+
+flags:
+  unittests:
+    paths:
+      - src/
+    carryforward: true
+
+ignore:
+  - "tests/**"
+  - "*/migrations/**"
+  - "*/commands/**"
+  - "*/apps.py"
+  - "*/wsgi.py"
