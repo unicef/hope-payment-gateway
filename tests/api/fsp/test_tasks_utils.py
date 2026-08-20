@@ -105,13 +105,11 @@ def test_send_to_fsp(fsp, instructions):
 
 
 @pytest.mark.django_db
-def test_send_to_fsp_fires_signal(fsp, instructions):
-    with (
-        patch("hope_payment_gateway.apps.fsp.tasks_utils.lock_job") as mock_lock,
-        patch.object(payment_instruction_sent_to_fsp, "send") as mock_send,
-    ):
-        mock_lock.return_value.__enter__.return_value = MagicMock()
+def test_notify_records_to_fsp_fires_signal_on_full_success(mock_client):
+    pi = PaymentInstructionFactory()
+    PaymentRecordFactory.create_batch(2, parent=pi)
 
-        send_to_fsp("TestFSP", "V123", "some.action", "group_key")
+    with patch.object(payment_instruction_sent_to_fsp, "send") as mock_send:
+        notify_records_to_fsp("client_path", pi.id)
 
-        mock_send.assert_called_once_with(sender=PaymentInstruction, instance=instructions)
+    mock_send.assert_called_once_with(sender=PaymentInstruction, instance=pi)

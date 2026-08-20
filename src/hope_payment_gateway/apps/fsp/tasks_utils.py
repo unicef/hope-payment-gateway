@@ -34,6 +34,7 @@ def notify_records_to_fsp(client_fqn: str, instruction_id: int) -> None:
     if total > 0 and success_count == total:
         pi.status = PaymentInstructionState.PROCESSED
         pi.save()
+        payment_instruction_sent_to_fsp.send(sender=PaymentInstruction, instance=pi)
 
 
 def send_to_fsp(fsp: str, fsp_vendor_number: str, action_fqn: str, group_key: str) -> None:
@@ -57,6 +58,5 @@ def send_to_fsp(fsp: str, fsp_vendor_number: str, action_fqn: str, group_key: st
         )
         with lock_job(job):
             job.queue()
-        payment_instruction_sent_to_fsp.send(sender=PaymentInstruction, instance=pi)
 
     logging.info(f"{fsp} Task completed")
