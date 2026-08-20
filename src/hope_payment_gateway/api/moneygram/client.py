@@ -53,8 +53,14 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         self.token = None
         self.expires_in = None
         self.sender = None
-        self.set_token()
-        self.sender = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER).configuration
+        self._initialized = False
+
+    def _ensure_initialized(self):
+        if not self._initialized:
+            self.set_token()
+            fsp = FinancialServiceProvider.objects.get(vendor_number=config.MONEYGRAM_VENDOR_NUMBER)
+            self.sender = fsp.configuration
+            self._initialized = True
 
     def set_token(self):
         """Set up the token to perform MoneyGram API calls."""
@@ -101,6 +107,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
 
     def prepare_transaction(self, base_payload, autocommit=False):
         """Prepare the payload to create transactions."""
+        self._ensure_initialized()
         delivery_phone_number = get_account_field(base_payload, "number")
         phone_number, country_code = get_phone_number(delivery_phone_number)
 
@@ -189,7 +196,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             flow = PaymentRecordFlow(pr)
             try:
                 transaction_id, payload = self.prepare_transaction(base_payload, autocommit)
-                sentry_sdk.capture_message("MoneyGram Union: Create Transaction")
+                sentry_sdk.capture_message("MoneyGram: Create Transaction")
                 response = self.perform_request(endpoint, transaction_id, payload, "post")
             except (PayloadMissingKeyError, ValueError, TypeError) as e:
                 pr.message = e.args[0]
@@ -325,6 +332,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
         )
 
     def perform_request(self, endpoint, transaction_id, payload, method="get"):
+        self._ensure_initialized()
         response = None
         base_url = settings.MONEYGRAM_HOST + endpoint
         for _ in range(2):
@@ -346,7 +354,7 @@ class MoneyGramClient(FSPClient, metaclass=Singleton):
             ):
                 logger.error("An error occurred")
                 self.set_token()
-        if not response:
+        if response is None:
             logger.error("Cannot retrieve response")
         elif response.status_code != 200:
             logger.error(f"Request failed with status code {response.status_code}")

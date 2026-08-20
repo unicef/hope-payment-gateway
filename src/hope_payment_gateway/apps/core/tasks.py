@@ -41,13 +41,13 @@ def sync_job_task(pk: int, version: int) -> dict[str, Any]:
         job: AsyncJob = AsyncJob.objects.select_related("owner").get(pk=pk, version=version)
     except AsyncJob.DoesNotExist as e:
         sentry_sdk.capture_exception(e)
-        raise e
+        raise
 
     with lock_job(job):
         try:
             scope = sentry_sdk.get_current_scope()
             if job.owner:
-                sentry_sdk.set_user = {"id": job.owner.pk, "email": job.owner.email}
+                sentry_sdk.set_user({"id": job.owner.pk, "email": job.owner.email})
             return job.execute()
         except Exception:
             # error is logged in job.execute

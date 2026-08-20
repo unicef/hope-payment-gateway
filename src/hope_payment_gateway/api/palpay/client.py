@@ -1,3 +1,4 @@
+import contextlib
 import logging
 from urllib.parse import urlencode
 
@@ -140,7 +141,8 @@ class PalPayClient(FSPClient):
             )
             payload = response
         if response.status_code >= 300:
-            flow.fail()
+            with contextlib.suppress(TransitionNotAllowed):
+                flow.fail()
             pr.success = False
             response = Response(response.data, status=HTTP_400_BAD_REQUEST)
         else:

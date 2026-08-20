@@ -34,9 +34,10 @@ from viewflow.fsm import TransitionNotAllowed
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_get_token_ko(mg):
+    MoneyGramClient._instances = {}
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token_ko.yaml")
     with pytest.raises(InvalidTokenError):
-        MoneyGramClient()
+        MoneyGramClient().set_token()
 
 
 @responses.activate
@@ -45,6 +46,7 @@ def test_get_token_ko(mg):
 def test_get_token(mg):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
+    client.set_token()
     assert client.token == "HMfWVGb6AYGmx3B07JSXsfIZQw6Z"
     assert client.expires_in == "3599"
 
@@ -55,6 +57,7 @@ def test_get_token(mg):
 def test_get_headers_token(mg):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
+    client.set_token()
     assert client.get_headers("request_id") == {
         "Content-Type": "application/json",
         "X-MG-ClientRequestId": "request_id",
@@ -1424,6 +1427,7 @@ def test_set_token_expires_in(mg):
     mock_response = {"access_token": "test_token", "expires_in": "3600", "token_type": "Bearer"}
     responses.add(responses.GET, url, json=mock_response, status=200)
     client = MoneyGramClient()
+    client.set_token()
     assert client.expires_in == "3600"
 
 
@@ -1431,12 +1435,13 @@ def test_set_token_expires_in(mg):
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
 def test_set_token_invalid_error(mg):
-    MoneyGramClient._instances = {}  # Clear singleton instance
+    MoneyGramClient._instances = {}
     url = settings.MONEYGRAM_HOST + "/oauth/accesstoken?grant_type=client_credentials"
     mock_error_response = {"error": {"category": "AUTHENTICATION", "message": "Invalid credentials", "code": "401"}}
     responses.add(responses.GET, url, json=mock_error_response, status=401)
+    client = MoneyGramClient()
     with pytest.raises(InvalidTokenError) as exc_info:
-        MoneyGramClient()
+        client.set_token()
     assert str(exc_info.value) == "AUTHENTICATION: Invalid credentials  [401]"
 
 

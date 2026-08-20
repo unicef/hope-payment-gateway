@@ -185,9 +185,11 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
                 },
                 status=HTTP_201_CREATED,
             )
-        error_dict = {
-            index: serializer.errors[index] for index in range(len(serializer.errors)) if serializer.errors[index]
-        }
+        errors = serializer.errors
+        if isinstance(errors, list):
+            error_dict = {str(i): v for i, v in enumerate(errors) if v}
+        else:
+            error_dict = {k: v for k, v in errors.items() if v}
         return Response(
             {"remote_id": obj.remote_id, "errors": error_dict},
             status=HTTP_400_BAD_REQUEST,
@@ -234,7 +236,7 @@ class PaymentRecordViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     def cancel(self, request, **kwargs):
         record = self.get_object()
         try:
-            WesternUnionClient().refund(record.pk, dict)
+            WesternUnionClient().refund(record.fsp_code, record.get_payload())
             return Response({"message": "cancel triggered"})
         except TransitionNotAllowed as exc:
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)

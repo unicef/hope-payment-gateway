@@ -1,7 +1,7 @@
 from smart_env import SmartEnv
 
 MANDATORY = {
-    "DATABASE_URL": (str, "", "Database connetcion url"),
+    "DATABASE_URL": (str, "", "Database connection url"),
     "SECRET_KEY": (str, ""),
     "CACHE_URL": (str, "redis://localhost:6379/0"),
     "CELERY_BROKER_URL": (str, "redis://localhost:6379/0"),
@@ -60,6 +60,7 @@ OPTIONAL = {
     "SIGNING_BACKEND": (str, "django.core.signing.TimestampSigner"),
     "MEDIA_URL": (str, "/media/"),
     "MEDIA_ROOT": (str, "/tmp/media/"),  # noqa
+    "MAX_CSV_UPLOAD_ROWS": (int, 10000),
     "MONEYGRAM_HOST": (str, ""),
     "MONEYGRAM_CLIENT_ID": (str, ""),
     "MONEYGRAM_CLIENT_SECRET": (str, ""),

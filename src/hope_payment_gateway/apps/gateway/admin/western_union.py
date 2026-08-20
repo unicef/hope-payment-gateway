@@ -67,9 +67,8 @@ class WesternUnionAdminMixin:
         obj = PaymentRecord.objects.get(pk=pk)
         payload = obj.get_payload()
         try:
-            payload = WesternUnionClient.create_validation_payload(payload)
-            client = WesternUnionClient()
-            _, data = client.prepare(client.quote_client, "sendmoneyValidation", payload)
+            payload = WesternUnionClient().create_validation_payload(payload)
+            _, data = WesternUnionClient().prepare(WesternUnionClient().quote_client, "sendmoneyValidation", payload)
 
             context["title"] = "Western Union Payload"
             context["content_request"] = payload
@@ -94,7 +93,7 @@ class WesternUnionAdminMixin:
         payload = obj.get_payload()
         context["msg"] = "First call: check if data is valid \n it returns MTCN"
         try:
-            payload = WesternUnionClient.create_validation_payload(payload)
+            payload = WesternUnionClient().create_validation_payload(payload)
             context.update(WesternUnionClient().send_money_validation(payload))
             return TemplateResponse(request, "request.html", context)
         except (PayloadError, InvalidCorridorError) as e:

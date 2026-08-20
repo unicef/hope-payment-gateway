@@ -62,7 +62,7 @@ def test_client_error(wu):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = WesternUnionClient.create_validation_payload(payload)
+    payload = WesternUnionClient().create_validation_payload(payload)
     client = WesternUnionClient()
     resp = client.response_context(client.quote_client, "sendmoneyValidation", payload)
 
@@ -91,7 +91,7 @@ def test_client_non_std_error(wu):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    payload = WesternUnionClient.create_validation_payload(payload)
+    payload = WesternUnionClient().create_validation_payload(payload)
     client = WesternUnionClient()
     resp = client.response_context(client.quote_client, "sendmoneyValidation", payload)
     assert resp["title"] == "business exception [xrsi:error-reply]"

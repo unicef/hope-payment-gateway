@@ -3,7 +3,7 @@ import csv
 from adminactions.api import delimiters, quotes
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F
+from django.db.models import F, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 from django_celery_boost.models import AsyncJobModel
 from model_utils.models import TimeStampedModel
@@ -78,7 +78,7 @@ class Country(TimeStampedModel):
     iso_num = models.CharField(max_length=4, unique=True)
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        return self.name
 
 
 class FinancialServiceProvider(TimeStampedModel):
@@ -109,7 +109,9 @@ class FinancialServiceProviderConfig(models.Model):
     configuration = models.JSONField(default=dict, null=True, blank=True)
 
     class Meta:
-        unique_together = ("country", "fsp", "delivery_mechanism")
+        constraints = [
+            UniqueConstraint(fields=["country", "fsp", "delivery_mechanism"], name="uniq_fsp_config_country_fsp_dm"),
+        ]
 
     def __str__(self) -> str:
         if self.delivery_mechanism:
@@ -157,7 +159,9 @@ class ExportTemplate(models.Model):
     )
 
     class Meta:
-        unique_together = ("fsp", "config_key")
+        constraints = [
+            UniqueConstraint(fields=["fsp", "config_key"], name="uniq_export_template_fsp_config_key"),
+        ]
         permissions = (
             ("can_import_records", "Can Import Records"),
             ("can_export_records", "Can Export Records"),
@@ -204,7 +208,9 @@ class PaymentInstruction(TimeStampedModel):
     active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ("system", "remote_id")
+        constraints = [
+            UniqueConstraint(fields=["system", "remote_id"], name="uniq_payment_instruction_system_remote_id"),
+        ]
 
     def __str__(self) -> str:
         return f"{self.external_code} - {self.status}"
