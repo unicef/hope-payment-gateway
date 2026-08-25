@@ -31,6 +31,14 @@ def req(user):
     return request
 
 
+@pytest.fixture
+def payment_record_with_config(mg):
+    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
+    FinancialServiceProviderConfigFactory(key="test_config", fsp=mg, delivery_mechanism=delivery_mechanism)
+    instruction = PaymentInstructionFactory(fsp=mg, payload={"config_key": "test_config"})
+    return PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
+
+
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 def test_moneygram_button_visibility_for_mg_fsp(req, payment_record, payment_record_admin_instance):
@@ -48,13 +56,8 @@ def test_moneygram_button_visibility_for_non_mg_fsp(req, payment_record, payment
 
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
-def test_moneygram_button_with_configuration(mg, req, payment_record_admin_instance):
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-
-    FinancialServiceProviderConfigFactory(key="test_config", fsp=mg, delivery_mechanism=delivery_mechanism)
-    instruction = PaymentInstructionFactory(fsp=mg, payload={"config_key": "test_config"})
-    payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
-    req.original = payment_record
+def test_moneygram_button_with_configuration(req, payment_record_with_config, payment_record_admin_instance):
+    req.original = payment_record_with_config
 
     payment_record_admin_instance.moneygram.func(payment_record_admin_instance, req)
     assert any(choice.name == "configuration" for choice in req.choices)

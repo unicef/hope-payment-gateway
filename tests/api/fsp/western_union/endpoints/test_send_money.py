@@ -75,7 +75,7 @@ def test_send_money_validation_ko(django_app, admin_user, wu, wu_client):
 # @_recorder.record(file_path="tests/api/fsp/western_union/endpoints/send_money_complete.yaml")
 @responses.activate
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete(django_app, admin_user, wu, wu_client):
+def test_send_complete(django_app, admin_user, wu, wu_client, payment_record_send_complete):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/api/fsp/western_union/endpoints/send_money.yaml")
@@ -97,7 +97,7 @@ def test_send_complete(django_app, admin_user, wu, wu_client):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
+    pr = payment_record_send_complete
     wu_client.create_transaction(payload)
     pr.refresh_from_db()
     assert pr.success
@@ -105,13 +105,49 @@ def test_send_complete(django_app, admin_user, wu, wu_client):
     assert PaymentRecord.objects.filter(record_code=record_code).count() == 1
 
 
+@pytest.fixture
+def payment_record_send_complete(wu):
+    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
+
+
 @responses.activate
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_corridor(django_app, admin_user, wu, wu_client):
+def test_send_complete_corridor(
+    django_app, admin_user, wu, wu_client, payment_record_send_complete_corridor, corridor_send_complete_corridor
+):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses.patch("https://wugateway2pi.westernunion.com/SendMoneyStore_Service_H2H")
     responses._add_from_file(file_path="tests/api/fsp/western_union/endpoints/send_money.yaml")
     record_code = "Y3snz233UkGt1Gw1"
+    payload = {
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
+        "first_name": "Aliyah",
+        "last_name": "GRAY",
+        "source_country": "US",
+        "source_currency": "USD",
+        "transaction_type": "WMF",
+        "destination_country": "ES",
+        "destination_currency": "EUR",
+        "duplication_enabled": "D",
+        "amount": 199900,
+        "delivery_mechanism": "mobile_money",
+        "account": {
+            "number": "+94786661137",
+        },
+        "delivery_services_code": "800",
+        "reason_for_sending": "P012",
+    }
+    pr = payment_record_send_complete_corridor
+    wu_client.create_transaction(payload)
+    pr.refresh_from_db()
+    assert pr.success
+    assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
+    assert "mtcn" in pr.fsp_data
+
+
+@pytest.fixture
+def corridor_send_complete_corridor():
     corridor_template = {
         "receiver": {
             "mobile_phone": {"phone_number": {"country_code": 229, "national_number": None}},
@@ -128,40 +164,22 @@ def test_send_complete_corridor(django_app, admin_user, wu, wu_client):
         },
         "wallet_details": {"service_provider_code": "22901"},
     }
-    payload = {
-        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
-        "payment_record_code": record_code,
-        "first_name": "Aliyah",
-        "last_name": "GRAY",
-        "source_country": "US",
-        "source_currency": "USD",
-        "transaction_type": "WMF",
-        "destination_country": "ES",
-        "destination_currency": "EUR",
-        "duplication_enabled": "D",
-        "amount": 199900,
-        "delivery_mechanism": "mobile_money",
-        "account": {
-            "number": "+94786661137",
-        },
-        "delivery_services_code": "800",
-        "reason_for_sending": "P012",
-    }
-    CorridorFactory(
+    return CorridorFactory(
         destination_country="ES",
         destination_currency="EUR",
         template=corridor_template,
     )
-    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
-    wu_client.create_transaction(payload)
-    pr.refresh_from_db()
-    assert pr.success
-    assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
-    assert "mtcn" in pr.fsp_data
+
+
+@pytest.fixture
+def payment_record_send_complete_corridor(wu):
+    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw1", parent__fsp=wu)
 
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_corridor_no_exist(django_app, admin_user, wu, wu_client):
+def test_send_complete_corridor_no_exist(
+    django_app, admin_user, wu, wu_client, payment_record_send_complete_corridor_no_exist
+):
     record_code = "Y3snz233UkGt1Gw1"
     payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
@@ -182,13 +200,28 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu, wu_client):
             "number": "+94786661137",
         },
     }
-    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
+    pr = payment_record_send_complete_corridor_no_exist
     with pytest.raises(InvalidCorridorError):
         wu_client.create_transaction(payload)
     pr.refresh_from_db()
     assert not pr.success
     assert pr.status == PaymentRecordState.ERROR
     assert pr.message == "Invalid corridor for ES/EUR"
+
+
+@pytest.fixture
+def payment_record_send_complete_corridor_no_exist(wu):
+    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw1", parent__fsp=wu)
+
+
+@pytest.fixture
+def payment_record_for_corridor_ko(corridor_template, wu):
+    CorridorFactory(
+        destination_country="ES",
+        destination_currency="EUR",
+        template=corridor_template,
+    )
+    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
 
 
 @pytest.mark.parametrize(
@@ -227,11 +260,19 @@ def test_send_complete_corridor_no_exist(django_app, admin_user, wu, wu_client):
     ],
 )
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, message, wu, exc_class, wu_client):
-    record_code = "Y3snz233UkGt1Gw1"
+def test_send_complete_corridor_ko(
+    django_app,
+    admin_user,
+    corridor_template,
+    message,
+    wu,
+    exc_class,
+    wu_client,
+    payment_record_for_corridor_ko,
+):
     payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
-        "payment_record_code": record_code,
+        "payment_record_code": payment_record_for_corridor_ko.record_code,
         "first_name": "Aliyah",
         "last_name": "GRAY",
         "account": {
@@ -248,12 +289,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
         "delivery_services_code": "800",
         "reason_for_sending": "AO12",
     }
-    CorridorFactory(
-        destination_country="ES",
-        destination_currency="EUR",
-        template=corridor_template,
-    )
-    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
+    pr = payment_record_for_corridor_ko
     with pytest.raises(exc_class):
         wu_client.create_transaction(payload)
     pr.refresh_from_db()
@@ -264,7 +300,7 @@ def test_send_complete_corridor_ko(django_app, admin_user, corridor_template, me
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_send_money_validation_response_error(wu, wu_client):
+def test_send_complete_send_money_validation_response_error(wu, wu_client, payment_record_validation_response_error):
     record_code = "Y3snz233UkGt1Gw4"
     payload = {
         "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
@@ -283,7 +319,7 @@ def test_send_complete_send_money_validation_response_error(wu, wu_client):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
+    pr = payment_record_validation_response_error
 
     mock_response = {
         "code": 400,
@@ -298,10 +334,15 @@ def test_send_complete_send_money_validation_response_error(wu, wu_client):
         assert response == mock_response
 
 
+@pytest.fixture
+def payment_record_validation_response_error(wu):
+    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
+
+
 @responses.activate
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_send_complete_send_money_store_response_error(wu, wu_client):
+def test_send_complete_send_money_store_response_error(wu, wu_client, payment_record_store_response_error):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses._add_from_file(file_path="tests/api/fsp/western_union/endpoints/send_money_validation.yaml")
 
@@ -323,7 +364,7 @@ def test_send_complete_send_money_store_response_error(wu, wu_client):
         "amount": 199900,
         "delivery_services_code": "000",
     }
-    pr = PaymentRecordFactory(record_code=record_code, parent__fsp=wu)
+    pr = payment_record_store_response_error
 
     mock_response = {
         "code": 400,
@@ -336,3 +377,8 @@ def test_send_complete_send_money_store_response_error(wu, wu_client):
         assert pr.status == PaymentRecordState.ERROR
         assert pr.success is False
         assert response == mock_response
+
+
+@pytest.fixture
+def payment_record_store_response_error(wu):
+    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)

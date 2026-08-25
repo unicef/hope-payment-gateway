@@ -2,7 +2,11 @@ import pytest
 from factories import CorridorFactory
 
 
+@pytest.fixture
+def corridor():
+    return CorridorFactory(description="Corridor", template_code="TMP")
+
+
 @pytest.mark.django_db
-def test_corridor():
-    corridor = CorridorFactory(description="Corridor", template_code="TMP")
+def test_corridor(corridor):
     assert str(corridor) == "Corridor / TMP"

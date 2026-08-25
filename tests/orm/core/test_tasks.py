@@ -9,22 +9,50 @@ from tests.factories import PaymentInstructionFactory, UserFactory
 from tests.factories.tasks import AsyncJobFactory
 
 
+@pytest.fixture
+def task_user():
+    return UserFactory()
+
+
+@pytest.fixture
+def async_job(task_user):
+    return AsyncJobFactory(owner=task_user, group_key=None)
+
+
+@pytest.fixture
+def async_job_without_owner():
+    return AsyncJobFactory(group_key=None)
+
+
+@pytest.fixture
+def expired_pi_1():
+    return PaymentInstructionFactory.create()
+
+
+@pytest.fixture
+def expired_pi_2():
+    return PaymentInstructionFactory.create()
+
+
+@pytest.fixture
+def expired_jobs(expired_pi_1, expired_pi_2):
+    AsyncJobFactory.create_batch(3, instruction=expired_pi_1)
+    AsyncJobFactory.create_batch(2, instruction=expired_pi_2)
+
+
 @pytest.mark.django_db
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @patch("hope_payment_gateway.apps.gateway.models.AsyncJob.execute")
 @patch("sentry_sdk.get_current_scope")
 @patch("sentry_sdk.capture_exception")
-def test_sync_job_task_success(mocked_capture_exception, mocked_get_current_scope, mocked_execute):
-    user = UserFactory()
-    job = AsyncJobFactory(owner=user, group_key=None)
-
+def test_sync_job_task_success(mocked_capture_exception, mocked_get_current_scope, mocked_execute, async_job):
     scope = MagicMock()
     scope.clear.return_value = None
     mocked_get_current_scope.return_value = scope
 
     mocked_execute.return_value = None
 
-    sync_job_task(job.pk, job.version)
+    sync_job_task(async_job.pk, async_job.version)
 
     mocked_capture_exception.assert_not_called()
     scope.clear.assert_called_once()
@@ -35,10 +63,7 @@ def test_sync_job_task_success(mocked_capture_exception, mocked_get_current_scop
 @patch("hope_payment_gateway.apps.gateway.models.AsyncJob.execute")
 @patch("sentry_sdk.get_current_scope")
 @patch("sentry_sdk.capture_exception")
-def test_sync_job_task_fail(mocked_capture_exception, mocked_get_current_scope, mocked_execute):
-    user = UserFactory()
-    job = AsyncJobFactory(owner=user, group_key=None)
-
+def test_sync_job_task_fail(mocked_capture_exception, mocked_get_current_scope, mocked_execute, async_job):
     scope = MagicMock()
     scope.clear.return_value = None
     mocked_get_current_scope.return_value = scope
@@ -46,7 +71,7 @@ def test_sync_job_task_fail(mocked_capture_exception, mocked_get_current_scope, 
     mocked_execute.side_effect = Exception()  # noqa: B017, PT011
 
     with pytest.raises(Exception):  # noqa: B017, PT011
-        sync_job_task(job.pk, job.version)
+        sync_job_task(async_job.pk, async_job.version)
 
     mocked_capture_exception.assert_not_called()
     scope.clear.assert_called_once()
@@ -57,16 +82,16 @@ def test_sync_job_task_fail(mocked_capture_exception, mocked_get_current_scope, 
 @patch("hope_payment_gateway.apps.gateway.models.AsyncJob.execute")
 @patch("sentry_sdk.get_current_scope")
 @patch("sentry_sdk.capture_exception")
-def test_sync_job_task_success_without_owner(mocked_capture_exception, mocked_get_current_scope, mocked_execute):
-    job = AsyncJobFactory(group_key=None)
-
+def test_sync_job_task_success_without_owner(
+    mocked_capture_exception, mocked_get_current_scope, mocked_execute, async_job_without_owner
+):
     scope = MagicMock()
     scope.clear.return_value = None
     mocked_get_current_scope.return_value = scope
 
     mocked_execute.return_value = None
 
-    sync_job_task(job.pk, job.version)
+    sync_job_task(async_job_without_owner.pk, async_job_without_owner.version)
 
     mocked_capture_exception.assert_not_called()
     scope.clear.assert_called_once()
@@ -85,15 +110,8 @@ def test_sync_job_task_not_found(mock_sentry):
 
 @pytest.mark.django_db
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-def test_removed_expired_jobs():
-    # create payment instruction instances to assert deletion against them
-    pi_1 = PaymentInstructionFactory.create()
-    pi_2 = PaymentInstructionFactory.create()
+def test_removed_expired_jobs(expired_jobs, expired_pi_1, expired_pi_2):
+    removed_expired_jobs(instruction=expired_pi_1)
 
-    AsyncJobFactory.create_batch(3, instruction=pi_1)
-    AsyncJobFactory.create_batch(2, instruction=pi_2)
-
-    removed_expired_jobs(instruction=pi_1)
-
-    assert AsyncJob.objects.filter(instruction_id=pi_1.pk).count() == 0
-    assert AsyncJob.objects.filter(instruction_id=pi_2.pk).count() == 2
+    assert AsyncJob.objects.filter(instruction_id=expired_pi_1.pk).count() == 0
+    assert AsyncJob.objects.filter(instruction_id=expired_pi_2.pk).count() == 2

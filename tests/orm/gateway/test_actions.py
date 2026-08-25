@@ -84,6 +84,148 @@ def request_with_data(request_with_messages, admin_user):
     return request_with_messages
 
 
+@pytest.fixture
+def fsp_for_admin_test():
+    return FinancialServiceProviderFactory(name="Test FSP")
+
+
+@pytest.fixture
+def pi_for_admin_test(fsp_for_admin_test):
+    return PaymentInstructionFactory(fsp=fsp_for_admin_test)
+
+
+@pytest.fixture
+def pr_for_admin_test(pi_for_admin_test):
+    return PaymentRecordFactory(parent=pi_for_admin_test)
+
+
+@pytest.fixture
+def instruction_with_template():
+    fsp = FinancialServiceProviderFactory()
+    dm = DeliveryMechanismFactory()
+    office = OfficeFactory()
+    country = CountryFactory()
+    template = ExportTemplateFactory(
+        fsp=fsp, delivery_mechanism=dm, office=office, country=country, query="obj.remote_id"
+    )
+    pi = PaymentInstructionFactory(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
+    return pi, template
+
+
+@pytest.fixture
+def instruction_with_records():
+    fsp = FinancialServiceProviderFactory()
+    dm = DeliveryMechanismFactory()
+    office = OfficeFactory()
+    country = CountryFactory()
+    ExportTemplateFactory(
+        fsp=fsp,
+        delivery_mechanism=dm,
+        office=office,
+        country=country,
+        query="{{ obj.record_code }}\n{{ obj.remote_id }}",
+    )
+    instruction = PaymentInstructionFactory(
+        fsp=fsp,
+        delivery_mechanism=dm,
+        office=office,
+        country=country,
+    )
+    PaymentRecordFactory(parent=instruction, record_code="REC-001", remote_id="PR-001")
+    return instruction
+
+
+@pytest.fixture
+def bare_instruction():
+    return PaymentInstructionFactory()
+
+
+@pytest.fixture(
+    params=[
+        ("datetime", datetime(2023, 1, 1, 12, 0), "Y-m-d H:i:s"),
+        ("date", date(2023, 1, 1), "Y-m-d"),
+        ("time", time(12, 0), "H:i:s"),
+    ]
+)
+def formatted_record(request):
+    _, field_value, expected_format = request.param
+    record = PaymentRecordFactory(record_code=field_value)
+    queryset = PaymentRecord.objects.filter(id=record.id)
+    return queryset, expected_format
+
+
+@pytest.fixture
+def payment_records_for_export():
+    return PaymentRecordFactory.create_batch(2)
+
+
+@pytest.fixture
+def wu_records(wu):
+    return PaymentRecordFactory.create_batch(2, parent__fsp=wu)
+
+
+@pytest.fixture
+def mg_records(mg):
+    return PaymentRecordFactory.create_batch(2, parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_records_with_code(mg):
+    return PaymentRecordFactory.create_batch(2, parent__fsp=mg, fsp_code="TEST123")
+
+
+@pytest.fixture
+def refund_request_with_permission(request_with_messages, mg_records_with_code):
+    post_data = QueryDict(mutable=True)
+    post_data.update(
+        {
+            "action": "moneygram_refund",
+            "_selected_action": [str(r.id) for r in mg_records_with_code],
+            "select_across": "0",
+            "apply": "1",
+            "reason": "test_reason",
+        }
+    )
+    request_with_messages.POST = post_data
+    request_with_messages.user = MagicMock()
+    request_with_messages.user.has_perm.return_value = True
+    return request_with_messages
+
+
+@pytest.fixture
+def refund_request_without_permission(request_with_messages, mg_records_with_code):
+    post_data = QueryDict(mutable=True)
+    post_data.update(
+        {
+            "action": "moneygram_refund",
+            "_selected_action": [str(r.id) for r in mg_records_with_code],
+            "select_across": "0",
+            "apply": "1",
+            "reason": "test_reason",
+        }
+    )
+    request_with_messages.POST = post_data
+    request_with_messages.user = MagicMock()
+    request_with_messages.user.has_perm.return_value = False
+    return request_with_messages
+
+
+@pytest.fixture
+def refund_request_invalid_form(request_with_messages, mg_records_with_code):
+    post_data = QueryDict(mutable=True)
+    post_data.update(
+        {
+            "action": "moneygram_refund",
+            "_selected_action": [str(r.id) for r in mg_records_with_code],
+            "select_across": "0",
+        }
+    )
+    request_with_messages.POST = post_data
+    request_with_messages.user = MagicMock()
+    request_with_messages.user.has_perm.return_value = True
+    return request_with_messages
+
+
 @pytest.mark.parametrize(
     ("input_data", "expected_headers", "expected_columns"),
     [
@@ -147,18 +289,9 @@ def test_with_custom_options(sample_queryset):
     assert isinstance(response, HttpResponse)
 
 
-@pytest.mark.parametrize(
-    ("field_type", "field_value", "expected_format"),
-    [
-        ("datetime", datetime(2023, 1, 1, 12, 0), "Y-m-d H:i:s"),
-        ("date", date(2023, 1, 1), "Y-m-d"),
-        ("time", time(12, 0), "H:i:s"),
-    ],
-)
 @pytest.mark.django_db
-def test_datetime_formatting(field_type, field_value, expected_format):
-    record = PaymentRecordFactory(record_code=field_value)
-    queryset = PaymentRecord.objects.filter(id=record.id)
+def test_datetime_formatting(formatted_record):
+    queryset, expected_format = formatted_record
     fields = ["{{ obj.record_code }}"]
 
     response = export_as_template_impl(queryset=queryset, fields=fields, options={"datetime_format": expected_format})
@@ -214,9 +347,8 @@ def test_header_generation_without_header(sample_queryset):
 
 
 @pytest.mark.django_db
-def test_export_with_valid_form(modeladmin, request_with_data):
-    records = PaymentRecordFactory.create_batch(2)
-    queryset = PaymentRecord.objects.filter(id__in=[r.id for r in records])
+def test_export_with_valid_form(modeladmin, request_with_data, payment_records_for_export):
+    queryset = PaymentRecord.objects.filter(id__in=[r.id for r in payment_records_for_export])
 
     with patch("hope_payment_gateway.apps.gateway.actions.export_as_template_impl") as mock_impl:
         mock_response = HttpResponse()
@@ -242,13 +374,12 @@ def test_export_with_valid_form(modeladmin, request_with_data):
 
 
 @pytest.mark.django_db
-def test_export_with_custom_form_class(modeladmin, request_with_data):
+def test_export_with_custom_form_class(modeladmin, request_with_data, payment_records_for_export):
     class CustomForm(TemplateExportForm):
         pass
 
     modeladmin.get_template_export_form = MagicMock(return_value=CustomForm)
-    records = PaymentRecordFactory.create_batch(2)
-    queryset = PaymentRecord.objects.filter(id__in=[r.id for r in records])
+    queryset = PaymentRecord.objects.filter(id__in=[r.id for r in payment_records_for_export])
 
     with patch("hope_payment_gateway.apps.gateway.actions.export_as_template_impl") as mock_impl:
         mock_response = HttpResponse()
@@ -282,8 +413,7 @@ def test_export_with_invalid_form(modeladmin, request_with_data):
         }
     )
     request_with_data.POST = post_data
-    records = PaymentRecordFactory.create_batch(2)
-    queryset = PaymentRecord.objects.filter(id__in=[r.id for r in records])
+    queryset = PaymentRecord.objects.none()
 
     with patch("hope_payment_gateway.apps.gateway.actions.export_as_template_impl") as mock_impl:
         with patch("hope_payment_gateway.apps.gateway.actions.TemplateExportForm") as mock_form:
@@ -318,10 +448,9 @@ def test_export_with_empty_queryset(modeladmin, request_with_data):
 
 
 @pytest.mark.django_db
-def test_export_with_custom_template(modeladmin, request_with_data):
+def test_export_with_custom_template(modeladmin, request_with_data, payment_records_for_export):
     modeladmin.get_template_export_form = MagicMock(return_value=None)
-    records = PaymentRecordFactory.create_batch(2)
-    queryset = PaymentRecord.objects.filter(id__in=[r.id for r in records])
+    queryset = PaymentRecord.objects.filter(id__in=[r.id for r in payment_records_for_export])
 
     with patch("hope_payment_gateway.apps.gateway.actions.export_as_template_impl") as mock_impl:
         mock_response = HttpResponse()
@@ -359,9 +488,8 @@ def test_export_with_custom_template(modeladmin, request_with_data):
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @pytest.mark.django_db
 @patch("hope_payment_gateway.apps.gateway.actions.AsyncJob.queue")
-def test_western_union_update_status_action(mock_queue, request_with_data, wu, mock_messages):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=wu)
-    record_ids = [record.id for record in records]
+def test_western_union_update_status_action(mock_queue, request_with_data, wu_records, mock_messages):
+    record_ids = [record.id for record in wu_records]
     queryset = PaymentRecord.objects.filter(id__in=record_ids)
 
     western_union_update_status_action(None, request_with_data, queryset)
@@ -378,10 +506,9 @@ def test_western_union_update_status_action(mock_queue, request_with_data, wu, m
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @pytest.mark.django_db
-def test_western_union_update_status_action_no_permission(request_with_messages, user, wu, mock_messages):
+def test_western_union_update_status_action_no_permission(request_with_messages, user, wu_records, mock_messages):
     request_with_messages.user = user
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=wu)
-    queryset = PaymentRecord.objects.filter(id__in=[record.id for record in records])
+    queryset = PaymentRecord.objects.filter(id__in=[record.id for record in wu_records])
 
     western_union_update_status_action(None, request_with_messages, queryset)
 
@@ -393,9 +520,8 @@ def test_western_union_update_status_action_no_permission(request_with_messages,
 
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_moneygram_update_called(modeladmin, request_with_messages, mg):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg)
-    record_ids = [record.id for record in records]
+def test_moneygram_update_called(modeladmin, request_with_messages, mg_records):
+    record_ids = [record.id for record in mg_records]
     queryset = PaymentRecord.objects.filter(id__in=record_ids).values_list("id", flat=True)
 
     with patch("hope_payment_gateway.apps.gateway.actions.moneygram_update") as mock_update:
@@ -405,24 +531,8 @@ def test_moneygram_update_called(modeladmin, request_with_messages, mg):
 
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_refund_with_permission(modeladmin, request_with_messages, mg):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg, fsp_code="TEST123")
-    record_ids = [record.id for record in records]
-    queryset = PaymentRecord.objects.filter(id__in=record_ids)
-
-    post_data = QueryDict(mutable=True)
-    post_data.update(
-        {
-            "action": "moneygram_refund",
-            "_selected_action": [str(r.id) for r in records],
-            "select_across": "0",
-            "apply": "1",
-            "reason": "test_reason",
-        }
-    )
-    request_with_messages.POST = post_data
-    request_with_messages.user = MagicMock()
-    request_with_messages.user.has_perm.return_value = True
+def test_refund_with_permission(modeladmin, refund_request_with_permission, mg_records_with_code):
+    queryset = PaymentRecord.objects.filter(id__in=[record.id for record in mg_records_with_code])
 
     with patch("hope_payment_gateway.apps.gateway.actions.moneygram_update") as mock_update:
         with patch("hope_payment_gateway.apps.gateway.actions.MoneyGramClient") as mock_client:
@@ -430,13 +540,13 @@ def test_refund_with_permission(modeladmin, request_with_messages, mg):
                 mock_form.return_value.is_valid.return_value = True
                 mock_form.return_value.cleaned_data = {"reason": "test_reason"}
                 mock_client.return_value.refund.return_value = None
-                response = moneygram_refund(modeladmin, request_with_messages, queryset)
+                response = moneygram_refund(modeladmin, refund_request_with_permission, queryset)
 
                 mock_update.assert_called_once()
 
-                assert mock_client.return_value.refund.call_count == len(records)
+                assert mock_client.return_value.refund.call_count == len(mg_records_with_code)
 
-                for record in records:
+                for record in mg_records_with_code:
                     record.refresh_from_db()
                     assert record.payload["refuse_reason_code"] == "test_reason"
 
@@ -446,34 +556,18 @@ def test_refund_with_permission(modeladmin, request_with_messages, mg):
 
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_refund_without_permission(modeladmin, request_with_messages, mg):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg, fsp_code="TEST123")
-    record_ids = [record.id for record in records]
-    queryset = PaymentRecord.objects.filter(id__in=record_ids)
-
-    post_data = QueryDict(mutable=True)
-    post_data.update(
-        {
-            "action": "moneygram_refund",
-            "_selected_action": [str(r.id) for r in records],
-            "select_across": "0",
-            "apply": "1",
-            "reason": "test_reason",
-        }
-    )
-    request_with_messages.POST = post_data
-    request_with_messages.user = MagicMock()
-    request_with_messages.user.has_perm.return_value = False
+def test_refund_without_permission(modeladmin, refund_request_without_permission, mg_records_with_code):
+    queryset = PaymentRecord.objects.filter(id__in=[record.id for record in mg_records_with_code])
 
     with patch("hope_payment_gateway.apps.gateway.actions.moneygram_update") as mock_update:
         with patch("hope_payment_gateway.apps.gateway.actions.MoneyGramClient") as mock_client:
-            response = moneygram_refund(modeladmin, request_with_messages, queryset)
+            response = moneygram_refund(modeladmin, refund_request_without_permission, queryset)
 
             mock_update.assert_called_once()
 
             mock_client.return_value.refund.assert_not_called()
 
-            messages = list(request_with_messages._messages)
+            messages = list(refund_request_without_permission._messages)
             assert len(messages) == 1
             assert str(messages[0]) == "Sorry you do not have rights to execute this action"
 
@@ -482,18 +576,8 @@ def test_refund_without_permission(modeladmin, request_with_messages, mg):
 
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @pytest.mark.django_db
-def test_refund_with_invalid_form(modeladmin, request_with_messages, mg):
-    records = PaymentRecordFactory.create_batch(2, parent__fsp=mg, fsp_code="TEST123")
-    record_ids = [record.id for record in records]
-    queryset = PaymentRecord.objects.filter(id__in=record_ids)
-
-    post_data = QueryDict(mutable=True)
-    post_data.update(
-        {"action": "moneygram_refund", "_selected_action": [str(r.id) for r in records], "select_across": "0"}
-    )
-    request_with_messages.POST = post_data
-    request_with_messages.user = MagicMock()
-    request_with_messages.user.has_perm.return_value = True
+def test_refund_with_invalid_form(modeladmin, refund_request_invalid_form, mg_records_with_code):
+    queryset = PaymentRecord.objects.filter(id__in=[record.id for record in mg_records_with_code])
 
     with patch("hope_payment_gateway.apps.gateway.actions.moneygram_update") as mock_update:
         with patch("hope_payment_gateway.apps.gateway.actions.MoneyGramClient") as mock_client:
@@ -518,7 +602,7 @@ def test_refund_with_invalid_form(modeladmin, request_with_messages, mg):
 
                         mock_update.return_value = None
 
-                        response = moneygram_refund(modeladmin, request_with_messages, queryset)
+                        response = moneygram_refund(modeladmin, refund_request_invalid_form, queryset)
 
                         mock_update.assert_called_once()
 
@@ -537,7 +621,7 @@ def test_refund_with_invalid_form(modeladmin, request_with_messages, mg):
 
                         mock_render.assert_called_once()
                         render_args = mock_render.call_args[0]
-                        assert render_args[0] == request_with_messages
+                        assert render_args[0] == refund_request_invalid_form
                         assert render_args[1] == "admin/gateway/refund.html"
                         assert "title" in render_args[2]
                         assert render_args[2]["title"] == "MoneyGram: Refund"
@@ -552,28 +636,16 @@ def test_refund_with_invalid_form(modeladmin, request_with_messages, mg):
 
 
 @pytest.mark.django_db
-def test_payment_record_admin_fsp_method():
-    fsp = FinancialServiceProviderFactory(name="Test FSP")
-    pi = PaymentInstructionFactory(fsp=fsp)
-    pr = PaymentRecordFactory(parent=pi)
-
+def test_payment_record_admin_fsp_method(fsp_for_admin_test, pi_for_admin_test, pr_for_admin_test):
     admin_site = AdminSite()
     pr_admin = PaymentRecordAdmin(PaymentRecord, admin_site)
 
-    assert pr_admin.fsp(pr) == "Test FSP"
+    assert pr_admin.fsp(pr_for_admin_test) == "Test FSP"
 
 
 @pytest.mark.django_db
-def test_payment_instruction_admin_generate_records(rf, admin_user, mock_messages):
-    fsp = FinancialServiceProviderFactory()
-    dm = DeliveryMechanismFactory()
-    office = OfficeFactory()
-    country = CountryFactory()
-    template = ExportTemplateFactory(
-        fsp=fsp, delivery_mechanism=dm, office=office, country=country, query="obj.remote_id"
-    )
-
-    pi = PaymentInstructionFactory(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
+def test_payment_instruction_admin_generate_records(rf, admin_user, mock_messages, instruction_with_template):
+    pi, template = instruction_with_template
 
     admin_site = AdminSite()
     pi_admin = PaymentInstructionAdmin(PaymentInstruction, admin_site)
@@ -599,28 +671,9 @@ def test_payment_instruction_admin_generate_records(rf, admin_user, mock_message
 
 
 @pytest.mark.django_db
-def test_export_payment_instruction_to_email():
-    fsp = FinancialServiceProviderFactory()
-    dm = DeliveryMechanismFactory()
-    office = OfficeFactory()
-    country = CountryFactory()
-    ExportTemplateFactory(
-        fsp=fsp,
-        delivery_mechanism=dm,
-        office=office,
-        country=country,
-        query="{{ obj.record_code }}\n{{ obj.remote_id }}",
-    )
-    instruction = PaymentInstructionFactory(
-        fsp=fsp,
-        delivery_mechanism=dm,
-        office=office,
-        country=country,
-    )
-    PaymentRecordFactory(parent=instruction, record_code="REC-001", remote_id="PR-001")
-
+def test_export_payment_instruction_to_email(instruction_with_records):
     with patch("hope_payment_gateway.apps.gateway.actions.EmailMessage") as message_cls:
-        filename = export_payment_instruction_to_email(instruction.pk, "admin@example.com")
+        filename = export_payment_instruction_to_email(instruction_with_records.pk, "admin@example.com")
 
     assert filename.startswith("payment_instruction_")
     kwargs = message_cls.call_args.kwargs
@@ -637,7 +690,6 @@ def test_export_payment_instruction_to_email():
 
 
 @pytest.mark.django_db
-def test_export_payment_instruction_to_email_without_template():
-    instruction = PaymentInstructionFactory()
+def test_export_payment_instruction_to_email_without_template(bare_instruction):
     with pytest.raises(ValueError, match="No template found"):
-        export_payment_instruction_to_email(instruction.pk, "admin@example.com")
+        export_payment_instruction_to_email(bare_instruction.pk, "admin@example.com")

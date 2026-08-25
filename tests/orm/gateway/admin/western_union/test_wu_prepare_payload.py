@@ -33,6 +33,11 @@ def payment_record(wu):
     return PaymentRecordFactory(parent=instruction)
 
 
+@pytest.fixture
+def corridor_us_usd():
+    return CorridorFactory(destination_country="US", destination_currency="USD")
+
+
 @pytest.mark.django_db
 def test_wu_prepare_payload_no_permissions(user, western_union_admin_instance, payment_record):
     factory = RequestFactory()
@@ -52,7 +57,9 @@ def test_wu_prepare_payload_no_permissions(user, western_union_admin_instance, p
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_wu_prepare_payload_success(user_with_permissions, western_union_admin_instance, payment_record, client):
+def test_wu_prepare_payload_success(
+    user_with_permissions, western_union_admin_instance, payment_record, corridor_us_usd, client
+):
     payment_record.payload = {
         "delivery_services_code": "800",
         "destination_country": "US",
@@ -63,7 +70,6 @@ def test_wu_prepare_payload_success(user_with_permissions, western_union_admin_i
         "amount": 100,
     }
     payment_record.save()
-    CorridorFactory(destination_country="US", destination_currency="USD")
 
     client.force_login(user_with_permissions)
     url = reverse("admin:gateway_paymentrecord_wu_prepare_payload", args=[payment_record.pk])

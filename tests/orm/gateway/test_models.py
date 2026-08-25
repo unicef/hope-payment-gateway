@@ -15,41 +15,95 @@ from factories import (
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 
+# --- Fixtures for test_model_str_methods ---
+
+
+@pytest.fixture
+def account_type():
+    return AccountTypeFactory(label="Test Account Type")
+
+
+@pytest.fixture
+def delivery_mechanism_for_str():
+    return DeliveryMechanismFactory(name="Test DM", code="TDM")
+
+
+@pytest.fixture
+def office_for_str():
+    return OfficeFactory(name="Test Office")
+
+
+@pytest.fixture
+def country_for_str():
+    return CountryFactory(name="Test Country")
+
+
+@pytest.fixture
+def fsp_for_str():
+    return FinancialServiceProviderFactory(name="Test FSP", vendor_number="V123")
+
+
+@pytest.fixture
+def fsp_config_for_str(fsp_for_str, delivery_mechanism_for_str):
+    return FinancialServiceProviderConfigFactory(
+        fsp=fsp_for_str, delivery_mechanism=delivery_mechanism_for_str, label="L1"
+    )
+
+
+@pytest.fixture
+def export_template_for_str(fsp_for_str):
+    return ExportTemplateFactory(fsp=fsp_for_str, config_key="CK1")
+
+
+@pytest.fixture
+def instruction_for_str():
+    return PaymentInstructionFactory(external_code="EC1", status="DRAFT")
+
+
+@pytest.fixture
+def record_for_str():
+    return PaymentRecordFactory(record_code="RC1", status="PENDING")
+
+
 @pytest.mark.django_db
-def test_model_str_methods():
-    at = AccountTypeFactory(label="Test Account Type")
-    assert str(at) == "Test Account Type"
+def test_model_str_methods(
+    account_type,
+    delivery_mechanism_for_str,
+    office_for_str,
+    country_for_str,
+    fsp_for_str,
+    fsp_config_for_str,
+    export_template_for_str,
+    instruction_for_str,
+    record_for_str,
+):
+    assert str(account_type) == "Test Account Type"
+    assert str(delivery_mechanism_for_str) == "Test DM [TDM]"
+    assert str(office_for_str) == "Test Office"
+    assert str(country_for_str) == "Test Country"
+    assert str(fsp_for_str) == "Test FSP [V123]"
+    assert str(fsp_config_for_str) == f"{fsp_for_str}/{delivery_mechanism_for_str} [L1]"
+    assert str(export_template_for_str) == "Test FSP [V123] / CK1"
+    assert str(instruction_for_str) == "EC1 - DRAFT"
+    assert str(record_for_str) == "RC1 / PENDING"
 
-    dm = DeliveryMechanismFactory(name="Test DM", code="TDM")
-    assert str(dm) == "Test DM [TDM]"
 
-    office = OfficeFactory(name="Test Office")
-    assert str(office) == "Test Office"
+# --- Fixtures for test_payment_record_payload ---
 
-    country = CountryFactory(name="Test Country")
-    assert str(country) == "Test Country"
 
-    fsp = FinancialServiceProviderFactory(name="Test FSP", vendor_number="V123")
-    assert str(fsp) == "Test FSP [V123]"
+@pytest.fixture
+def payment_instruction_with_payload():
+    return PaymentInstructionFactory(payload={"a": "a"})
 
-    fsp_config = FinancialServiceProviderConfigFactory(fsp=fsp, delivery_mechanism=dm, label="L1")
-    assert str(fsp_config) == f"{fsp}/{dm} [L1]"
 
-    template = ExportTemplateFactory(fsp=fsp, config_key="CK1")
-    assert str(template) == "Test FSP [V123] / CK1"
-
-    instruction = PaymentInstructionFactory(external_code="EC1", status="DRAFT")
-    assert str(instruction) == "EC1 - DRAFT"
-
-    record = PaymentRecordFactory(record_code="RC1", status="PENDING")
-    assert str(record) == "RC1 / PENDING"
+@pytest.fixture
+def payment_record_with_payload(payment_instruction_with_payload):
+    return PaymentRecordFactory(parent=payment_instruction_with_payload, payload={"b": "b"}, record_code="r")
 
 
 @pytest.mark.django_db
-def test_payment_record_payload():
-    instruction = PaymentInstructionFactory(payload={"a": "a"})
-    prl = PaymentRecordFactory(parent=instruction, payload={"b": "b"}, record_code="r")
-    assert prl.get_payload().keys() == {
+def test_payment_record_payload(payment_record_with_payload):
+    assert payment_record_with_payload.get_payload().keys() == {
         "a",
         "delivery_mechanism",
         "b",
@@ -58,77 +112,206 @@ def test_payment_record_payload():
     }
 
 
-@pytest.mark.django_db
-def test_payment_instruction_selected_export():
-    fsp = FinancialServiceProviderFactory()
-    dm = DeliveryMechanismFactory()
-    office = OfficeFactory()
-    country = CountryFactory()
-
-    # Template with everything matching
-    template1 = ExportTemplateFactory(fsp=fsp, delivery_mechanism=dm, office=office, country=country, config_key="T1")
-    # Template with office as null
-    template2 = ExportTemplateFactory(fsp=fsp, delivery_mechanism=dm, office=None, country=country, config_key="T2")
-
-    instruction = PaymentInstructionFactory(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
-    assert instruction.selected_export == template1
-
-    instruction.office = None
-    instruction.save()
-    assert instruction.selected_export == template2
-
-    # Forced export
-    forced_template = ExportTemplateFactory(fsp=fsp, config_key="FORCED")
-    instruction.export = forced_template
-    instruction.save()
-    assert instruction.selected_export == forced_template
+# --- Fixtures for test_payment_instruction_selected_export ---
 
 
-@pytest.mark.django_db
-def test_payment_instruction_configuration():
-    fsp = FinancialServiceProviderFactory()
-    dm = DeliveryMechanismFactory()
-    office = OfficeFactory()
-    country1 = CountryFactory()
-    country2 = CountryFactory()
+@pytest.fixture
+def fsp_for_se():
+    return FinancialServiceProviderFactory()
 
-    config1 = FinancialServiceProviderConfigFactory(
-        fsp=fsp, delivery_mechanism=dm, office=office, country=country1, label="C1"
-    )
-    # Use different country to avoid unique_together constraint violation
-    config2 = FinancialServiceProviderConfigFactory(
-        fsp=fsp, delivery_mechanism=dm, office=None, country=country2, label="C2"
+
+@pytest.fixture
+def dm_for_se():
+    return DeliveryMechanismFactory()
+
+
+@pytest.fixture
+def office_for_se():
+    return OfficeFactory()
+
+
+@pytest.fixture
+def country_for_se():
+    return CountryFactory()
+
+
+@pytest.fixture
+def template1_for_se(fsp_for_se, dm_for_se, office_for_se, country_for_se):
+    return ExportTemplateFactory(
+        fsp=fsp_for_se,
+        delivery_mechanism=dm_for_se,
+        office=office_for_se,
+        country=country_for_se,
+        config_key="T1",
     )
 
-    instruction = PaymentInstructionFactory(fsp=fsp, delivery_mechanism=dm, office=office, country=country1)
-    assert instruction.configuration == config1
 
-    instruction.country = country2
-    instruction.office = None
-    instruction.save()
-    assert instruction.configuration == config2
+@pytest.fixture
+def template2_for_se(fsp_for_se, dm_for_se, country_for_se):
+    return ExportTemplateFactory(
+        fsp=fsp_for_se,
+        delivery_mechanism=dm_for_se,
+        office=None,
+        country=country_for_se,
+        config_key="T2",
+    )
+
+
+@pytest.fixture
+def instruction_for_se(fsp_for_se, dm_for_se, office_for_se, country_for_se):
+    return PaymentInstructionFactory(
+        fsp=fsp_for_se,
+        delivery_mechanism=dm_for_se,
+        office=office_for_se,
+        country=country_for_se,
+    )
+
+
+@pytest.fixture
+def forced_template_for_se(fsp_for_se):
+    return ExportTemplateFactory(fsp=fsp_for_se, config_key="FORCED")
 
 
 @pytest.mark.django_db
-def test_get_payload_methods():
-    fsp = FinancialServiceProviderFactory()
-    instruction = PaymentInstructionFactory(fsp=fsp, payload={"a": 1, "config_key": "CK1"})
+def test_payment_instruction_selected_export(
+    template1_for_se,
+    template2_for_se,
+    instruction_for_se,
+    forced_template_for_se,
+):
+    assert instruction_for_se.selected_export == template1_for_se
 
-    with patch.object(fsp.strategy.__class__, "get_configuration") as mock_get_config:
+    instruction_for_se.office = None
+    instruction_for_se.save()
+    assert instruction_for_se.selected_export == template2_for_se
+
+    instruction_for_se.export = forced_template_for_se
+    instruction_for_se.save()
+    assert instruction_for_se.selected_export == forced_template_for_se
+
+
+# --- Fixtures for test_payment_instruction_configuration ---
+
+
+@pytest.fixture
+def fsp_for_config():
+    return FinancialServiceProviderFactory()
+
+
+@pytest.fixture
+def dm_for_config():
+    return DeliveryMechanismFactory()
+
+
+@pytest.fixture
+def office_for_config():
+    return OfficeFactory()
+
+
+@pytest.fixture
+def country1_for_config():
+    return CountryFactory()
+
+
+@pytest.fixture
+def country2_for_config():
+    return CountryFactory()
+
+
+@pytest.fixture
+def config1_for_config(fsp_for_config, dm_for_config, office_for_config, country1_for_config):
+    return FinancialServiceProviderConfigFactory(
+        fsp=fsp_for_config,
+        delivery_mechanism=dm_for_config,
+        office=office_for_config,
+        country=country1_for_config,
+        label="C1",
+    )
+
+
+@pytest.fixture
+def config2_for_config(fsp_for_config, dm_for_config, country2_for_config):
+    return FinancialServiceProviderConfigFactory(
+        fsp=fsp_for_config,
+        delivery_mechanism=dm_for_config,
+        office=None,
+        country=country2_for_config,
+        label="C2",
+    )
+
+
+@pytest.fixture
+def instruction_for_config(fsp_for_config, dm_for_config, office_for_config, country1_for_config):
+    return PaymentInstructionFactory(
+        fsp=fsp_for_config,
+        delivery_mechanism=dm_for_config,
+        office=office_for_config,
+        country=country1_for_config,
+    )
+
+
+@pytest.mark.django_db
+def test_payment_instruction_configuration(
+    config1_for_config,
+    config2_for_config,
+    instruction_for_config,
+    country2_for_config,
+):
+    assert instruction_for_config.configuration == config1_for_config
+
+    instruction_for_config.country = country2_for_config
+    instruction_for_config.office = None
+    instruction_for_config.save()
+    assert instruction_for_config.configuration == config2_for_config
+
+
+# --- Fixtures for test_get_payload_methods ---
+
+
+@pytest.fixture
+def fsp_for_get_payload():
+    return FinancialServiceProviderFactory()
+
+
+@pytest.fixture
+def instruction_for_get_payload(fsp_for_get_payload):
+    return PaymentInstructionFactory(fsp=fsp_for_get_payload, payload={"a": 1, "config_key": "CK1"})
+
+
+@pytest.fixture
+def instruction_no_config_for_get_payload(fsp_for_get_payload):
+    return PaymentInstructionFactory(fsp=fsp_for_get_payload, payload={"a": 1})
+
+
+@pytest.fixture
+def record_for_get_payload(instruction_for_get_payload):
+    return PaymentRecordFactory(
+        parent=instruction_for_get_payload,
+        record_code="RC1",
+        remote_id="RID1",
+        payload={"c": 3},
+    )
+
+
+@pytest.mark.django_db
+def test_get_payload_methods(
+    fsp_for_get_payload,
+    instruction_for_get_payload,
+    instruction_no_config_for_get_payload,
+    record_for_get_payload,
+):
+    with patch.object(fsp_for_get_payload.strategy.__class__, "get_configuration") as mock_get_config:
         mock_get_config.return_value = {"b": 2}
 
-        payload = instruction.get_payload()
+        payload = instruction_for_get_payload.get_payload()
         assert payload["a"] == 1
         assert payload["b"] == 2
         assert "config_key" in payload
 
-        # Case without config_key to cover branch
-        instruction_no_config = PaymentInstructionFactory(fsp=fsp, payload={"a": 1})
-        payload_no_config = instruction_no_config.get_payload()
+        payload_no_config = instruction_no_config_for_get_payload.get_payload()
         assert payload_no_config["a"] == 1
 
-        record = PaymentRecordFactory(parent=instruction, record_code="RC1", remote_id="RID1", payload={"c": 3})
-        record_payload = record.get_payload()
+        record_payload = record_for_get_payload.get_payload()
         assert record_payload["a"] == 1
         assert record_payload["b"] == 2
         assert record_payload["c"] == 3
@@ -136,87 +319,161 @@ def test_get_payload_methods():
         assert record_payload["remote_id"] == "RID1"
 
 
+# --- Fixtures for test_payment_record_add_push_notification ---
+
+
+@pytest.fixture
+def record_for_push_notification():
+    return PaymentRecordFactory(fsp_data=None)
+
+
 @pytest.mark.django_db
-def test_payment_record_add_push_notification():
-    record = PaymentRecordFactory(fsp_data=None)
+def test_payment_record_add_push_notification(record_for_push_notification):
     payload1 = {"event": "test1"}
     payload2 = {"event": "test2"}
 
-    # Test initialization of None fsp_data
-    record.add_push_notification(payload1)
-    assert record.fsp_data["push_notification"] == [payload1]
+    record_for_push_notification.add_push_notification(payload1)
+    assert record_for_push_notification.fsp_data["push_notification"] == [payload1]
 
-    # Test appending second payload
-    record.add_push_notification(payload2)
-    assert record.fsp_data["push_notification"] == [payload1, payload2]
+    record_for_push_notification.add_push_notification(payload2)
+    assert record_for_push_notification.fsp_data["push_notification"] == [
+        payload1,
+        payload2,
+    ]
 
-    # Test persistence
-    record.save()
-    record.refresh_from_db()
-    assert record.fsp_data["push_notification"] == [payload1, payload2]
+    record_for_push_notification.save()
+    record_for_push_notification.refresh_from_db()
+    assert record_for_push_notification.fsp_data["push_notification"] == [
+        payload1,
+        payload2,
+    ]
+
+
+# --- Fixtures for test_record_updated_signal_no_old_instance ---
+
+
+@pytest.fixture
+def parent_for_signal():
+    return PaymentInstructionFactory()
+
+
+@pytest.fixture
+def record_for_signal(parent_for_signal):
+    return PaymentRecordFactory.build(id=99999, status=PaymentRecordState.PENDING, parent=parent_for_signal)
 
 
 @pytest.mark.django_db
-def test_record_updated_signal_no_old_instance():
+def test_record_updated_signal_no_old_instance(parent_for_signal, record_for_signal):
     with patch("hope_payment_gateway.apps.gateway.signals.flag_enabled", return_value=True):
         with patch("hope_payment_gateway.apps.gateway.signals.notify_record_change") as mock_notify:
-            parent = PaymentInstructionFactory()
-            record = PaymentRecordFactory.build(id=99999, status=PaymentRecordState.PENDING, parent=parent)
-            record.save()
+            record_for_signal.save()
             mock_notify.assert_not_called()
 
 
-@pytest.mark.django_db
-def test_get_payload_without_delivery_mechanism():
-    fsp = FinancialServiceProviderFactory()
-    country = CountryFactory()
-    instruction = PaymentInstructionFactory(
-        fsp=fsp,
+# --- Fixtures for test_get_payload_without_delivery_mechanism ---
+
+
+@pytest.fixture
+def fsp_for_no_dm():
+    return FinancialServiceProviderFactory()
+
+
+@pytest.fixture
+def country_for_no_dm():
+    return CountryFactory()
+
+
+@pytest.fixture
+def instruction_for_no_dm(fsp_for_no_dm, country_for_no_dm):
+    return PaymentInstructionFactory(
+        fsp=fsp_for_no_dm,
         delivery_mechanism=None,
-        country=country,
+        country=country_for_no_dm,
         payload={"a": 1},
     )
-    payload = instruction.get_payload()
+
+
+@pytest.mark.django_db
+def test_get_payload_without_delivery_mechanism(instruction_for_no_dm):
+    payload = instruction_for_no_dm.get_payload()
     assert payload["a"] == 1
     assert "delivery_mechanism" not in payload
 
 
-@pytest.mark.django_db
-def test_get_payload_without_country():
-    fsp = FinancialServiceProviderFactory()
-    dm = DeliveryMechanismFactory(code="CASH")
-    instruction = PaymentInstructionFactory(
-        fsp=fsp,
-        delivery_mechanism=dm,
+# --- Fixtures for test_get_payload_without_country ---
+
+
+@pytest.fixture
+def fsp_for_no_country():
+    return FinancialServiceProviderFactory()
+
+
+@pytest.fixture
+def dm_for_no_country():
+    return DeliveryMechanismFactory(code="CASH")
+
+
+@pytest.fixture
+def instruction_for_no_country(fsp_for_no_country, dm_for_no_country):
+    return PaymentInstructionFactory(
+        fsp=fsp_for_no_country,
+        delivery_mechanism=dm_for_no_country,
         country=None,
         payload={"a": 1},
     )
-    payload = instruction.get_payload()
+
+
+@pytest.mark.django_db
+def test_get_payload_without_country(instruction_for_no_country):
+    payload = instruction_for_no_country.get_payload()
     assert payload["a"] == 1
     assert payload["delivery_mechanism"] == "CASH"
 
 
-@pytest.mark.django_db
-def test_get_payload_with_real_configuration():
-    fsp = FinancialServiceProviderFactory()
-    country = CountryFactory()
-    dm = DeliveryMechanismFactory(code="cash_over_the_counter")
+# --- Fixtures for test_get_payload_with_real_configuration ---
 
-    FinancialServiceProviderConfigFactory(
-        fsp=fsp,
-        country=country,
-        delivery_mechanism=dm,
+
+@pytest.fixture
+def fsp_for_real_config():
+    return FinancialServiceProviderFactory()
+
+
+@pytest.fixture
+def country_for_real_config():
+    return CountryFactory()
+
+
+@pytest.fixture
+def dm_for_real_config():
+    return DeliveryMechanismFactory(code="cash_over_the_counter")
+
+
+@pytest.fixture
+def config_for_real_config(fsp_for_real_config, country_for_real_config, dm_for_real_config):
+    return FinancialServiceProviderConfigFactory(
+        fsp=fsp_for_real_config,
+        country=country_for_real_config,
+        delivery_mechanism=dm_for_real_config,
         configuration={"extra_key": "extra_value"},
     )
 
-    instruction = PaymentInstructionFactory(
+
+@pytest.fixture
+def instruction_for_real_config(config_for_real_config):
+    fsp = config_for_real_config.fsp
+    country = config_for_real_config.country
+    dm = config_for_real_config.delivery_mechanism
+    return PaymentInstructionFactory(
         fsp=fsp,
         country=country,
         delivery_mechanism=dm,
         payload={"a": 1},
     )
 
-    payload = instruction.get_payload()
+
+@pytest.mark.django_db
+def test_get_payload_with_real_configuration(config_for_real_config, instruction_for_real_config):
+    payload = instruction_for_real_config.get_payload()
 
     assert payload["a"] == 1
     assert payload["delivery_mechanism"] == "cash_over_the_counter"

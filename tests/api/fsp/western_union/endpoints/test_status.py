@@ -13,29 +13,10 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 @responses.activate
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_status(wu, wu_client):
+def test_status(wu, wu_client, payment_record_status):
     responses.patch("https://wugateway2pi.westernunion.com/Search_Service_H2H")
     responses._add_from_file(file_path="tests/api/fsp/western_union/endpoints/status.yaml")
-    ref_no, mtcn, frm = (
-        "Y3snz233UkGt1Gw4",
-        "8560724095",
-        {
-            "identifier": "IDENTIFIER",
-            "reference_no": "REFNO",
-            "counter_id": "COUNTER",
-        },
-    )
-    pr = PaymentRecordFactory(
-        fsp_code=mtcn,
-        record_code=ref_no,
-        fsp_data={
-            "mtcn": mtcn,
-            "foreign_remote_system": frm,
-            "channel": {"type": "H2H", "name": "TEST", "version": "9500"},
-        },
-        parent__fsp=wu,
-        status=PaymentRecordState.TRANSFERRED_TO_FSP,
-    )
+    pr = payment_record_status
     resp = wu_client.status(pr.fsp_code, True)
     pr.refresh_from_db()
     assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
@@ -44,19 +25,16 @@ def test_status(wu, wu_client):
     assert (resp["title"], resp["code"]) == ("PayStatus", 200)
 
 
-@pytest.mark.django_db
-@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_status_paid_without_payout_fields(wu, wu_client):
-    ref_no, mtcn, frm = (
-        "Y3snz233UkGt1Gw4",
-        "8560724095",
-        {
-            "identifier": "IDENTIFIER",
-            "reference_no": "REFNO",
-            "counter_id": "COUNTER",
-        },
-    )
-    pr = PaymentRecordFactory(
+@pytest.fixture
+def payment_record_status(wu):
+    ref_no = "Y3snz233UkGt1Gw4"
+    mtcn = "8560724095"
+    frm = {
+        "identifier": "IDENTIFIER",
+        "reference_no": "REFNO",
+        "counter_id": "COUNTER",
+    }
+    return PaymentRecordFactory(
         fsp_code=mtcn,
         record_code=ref_no,
         fsp_data={
@@ -67,6 +45,12 @@ def test_status_paid_without_payout_fields(wu, wu_client):
         parent__fsp=wu,
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_status_paid_without_payout_fields(wu, wu_client, payment_record_status_paid_without_payout):
+    pr = payment_record_status_paid_without_payout
     mock_response = {
         "content_response": {"payment_transactions": {"payment_transaction": [{"pay_status_description": "PAID"}]}}
     }
@@ -80,6 +64,28 @@ def test_status_paid_without_payout_fields(wu, wu_client):
         assert resp == mock_response
 
 
+@pytest.fixture
+def payment_record_status_paid_without_payout(wu):
+    ref_no = "Y3snz233UkGt1Gw4"
+    mtcn = "8560724095"
+    frm = {
+        "identifier": "IDENTIFIER",
+        "reference_no": "REFNO",
+        "counter_id": "COUNTER",
+    }
+    return PaymentRecordFactory(
+        fsp_code=mtcn,
+        record_code=ref_no,
+        fsp_data={
+            "mtcn": mtcn,
+            "foreign_remote_system": frm,
+            "channel": {"type": "H2H", "name": "TEST", "version": "9500"},
+        },
+        parent__fsp=wu,
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+    )
+
+
 @pytest.mark.parametrize(
     ("pr_status", "response_status", "message"),
     [
@@ -89,27 +95,10 @@ def test_status_paid_without_payout_fields(wu, wu_client):
 )
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_status_no_matching_status(wu, wu_client, pr_status, response_status, message):
-    ref_no, mtcn, frm = (
-        "Y3snz233UkGt1Gw4",
-        "8560724095",
-        {
-            "identifier": "IDENTIFIER",
-            "reference_no": "REFNO",
-            "counter_id": "COUNTER",
-        },
-    )
-    pr = PaymentRecordFactory(
-        fsp_code=mtcn,
-        record_code=ref_no,
-        fsp_data={
-            "mtcn": mtcn,
-            "foreign_remote_system": frm,
-            "channel": {"type": "H2H", "name": "TEST", "version": "9500"},
-        },
-        parent__fsp=wu,
-        status=PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
-    )
+def test_status_no_matching_status(
+    wu, wu_client, payment_record_status_no_matching, pr_status, response_status, message
+):
+    pr = payment_record_status_no_matching
     mock_response = {
         "content_response": {
             "payment_transactions": {"payment_transaction": [{"pay_status_description": response_status}]}
@@ -122,3 +111,25 @@ def test_status_no_matching_status(wu, wu_client, pr_status, response_status, me
         assert pr.status == pr_status
         assert pr.success is True
         assert resp == mock_response
+
+
+@pytest.fixture
+def payment_record_status_no_matching(wu):
+    ref_no = "Y3snz233UkGt1Gw4"
+    mtcn = "8560724095"
+    frm = {
+        "identifier": "IDENTIFIER",
+        "reference_no": "REFNO",
+        "counter_id": "COUNTER",
+    }
+    return PaymentRecordFactory(
+        fsp_code=mtcn,
+        record_code=ref_no,
+        fsp_data={
+            "mtcn": mtcn,
+            "foreign_remote_system": frm,
+            "channel": {"type": "H2H", "name": "TEST", "version": "9500"},
+        },
+        parent__fsp=wu,
+        status=PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
+    )

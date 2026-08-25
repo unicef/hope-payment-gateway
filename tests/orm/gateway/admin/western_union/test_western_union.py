@@ -33,6 +33,30 @@ def req(user):
     return request
 
 
+@pytest.fixture
+def corridor_us_usd():
+    return CorridorFactory(destination_country="US", destination_currency="USD")
+
+
+@pytest.fixture
+def corridor_empty():
+    return CorridorFactory(destination_country="", destination_currency="")
+
+
+@pytest.fixture
+def configured_payment_record(wu):
+    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
+    config = FinancialServiceProviderConfigFactory(key="test_config", fsp=wu, delivery_mechanism=delivery_mechanism)
+    instruction = PaymentInstructionFactory(
+        fsp=wu,
+        payload={"config_key": "test_config"},
+        delivery_mechanism=delivery_mechanism,
+        office=config.office,
+        country=config.country,
+    )
+    return PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
+
+
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 def test_western_union_button_visibility_for_wu_fsp(req, payment_record, payment_record_admin_instance):
@@ -52,7 +76,7 @@ def test_western_union_button_visibility_for_non_wu_fsp(req, payment_record, pay
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_western_union_button_with_corridor(req, payment_record, payment_record_admin_instance):
+def test_western_union_button_with_corridor(req, payment_record, payment_record_admin_instance, corridor_us_usd):
     req.original = payment_record
 
     payment_record.payload = {
@@ -60,8 +84,6 @@ def test_western_union_button_with_corridor(req, payment_record, payment_record_
         "destination_country": "US",
         "destination_currency": "USD",
     }
-
-    CorridorFactory(destination_country="US", destination_currency="USD")
 
     with user_grant_permissions(req.user, "western_union.can_check_status"):
         payment_record_admin_instance.western_union.func(payment_record_admin_instance, req)
@@ -70,19 +92,8 @@ def test_western_union_button_with_corridor(req, payment_record, payment_record_
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_western_union_button_with_configuration(wu, req, payment_record_admin_instance):
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-
-    config = FinancialServiceProviderConfigFactory(key="test_config", fsp=wu, delivery_mechanism=delivery_mechanism)
-    instruction = PaymentInstructionFactory(
-        fsp=wu,
-        payload={"config_key": "test_config"},
-        delivery_mechanism=delivery_mechanism,
-        office=config.office,
-        country=config.country,
-    )
-    payment_record = PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
-    req.original = payment_record
+def test_western_union_button_with_configuration(configured_payment_record, req, payment_record_admin_instance):
+    req.original = configured_payment_record
 
     with user_grant_permissions(req.user, "western_union.can_check_status"):
         payment_record_admin_instance.western_union.func(payment_record_admin_instance, req)
@@ -91,13 +102,12 @@ def test_western_union_button_with_configuration(wu, req, payment_record_admin_i
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_western_union_button_without_corridor(req, payment_record, payment_record_admin_instance):
+def test_western_union_button_without_corridor(req, payment_record, payment_record_admin_instance, corridor_empty):
     payment_record.payload = {
         "delivery_services_code": "800",
         "destination_country": "US",
         "destination_currency": "USD",
     }
-    CorridorFactory(destination_country="", destination_currency="")
     req.original = payment_record
 
     with user_grant_permissions(req.user, "western_union.can_check_status"):
