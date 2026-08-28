@@ -38,8 +38,8 @@ def trigger_event(event_name: str, payload: dict[str, Any]) -> None:
     client = get_client()
     if client is None:
         return
-    future = client.trigger_event(event_name, context=payload)
-    if future.done() and future.exception():
+    result = client.trigger_event(event_name, context=payload)
+    if isinstance(result, Future) and result.done() and result.exception():
         logger.warning("Bitcaster event dropped (queue full): %s", event_name)
 
 
