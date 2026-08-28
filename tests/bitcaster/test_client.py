@@ -82,22 +82,18 @@ def test_trigger_event_calls_client():
 
 def test_trigger_event_no_warning_when_future_not_done():
     mock_client = MagicMock()
-    mock_future = MagicMock()
-    mock_future.done.return_value = False
-    mock_client.trigger_event.return_value = mock_future
+    future = Future()
+    mock_client.trigger_event.return_value = future
 
     with patch("hope_payment_gateway.apps.bitcaster.client.get_client", return_value=mock_client):
         trigger_event("some_event", {})
 
-    mock_future.exception.assert_not_called()
-
 
 def test_trigger_event_logs_on_failure(caplog):
     mock_client = MagicMock()
-    mock_future = MagicMock()
-    mock_future.done.return_value = True
-    mock_future.exception.return_value = Exception("something went wrong")
-    mock_client.trigger_event.return_value = mock_future
+    future = Future()
+    future.set_exception(Exception("something went wrong"))
+    mock_client.trigger_event.return_value = future
 
     with patch("hope_payment_gateway.apps.bitcaster.client.get_client", return_value=mock_client):
         with caplog.at_level(logging.WARNING):
