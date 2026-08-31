@@ -29,7 +29,7 @@ def text(length, choices=ascii_letters):
 
 
 def get_group(name=None, permissions=None):
-    group = GroupFactory(name=(name or text(5)))
+    group = GroupFactory.create(name=(name or text(5)))
     permission_names = permissions or []
     for permission_name in permission_names:
         try:
@@ -101,7 +101,7 @@ class user_token_permission(ContextDecorator):  # noqa
             if hasattr(self.user, cache):
                 delattr(self.user, cache)
 
-        self.token = APITokenFactory(
+        self.token = APITokenFactory.create(
             user=self.user,
             grants=[c.name for c in self.permissions],
         )

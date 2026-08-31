@@ -21,8 +21,8 @@ def payment_record_admin_instance(admin_site) -> PaymentRecordAdmin:
 
 @pytest.fixture
 def payment_record(wu):
-    instruction = PaymentInstructionFactory(fsp=wu)
-    return PaymentRecordFactory(parent=instruction)
+    instruction = PaymentInstructionFactory.create(fsp=wu)
+    return PaymentRecordFactory.create(parent=instruction)
 
 
 @pytest.fixture
@@ -35,26 +35,28 @@ def req(user):
 
 @pytest.fixture
 def corridor_us_usd():
-    return CorridorFactory(destination_country="US", destination_currency="USD")
+    return CorridorFactory.create(destination_country="US", destination_currency="USD")
 
 
 @pytest.fixture
 def corridor_empty():
-    return CorridorFactory(destination_country="", destination_currency="")
+    return CorridorFactory.create(destination_country="", destination_currency="")
 
 
 @pytest.fixture
 def configured_payment_record(wu):
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    config = FinancialServiceProviderConfigFactory(key="test_config", fsp=wu, delivery_mechanism=delivery_mechanism)
-    instruction = PaymentInstructionFactory(
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    config = FinancialServiceProviderConfigFactory.create(
+        key="test_config", fsp=wu, delivery_mechanism=delivery_mechanism
+    )
+    instruction = PaymentInstructionFactory.create(
         fsp=wu,
         payload={"config_key": "test_config"},
         delivery_mechanism=delivery_mechanism,
         office=config.office,
         country=config.country,
     )
-    return PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
+    return PaymentRecordFactory.create(parent=instruction, payload={"delivery_mechanism": "CASH"})
 
 
 @pytest.mark.django_db

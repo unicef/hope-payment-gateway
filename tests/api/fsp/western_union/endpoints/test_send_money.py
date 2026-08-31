@@ -107,7 +107,7 @@ def test_send_complete(django_app, admin_user, wu, wu_client, payment_record_sen
 
 @pytest.fixture
 def payment_record_send_complete(wu):
-    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
+    return PaymentRecordFactory.create(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
 
 
 @responses.activate
@@ -164,7 +164,7 @@ def corridor_send_complete_corridor():
         },
         "wallet_details": {"service_provider_code": "22901"},
     }
-    return CorridorFactory(
+    return CorridorFactory.create(
         destination_country="ES",
         destination_currency="EUR",
         template=corridor_template,
@@ -173,7 +173,7 @@ def corridor_send_complete_corridor():
 
 @pytest.fixture
 def payment_record_send_complete_corridor(wu):
-    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw1", parent__fsp=wu)
+    return PaymentRecordFactory.create(record_code="Y3snz233UkGt1Gw1", parent__fsp=wu)
 
 
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
@@ -211,17 +211,17 @@ def test_send_complete_corridor_no_exist(
 
 @pytest.fixture
 def payment_record_send_complete_corridor_no_exist(wu):
-    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw1", parent__fsp=wu)
+    return PaymentRecordFactory.create(record_code="Y3snz233UkGt1Gw1", parent__fsp=wu)
 
 
 @pytest.fixture
 def payment_record_for_corridor_ko(corridor_template, wu):
-    CorridorFactory(
+    CorridorFactory.create(
         destination_country="ES",
         destination_currency="EUR",
         template=corridor_template,
     )
-    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
+    return PaymentRecordFactory.create(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
 
 
 @pytest.mark.parametrize(
@@ -336,7 +336,7 @@ def test_send_complete_send_money_validation_response_error(wu, wu_client, payme
 
 @pytest.fixture
 def payment_record_validation_response_error(wu):
-    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
+    return PaymentRecordFactory.create(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
 
 
 @responses.activate
@@ -381,4 +381,4 @@ def test_send_complete_send_money_store_response_error(wu, wu_client, payment_re
 
 @pytest.fixture
 def payment_record_store_response_error(wu):
-    return PaymentRecordFactory(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
+    return PaymentRecordFactory.create(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)

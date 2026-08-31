@@ -30,7 +30,7 @@ from viewflow.fsm import TransitionNotAllowed
 def make_pr(mg):
     def _make(**kwargs):
         kwargs.setdefault("parent__fsp", mg)
-        return PaymentRecordFactory(**kwargs)
+        return PaymentRecordFactory.create(**kwargs)
 
     return _make
 

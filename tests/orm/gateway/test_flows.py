@@ -12,7 +12,7 @@ from hope_payment_gateway.apps.gateway.models import (
 @pytest.fixture
 def make_instruction():
     def _make(status):
-        return PaymentInstructionFactory(status=status)
+        return PaymentInstructionFactory.create(status=status)
 
     return _make
 
@@ -20,7 +20,7 @@ def make_instruction():
 @pytest.fixture
 def make_record():
     def _make(status):
-        return PaymentRecordFactory(status=status)
+        return PaymentRecordFactory.create(status=status)
 
     return _make
 

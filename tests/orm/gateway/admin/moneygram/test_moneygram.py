@@ -19,8 +19,8 @@ def payment_record_admin_instance(admin_site) -> PaymentRecordAdmin:
 
 @pytest.fixture
 def payment_record(mg):
-    instruction = PaymentInstructionFactory(fsp=mg)
-    return PaymentRecordFactory(parent=instruction)
+    instruction = PaymentInstructionFactory.create(fsp=mg)
+    return PaymentRecordFactory.create(parent=instruction)
 
 
 @pytest.fixture
@@ -33,10 +33,10 @@ def req(user):
 
 @pytest.fixture
 def payment_record_with_config(mg):
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    FinancialServiceProviderConfigFactory(key="test_config", fsp=mg, delivery_mechanism=delivery_mechanism)
-    instruction = PaymentInstructionFactory(fsp=mg, payload={"config_key": "test_config"})
-    return PaymentRecordFactory(parent=instruction, payload={"delivery_mechanism": "CASH"})
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    FinancialServiceProviderConfigFactory.create(key="test_config", fsp=mg, delivery_mechanism=delivery_mechanism)
+    instruction = PaymentInstructionFactory.create(fsp=mg, payload={"config_key": "test_config"})
+    return PaymentRecordFactory.create(parent=instruction, payload={"delivery_mechanism": "CASH"})
 
 
 @pytest.mark.django_db

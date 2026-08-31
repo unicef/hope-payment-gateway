@@ -4,7 +4,7 @@ from factories import CorridorFactory
 
 @pytest.fixture
 def corridor():
-    return CorridorFactory(description="Corridor", template_code="TMP")
+    return CorridorFactory.create(description="Corridor", template_code="TMP")
 
 
 @pytest.mark.django_db

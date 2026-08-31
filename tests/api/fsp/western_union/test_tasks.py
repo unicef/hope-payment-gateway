@@ -20,22 +20,22 @@ from tests.factories import CorridorFactory
 
 @pytest.fixture
 def wu_instruction(wu):
-    return PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=wu)
+    return PaymentInstructionFactory.create(status=PaymentInstructionState.READY, fsp=wu)
 
 
 @pytest.fixture
 def wu_instruction_b(wu):
-    return PaymentInstructionFactory(status=PaymentInstructionState.READY, fsp=wu)
+    return PaymentInstructionFactory.create(status=PaymentInstructionState.READY, fsp=wu)
 
 
 @pytest.fixture
 def noise_instruction():
-    return PaymentInstructionFactory(status=PaymentInstructionState.OPEN)
+    return PaymentInstructionFactory.create(status=PaymentInstructionState.OPEN)
 
 
 @pytest.fixture
 def noise_instruction_no_tag():
-    return PaymentInstructionFactory(status=PaymentInstructionState.OPEN)
+    return PaymentInstructionFactory.create(status=PaymentInstructionState.OPEN)
 
 
 @pytest.fixture
@@ -72,7 +72,7 @@ def corridor_data():
 
 @pytest.fixture
 def wu_status_instruction(wu):
-    return PaymentInstructionFactory(fsp=wu)
+    return PaymentInstructionFactory.create(fsp=wu)
 
 
 @pytest.fixture

@@ -41,26 +41,26 @@ def payment_instruction_admin_instance(admin_site) -> PaymentInstructionAdmin:
 
 @pytest.fixture
 def pr_redirect_data():
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
-    office = OfficeFactory()
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
+    office = OfficeFactory.create()
 
-    config = FinancialServiceProviderConfigFactory(
+    config = FinancialServiceProviderConfigFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,
         office=office,
     )
 
-    instruction = PaymentInstructionFactory(
+    instruction = PaymentInstructionFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,
         office=office,
     )
 
-    payment_record = PaymentRecordFactory(parent=instruction)
+    payment_record = PaymentRecordFactory.create(parent=instruction)
     return config, payment_record
 
 
@@ -84,17 +84,17 @@ def test_payment_record_configuration_view_redirects_correctly(
 
 @pytest.fixture
 def pr_missing_record():
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
 
-    instruction = PaymentInstructionFactory(
+    instruction = PaymentInstructionFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,
     )
 
-    return PaymentRecordFactory(parent=instruction)
+    return PaymentRecordFactory.create(parent=instruction)
 
 
 @pytest.mark.django_db
@@ -114,19 +114,19 @@ def test_payment_record_configuration_view_handles_missing_config(
 
 @pytest.fixture
 def pi_redirect_data():
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
-    office = OfficeFactory()
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
+    office = OfficeFactory.create()
 
-    config = FinancialServiceProviderConfigFactory(
+    config = FinancialServiceProviderConfigFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,
         office=office,
     )
 
-    instruction = PaymentInstructionFactory(
+    instruction = PaymentInstructionFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,
@@ -158,11 +158,11 @@ def test_payment_instruction_configuration_view_redirects_correctly(
 
 @pytest.fixture
 def pi_missing_instruction():
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
 
-    return PaymentInstructionFactory(
+    return PaymentInstructionFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,

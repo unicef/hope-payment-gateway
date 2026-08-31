@@ -29,13 +29,13 @@ def user_with_permissions(user):
 
 @pytest.fixture
 def payment_record(wu):
-    instruction = PaymentInstructionFactory(fsp=wu)
-    return PaymentRecordFactory(parent=instruction)
+    instruction = PaymentInstructionFactory.create(fsp=wu)
+    return PaymentRecordFactory.create(parent=instruction)
 
 
 @pytest.fixture
 def corridor_us_usd():
-    return CorridorFactory(destination_country="US", destination_currency="USD")
+    return CorridorFactory.create(destination_country="US", destination_currency="USD")
 
 
 @pytest.mark.django_db

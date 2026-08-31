@@ -17,13 +17,13 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
 
 @pytest.fixture
 def palpay_instruction(palpay):
-    return PaymentInstructionFactory(fsp=palpay)
+    return PaymentInstructionFactory.create(fsp=palpay)
 
 
 @pytest.fixture
 def palpay_instruction_with_record(palpay):
-    instruction = PaymentInstructionFactory(fsp=palpay, external_code="INST-001")
-    PaymentRecordFactory(
+    instruction = PaymentInstructionFactory.create(fsp=palpay, external_code="INST-001")
+    PaymentRecordFactory.create(
         parent=instruction,
         payload={
             "first_name": "John",
@@ -38,8 +38,8 @@ def palpay_instruction_with_record(palpay):
 
 @pytest.fixture
 def palpay_instruction_with_record_error(palpay):
-    instruction = PaymentInstructionFactory(fsp=palpay, external_code="INST-002")
-    PaymentRecordFactory(
+    instruction = PaymentInstructionFactory.create(fsp=palpay, external_code="INST-002")
+    PaymentRecordFactory.create(
         parent=instruction,
         payload={
             "first_name": "Jane",
@@ -54,13 +54,13 @@ def palpay_instruction_with_record_error(palpay):
 
 @pytest.fixture
 def palpay_cash_instructions(palpay):
-    PaymentInstructionFactory(
+    PaymentInstructionFactory.create(
         fsp=palpay,
         status=PaymentInstructionState.READY,
         active=True,
         external_code="CASH-001",
     )
-    PaymentInstructionFactory(
+    PaymentInstructionFactory.create(
         fsp=palpay,
         status=PaymentInstructionState.READY,
         active=True,
@@ -70,14 +70,14 @@ def palpay_cash_instructions(palpay):
 
 @pytest.fixture
 def palpay_tagged_instructions(palpay):
-    PaymentInstructionFactory(
+    PaymentInstructionFactory.create(
         fsp=palpay,
         status=PaymentInstructionState.READY,
         active=True,
         tag="mytag",
         external_code="TAG-001",
     )
-    PaymentInstructionFactory(
+    PaymentInstructionFactory.create(
         fsp=palpay,
         status=PaymentInstructionState.READY,
         active=True,

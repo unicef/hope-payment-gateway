@@ -15,7 +15,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 @pytest.fixture
 def pr_invalid_payload(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="new-transaction",
@@ -25,7 +25,7 @@ def pr_invalid_payload(palpay):
 
 @pytest.fixture
 def pr_invalid_account(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="new-transaction",
@@ -41,14 +41,14 @@ def pr_invalid_account(palpay):
 
 @pytest.fixture
 def pr_status_ok(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__fsp=palpay, record_code="1234566777", payload={"payment_record_code": "1234566777"}
     )
 
 
 @pytest.fixture
 def pr_invalid_status(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="new-transaction",
@@ -65,7 +65,7 @@ def pr_invalid_status(palpay):
 
 @pytest.fixture
 def pr_create_success(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="new-transaction",
@@ -81,7 +81,7 @@ def pr_create_success(palpay):
 
 @pytest.fixture
 def pr_create_success_no_update(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="new-transaction-no-update",
@@ -97,7 +97,7 @@ def pr_create_success_no_update(palpay):
 
 @pytest.fixture
 def pr_global_status(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="status-query",
@@ -107,7 +107,7 @@ def pr_global_status(palpay):
 
 @pytest.fixture
 def pr_post_success(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="post-ok",
@@ -116,7 +116,7 @@ def pr_post_success(palpay):
 
 @pytest.fixture
 def pr_post_failure(palpay):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent__office=palpay.configs.first().office,
         parent__fsp=palpay,
         record_code="post-ko",

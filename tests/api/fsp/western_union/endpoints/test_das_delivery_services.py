@@ -125,7 +125,7 @@ def test_das_delivery_services_invalid_response(wu_client, wu, mock_setup_data):
 
 @pytest.fixture
 def existing_corridor(mock_setup_data):
-    return CorridorFactory(
+    return CorridorFactory.create(
         destination_country=mock_setup_data["destination_country"],
         destination_currency=mock_setup_data["destination_currency"],
         description="Existing Corridor",

@@ -5,12 +5,12 @@ from hope_payment_gateway.apps.core.models import Singleton
 
 @pytest.fixture
 def system():
-    return SystemFactory(name="Hope")
+    return SystemFactory.create(name="Hope")
 
 
 @pytest.fixture
 def test_user():
-    return UserFactory(username="testuser")
+    return UserFactory.create(username="testuser")
 
 
 @pytest.mark.django_db

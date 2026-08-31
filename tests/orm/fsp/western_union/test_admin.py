@@ -12,7 +12,7 @@ from tests.factories.payment import CorridorFactory
 def superuser(db):
     from tests.factories.user import SuperUserFactory
 
-    return SuperUserFactory()
+    return SuperUserFactory.create()
 
 
 @pytest.fixture
@@ -31,12 +31,12 @@ def user_with_dot_perm(user):
 
 @pytest.fixture
 def us_corridor():
-    return CorridorFactory(destination_country="US", destination_currency="USD", template_code="1234")
+    return CorridorFactory.create(destination_country="US", destination_currency="USD", template_code="1234")
 
 
 @pytest.fixture
 def ph_corridor():
-    return CorridorFactory(destination_country="PH", destination_currency="PHP", template_code="4061")
+    return CorridorFactory.create(destination_country="PH", destination_currency="PHP", template_code="4061")
 
 
 @pytest.mark.django_db

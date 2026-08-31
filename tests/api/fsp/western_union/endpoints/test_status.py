@@ -34,7 +34,7 @@ def payment_record_status(wu):
         "reference_no": "REFNO",
         "counter_id": "COUNTER",
     }
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         fsp_code=mtcn,
         record_code=ref_no,
         fsp_data={
@@ -73,7 +73,7 @@ def payment_record_status_paid_without_payout(wu):
         "reference_no": "REFNO",
         "counter_id": "COUNTER",
     }
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         fsp_code=mtcn,
         record_code=ref_no,
         fsp_data={
@@ -122,7 +122,7 @@ def payment_record_status_no_matching(wu):
         "reference_no": "REFNO",
         "counter_id": "COUNTER",
     }
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         fsp_code=mtcn,
         record_code=ref_no,
         fsp_data={

@@ -38,23 +38,23 @@ def mock_messages():
 
 @pytest.fixture
 def payment_record():
-    return PaymentRecordFactory()
+    return PaymentRecordFactory.create()
 
 
 @pytest.fixture
 def open_payment_record():
-    return PaymentRecordFactory(parent__status=PaymentInstructionState.OPEN)
+    return PaymentRecordFactory.create(parent__status=PaymentInstructionState.OPEN)
 
 
 @pytest.fixture
 def aborted_payment_record():
-    return PaymentRecordFactory(parent__status=PaymentInstructionState.ABORTED)
+    return PaymentRecordFactory.create(parent__status=PaymentInstructionState.ABORTED)
 
 
 @pytest.fixture
 def system(token_user):
     user, _ = token_user
-    return SystemFactory(owner=user)
+    return SystemFactory.create(owner=user)
 
 
 @pytest.fixture
@@ -64,8 +64,8 @@ def supervised_office():
 
 @pytest.fixture
 def download_fail_setup():
-    instruction_instance = PaymentInstructionFactory(payload={"delivery_mechanism": "tester_one"})
-    pr = PaymentRecordFactory(parent=instruction_instance)
+    instruction_instance = PaymentInstructionFactory.create(payload={"delivery_mechanism": "tester_one"})
+    pr = PaymentRecordFactory.create(parent=instruction_instance)
     DeliveryMechanismFactory.create(code="tester_one")
     return pr
 
@@ -80,7 +80,7 @@ def download_setup():
         country=fsp_config.country,
         office=fsp_config.office,
     )
-    pi = PaymentInstructionFactory(
+    pi = PaymentInstructionFactory.create(
         fsp=fsp_config.fsp,
         payload={"config_key": "123456"},
         country=fsp_config.country,
@@ -104,7 +104,7 @@ def download_requires_email_setup(token_user):
         country=fsp_config.country,
         office=fsp_config.office,
     )
-    pi = PaymentInstructionFactory(
+    pi = PaymentInstructionFactory.create(
         fsp=fsp_config.fsp,
         payload={"config_key": "123456"},
         country=fsp_config.country,
@@ -119,70 +119,72 @@ def download_requires_email_setup(token_user):
 @pytest.fixture
 def serializer_update_setup(token_user):
     user, _ = token_user
-    system = SystemFactory(owner=user)
-    fsp = FinancialServiceProviderFactory()
+    system = SystemFactory.create(owner=user)
+    fsp = FinancialServiceProviderFactory.create()
     remote_id = "existing_remote_id"
-    instruction = PaymentInstructionFactory(system=system, fsp=fsp, remote_id=remote_id, payload={"initial": "data"})
+    instruction = PaymentInstructionFactory.create(
+        system=system, fsp=fsp, remote_id=remote_id, payload={"initial": "data"}
+    )
     return {"system": system, "fsp": fsp, "remote_id": remote_id, "instruction": instruction}
 
 
 @pytest.fixture
 def office_country_setup(token_user):
     user, _ = token_user
-    system = SystemFactory(owner=user)
-    fsp = FinancialServiceProviderFactory()
-    CountryFactory(iso_code2="US", iso_code3="USA", iso_num="840", name="USA")
-    CountryFactory(iso_code2="FR", iso_code3="FRA", iso_num="250", name="France")
-    OfficeFactory(code="supervised_office", supervised=True)
+    system = SystemFactory.create(owner=user)
+    fsp = FinancialServiceProviderFactory.create()
+    CountryFactory.create(iso_code2="US", iso_code3="USA", iso_num="840", name="USA")
+    CountryFactory.create(iso_code2="FR", iso_code3="FRA", iso_num="250", name="France")
+    OfficeFactory.create(code="supervised_office", supervised=True)
     return {"system": system, "fsp": fsp}
 
 
 @pytest.fixture
 def no_country_setup(token_user):
     user, _ = token_user
-    system = SystemFactory(owner=user)
-    fsp = FinancialServiceProviderFactory()
+    system = SystemFactory.create(owner=user)
+    fsp = FinancialServiceProviderFactory.create()
     return {"system": system, "fsp": fsp}
 
 
 @pytest.fixture
 def account_type_obj():
-    return AccountTypeFactory(key="old_key", label="old_label")
+    return AccountTypeFactory.create(key="old_key", label="old_label")
 
 
 @pytest.fixture
 def delivery_mechanism_obj():
-    return DeliveryMechanismFactory(code="DM_OLD", name="old")
+    return DeliveryMechanismFactory.create(code="DM_OLD", name="old")
 
 
 @pytest.fixture
 def fsp_obj():
-    return FinancialServiceProviderFactory(name="old_name")
+    return FinancialServiceProviderFactory.create(name="old_name")
 
 
 @pytest.fixture
 def config_obj():
-    return FinancialServiceProviderConfigFactory()
+    return FinancialServiceProviderConfigFactory.create()
 
 
 @pytest.fixture
 def payment_record_message():
-    return PaymentRecordFactory(message="old_msg")
+    return PaymentRecordFactory.create(message="old_msg")
 
 
 @pytest.fixture
 def export_template_obj():
-    return ExportTemplateFactory(config_key="old_key")
+    return ExportTemplateFactory.create(config_key="old_key")
 
 
 @pytest.fixture
 def corridor_obj():
-    return CorridorFactory(description="old")
+    return CorridorFactory.create(description="old")
 
 
 @pytest.fixture
 def service_provider_code_obj():
-    return ServiceProviderCodeFactory(description="old")
+    return ServiceProviderCodeFactory.create(description="old")
 
 
 def _test_payment_instruction_create(api_client, token_user, mg, payload, system):

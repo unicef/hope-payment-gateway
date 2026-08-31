@@ -40,7 +40,7 @@ def payment_record_search_request(wu):
         "operator_id": None,
         "partnership_indicator": None,
     }
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         record_code=ref_no,
         fsp_data={
             "mtcn": mtcn,
@@ -74,7 +74,7 @@ def payment_record_for_cancel(wu):
         "operator_id": None,
         "partnership_indicator": None,
     }
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         fsp_data={
             "mtcn": mtcn,
             "foreign_remote_system": frm,
@@ -100,7 +100,7 @@ def test_search_ko(wu, wu_client, payment_record_search_ko):
 
 @pytest.fixture
 def payment_record_search_ko(wu):
-    return PaymentRecordFactory(parent__fsp=wu)
+    return PaymentRecordFactory.create(parent__fsp=wu)
 
 
 @responses.activate
@@ -129,7 +129,7 @@ def payment_record_cancel_type_error(wu):
         "operator_id": None,
         "partnership_indicator": None,
     }
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         fsp_data={
             "mtcn": mtcn,
             "foreign_remote_system": frm,
@@ -165,7 +165,7 @@ def payment_record_cancel_request_not_successful(wu):
         "operator_id": None,
         "partnership_indicator": None,
     }
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         fsp_data={
             "mtcn": mtcn,
             "foreign_remote_system": frm,

@@ -26,7 +26,7 @@ def test_nis_notification_rejected(wu, api_client, admin_user, payment_record_ni
 
 @pytest.fixture
 def payment_record_nis_rejected(wu):
-    return PaymentRecordFactory(record_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(record_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 def test_nis_notification_xml_with_invalid_request(api_client, admin_user):
@@ -127,7 +127,7 @@ def _test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_use
 
 @pytest.fixture
 def payment_record_success(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -175,7 +175,7 @@ def _test_nis_notification_xml_post_cancel(mock_flow, wu, api_client, admin_user
 
 @pytest.fixture
 def payment_record_cancel(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -231,7 +231,7 @@ def test_nis_notification_xml_post_purged(mock_flow, wu, api_client, admin_user,
 
 @pytest.fixture
 def payment_record_purged(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -259,7 +259,7 @@ def test_nis_notification_xml_post_refund(mock_flow, wu, api_client, admin_user,
 
 @pytest.fixture
 def payment_record_refund(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -287,7 +287,7 @@ def test_nis_notification_xml_post_error(mock_flow, wu, api_client, admin_user, 
 
 @pytest.fixture
 def payment_record_error(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 def _test_nis_notification_xml_post_transition_not_allowed(mock_flow, wu, api_client, admin_user, method, file_name):
@@ -309,7 +309,7 @@ def _test_nis_notification_xml_post_transition_not_allowed(mock_flow, wu, api_cl
 
 @pytest.fixture
 def payment_record_transition_not_allowed(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -370,7 +370,7 @@ def test_nis_notification_xml_post_unpay(mock_flow, wu, api_client, admin_user, 
 
 @pytest.fixture
 def payment_record_unpay(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -412,7 +412,7 @@ def test_nis_notification_xml_post_overridden_unpay(
 
 @pytest.fixture
 def payment_record_overridden_unpay(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -444,7 +444,7 @@ def test_nis_notification_xml_post_transfer_to_fsp(
 
 @pytest.fixture
 def payment_record_transfer_to_fsp(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="PENDING", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="PENDING", parent__fsp=wu)
 
 
 @pytest.mark.django_db
@@ -470,4 +470,4 @@ def test_nis_notification_xml_post_transfer_to_fsp_not_pending(
 
 @pytest.fixture
 def payment_record_transfer_to_fsp_not_pending(wu):
-    return PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)

@@ -7,7 +7,7 @@ from hope_payment_gateway.apps.fsp.palpay.handlers import PalPayHandler
 
 @pytest.fixture
 def us_country():
-    return CountryFactory(iso_code2="US")
+    return CountryFactory.create(iso_code2="US")
 
 
 @pytest.mark.django_db

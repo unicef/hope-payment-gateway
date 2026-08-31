@@ -29,8 +29,8 @@ def user_with_permissions(user):
 
 @pytest.fixture
 def payment_record(wu):
-    instruction = PaymentInstructionFactory(fsp=wu)
-    return PaymentRecordFactory(parent=instruction)
+    instruction = PaymentInstructionFactory.create(fsp=wu)
+    return PaymentRecordFactory.create(parent=instruction)
 
 
 @pytest.mark.django_db

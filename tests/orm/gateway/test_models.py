@@ -20,49 +20,49 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 @pytest.fixture
 def account_type():
-    return AccountTypeFactory(label="Test Account Type")
+    return AccountTypeFactory.create(label="Test Account Type")
 
 
 @pytest.fixture
 def delivery_mechanism_for_str():
-    return DeliveryMechanismFactory(name="Test DM", code="TDM")
+    return DeliveryMechanismFactory.create(name="Test DM", code="TDM")
 
 
 @pytest.fixture
 def office_for_str():
-    return OfficeFactory(name="Test Office")
+    return OfficeFactory.create(name="Test Office")
 
 
 @pytest.fixture
 def country_for_str():
-    return CountryFactory(name="Test Country")
+    return CountryFactory.create(name="Test Country")
 
 
 @pytest.fixture
 def fsp_for_str():
-    return FinancialServiceProviderFactory(name="Test FSP", vendor_number="V123")
+    return FinancialServiceProviderFactory.create(name="Test FSP", vendor_number="V123")
 
 
 @pytest.fixture
 def fsp_config_for_str(fsp_for_str, delivery_mechanism_for_str):
-    return FinancialServiceProviderConfigFactory(
+    return FinancialServiceProviderConfigFactory.create(
         fsp=fsp_for_str, delivery_mechanism=delivery_mechanism_for_str, label="L1"
     )
 
 
 @pytest.fixture
 def export_template_for_str(fsp_for_str):
-    return ExportTemplateFactory(fsp=fsp_for_str, config_key="CK1")
+    return ExportTemplateFactory.create(fsp=fsp_for_str, config_key="CK1")
 
 
 @pytest.fixture
 def instruction_for_str():
-    return PaymentInstructionFactory(external_code="EC1", status="DRAFT")
+    return PaymentInstructionFactory.create(external_code="EC1", status="DRAFT")
 
 
 @pytest.fixture
 def record_for_str():
-    return PaymentRecordFactory(record_code="RC1", status="PENDING")
+    return PaymentRecordFactory.create(record_code="RC1", status="PENDING")
 
 
 @pytest.mark.django_db
@@ -93,12 +93,12 @@ def test_model_str_methods(
 
 @pytest.fixture
 def payment_instruction_with_payload():
-    return PaymentInstructionFactory(payload={"a": "a"})
+    return PaymentInstructionFactory.create(payload={"a": "a"})
 
 
 @pytest.fixture
 def payment_record_with_payload(payment_instruction_with_payload):
-    return PaymentRecordFactory(parent=payment_instruction_with_payload, payload={"b": "b"}, record_code="r")
+    return PaymentRecordFactory.create(parent=payment_instruction_with_payload, payload={"b": "b"}, record_code="r")
 
 
 @pytest.mark.django_db
@@ -117,27 +117,27 @@ def test_payment_record_payload(payment_record_with_payload):
 
 @pytest.fixture
 def fsp_for_se():
-    return FinancialServiceProviderFactory()
+    return FinancialServiceProviderFactory.create()
 
 
 @pytest.fixture
 def dm_for_se():
-    return DeliveryMechanismFactory()
+    return DeliveryMechanismFactory.create()
 
 
 @pytest.fixture
 def office_for_se():
-    return OfficeFactory()
+    return OfficeFactory.create()
 
 
 @pytest.fixture
 def country_for_se():
-    return CountryFactory()
+    return CountryFactory.create()
 
 
 @pytest.fixture
 def template1_for_se(fsp_for_se, dm_for_se, office_for_se, country_for_se):
-    return ExportTemplateFactory(
+    return ExportTemplateFactory.create(
         fsp=fsp_for_se,
         delivery_mechanism=dm_for_se,
         office=office_for_se,
@@ -148,7 +148,7 @@ def template1_for_se(fsp_for_se, dm_for_se, office_for_se, country_for_se):
 
 @pytest.fixture
 def template2_for_se(fsp_for_se, dm_for_se, country_for_se):
-    return ExportTemplateFactory(
+    return ExportTemplateFactory.create(
         fsp=fsp_for_se,
         delivery_mechanism=dm_for_se,
         office=None,
@@ -159,7 +159,7 @@ def template2_for_se(fsp_for_se, dm_for_se, country_for_se):
 
 @pytest.fixture
 def instruction_for_se(fsp_for_se, dm_for_se, office_for_se, country_for_se):
-    return PaymentInstructionFactory(
+    return PaymentInstructionFactory.create(
         fsp=fsp_for_se,
         delivery_mechanism=dm_for_se,
         office=office_for_se,
@@ -169,7 +169,7 @@ def instruction_for_se(fsp_for_se, dm_for_se, office_for_se, country_for_se):
 
 @pytest.fixture
 def forced_template_for_se(fsp_for_se):
-    return ExportTemplateFactory(fsp=fsp_for_se, config_key="FORCED")
+    return ExportTemplateFactory.create(fsp=fsp_for_se, config_key="FORCED")
 
 
 @pytest.mark.django_db
@@ -195,32 +195,32 @@ def test_payment_instruction_selected_export(
 
 @pytest.fixture
 def fsp_for_config():
-    return FinancialServiceProviderFactory()
+    return FinancialServiceProviderFactory.create()
 
 
 @pytest.fixture
 def dm_for_config():
-    return DeliveryMechanismFactory()
+    return DeliveryMechanismFactory.create()
 
 
 @pytest.fixture
 def office_for_config():
-    return OfficeFactory()
+    return OfficeFactory.create()
 
 
 @pytest.fixture
 def country1_for_config():
-    return CountryFactory()
+    return CountryFactory.create()
 
 
 @pytest.fixture
 def country2_for_config():
-    return CountryFactory()
+    return CountryFactory.create()
 
 
 @pytest.fixture
 def config1_for_config(fsp_for_config, dm_for_config, office_for_config, country1_for_config):
-    return FinancialServiceProviderConfigFactory(
+    return FinancialServiceProviderConfigFactory.create(
         fsp=fsp_for_config,
         delivery_mechanism=dm_for_config,
         office=office_for_config,
@@ -231,7 +231,7 @@ def config1_for_config(fsp_for_config, dm_for_config, office_for_config, country
 
 @pytest.fixture
 def config2_for_config(fsp_for_config, dm_for_config, country2_for_config):
-    return FinancialServiceProviderConfigFactory(
+    return FinancialServiceProviderConfigFactory.create(
         fsp=fsp_for_config,
         delivery_mechanism=dm_for_config,
         office=None,
@@ -242,7 +242,7 @@ def config2_for_config(fsp_for_config, dm_for_config, country2_for_config):
 
 @pytest.fixture
 def instruction_for_config(fsp_for_config, dm_for_config, office_for_config, country1_for_config):
-    return PaymentInstructionFactory(
+    return PaymentInstructionFactory.create(
         fsp=fsp_for_config,
         delivery_mechanism=dm_for_config,
         office=office_for_config,
@@ -270,22 +270,22 @@ def test_payment_instruction_configuration(
 
 @pytest.fixture
 def fsp_for_get_payload():
-    return FinancialServiceProviderFactory()
+    return FinancialServiceProviderFactory.create()
 
 
 @pytest.fixture
 def instruction_for_get_payload(fsp_for_get_payload):
-    return PaymentInstructionFactory(fsp=fsp_for_get_payload, payload={"a": 1, "config_key": "CK1"})
+    return PaymentInstructionFactory.create(fsp=fsp_for_get_payload, payload={"a": 1, "config_key": "CK1"})
 
 
 @pytest.fixture
 def instruction_no_config_for_get_payload(fsp_for_get_payload):
-    return PaymentInstructionFactory(fsp=fsp_for_get_payload, payload={"a": 1})
+    return PaymentInstructionFactory.create(fsp=fsp_for_get_payload, payload={"a": 1})
 
 
 @pytest.fixture
 def record_for_get_payload(instruction_for_get_payload):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         parent=instruction_for_get_payload,
         record_code="RC1",
         remote_id="RID1",
@@ -324,7 +324,7 @@ def test_get_payload_methods(
 
 @pytest.fixture
 def record_for_push_notification():
-    return PaymentRecordFactory(fsp_data=None)
+    return PaymentRecordFactory.create(fsp_data=None)
 
 
 @pytest.mark.django_db
@@ -354,12 +354,12 @@ def test_payment_record_add_push_notification(record_for_push_notification):
 
 @pytest.fixture
 def parent_for_signal():
-    return PaymentInstructionFactory()
+    return PaymentInstructionFactory.create()
 
 
 @pytest.fixture
 def record_for_signal(parent_for_signal):
-    return PaymentRecordFactory.build(id=99999, status=PaymentRecordState.PENDING, parent=parent_for_signal)
+    return PaymentRecordFactory.create(id=99999, status=PaymentRecordState.PENDING, parent=parent_for_signal)
 
 
 @pytest.mark.django_db
@@ -375,17 +375,17 @@ def test_record_updated_signal_no_old_instance(parent_for_signal, record_for_sig
 
 @pytest.fixture
 def fsp_for_no_dm():
-    return FinancialServiceProviderFactory()
+    return FinancialServiceProviderFactory.create()
 
 
 @pytest.fixture
 def country_for_no_dm():
-    return CountryFactory()
+    return CountryFactory.create()
 
 
 @pytest.fixture
 def instruction_for_no_dm(fsp_for_no_dm, country_for_no_dm):
-    return PaymentInstructionFactory(
+    return PaymentInstructionFactory.create(
         fsp=fsp_for_no_dm,
         delivery_mechanism=None,
         country=country_for_no_dm,
@@ -405,17 +405,17 @@ def test_get_payload_without_delivery_mechanism(instruction_for_no_dm):
 
 @pytest.fixture
 def fsp_for_no_country():
-    return FinancialServiceProviderFactory()
+    return FinancialServiceProviderFactory.create()
 
 
 @pytest.fixture
 def dm_for_no_country():
-    return DeliveryMechanismFactory(code="CASH")
+    return DeliveryMechanismFactory.create(code="CASH")
 
 
 @pytest.fixture
 def instruction_for_no_country(fsp_for_no_country, dm_for_no_country):
-    return PaymentInstructionFactory(
+    return PaymentInstructionFactory.create(
         fsp=fsp_for_no_country,
         delivery_mechanism=dm_for_no_country,
         country=None,
@@ -435,22 +435,22 @@ def test_get_payload_without_country(instruction_for_no_country):
 
 @pytest.fixture
 def fsp_for_real_config():
-    return FinancialServiceProviderFactory()
+    return FinancialServiceProviderFactory.create()
 
 
 @pytest.fixture
 def country_for_real_config():
-    return CountryFactory()
+    return CountryFactory.create()
 
 
 @pytest.fixture
 def dm_for_real_config():
-    return DeliveryMechanismFactory(code="cash_over_the_counter")
+    return DeliveryMechanismFactory.create(code="cash_over_the_counter")
 
 
 @pytest.fixture
 def config_for_real_config(fsp_for_real_config, country_for_real_config, dm_for_real_config):
-    return FinancialServiceProviderConfigFactory(
+    return FinancialServiceProviderConfigFactory.create(
         fsp=fsp_for_real_config,
         country=country_for_real_config,
         delivery_mechanism=dm_for_real_config,
@@ -463,7 +463,7 @@ def instruction_for_real_config(config_for_real_config):
     fsp = config_for_real_config.fsp
     country = config_for_real_config.country
     dm = config_for_real_config.delivery_mechanism
-    return PaymentInstructionFactory(
+    return PaymentInstructionFactory.create(
         fsp=fsp,
         country=country,
         delivery_mechanism=dm,

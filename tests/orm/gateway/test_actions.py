@@ -86,58 +86,58 @@ def request_with_data(request_with_messages, admin_user):
 
 @pytest.fixture
 def fsp_for_admin_test():
-    return FinancialServiceProviderFactory(name="Test FSP")
+    return FinancialServiceProviderFactory.create(name="Test FSP")
 
 
 @pytest.fixture
 def pi_for_admin_test(fsp_for_admin_test):
-    return PaymentInstructionFactory(fsp=fsp_for_admin_test)
+    return PaymentInstructionFactory.create(fsp=fsp_for_admin_test)
 
 
 @pytest.fixture
 def pr_for_admin_test(pi_for_admin_test):
-    return PaymentRecordFactory(parent=pi_for_admin_test)
+    return PaymentRecordFactory.create(parent=pi_for_admin_test)
 
 
 @pytest.fixture
 def instruction_with_template():
-    fsp = FinancialServiceProviderFactory()
-    dm = DeliveryMechanismFactory()
-    office = OfficeFactory()
-    country = CountryFactory()
-    template = ExportTemplateFactory(
+    fsp = FinancialServiceProviderFactory.create()
+    dm = DeliveryMechanismFactory.create()
+    office = OfficeFactory.create()
+    country = CountryFactory.create()
+    template = ExportTemplateFactory.create(
         fsp=fsp, delivery_mechanism=dm, office=office, country=country, query="obj.remote_id"
     )
-    pi = PaymentInstructionFactory(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
+    pi = PaymentInstructionFactory.create(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
     return pi, template
 
 
 @pytest.fixture
 def instruction_with_records():
-    fsp = FinancialServiceProviderFactory()
-    dm = DeliveryMechanismFactory()
-    office = OfficeFactory()
-    country = CountryFactory()
-    ExportTemplateFactory(
+    fsp = FinancialServiceProviderFactory.create()
+    dm = DeliveryMechanismFactory.create()
+    office = OfficeFactory.create()
+    country = CountryFactory.create()
+    ExportTemplateFactory.create(
         fsp=fsp,
         delivery_mechanism=dm,
         office=office,
         country=country,
         query="{{ obj.record_code }}\n{{ obj.remote_id }}",
     )
-    instruction = PaymentInstructionFactory(
+    instruction = PaymentInstructionFactory.create(
         fsp=fsp,
         delivery_mechanism=dm,
         office=office,
         country=country,
     )
-    PaymentRecordFactory(parent=instruction, record_code="REC-001", remote_id="PR-001")
+    PaymentRecordFactory.create(parent=instruction, record_code="REC-001", remote_id="PR-001")
     return instruction
 
 
 @pytest.fixture
 def bare_instruction():
-    return PaymentInstructionFactory()
+    return PaymentInstructionFactory.create()
 
 
 @pytest.fixture(
@@ -149,7 +149,7 @@ def bare_instruction():
 )
 def formatted_record(request):
     _, field_value, expected_format = request.param
-    record = PaymentRecordFactory(record_code=field_value)
+    record = PaymentRecordFactory.create(record_code=field_value)
     queryset = PaymentRecord.objects.filter(id=record.id)
     return queryset, expected_format
 

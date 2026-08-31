@@ -38,7 +38,7 @@ def user_with_permissions(user) -> User:
 
 @pytest.fixture
 def payment_instruction():
-    return PaymentInstructionFactory()
+    return PaymentInstructionFactory.create()
 
 
 @pytest.mark.django_db

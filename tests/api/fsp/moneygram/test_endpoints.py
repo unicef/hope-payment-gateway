@@ -13,22 +13,22 @@ from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 @pytest.fixture
 def mg_pending_record(mg):
-    return PaymentRecordFactory(fsp_code="1234567890", status="PENDING", parent__fsp=mg)
+    return PaymentRecordFactory.create(fsp_code="1234567890", status="PENDING", parent__fsp=mg)
 
 
 @pytest.fixture
 def mg_no_match_record(mg):
-    return PaymentRecordFactory(fsp_code="xxxxx", status=PaymentRecordState.PENDING, parent__fsp=mg)
+    return PaymentRecordFactory.create(fsp_code="xxxxx", status=PaymentRecordState.PENDING, parent__fsp=mg)
 
 
 @pytest.fixture
 def mg_refund_record(mg):
-    return PaymentRecordFactory(fsp_code="1234567890", status=PaymentRecordState.REFUND, parent__fsp=mg)
+    return PaymentRecordFactory.create(fsp_code="1234567890", status=PaymentRecordState.REFUND, parent__fsp=mg)
 
 
 @pytest.fixture
 def mg_transferred_record(mg):
-    return PaymentRecordFactory(
+    return PaymentRecordFactory.create(
         fsp_code="1234567890",
         status=PaymentRecordState.TRANSFERRED_TO_FSP,
         parent__fsp=mg,

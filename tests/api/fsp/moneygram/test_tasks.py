@@ -14,7 +14,7 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, Pa
 def make_instr(mg):
     def _make(**kwargs):
         kwargs.setdefault("fsp", mg)
-        return PaymentInstructionFactory(**kwargs)
+        return PaymentInstructionFactory.create(**kwargs)
 
     return _make
 

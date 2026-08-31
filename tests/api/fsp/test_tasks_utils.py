@@ -25,31 +25,31 @@ def mock_client():
 
 @pytest.fixture
 def payment_instruction_with_2_records():
-    pi = PaymentInstructionFactory()
+    pi = PaymentInstructionFactory.create()
     PaymentRecordFactory.create_batch(2, parent=pi)
     return pi
 
 
 @pytest.fixture
 def payment_instruction_with_3_records():
-    pi = PaymentInstructionFactory()
+    pi = PaymentInstructionFactory.create()
     PaymentRecordFactory.create_batch(3, parent=pi)
     return pi
 
 
 @pytest.fixture
 def payment_instruction_no_records():
-    return PaymentInstructionFactory()
+    return PaymentInstructionFactory.create()
 
 
 @pytest.fixture
 def send_to_fsp_data():
-    fsp = FinancialServiceProviderFactory(vendor_number="V123")
-    pi = PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=True)
-    PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.DRAFT, active=True)
-    PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=False)
-    fsp2 = FinancialServiceProviderFactory(vendor_number="V456")
-    PaymentInstructionFactory(fsp=fsp2, status=PaymentInstructionState.READY, active=True)
+    fsp = FinancialServiceProviderFactory.create(vendor_number="V123")
+    pi = PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.READY, active=True)
+    PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.DRAFT, active=True)
+    PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.READY, active=False)
+    fsp2 = FinancialServiceProviderFactory.create(vendor_number="V456")
+    PaymentInstructionFactory.create(fsp=fsp2, status=PaymentInstructionState.READY, active=True)
     return fsp, pi
 
 

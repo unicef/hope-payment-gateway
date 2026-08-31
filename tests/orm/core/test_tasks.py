@@ -11,17 +11,17 @@ from tests.factories.tasks import AsyncJobFactory
 
 @pytest.fixture
 def task_user():
-    return UserFactory()
+    return UserFactory.create()
 
 
 @pytest.fixture
 def async_job(task_user):
-    return AsyncJobFactory(owner=task_user, group_key=None)
+    return AsyncJobFactory.create(owner=task_user, group_key=None)
 
 
 @pytest.fixture
 def async_job_without_owner():
-    return AsyncJobFactory(group_key=None)
+    return AsyncJobFactory.create(group_key=None)
 
 
 @pytest.fixture
