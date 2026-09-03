@@ -1565,10 +1565,19 @@ wheels = [
 ]
 
 [[package]]
+name = "hope-bitcaster"
+version = "0.1.dev1+gfb94b7a22"
+source = { git = "https://github.com/unicef/hope-bitcaster.git?branch=main#fb94b7a22687fb57e4e55323de4c47e0e428b040" }
+dependencies = [
+    { name = "bitcaster-sdk" },
+    { name = "celery" },
+    { name = "django" },
+]
+
+[[package]]
 name = "hope-payment-gateway"
 source = { editable = "." }
 dependencies = [
-    { name = "bitcaster-sdk" },
     { name = "celery", extra = ["redis"] },
     { name = "dj-static" },
     { name = "django" },
@@ -1606,6 +1615,7 @@ dependencies = [
     { name = "flower" },
     { name = "gunicorn" },
     { name = "hope-api-auth" },
+    { name = "hope-bitcaster" },
     { name = "natural-keys" },
     { name = "newrelic" },
     { name = "paramiko" },
@@ -1685,7 +1695,6 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bitcaster-sdk", specifier = ">=0.4,<1" },
     { name = "celery", extras = ["redis"] },
     { name = "dj-static" },
     { name = "django", specifier = "<6" },
@@ -1723,6 +1732,7 @@ requires-dist = [
     { name = "flower" },
     { name = "gunicorn" },
     { name = "hope-api-auth" },
+    { name = "hope-bitcaster", git = "https://github.com/unicef/hope-bitcaster.git?branch=main" },
     { name = "natural-keys" },
     { name = "newrelic" },
     { name = "paramiko" },
