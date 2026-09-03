@@ -56,7 +56,7 @@ def use_override_settings(settings):
     settings.SECRET_KEY = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
 
     settings.BITCASTER_ENABLED = False
-    from hope_payment_gateway.apps.bitcaster.client import HopeBitcasterClient
+    from hope_bitcaster.client import HopeBitcasterClient
 
     HopeBitcasterClient.reset()
     yield

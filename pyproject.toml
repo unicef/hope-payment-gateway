@@ -22,7 +22,6 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "bitcaster-sdk>=0.4,<1",
   "celery[redis]",
   "dj-static",
   "django<6",
@@ -60,6 +59,7 @@ dependencies = [
   "flower",
   "gunicorn",
   "hope-api-auth",
+  "hope-bitcaster>=0.1",
   "natural-keys",
   "newrelic",
   "paramiko",
@@ -162,6 +162,7 @@ build.targets.sdist.ignore-vcs = true
 raw-options = { root = "../.." }
 
 [tool.uv]
+sources.hope-bitcaster = { git = "https://github.com/unicef/hope-bitcaster.git", branch = "main" }
 package = true
 
 [tool.nitpick]

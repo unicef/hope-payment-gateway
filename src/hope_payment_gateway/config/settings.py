@@ -22,6 +22,7 @@ INSTALLED_APPS = (
     "hope_payment_gateway.apps.fsp.moneygram.apps.AppConfig",
     "hope_payment_gateway.apps.fsp.palpay.apps.AppConfig",
     "hope_payment_gateway.apps.stream.apps.AppConfig",
+    "hope_bitcaster.apps.AppConfig",
     "hope_payment_gateway.apps.bitcaster.apps.AppConfig",
     "streaming",
     "hope_api_auth",
