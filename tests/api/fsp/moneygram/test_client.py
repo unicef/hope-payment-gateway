@@ -27,12 +27,129 @@ from viewflow.fsm import TransitionNotAllowed
 
 
 @pytest.fixture
-def make_pr(mg):
-    def _make(**kwargs):
-        kwargs.setdefault("parent__fsp", mg)
-        return PaymentRecordFactory.create(**kwargs)
+def mg_pr(mg):
+    return PaymentRecordFactory.create(record_code="test-code", parent__fsp=mg)
 
-    return _make
+
+@pytest.fixture
+def mg_pr_code_123(mg):
+    return PaymentRecordFactory.create(record_code="code-123", parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_pr_default(mg):
+    return PaymentRecordFactory.create(parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_pr_status_missing(mg):
+    return PaymentRecordFactory.create(fsp_code="transaction_id", parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_pr_status_ok(mg):
+    return PaymentRecordFactory.create(fsp_code="64c228ba-8013-43f6-9baf-a0c87b91a261", parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_pr_transition_not_allowed(mg):
+    return PaymentRecordFactory.create(fsp_code="18ba47c4-6376-40d4-a0c9-e52722dc52cf", parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_pr_pending(mg):
+    return PaymentRecordFactory.create(status=PaymentRecordState.PENDING, parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_pr_transferred(mg):
+    return PaymentRecordFactory.create(status=PaymentRecordState.TRANSFERRED_TO_FSP, parent__fsp=mg)
+
+
+@pytest.fixture
+def mg_pr_refund(mg):
+    return PaymentRecordFactory.create(
+        fsp_code="a0ea837d-af5b-4cdd-8ac1-560477bf0978",
+        payload={"refuse_reason_code": "DUP_TRAN", "agent_partner_id": "AAAAAA"},
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+        parent__fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_pr_required_fields(mg):
+    return PaymentRecordFactory.create(
+        payload={
+            "delivery_mechanism": "bank_account",
+            "service_provider_code": "BANK_DEPOSIT",
+            "service_provider_routing_code": "74826841",
+            "amount": 100,
+            "origination_currency": "USD",
+            "destination_country": "NGA",
+            "destination_currency": "NGN",
+            "agent_partner_id": "AAAAAA",
+        },
+        parent__fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_pr_create_transaction(mg):
+    return PaymentRecordFactory.create(
+        record_code="code-123",
+        payload={
+            "first_name": "Alice",
+            "last_name": "Foo",
+            "amount": 1000,
+            "origination_currency": "USD",
+            "destination_country": "NGA",
+            "destination_currency": "NGN",
+            "payment_record_code": "code-123",
+            "phone_no": "+393891234567",
+            "agent_partner_id": "AAAAAA",
+        },
+        fsp_code=None,
+        auth_code=None,
+        parent__fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_pr_commit_transaction(mg):
+    return PaymentRecordFactory.create(
+        record_code="code-123",
+        fsp_code="369cc376-b172-4616-a1c0-0fdc23305558",
+        parent__fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_pr_auth_code(mg):
+    return PaymentRecordFactory.create(
+        record_code="code-123",
+        auth_code="some-auth-code",
+        parent__fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_pr_fsp_code_auth_code(mg):
+    return PaymentRecordFactory.create(
+        record_code="code-123",
+        fsp_code=None,
+        auth_code="some-auth-code",
+        parent__fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_pr_commit_auth_code(mg):
+    return PaymentRecordFactory.create(
+        record_code="code-123",
+        fsp_code="some-fsp-code",
+        auth_code="some-auth-code",
+        parent__fsp=mg,
+    )
 
 
 # @_recorder.record(file_path="tests/api/fsp/moneygram/responses/token.yaml")
@@ -91,11 +208,10 @@ def test_get_basic_payload(mg):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_prepare_transactions(mg, make_pr):
+def test_prepare_transactions(mg, mg_pr):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr_code = "test-code"
-    pr = make_pr(record_code=pr_code)
+    pr = mg_pr
     pr.payload = {
         "first_name": "Alen",
         "last_name": "Smith",
@@ -110,7 +226,7 @@ def test_prepare_transactions(mg, make_pr):
         },
     }
     assert client.prepare_transaction(pr.get_payload()) == (
-        pr_code,
+        pr.record_code,
         {
             "autoCommit": "false",
             "targetAudience": "AGENT_FACING",
@@ -164,11 +280,10 @@ def test_prepare_transactions(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_prepare_quote(mg, make_pr):
+def test_prepare_quote(mg, mg_pr):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr_code = "test-code"
-    pr = make_pr(record_code=pr_code)
+    pr = mg_pr
     pr.payload = {
         "first_name": "Alen",
         "last_name": "Smith",
@@ -197,12 +312,11 @@ def test_prepare_quote(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_quote(mg, make_pr):
+def test_quote(mg, mg_pr):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/quote.yaml")
     client = MoneyGramClient()
-    pr_code = "test-code"
-    pr = make_pr(record_code=pr_code)
+    pr = mg_pr
     pr.payload = {
         "first_name": "Alen",
         "last_name": "Smith",
@@ -244,11 +358,10 @@ def test_quote(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_status_missing(mg, make_pr):
+def test_status_missing(mg, mg_pr_status_missing):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/status_missing.yaml")
     client = MoneyGramClient()
-    transaction_id = "transaction_id"
-    record = make_pr(fsp_code=transaction_id)
+    record = mg_pr_status_missing
     payload = {"agent_partner_id": "AAAAAA", "payment_record_code": record.record_code}
     _, response, _ = client.status(payload)
     assert response.status_code == 400
@@ -259,12 +372,11 @@ def test_status_missing(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_status_ok(mg, make_pr):
+def test_status_ok(mg, mg_pr_status_ok):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
-    transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
-    record = make_pr(fsp_code=transaction_id)
+    record = mg_pr_status_ok
     payload = {"agent_partner_id": "AAAAAA", "payment_record_code": record.record_code}
     _, response, _ = client.status(payload)
     assert response.status_code == 200
@@ -308,12 +420,11 @@ def test_status_ok(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_status(mg, make_pr):
+def test_status(mg, mg_pr_status_ok):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/status_ok.yaml")
     client = MoneyGramClient()
-    transaction_id = "64c228ba-8013-43f6-9baf-a0c87b91a261"
-    pr = make_pr(fsp_code=transaction_id)
+    pr = mg_pr_status_ok
     payload = {"agent_partner_id": "AAAAAA", "payment_record_code": pr.record_code}
     client.status_update(payload)
     pr.refresh_from_db()
@@ -324,11 +435,11 @@ def test_status(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_draft_transaction(mg, make_pr):
+def test_draft_transaction(mg, mg_pr_code_123):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/transaction.yaml")
     client = MoneyGramClient()
-    pr = make_pr(record_code="code-123")
+    pr = mg_pr_code_123
     payload = {
         "first_name": "Alice",
         "last_name": "Foo",
@@ -375,15 +486,10 @@ def test_draft_transaction(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_refund(mg, make_pr):
+def test_refund(mg, mg_pr_refund):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/refund.yaml")
     client = MoneyGramClient()
-    transaction_id = "a0ea837d-af5b-4cdd-8ac1-560477bf0978"
-    pr = make_pr(
-        fsp_code=transaction_id,
-        payload={"refuse_reason_code": "DUP_TRAN", "agent_partner_id": "AAAAAA"},
-        status=PaymentRecordState.TRANSFERRED_TO_FSP,
-    )
+    pr = mg_pr_refund
     _, resp, _ = client.refund(pr.get_payload())
     pr.refresh_from_db()
     assert pr.message == "Refunded Duplicate Transaction"
@@ -394,7 +500,7 @@ def test_refund(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_get_required_fields(mg, make_pr):
+def test_get_required_fields(mg, mg_pr_required_fields):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/required_fields.yaml")
     client = MoneyGramClient()
     payload = {
@@ -407,7 +513,7 @@ def test_get_required_fields(mg, make_pr):
         "destination_currency": "NGN",
         "agent_partner_id": "AAAAAA",
     }
-    pr = make_pr(payload=payload)
+    pr = mg_pr_required_fields
     _, response, _ = client.get_required_fields(payload)
     pr.refresh_from_db()
     assert response.status_code == 200
@@ -1456,11 +1562,10 @@ def test_set_token_invalid_error(mg):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_prepare_transaction_with_middle_name(mg, make_pr):
+def test_prepare_transaction_with_middle_name(mg, mg_pr):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr_code = "test-code"
-    pr = make_pr(record_code=pr_code)
+    pr = mg_pr
     pr.payload = {
         "first_name": "Alen",
         "middle_name": "John",
@@ -1479,11 +1584,10 @@ def test_prepare_transaction_with_middle_name(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_prepare_transaction_with_second_last_name(mg, make_pr):
+def test_prepare_transaction_with_second_last_name(mg, mg_pr):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr_code = "test-code"
-    pr = make_pr(record_code=pr_code)
+    pr = mg_pr
     pr.payload = {
         "first_name": "Alen",
         "last_name": "Smith",
@@ -1502,11 +1606,10 @@ def test_prepare_transaction_with_second_last_name(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_prepare_transaction_missing_required_field(mg, make_pr):
+def test_prepare_transaction_missing_required_field(mg, mg_pr):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr_code = "test-code"
-    pr = make_pr(record_code=pr_code)
+    pr = mg_pr
     pr.payload = {
         # Missing first_name which is required
         "last_name": "Smith",
@@ -1525,10 +1628,10 @@ def test_prepare_transaction_missing_required_field(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_draft_transaction_missing_key_error(mg, make_pr):
+def test_draft_transaction_missing_key_error(mg, mg_pr_default):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr = make_pr()
+    pr = mg_pr_default
     pr.payload = {
         # Missing required first_name field
         "last_name": "Smith",
@@ -1552,10 +1655,10 @@ def test_draft_transaction_missing_key_error(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_draft_transaction_error_response(mg, make_pr):
+def test_draft_transaction_error_response(mg, mg_pr_default):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr = make_pr()
+    pr = mg_pr_default
     pr.payload = {
         "first_name": "John",
         "last_name": "Smith",
@@ -1637,10 +1740,10 @@ def test_perform_request_no_response(mg, monkeypatch):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_post_transaction_with_errors(mg, make_pr):
+def test_post_transaction_with_errors(mg, mg_pr_default):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr = make_pr()
+    pr = mg_pr_default
     pr.payload = {
         "first_name": "John",
         "last_name": "Smith",
@@ -1663,9 +1766,9 @@ def test_post_transaction_with_errors(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_post_transaction_transition_not_allowed(mg, make_pr, monkeypatch):
+def test_post_transaction_transition_not_allowed(mg, mg_pr_transition_not_allowed, monkeypatch):
     client = MoneyGramClient()
-    pr = make_pr(fsp_code="18ba47c4-6376-40d4-a0c9-e52722dc52cf")
+    pr = mg_pr_transition_not_allowed
     pr.payload = {
         "first_name": "John",
         "last_name": "Smith",
@@ -1707,8 +1810,7 @@ def test_post_transaction_transition_not_allowed(mg, make_pr, monkeypatch):
     assert response.data == {"errors": [{"error": "transition_not_allowed"}]}
 
 
-def _test_update_status(make_pr, monkeypatch, status, flow_method_name=None, initial_status=None):
-    pr = make_pr(status=initial_status)
+def _test_update_status(pr, monkeypatch, status, flow_method_name=None):
     original_status = pr.status
 
     if flow_method_name:
@@ -1730,69 +1832,53 @@ def _test_update_status(make_pr, monkeypatch, status, flow_method_name=None, ini
 
 
 @pytest.mark.django_db
-def test_update_status_unfunded(make_pr):
-    _test_update_status(make_pr, None, UNFUNDED, initial_status=PaymentRecordState.PENDING)
+def test_update_status_unfunded(mg_pr_pending):
+    _test_update_status(mg_pr_pending, None, UNFUNDED)
 
 
 @pytest.mark.django_db
-def test_update_status_available(make_pr):
-    _test_update_status(make_pr, None, AVAILABLE, initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
+def test_update_status_available(mg_pr_transferred):
+    _test_update_status(mg_pr_transferred, None, AVAILABLE)
 
 
 @pytest.mark.django_db
-def test_update_status_rejected(make_pr, monkeypatch):
-    _test_update_status(make_pr, monkeypatch, REJECTED, "purge", initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
+def test_update_status_rejected(mg_pr_transferred, monkeypatch):
+    _test_update_status(mg_pr_transferred, monkeypatch, REJECTED, "purge")
 
 
 @pytest.mark.django_db
-def test_update_status_refunded(make_pr, monkeypatch):
-    _test_update_status(make_pr, monkeypatch, REFUNDED, "refund", initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
+def test_update_status_refunded(mg_pr_transferred, monkeypatch):
+    _test_update_status(mg_pr_transferred, monkeypatch, REFUNDED, "refund")
 
 
 @pytest.mark.django_db
-def test_update_status_closed(make_pr, monkeypatch):
-    _test_update_status(make_pr, monkeypatch, CLOSED, "fail", initial_status=PaymentRecordState.PENDING)
+def test_update_status_closed(mg_pr_pending, monkeypatch):
+    _test_update_status(mg_pr_pending, monkeypatch, CLOSED, "fail")
 
 
 @pytest.mark.django_db
-def test_update_status_received(make_pr, monkeypatch):
-    _test_update_status(make_pr, monkeypatch, RECEIVED, "confirm", initial_status=PaymentRecordState.TRANSFERRED_TO_FSP)
+def test_update_status_received(mg_pr_transferred, monkeypatch):
+    _test_update_status(mg_pr_transferred, monkeypatch, RECEIVED, "confirm")
 
 
 @pytest.mark.django_db
-def test_update_status_delivered(make_pr, monkeypatch):
+def test_update_status_delivered(mg_pr_transferred, monkeypatch):
     _test_update_status(
-        make_pr,
+        mg_pr_transferred,
         monkeypatch,
         DELIVERED,
         "confirm",
-        initial_status=PaymentRecordState.TRANSFERRED_TO_FSP,
     )
 
 
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_create_transaction(mg, make_pr):
+def test_create_transaction(mg, mg_pr_create_transaction):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/transaction_commit.yaml")
     client = MoneyGramClient()
-    pr = make_pr(
-        record_code="code-123",
-        payload={
-            "first_name": "Alice",
-            "last_name": "Foo",
-            "amount": 1000,
-            "origination_currency": "USD",
-            "destination_country": "NGA",
-            "destination_currency": "NGN",
-            "payment_record_code": "code-123",
-            "phone_no": "+393891234567",
-            "agent_partner_id": "AAAAAA",
-        },
-        fsp_code=None,
-        auth_code=None,
-    )
+    pr = mg_pr_create_transaction
 
     _, response, _ = client.create_transaction(pr.get_payload())
     assert response.status_code == 200
@@ -1805,11 +1891,11 @@ def test_create_transaction(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_commit_transaction(mg, make_pr):
+def test_commit_transaction(mg, mg_pr_commit_transaction):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/transaction_commit.yaml")
     client = MoneyGramClient()
-    pr = make_pr(record_code="code-123", fsp_code="369cc376-b172-4616-a1c0-0fdc23305558")
+    pr = mg_pr_commit_transaction
     _, response, _ = client.commit_transaction(pr.get_payload())
     assert response.status_code == 200
     assert response.data == {"referenceNumber": "99067959"}
@@ -1821,15 +1907,12 @@ def test_commit_transaction(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_create_transaction_with_auth_code(mg, make_pr):
+def test_create_transaction_with_auth_code(mg, mg_pr_auth_code):
     from hope_payment_gateway.apps.fsp.exceptions import PotentialDuplicateError
 
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr = make_pr(
-        record_code="code-123",
-        auth_code="some-auth-code",
-    )
+    pr = mg_pr_auth_code
     with pytest.raises(PotentialDuplicateError):
         client.create_transaction(pr.get_payload())
 
@@ -1837,12 +1920,12 @@ def test_create_transaction_with_auth_code(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_create_transaction_with_fsp_code(mg, make_pr):
+def test_create_transaction_with_fsp_code(mg, mg_pr_fsp_code_auth_code):
     from hope_payment_gateway.apps.fsp.exceptions import PotentialDuplicateError
 
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr = make_pr(record_code="code-123", fsp_code=None, auth_code="some-auth-code")
+    pr = mg_pr_fsp_code_auth_code
     with pytest.raises(PotentialDuplicateError):
         client.create_transaction(pr.get_payload())
 
@@ -1850,15 +1933,11 @@ def test_create_transaction_with_fsp_code(mg, make_pr):
 @responses.activate
 @pytest.mark.django_db
 @override_config(MONEYGRAM_VENDOR_NUMBER=67890)
-def test_commit_transaction_with_auth_code(mg, make_pr):
+def test_commit_transaction_with_auth_code(mg, mg_pr_commit_auth_code):
     from hope_payment_gateway.apps.fsp.exceptions import PotentialDuplicateError
 
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     client = MoneyGramClient()
-    pr = make_pr(
-        record_code="code-123",
-        fsp_code="some-fsp-code",
-        auth_code="some-auth-code",
-    )
+    pr = mg_pr_commit_auth_code
     with pytest.raises(PotentialDuplicateError):
         client.commit_transaction(pr.get_payload())

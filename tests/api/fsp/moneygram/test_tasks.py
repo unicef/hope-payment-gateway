@@ -11,20 +11,40 @@ from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, Pa
 
 
 @pytest.fixture
-def make_instr(mg):
-    def _make(**kwargs):
-        kwargs.setdefault("fsp", mg)
-        return PaymentInstructionFactory.create(**kwargs)
-
-    return _make
+def mg_ready_instruction(mg):
+    return PaymentInstructionFactory.create(status=PaymentInstructionState.READY, fsp=mg)
 
 
 @pytest.fixture
-def make_records():
-    def _make(count, **kwargs):
-        return PaymentRecordFactory.create_batch(count, **kwargs)
+def mg_open_instruction(mg):
+    return PaymentInstructionFactory.create(status=PaymentInstructionState.OPEN, fsp=mg)
 
-    return _make
+
+@pytest.fixture
+def mg_open_instruction_money(mg):
+    return PaymentInstructionFactory.create(
+        status=PaymentInstructionState.OPEN,
+        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
+        fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_open_instruction_voucher(mg):
+    return PaymentInstructionFactory.create(
+        status=PaymentInstructionState.OPEN,
+        payload={"config_key": "mg-key", "delivery_mechanism": "voucher"},
+        fsp=mg,
+    )
+
+
+@pytest.fixture
+def mg_processed_instruction(mg):
+    return PaymentInstructionFactory.create(
+        status=PaymentInstructionState.PROCESSED,
+        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
+        fsp=mg,
+    )
 
 
 @pytest.mark.parametrize(
@@ -42,17 +62,17 @@ def make_records():
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @patch("hope_payment_gateway.apps.fsp.tasks_utils.AsyncJob.queue")
-def test_send_money_task(mock_class, make_instr, make_records, rec_a, rec_b, total):
-    instr_a = make_instr(status=PaymentInstructionState.READY)
-    instr_b = make_instr(status=PaymentInstructionState.READY)
-    make_records(rec_a, parent=instr_a, status=PaymentRecordState.PENDING)
-    make_records(rec_b, parent=instr_b, status=PaymentRecordState.PENDING)
+def test_send_money_task(mock_class, mg, mg_ready_instruction, mg_open_instruction, rec_a, rec_b, total):
+    instr_a = mg_ready_instruction
+    instr_b = PaymentInstructionFactory.create(status=PaymentInstructionState.READY, fsp=mg)
+    PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.PENDING)
+    PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.PENDING)
 
-    instr_noise = make_instr(status=PaymentInstructionState.OPEN)
-    make_records(5, parent=instr_a, status=PaymentRecordState.CANCELLED)
-    make_records(5, parent=instr_noise, status=PaymentRecordState.PENDING)
-    make_records(5, parent__status=PaymentRecordState.PENDING, status=PaymentRecordState.PENDING)
-    make_records(
+    instr_noise = mg_open_instruction
+    PaymentRecordFactory.create_batch(5, parent=instr_a, status=PaymentRecordState.CANCELLED)
+    PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
+    PaymentRecordFactory.create_batch(5, parent__status=PaymentRecordState.PENDING, status=PaymentRecordState.PENDING)
+    PaymentRecordFactory.create_batch(
         5,
         parent__status=PaymentRecordState.PENDING,
         status=PaymentRecordState.PENDING,
@@ -74,28 +94,31 @@ def test_send_money_task(mock_class, make_instr, make_records, rec_a, rec_b, tot
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.status_update")
-def test_send_moneygram_update(mock_class, make_instr, make_records, rec_a, rec_b, total):
+def test_send_moneygram_update(
+    mock_class,
+    mg,
+    mg_processed_instruction,
+    mg_open_instruction_money,
+    mg_open_instruction_voucher,
+    rec_a,
+    rec_b,
+    total,
+):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
-    instr_a = make_instr(
+    instr_a = mg_processed_instruction
+    instr_b = PaymentInstructionFactory.create(
         status=PaymentInstructionState.PROCESSED,
         payload={"config_key": "mg-key", "delivery_mechanism": "money"},
+        fsp=mg,
     )
-    instr_b = make_instr(
-        status=PaymentInstructionState.PROCESSED,
-        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
-    )
-    make_records(rec_a, parent=instr_a, status=PaymentRecordState.TRANSFERRED_TO_FSP)
-    make_records(rec_b, parent=instr_b, status=PaymentRecordState.TRANSFERRED_TO_FSP)
+    PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.TRANSFERRED_TO_FSP)
+    PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
-    instr_noise = make_instr(
-        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "money"}
-    )
-    instr_noise_no_tag = make_instr(
-        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "voucher"}
-    )
-    make_records(5, parent=instr_noise, status=PaymentRecordState.PENDING)
-    make_records(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
-    make_records(
+    instr_noise = mg_open_instruction_money
+    instr_noise_no_tag = mg_open_instruction_voucher
+    PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
+    PaymentRecordFactory.create_batch(5, parent=instr_noise_no_tag, status=PaymentRecordState.PENDING)
+    PaymentRecordFactory.create_batch(
         5,
         parent__status=PaymentRecordState.PENDING,
         status=PaymentRecordState.PENDING,
@@ -116,24 +139,22 @@ def test_send_moneygram_update(mock_class, make_instr, make_records, rec_a, rec_
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.status_update")
-def test_send_moneygram_update_with_ids(mock_class, make_instr, make_records, rec_a, rec_b, total):
+def test_send_moneygram_update_with_ids(
+    mock_class, mg, mg_processed_instruction, mg_open_instruction_money, rec_a, rec_b, total
+):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
-    instr_a = make_instr(
+    instr_a = mg_processed_instruction
+    instr_b = PaymentInstructionFactory.create(
         status=PaymentInstructionState.PROCESSED,
         payload={"config_key": "mg-key", "delivery_mechanism": "money"},
+        fsp=mg,
     )
-    instr_b = make_instr(
-        status=PaymentInstructionState.PROCESSED,
-        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
-    )
-    records_a = make_records(rec_a, parent=instr_a, status=PaymentRecordState.TRANSFERRED_TO_FSP)
-    records_b = make_records(rec_b, parent=instr_b, status=PaymentRecordState.TRANSFERRED_TO_FSP)
+    records_a = PaymentRecordFactory.create_batch(rec_a, parent=instr_a, status=PaymentRecordState.TRANSFERRED_TO_FSP)
+    records_b = PaymentRecordFactory.create_batch(rec_b, parent=instr_b, status=PaymentRecordState.TRANSFERRED_TO_FSP)
 
-    instr_noise = make_instr(
-        status=PaymentInstructionState.OPEN, payload={"config_key": "mg-key", "delivery_mechanism": "money"}
-    )
-    make_records(5, parent=instr_noise, status=PaymentRecordState.PENDING)
-    make_records(
+    instr_noise = mg_open_instruction_money
+    PaymentRecordFactory.create_batch(5, parent=instr_noise, status=PaymentRecordState.PENDING)
+    PaymentRecordFactory.create_batch(
         5,
         parent__status=PaymentRecordState.PENDING,
         status=PaymentRecordState.PENDING,
@@ -149,16 +170,13 @@ def test_send_moneygram_update_with_ids(mock_class, make_instr, make_records, re
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_config(MONEYGRAM_VENDOR_NUMBER="67890")
 @patch("hope_payment_gateway.apps.fsp.moneygram.tasks.MoneyGramClient.create_transaction")
-def test_moneygram_notify(mock_create_transaction, mg, make_instr, make_records):
+def test_moneygram_notify(mock_create_transaction, mg, mg_processed_instruction):
     responses._add_from_file(file_path="tests/api/fsp/moneygram/responses/token.yaml")
     mg.configuration = {"agent_partner_id": "12345"}
     mg.save()
 
-    instr = make_instr(
-        status=PaymentInstructionState.PROCESSED,
-        payload={"config_key": "mg-key", "delivery_mechanism": "money"},
-    )
-    record = make_records(1, parent=instr, status=PaymentRecordState.PENDING, fsp_code="1234567890")[0]
+    instr = mg_processed_instruction
+    record = PaymentRecordFactory.create(parent=instr, status=PaymentRecordState.PENDING, fsp_code="1234567890")
 
     mock_create_transaction.return_value = None, None
 
