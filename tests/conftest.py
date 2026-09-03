@@ -55,6 +55,23 @@ def use_override_settings(settings):
     settings.PALPAY_HOST = "https://sandbox.palpay.ps"
     settings.SECRET_KEY = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
 
+    settings.BITCASTER_ENABLED = False
+    from hope_bitcaster.client import HopeBitcasterClient
+
+    HopeBitcasterClient.reset()
+    yield
+    HopeBitcasterClient.reset()
+
+
+@pytest.fixture
+def bitcaster_settings(settings):
+    settings.BITCASTER_ENABLED = True
+    settings.BITCASTER_BAE = "https://testkey@bitcaster.example.com/api/o/org/"
+    settings.BITCASTER_ORGANIZATION_SLUG = "org"
+    settings.BITCASTER_PROJECT_SLUG = "project"
+    settings.BITCASTER_APPLICATION_SLUG = "app"
+    return settings
+
 
 @pytest.fixture
 def mocked_responses():
