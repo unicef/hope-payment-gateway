@@ -123,16 +123,19 @@ def test_das_delivery_services_invalid_response(wu_client, wu, mock_setup_data):
         ).exists()
 
 
-@pytest.mark.django_db
-@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-def test_das_delivery_services_existing_corridor(wu_client, mock_response, wu, mock_setup_data):
-    existing_corridor = CorridorFactory(
+@pytest.fixture
+def existing_corridor(mock_setup_data):
+    return CorridorFactory.create(
         destination_country=mock_setup_data["destination_country"],
         destination_currency=mock_setup_data["destination_currency"],
         description="Existing Corridor",
         template_code="CODE",
     )
 
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_das_delivery_services_existing_corridor(wu_client, mock_response, wu, mock_setup_data, existing_corridor):
     with patch.object(wu_client, "response_context", return_value=mock_response):
         response = wu_client.das_delivery_services(
             mock_setup_data["destination_country"],

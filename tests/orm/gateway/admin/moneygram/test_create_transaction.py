@@ -18,8 +18,8 @@ def payment_record_admin_instance(admin_site) -> PaymentRecordAdmin:
 
 @pytest.fixture
 def payment_record(mg):
-    instruction = PaymentInstructionFactory(fsp=mg)
-    return PaymentRecordFactory(parent=instruction)
+    instruction = PaymentInstructionFactory.create(fsp=mg)
+    return PaymentRecordFactory.create(parent=instruction)
 
 
 @pytest.mark.parametrize(

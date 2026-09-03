@@ -9,6 +9,22 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 
+@pytest.fixture
+def make_instruction():
+    def _make(status):
+        return PaymentInstructionFactory.create(status=status)
+
+    return _make
+
+
+@pytest.fixture
+def make_record():
+    def _make(status):
+        return PaymentRecordFactory.create(status=status)
+
+    return _make
+
+
 @pytest.mark.django_db
 class TestPaymentInstructionFlow:
     @pytest.mark.parametrize(
@@ -30,8 +46,8 @@ class TestPaymentInstructionFlow:
             ("abort", PaymentInstructionState.FINALIZED, PaymentInstructionState.ABORTED),
         ],
     )
-    def test_transitions_ok(self, transition, source, target):
-        instruction = PaymentInstructionFactory(status=source)
+    def test_transitions_ok(self, transition, source, target, make_instruction):
+        instruction = make_instruction(status=source)
         flow = PaymentInstructionFlow(instruction)
         getattr(flow, transition)()
         assert instruction.status == target
@@ -51,8 +67,8 @@ class TestPaymentInstructionFlow:
             ("finalize", PaymentInstructionState.ABORTED),
         ],
     )
-    def test_transitions_ko(self, transition, source):
-        instruction = PaymentInstructionFactory(status=source)
+    def test_transitions_ko(self, transition, source, make_instruction):
+        instruction = make_instruction(status=source)
         flow = PaymentInstructionFlow(instruction)
         with pytest.raises((TransitionNotAllowed, AssertionError)):
             getattr(flow, transition)()
@@ -76,8 +92,8 @@ class TestPaymentRecordFlow:
             ("unpay", PaymentRecordState.TRANSFERRED_TO_BENEFICIARY, PaymentRecordState.TRANSFERRED_TO_FSP),
         ],
     )
-    def test_transitions_ok(self, transition, source, target):
-        record = PaymentRecordFactory(status=source)
+    def test_transitions_ok(self, transition, source, target, make_record):
+        record = make_record(status=source)
         flow = PaymentRecordFlow(record)
         getattr(flow, transition)()
         assert record.status == target
@@ -94,8 +110,8 @@ class TestPaymentRecordFlow:
             ("unpay", PaymentRecordState.TRANSFERRED_TO_FSP),
         ],
     )
-    def test_transitions_ko(self, transition, source):
-        record = PaymentRecordFactory(status=source)
+    def test_transitions_ko(self, transition, source, make_record):
+        record = make_record(status=source)
         flow = PaymentRecordFlow(record)
         with pytest.raises((TransitionNotAllowed, AssertionError)):
             getattr(flow, transition)()

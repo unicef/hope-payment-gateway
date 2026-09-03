@@ -13,6 +13,116 @@ from hope_payment_gateway.api.palpay.client import PalPayClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
 
 
+@pytest.fixture
+def pr_invalid_payload(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="new-transaction",
+        payload={"payment_record_code": "new-transaction"},
+    )
+
+
+@pytest.fixture
+def pr_invalid_account(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="new-transaction",
+        payload={
+            "payment_record_code": "new-transaction",
+            "account-national_number": "NAT-123",
+            "account-city_name": "Rome",
+            "account-gov_name": "Lazio",
+            "amount": 1000,
+        },
+    )
+
+
+@pytest.fixture
+def pr_status_ok(palpay):
+    return PaymentRecordFactory.create(
+        parent__fsp=palpay, record_code="1234566777", payload={"payment_record_code": "1234566777"}
+    )
+
+
+@pytest.fixture
+def pr_invalid_status(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="new-transaction",
+        payload={
+            "payment_record_code": "new-transaction",
+            "account-national_number": "NAT-123",
+            "account-city_name": "Rome",
+            "account-gov_name": "Lazio",
+            "amount": 1000,
+        },
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+    )
+
+
+@pytest.fixture
+def pr_create_success(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="new-transaction",
+        payload={
+            "payment_record_code": "new-transaction",
+            "account-national_number": "NAT-123",
+            "account-city_name": "Rome",
+            "account-gov_name": "Lazio",
+            "amount": 1000,
+        },
+    )
+
+
+@pytest.fixture
+def pr_create_success_no_update(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="new-transaction-no-update",
+        payload={
+            "payment_record_code": "new-transaction-no-update",
+            "account-national_number": "NAT-456",
+            "account-city_name": "Ramallah",
+            "account-gov_name": "Central",
+            "amount": 500,
+        },
+    )
+
+
+@pytest.fixture
+def pr_global_status(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="status-query",
+        fsp_code="FSP-CODE-123",
+    )
+
+
+@pytest.fixture
+def pr_post_success(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="post-ok",
+    )
+
+
+@pytest.fixture
+def pr_post_failure(palpay):
+    return PaymentRecordFactory.create(
+        parent__office=palpay.configs.first().office,
+        parent__fsp=palpay,
+        record_code="post-ko",
+    )
+
+
 @responses.activate
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
@@ -69,15 +179,9 @@ def test_transactions(mg):
 @responses.activate
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_create_transaction_ko_invalid_payload(palpay):
+def test_create_transaction_ko_invalid_payload(palpay, pr_invalid_payload):
     responses._add_from_file(file_path="tests/api/fsp/palpay/responses/create_transaction_ko_invalid_payload.yaml")
-    pr = PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="new-transaction",
-        payload={"payment_record_code": "new-transaction"},
-    )
-    _, response, _ = PalPayClient().create_transaction(pr.payload)
+    _, response, _ = PalPayClient().create_transaction(pr_invalid_payload.payload)
     assert response.status_code == 400
     jresponse = response.data
     assert jresponse["code"] == "validation_error"
@@ -87,21 +191,9 @@ def test_create_transaction_ko_invalid_payload(palpay):
 @responses.activate
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_create_transaction_ko_invalid_(palpay):
+def test_create_transaction_ko_invalid_(palpay, pr_invalid_account):
     responses._add_from_file(file_path="tests/api/fsp/palpay/responses/create_transaction_ko_invalid_account.yaml")
-    pr = PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="new-transaction",
-        payload={
-            "payment_record_code": "new-transaction",
-            "account-national_number": "NAT-123",
-            "account-city_name": "Rome",
-            "account-gov_name": "Lazio",
-            "amount": 1000,
-        },
-    )
-    _, response, _ = PalPayClient().create_transaction(pr.payload)
+    _, response, _ = PalPayClient().create_transaction(pr_invalid_account.payload)
     assert response.status_code == 400
     jresponse = response.data
     assert not jresponse["Succeeded"]
@@ -112,12 +204,9 @@ def test_create_transaction_ko_invalid_(palpay):
 @responses.activate
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_status_ok(palpay):
+def test_status_ok(palpay, pr_status_ok):
     responses._add_from_file(file_path="tests/api/fsp/palpay/responses/status_ok.yaml")
-    pr = PaymentRecordFactory(
-        parent__fsp=palpay, record_code="1234566777", payload={"payment_record_code": "1234566777"}
-    )
-    _, response, _ = PalPayClient().status(pr.payload)
+    _, response, _ = PalPayClient().status(pr_status_ok.payload)
     jresponse = response.json()
     assert response.status_code == 200
     assert response.json()["Succeeded"]
@@ -140,23 +229,10 @@ def test_status_ok(palpay):
 @responses.activate
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_create_transaction_ko_invalid_status(palpay):
+def test_create_transaction_ko_invalid_status(palpay, pr_invalid_status):
     responses._add_from_file(file_path="tests/api/fsp/palpay/responses/create_transaction_ko_invalid_account.yaml")
-    pr = PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="new-transaction",
-        payload={
-            "payment_record_code": "new-transaction",
-            "account-national_number": "NAT-123",
-            "account-city_name": "Rome",
-            "account-gov_name": "Lazio",
-            "amount": 1000,
-        },
-        status=PaymentRecordState.TRANSFERRED_TO_FSP,
-    )
     with pytest.raises(TransitionNotAllowed, match="Cannot Trigger Transaction: Invalid Status"):
-        PalPayClient().create_transaction(pr.payload)
+        PalPayClient().create_transaction(pr_invalid_status.payload)
 
 
 def _make_mock_response(data, status_code=200):
@@ -170,73 +246,45 @@ def _make_mock_response(data, status_code=200):
 @responses.activate
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_create_transaction_success(palpay):
-    pr = PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="new-transaction",
-        payload={
-            "payment_record_code": "new-transaction",
-            "account-national_number": "NAT-123",
-            "account-city_name": "Rome",
-            "account-gov_name": "Lazio",
-            "amount": 1000,
-        },
-    )
+def test_create_transaction_success(palpay, pr_create_success):
     data = {"Succeeded": True, "Data": {"TransferId": "T123"}, "Message": "ok"}
     mock_resp = _make_mock_response(data, 200)
     with (
         patch.object(PalPayClient, "perform_request", return_value=mock_resp),
         patch.object(PalPayClient, "post_transaction") as mock_post,
     ):
-        payload, response, endpoint = PalPayClient().create_transaction(pr.payload)
+        payload, response, endpoint = PalPayClient().create_transaction(pr_create_success.payload)
     assert response.status_code == 200
     assert response.data["Succeeded"]
-    pr.refresh_from_db()
-    assert pr.success is True
-    assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
-    mock_post.assert_called_once_with(response, pr.payload)
+    pr_create_success.refresh_from_db()
+    assert pr_create_success.success is True
+    assert pr_create_success.status == PaymentRecordState.TRANSFERRED_TO_FSP
+    mock_post.assert_called_once_with(response, pr_create_success.payload)
 
 
 @responses.activate
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_create_transaction_success_no_update(palpay):
-    pr = PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="new-transaction-no-update",
-        payload={
-            "payment_record_code": "new-transaction-no-update",
-            "account-national_number": "NAT-456",
-            "account-city_name": "Ramallah",
-            "account-gov_name": "Central",
-            "amount": 500,
-        },
-    )
+def test_create_transaction_success_no_update(palpay, pr_create_success_no_update):
     data = {"Succeeded": True, "Data": {"TransferId": "T456"}, "Message": "ok"}
     mock_resp = _make_mock_response(data, 200)
     with (
         patch.object(PalPayClient, "perform_request", return_value=mock_resp),
         patch.object(PalPayClient, "post_transaction") as mock_post,
     ):
-        payload, response, endpoint = PalPayClient().create_transaction(pr.payload, update=False)
+        payload, response, endpoint = PalPayClient().create_transaction(
+            pr_create_success_no_update.payload, update=False
+        )
     assert response.status_code == 200
     assert response.data["Succeeded"]
-    pr.refresh_from_db()
-    assert pr.success is True
+    pr_create_success_no_update.refresh_from_db()
+    assert pr_create_success_no_update.success is True
     mock_post.assert_not_called()
 
 
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_global_status(palpay):
-    PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="status-query",
-        fsp_code="FSP-CODE-123",
-    )
+def test_global_status(palpay, pr_global_status):
     mock_resp = MagicMock()
     with patch.object(PalPayClient, "perform_request", return_value=mock_resp) as mock_perform:
         endpoint, payload, response = PalPayClient().global_status({"payment_record_code": "status-query"})
@@ -249,36 +297,26 @@ def test_global_status(palpay):
 
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_post_transaction_success(palpay):
-    pr = PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="post-ok",
-    )
+def test_post_transaction_success(palpay, pr_post_success):
     body = {"Succeeded": True, "Data": {"TransferId": "T999"}, "Message": "done"}
     response = DRFResponse(body, status=200)
     PalPayClient().post_transaction(response, {"payment_record_code": "post-ok"})
-    pr.refresh_from_db()
-    assert pr.success is True
-    assert pr.auth_code == "T999"
-    assert pr.message == "done"
-    assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
-    assert pr.fsp_data == body
+    pr_post_success.refresh_from_db()
+    assert pr_post_success.success is True
+    assert pr_post_success.auth_code == "T999"
+    assert pr_post_success.message == "done"
+    assert pr_post_success.status == PaymentRecordState.TRANSFERRED_TO_FSP
+    assert pr_post_success.fsp_data == body
 
 
 @pytest.mark.django_db
 @override_config(PALPAY_VENDOR_NUMBER="XYZ")
-def test_post_transaction_failure(palpay):
-    pr = PaymentRecordFactory(
-        parent__office=palpay.configs.first().office,
-        parent__fsp=palpay,
-        record_code="post-ko",
-    )
+def test_post_transaction_failure(palpay, pr_post_failure):
     body = {"Succeeded": False, "ErrorCode": -1003, "Message": "error"}
     response = DRFResponse(body, status=200)
     PalPayClient().post_transaction(response, {"payment_record_code": "post-ko"})
-    pr.refresh_from_db()
-    assert pr.success is False
-    assert pr.message == "error [-1003]"
-    assert pr.status == PaymentRecordState.ERROR
-    assert pr.fsp_data == body
+    pr_post_failure.refresh_from_db()
+    assert pr_post_failure.success is False
+    assert pr_post_failure.message == "error [-1003]"
+    assert pr_post_failure.status == PaymentRecordState.ERROR
+    assert pr_post_failure.fsp_data == body

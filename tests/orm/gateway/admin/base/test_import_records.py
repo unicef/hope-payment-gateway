@@ -36,13 +36,16 @@ def user_with_permissions(user) -> User:
     return user
 
 
+@pytest.fixture
+def payment_instruction():
+    return PaymentInstructionFactory.create()
+
+
 @pytest.mark.django_db
-def test_import_records_get_request(user_with_permissions, payment_instruction_admin_instance):
+def test_import_records_get_request(user_with_permissions, payment_instruction_admin_instance, payment_instruction):
     factory = RequestFactory()
     request = factory.get("/")
     request.user = user_with_permissions
-
-    payment_instruction = PaymentInstructionFactory()
 
     response = payment_instruction_admin_instance.import_records(
         payment_instruction_admin_instance, request, payment_instruction.pk
@@ -54,12 +57,10 @@ def test_import_records_get_request(user_with_permissions, payment_instruction_a
 
 
 @pytest.mark.django_db
-def test_import_records_no_permissions(user, payment_instruction_admin_instance):
+def test_import_records_no_permissions(user, payment_instruction_admin_instance, payment_instruction):
     factory = RequestFactory()
     request = factory.get("/")
     request.user = user
-
-    payment_instruction = PaymentInstructionFactory()
 
     with pytest.raises(PermissionDenied):
         payment_instruction_admin_instance.import_records(
@@ -68,8 +69,10 @@ def test_import_records_no_permissions(user, payment_instruction_admin_instance)
 
 
 @pytest.mark.django_db
-def test_import_records_valid_csv(user_with_permissions, payment_instruction_admin_instance, client):
-    instruction = PaymentInstructionFactory()
+def test_import_records_valid_csv(
+    user_with_permissions, payment_instruction_admin_instance, client, payment_instruction
+):
+    instruction = payment_instruction
 
     csv_content = "record_code,first_name,last_name,amount,phone_no,service_provider_code\n"
     csv_content += "TEST001,John,Doe,100,1234567890,SP001\n"
@@ -95,8 +98,10 @@ def test_import_records_valid_csv(user_with_permissions, payment_instruction_adm
 
 
 @pytest.mark.django_db
-def test_import_records_duplicates(user_with_permissions, payment_instruction_admin_instance, client):
-    instruction = PaymentInstructionFactory()
+def test_import_records_duplicates(
+    user_with_permissions, payment_instruction_admin_instance, client, payment_instruction
+):
+    instruction = payment_instruction
 
     csv_content = "record_code,first_name,last_name,amount,phone_no,service_provider_code\n"
     csv_content += "TEST001,John,Doe,100,1234567890,SP001\n"
@@ -118,8 +123,10 @@ def test_import_records_duplicates(user_with_permissions, payment_instruction_ad
 
 
 @pytest.mark.django_db
-def test_import_records_invalid_form(user_with_permissions, payment_instruction_admin_instance, client):
-    instruction = PaymentInstructionFactory()
+def test_import_records_invalid_form(
+    user_with_permissions, payment_instruction_admin_instance, client, payment_instruction
+):
+    instruction = payment_instruction
 
     client.force_login(user_with_permissions)
     url = reverse("admin:gateway_paymentinstruction_import_records", args=[instruction.pk])
