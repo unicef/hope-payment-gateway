@@ -23,10 +23,39 @@ def mock_client():
         yield mock_instance
 
 
-@pytest.mark.django_db
-def test_notify_records_to_fsp_success(mock_client):
-    pi = PaymentInstructionFactory()
+@pytest.fixture
+def payment_instruction_with_2_records():
+    pi = PaymentInstructionFactory.create()
     PaymentRecordFactory.create_batch(2, parent=pi)
+    return pi
+
+
+@pytest.fixture
+def payment_instruction_with_3_records():
+    pi = PaymentInstructionFactory.create()
+    PaymentRecordFactory.create_batch(3, parent=pi)
+    return pi
+
+
+@pytest.fixture
+def payment_instruction_no_records():
+    return PaymentInstructionFactory.create()
+
+
+@pytest.fixture
+def send_to_fsp_data():
+    fsp = FinancialServiceProviderFactory.create(vendor_number="V123")
+    pi = PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.READY, active=True)
+    PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.DRAFT, active=True)
+    PaymentInstructionFactory.create(fsp=fsp, status=PaymentInstructionState.READY, active=False)
+    fsp2 = FinancialServiceProviderFactory.create(vendor_number="V456")
+    PaymentInstructionFactory.create(fsp=fsp2, status=PaymentInstructionState.READY, active=True)
+    return fsp, pi
+
+
+@pytest.mark.django_db
+def test_notify_records_to_fsp_success(mock_client, payment_instruction_with_2_records):
+    pi = payment_instruction_with_2_records
 
     notify_records_to_fsp("client_path", pi.id)
 
@@ -34,9 +63,8 @@ def test_notify_records_to_fsp_success(mock_client):
 
 
 @pytest.mark.django_db
-def test_notify_records_to_fsp_exception(mock_client):
-    pi = PaymentInstructionFactory()
-    PaymentRecordFactory.create_batch(2, parent=pi)
+def test_notify_records_to_fsp_exception(mock_client, payment_instruction_with_2_records):
+    pi = payment_instruction_with_2_records
     mock_client.create_transaction.side_effect = TokenError("Test error")
 
     notify_records_to_fsp("client_path", pi.id)
@@ -47,9 +75,8 @@ def test_notify_records_to_fsp_exception(mock_client):
 
 
 @pytest.mark.django_db
-def test_notify_records_to_fsp_partial_success(mock_client):
-    pi = PaymentInstructionFactory()
-    PaymentRecordFactory.create_batch(3, parent=pi)
+def test_notify_records_to_fsp_partial_success(mock_client, payment_instruction_with_3_records):
+    pi = payment_instruction_with_3_records
     mock_client.create_transaction.side_effect = [
         None,
         PayloadError("fail"),
@@ -64,21 +91,16 @@ def test_notify_records_to_fsp_partial_success(mock_client):
 
 
 @pytest.mark.django_db
-def test_notify_records_to_fsp_with_invalid_ids(mock_client):
-    pi = PaymentInstructionFactory()
+def test_notify_records_to_fsp_with_invalid_ids(mock_client, payment_instruction_no_records):
+    pi = payment_instruction_no_records
     notify_records_to_fsp("client_path", pi.id)
 
     assert mock_client.create_transaction.call_count == 0
 
 
 @pytest.mark.django_db
-def test_send_to_fsp():
-    fsp = FinancialServiceProviderFactory(vendor_number="V123")
-    pi = PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=True)
-    PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.DRAFT, active=True)
-    PaymentInstructionFactory(fsp=fsp, status=PaymentInstructionState.READY, active=False)
-    fsp2 = FinancialServiceProviderFactory(vendor_number="V456")
-    PaymentInstructionFactory(fsp=fsp2, status=PaymentInstructionState.READY, active=True)
+def test_send_to_fsp(send_to_fsp_data):
+    fsp, pi = send_to_fsp_data
 
     with patch("hope_payment_gateway.apps.fsp.tasks_utils.lock_job") as mock_lock:
         mock_job_instance = MagicMock()

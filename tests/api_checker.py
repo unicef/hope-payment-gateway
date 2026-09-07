@@ -46,13 +46,13 @@ def frozenfixture(fixture_name=default_fixture_name, is_fixture=True):
 
 @frozenfixture(is_fixture=False)
 def token_user():
-    user = UserFactory()
+    user = UserFactory.create()
     user_permissions = [
         Grant.API_READ_ONLY,
         Grant.API_PLAN_UPLOAD,
         Grant.API_PLAN_MANAGE,
     ]
-    token = APITokenFactory(
+    token = APITokenFactory.create(
         user=user,
         grants=[c.name for c in user_permissions],
     )

@@ -10,7 +10,7 @@ SUPERUSER_EMAIL = "superuser@example.com"
 
 @pytest.fixture
 def superuser_user(request, db):
-    return UserFactory(email=SUPERUSER_EMAIL)
+    return UserFactory.create(email=SUPERUSER_EMAIL)
 
 
 @pytest.mark.django_db

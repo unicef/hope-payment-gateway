@@ -9,13 +9,17 @@ from hope_payment_gateway.apps.core.permissions import (
     WhitelistPermission,
     get_client_ip,
 )
-from tests.factories.user import UserFactory
 from tests.perms import user_grant_permissions
 
 
 @pytest.fixture
 def request_factory():
     return RequestFactory()
+
+
+@pytest.fixture
+def permission_user(user):
+    return user
 
 
 def test_get_client_ip_with_x_forwarded_for(request_factory):
@@ -62,14 +66,13 @@ def test_whitelist_disabled_permission(request_factory):
 
 @pytest.mark.django_db
 @patch("hope_payment_gateway.api.western_union.views.ftp.FTPClient")
-def test_has_any_permission_view(mock_patch, api_client):
-    user = UserFactory()
-    api_client.force_authenticate(user=user)
+def test_has_any_permission_view(mock_patch, permission_user, api_client):
+    api_client.force_authenticate(user=permission_user)
     url = reverse("rest:wu-files-list")
 
     response = api_client.get(url)
     assert response.status_code == 403
 
-    with user_grant_permissions(user, "core.can_access_ftp"):
+    with user_grant_permissions(permission_user, "core.can_access_ftp"):
         response = api_client.get(url)
         assert response.status_code in [200, 400]

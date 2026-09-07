@@ -101,7 +101,7 @@ def record(db, request):
         full_name = f"{modeladmin.model._meta.app_label}.{modeladmin.model._meta.object_name}"
         factory = get_factory_for_model(modeladmin.model)
         try:
-            instance = factory(**KWARGS.get(full_name, {}))
+            instance = factory.create(**KWARGS.get(full_name, {}))
         except Exception as e:
             raise Exception(f"Error creating fixture for {modeladmin.model}") from e
     return instance
@@ -111,7 +111,7 @@ def record(db, request):
 def app(django_app_factory):
     from factories import SuperUserFactory
 
-    admin_user = SuperUserFactory(username="superuser")
+    admin_user = SuperUserFactory.create(username="superuser")
     django_app = django_app_factory(csrf_checks=False)
     django_app.set_user(admin_user)
     django_app._user = admin_user

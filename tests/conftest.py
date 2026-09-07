@@ -64,7 +64,7 @@ def mocked_responses():
 
 @pytest.fixture
 def user(request, db):
-    return UserFactory()
+    return UserFactory.create()
 
 
 @pytest.fixture
@@ -75,32 +75,32 @@ def logged_user(client, user):
 
 @pytest.fixture
 def corridor():
-    return CorridorFactory()
+    return CorridorFactory.create()
 
 
 @pytest.fixture
 def country():
-    return CountryFactory()
+    return CountryFactory.create()
 
 
 @pytest.fixture
 def office():
-    return OfficeFactory()
+    return OfficeFactory.create()
 
 
 @pytest.fixture
 def pi(office):
-    return PaymentInstructionFactory(office=office)
+    return PaymentInstructionFactory.create(office=office)
 
 
 @pytest.fixture
 def prl():
-    return PaymentRecordFactory()
+    return PaymentRecordFactory.create()
 
 
 @pytest.fixture
 def wu():
-    return FinancialServiceProviderFactory(
+    return FinancialServiceProviderFactory.create(
         name="Western Union",
         vendor_number="12345",
         strategy=fqn(WesternUnionHandler),
@@ -143,7 +143,7 @@ def wu():
 
 @pytest.fixture
 def mg():
-    mg = FinancialServiceProviderFactory(
+    mg = FinancialServiceProviderFactory.create(
         name="MoneyGram",
         vendor_number="67890",
         strategy=fqn(MoneyGramHandler),
@@ -166,8 +166,8 @@ def mg():
             }
         },
     )
-    dm = DeliveryMechanismFactory(code="money")
-    FinancialServiceProviderConfigFactory(
+    dm = DeliveryMechanismFactory.create(code="money")
+    FinancialServiceProviderConfigFactory.create(
         key="mg-key", fsp=mg, delivery_mechanism=dm, configuration={"agent_partner_id": "agent_partner_id"}
     )
 
@@ -176,14 +176,14 @@ def mg():
 
 @pytest.fixture
 def palpay(office):
-    palpay = FinancialServiceProviderFactory(
+    palpay = FinancialServiceProviderFactory.create(
         name="Palpay",
         vendor_number="XYZ",
         strategy=fqn(PalPayHandler),
         configuration={"profileId": "51"},
     )
-    dm = DeliveryMechanismFactory(code="money")
-    FinancialServiceProviderConfigFactory(
+    dm = DeliveryMechanismFactory.create(code="money")
+    FinancialServiceProviderConfigFactory.create(
         key="pp-key",
         fsp=palpay,
         delivery_mechanism=dm,
@@ -202,13 +202,13 @@ def palpay(office):
 
 @pytest.fixture
 def token_user():
-    user = UserFactory()
+    user = UserFactory.create()
     user_permissions = [
         Grant.API_READ_ONLY,
         Grant.API_PLAN_UPLOAD,
         Grant.API_PLAN_MANAGE,
     ]
-    token = APITokenFactory(
+    token = APITokenFactory.create(
         user=user,
         grants=[c.name for c in user_permissions],
     )

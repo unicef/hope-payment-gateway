@@ -1,17 +1,18 @@
 import pytest
-from django.urls import reverse
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
-from hope_payment_gateway.apps.gateway.admin.base import PaymentRecordAdmin, PaymentInstructionAdmin
-from hope_payment_gateway.apps.gateway.models import PaymentRecord, PaymentInstruction
+from django.urls import reverse
+
+from hope_payment_gateway.apps.gateway.admin.base import PaymentInstructionAdmin, PaymentRecordAdmin
+from hope_payment_gateway.apps.gateway.models import PaymentInstruction, PaymentRecord
 from tests.factories.payment import (
-    FinancialServiceProviderFactory,
+    CountryFactory,
     DeliveryMechanismFactory,
     FinancialServiceProviderConfigFactory,
+    FinancialServiceProviderFactory,
+    OfficeFactory,
     PaymentInstructionFactory,
     PaymentRecordFactory,
-    CountryFactory,
-    OfficeFactory,
 )
 
 
@@ -35,89 +36,114 @@ def payment_instruction_admin_instance(admin_site) -> PaymentInstructionAdmin:
     return PaymentInstructionAdmin(PaymentInstruction, admin_site)
 
 
+# ---------- test_payment_record_configuration_view_redirects_correctly ----------
+
+
+@pytest.fixture
+def pr_redirect_data():
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
+    office = OfficeFactory.create()
+
+    config = FinancialServiceProviderConfigFactory.create(
+        fsp=fsp,
+        delivery_mechanism=delivery_mechanism,
+        country=country,
+        office=office,
+    )
+
+    instruction = PaymentInstructionFactory.create(
+        fsp=fsp,
+        delivery_mechanism=delivery_mechanism,
+        country=country,
+        office=office,
+    )
+
+    payment_record = PaymentRecordFactory.create(parent=instruction)
+    return config, payment_record
+
+
 @pytest.mark.django_db
 def test_payment_record_configuration_view_redirects_correctly(
-    user, payment_record_admin_instance, request_with_messages
+    user, payment_record_admin_instance, request_with_messages, pr_redirect_data
 ):
     request = request_with_messages
     request.user = user
 
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
-    office = OfficeFactory()
-
-    config = FinancialServiceProviderConfigFactory(
-        fsp=fsp,
-        delivery_mechanism=delivery_mechanism,
-        country=country,
-        office=office,
-    )
-
-    instruction = PaymentInstructionFactory(
-        fsp=fsp,
-        delivery_mechanism=delivery_mechanism,
-        country=country,
-        office=office,
-    )
-
-    payment_record = PaymentRecordFactory(parent=instruction)
+    config, payment_record = pr_redirect_data
 
     response = payment_record_admin_instance.configuration(payment_record_admin_instance, request, payment_record.pk)
 
     expected_url = reverse("admin:gateway_financialserviceproviderconfig_change", args=[config.pk])
     assert response.url == expected_url
+
+
+# ---------- test_payment_record_configuration_view_handles_missing_config ----------
+
+
+@pytest.fixture
+def pr_missing_record():
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
+
+    instruction = PaymentInstructionFactory.create(
+        fsp=fsp,
+        delivery_mechanism=delivery_mechanism,
+        country=country,
+    )
+
+    return PaymentRecordFactory.create(parent=instruction)
 
 
 @pytest.mark.django_db
 def test_payment_record_configuration_view_handles_missing_config(
-    user, payment_record_admin_instance, request_with_messages
+    user, payment_record_admin_instance, request_with_messages, pr_missing_record
 ):
     request = request_with_messages
     request.user = user
 
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
+    response = payment_record_admin_instance.configuration(payment_record_admin_instance, request, pr_missing_record.pk)
 
-    instruction = PaymentInstructionFactory(
+    assert response.url == reverse("admin:gateway_paymentrecord_change", args=[pr_missing_record.pk])
+
+
+# ---------- test_payment_instruction_configuration_view_redirects_correctly ----------
+
+
+@pytest.fixture
+def pi_redirect_data():
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
+    office = OfficeFactory.create()
+
+    config = FinancialServiceProviderConfigFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,
+        office=office,
     )
 
-    payment_record = PaymentRecordFactory(parent=instruction)
+    instruction = PaymentInstructionFactory.create(
+        fsp=fsp,
+        delivery_mechanism=delivery_mechanism,
+        country=country,
+        office=office,
+    )
 
-    response = payment_record_admin_instance.configuration(payment_record_admin_instance, request, payment_record.pk)
-
-    assert response.url == reverse("admin:gateway_paymentrecord_change", args=[payment_record.pk])
+    return config, instruction
 
 
 @pytest.mark.django_db
 def test_payment_instruction_configuration_view_redirects_correctly(
-    user, payment_instruction_admin_instance, request_with_messages
+    user, payment_instruction_admin_instance, request_with_messages, pi_redirect_data
 ):
     request = request_with_messages
     request.user = user
 
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
-    office = OfficeFactory()
-
-    config = FinancialServiceProviderConfigFactory(
-        fsp=fsp,
-        delivery_mechanism=delivery_mechanism,
-        country=country,
-        office=office,
-    )
-
-    instruction = PaymentInstructionFactory(
-        fsp=fsp,
-        delivery_mechanism=delivery_mechanism,
-        country=country,
-        office=office,
-    )
+    config, instruction = pi_redirect_data
 
     response = payment_instruction_admin_instance.configuration(
         payment_instruction_admin_instance, request, instruction.pk
@@ -127,25 +153,31 @@ def test_payment_instruction_configuration_view_redirects_correctly(
     assert response.url == expected_url
 
 
-@pytest.mark.django_db
-def test_payment_instruction_configuration_view_handles_missing_config(
-    user, payment_instruction_admin_instance, request_with_messages
-):
-    request = request_with_messages
-    request.user = user
+# ---------- test_payment_instruction_configuration_view_handles_missing_config ----------
 
-    fsp = FinancialServiceProviderFactory()
-    delivery_mechanism = DeliveryMechanismFactory(code="CASH")
-    country = CountryFactory()
 
-    instruction = PaymentInstructionFactory(
+@pytest.fixture
+def pi_missing_instruction():
+    fsp = FinancialServiceProviderFactory.create()
+    delivery_mechanism = DeliveryMechanismFactory.create(code="CASH")
+    country = CountryFactory.create()
+
+    return PaymentInstructionFactory.create(
         fsp=fsp,
         delivery_mechanism=delivery_mechanism,
         country=country,
     )
 
+
+@pytest.mark.django_db
+def test_payment_instruction_configuration_view_handles_missing_config(
+    user, payment_instruction_admin_instance, request_with_messages, pi_missing_instruction
+):
+    request = request_with_messages
+    request.user = user
+
     response = payment_instruction_admin_instance.configuration(
-        payment_instruction_admin_instance, request, instruction.pk
+        payment_instruction_admin_instance, request, pi_missing_instruction.pk
     )
 
-    assert response.url == reverse("admin:gateway_paymentinstruction_change", args=[instruction.pk])
+    assert response.url == reverse("admin:gateway_paymentinstruction_change", args=[pi_missing_instruction.pk])

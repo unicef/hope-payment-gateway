@@ -18,7 +18,7 @@ def mock_setup_data():
 
 @pytest.fixture
 def mock_corridor(mock_setup_data):
-    return CorridorFactory(
+    return CorridorFactory.create(
         destination_country=mock_setup_data["destination_country"],
         destination_currency=mock_setup_data["destination_currency"],
         description="Test Corridor",

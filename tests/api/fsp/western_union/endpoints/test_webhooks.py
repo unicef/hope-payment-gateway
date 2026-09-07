@@ -12,17 +12,21 @@ from zeep.exceptions import ValidationError
 
 @responses.activate
 @pytest.mark.django_db
-def test_nis_notification_rejected(wu, api_client, admin_user):
+def test_nis_notification_rejected(wu, api_client, admin_user, payment_record_nis_rejected):
     responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
     responses._add_from_file(file_path="tests/api/fsp/western_union/endpoints/nis_notification_rejected.yaml")
     with open(Path(__file__).parent / "push_notification.xml", "r") as xml:
-        PaymentRecordFactory(record_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
         url = reverse("western_union:nis-notification-xml-view")
         data = xml.read()
         response = api_client.post(url, data=data, user=admin_user, content_type="application/xml")
 
         assert response.status_code == 400
         assert "cannot_find_transaction" in response.data
+
+
+@pytest.fixture
+def payment_record_nis_rejected(wu):
+    return PaymentRecordFactory.create(record_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 def test_nis_notification_xml_with_invalid_request(api_client, admin_user):
@@ -96,9 +100,8 @@ def test_nis_notification_xml_post_with_validation_error(wu, api_client, admin_u
     assert "Invalid XML structure" in response.data["validation_error"]
 
 
-def _test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_user, file_name):
+def _test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_user, file_name, payment_record):
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -122,25 +125,36 @@ def _test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_use
     assert len(payment_record.fsp_data["push_notification"]) == 1
 
 
-@pytest.mark.django_db
-@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-@patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_user):
-    _test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_user, file_name="push_notification.xml")
+@pytest.fixture
+def payment_record_success(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_success_apn(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_user, payment_record_success):
     _test_nis_notification_xml_post_success(
-        mock_flow, wu, api_client, admin_user, file_name="push_notification_success_apn.xml"
+        mock_flow, wu, api_client, admin_user, file_name="push_notification.xml", payment_record=payment_record_success
     )
 
 
-def _test_nis_notification_xml_post_cancel(mock_flow, wu, api_client, admin_user, file_name):
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
+def test_nis_notification_xml_post_success_apn(mock_flow, wu, api_client, admin_user, payment_record_success):
+    _test_nis_notification_xml_post_success(
+        mock_flow,
+        wu,
+        api_client,
+        admin_user,
+        file_name="push_notification_success_apn.xml",
+        payment_record=payment_record_success,
+    )
+
+
+def _test_nis_notification_xml_post_cancel(mock_flow, wu, api_client, admin_user, file_name, payment_record):
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -159,30 +173,44 @@ def _test_nis_notification_xml_post_cancel(mock_flow, wu, api_client, admin_user
     assert "Cancelled by FSP:" in payment_record.message
 
 
+@pytest.fixture
+def payment_record_cancel(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+
+
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_cancel(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_cancel(mock_flow, wu, api_client, admin_user, payment_record_cancel):
     _test_nis_notification_xml_post_cancel(
-        mock_flow, wu, api_client, admin_user, file_name="push_notification_cancel.xml"
+        mock_flow,
+        wu,
+        api_client,
+        admin_user,
+        file_name="push_notification_cancel.xml",
+        payment_record=payment_record_cancel,
     )
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_reject_apn(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_reject_apn(mock_flow, wu, api_client, admin_user, payment_record_cancel):
     _test_nis_notification_xml_post_cancel(
-        mock_flow, wu, api_client, admin_user, file_name="push_notification_reject_apn.xml"
+        mock_flow,
+        wu,
+        api_client,
+        admin_user,
+        file_name="push_notification_reject_apn.xml",
+        payment_record=payment_record_cancel,
     )
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_purged(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_purged(mock_flow, wu, api_client, admin_user, payment_record_purged):
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -196,17 +224,21 @@ def test_nis_notification_xml_post_purged(mock_flow, wu, api_client, admin_user)
     assert response["Content-Type"] == "application/xml"
     mock_instance.purge.assert_called_once()
 
-    payment_record.refresh_from_db()
-    assert payment_record.success is False
-    assert "Purged by FSP:" in payment_record.message
+    payment_record_purged.refresh_from_db()
+    assert payment_record_purged.success is False
+    assert "Purged by FSP:" in payment_record_purged.message
+
+
+@pytest.fixture
+def payment_record_purged(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_refund(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_refund(mock_flow, wu, api_client, admin_user, payment_record_refund):
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -220,17 +252,21 @@ def test_nis_notification_xml_post_refund(mock_flow, wu, api_client, admin_user)
     assert response["Content-Type"] == "application/xml"
     mock_instance.refund.assert_called_once()
 
-    payment_record.refresh_from_db()
-    assert payment_record.success is False
-    assert "Refund by FSP:" in payment_record.message
+    payment_record_refund.refresh_from_db()
+    assert payment_record_refund.success is False
+    assert "Refund by FSP:" in payment_record_refund.message
+
+
+@pytest.fixture
+def payment_record_refund(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_error(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_error(mock_flow, wu, api_client, admin_user, payment_record_error):
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -244,14 +280,18 @@ def test_nis_notification_xml_post_error(mock_flow, wu, api_client, admin_user):
     assert response["Content-Type"] == "application/xml"
     mock_instance.fail.assert_called_once()
 
-    payment_record.refresh_from_db()
-    assert payment_record.success is False
-    assert "Error in Notification:" in payment_record.message
+    payment_record_error.refresh_from_db()
+    assert payment_record_error.success is False
+    assert "Error in Notification:" in payment_record_error.message
+
+
+@pytest.fixture
+def payment_record_error(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
 
 def _test_nis_notification_xml_post_transition_not_allowed(mock_flow, wu, api_client, admin_user, method, file_name):
     url = reverse("western_union:nis-notification-xml-view")
-    PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
     mock_instance = MagicMock()
     getattr(mock_instance, method).side_effect = TransitionNotAllowed()
@@ -267,10 +307,17 @@ def _test_nis_notification_xml_post_transition_not_allowed(mock_flow, wu, api_cl
     getattr(mock_instance, method).assert_called_once()
 
 
+@pytest.fixture
+def payment_record_transition_not_allowed(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
+
+
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_transition_not_allowed_confirm(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_transition_not_allowed_confirm(
+    mock_flow, wu, api_client, admin_user, payment_record_transition_not_allowed
+):
     _test_nis_notification_xml_post_transition_not_allowed(
         mock_flow, wu, api_client, admin_user, method="confirm", file_name="push_notification.xml"
     )
@@ -279,7 +326,9 @@ def test_nis_notification_xml_post_transition_not_allowed_confirm(mock_flow, wu,
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_transition_not_allowed_purge(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_transition_not_allowed_purge(
+    mock_flow, wu, api_client, admin_user, payment_record_transition_not_allowed
+):
     _test_nis_notification_xml_post_transition_not_allowed(
         mock_flow, wu, api_client, admin_user, method="purge", file_name="push_notification_purged.xml"
     )
@@ -288,7 +337,9 @@ def test_nis_notification_xml_post_transition_not_allowed_purge(mock_flow, wu, a
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_transition_not_allowed_refund(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_transition_not_allowed_refund(
+    mock_flow, wu, api_client, admin_user, payment_record_transition_not_allowed
+):
     _test_nis_notification_xml_post_transition_not_allowed(
         mock_flow, wu, api_client, admin_user, method="refund", file_name="push_notification_refund.xml"
     )
@@ -297,11 +348,8 @@ def test_nis_notification_xml_post_transition_not_allowed_refund(mock_flow, wu, 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_unpay(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_unpay(mock_flow, wu, api_client, admin_user, payment_record_unpay):
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(
-        fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu
-    )
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -315,15 +363,22 @@ def test_nis_notification_xml_post_unpay(mock_flow, wu, api_client, admin_user):
     assert response["Content-Type"] == "application/xml"
     mock_instance.unpay.assert_called_once()
 
-    payment_record.refresh_from_db()
-    assert payment_record.success is False
-    assert "Unpay by FSP:" in payment_record.message
+    payment_record_unpay.refresh_from_db()
+    assert payment_record_unpay.success is False
+    assert "Unpay by FSP:" in payment_record_unpay.message
+
+
+@pytest.fixture
+def payment_record_unpay(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu)
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_transition_not_allowed_unpay(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_transition_not_allowed_unpay(
+    mock_flow, wu, api_client, admin_user, payment_record_transition_not_allowed
+):
     _test_nis_notification_xml_post_transition_not_allowed(
         mock_flow, wu, api_client, admin_user, method="unpay", file_name="push_notification_unpay.xml"
     )
@@ -332,12 +387,11 @@ def test_nis_notification_xml_post_transition_not_allowed_unpay(mock_flow, wu, a
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_overridden_unpay(mock_flow, wu, api_client, admin_user, monkeypatch):
+def test_nis_notification_xml_post_overridden_unpay(
+    mock_flow, wu, api_client, admin_user, monkeypatch, payment_record_overridden_unpay
+):
     monkeypatch.setattr("hope_payment_gateway.api.western_union.views.webhook.UNPAY", "OVERRIDDEN_UNPAY_CODE")
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(
-        fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu
-    )
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -351,17 +405,23 @@ def test_nis_notification_xml_post_overridden_unpay(mock_flow, wu, api_client, a
     assert response["Content-Type"] == "application/xml"
     mock_instance.unpay.assert_called_once()
 
-    payment_record.refresh_from_db()
-    assert payment_record.success is False
-    assert "Unpay by FSP:" in payment_record.message
+    payment_record_overridden_unpay.refresh_from_db()
+    assert payment_record_overridden_unpay.success is False
+    assert "Unpay by FSP:" in payment_record_overridden_unpay.message
+
+
+@pytest.fixture
+def payment_record_overridden_unpay(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_BENEFICIARY", parent__fsp=wu)
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_transfer_to_fsp(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_transfer_to_fsp(
+    mock_flow, wu, api_client, admin_user, payment_record_transfer_to_fsp
+):
     url = reverse("western_union:nis-notification-xml-view")
-    payment_record = PaymentRecordFactory(fsp_code="2323589126420060", status="PENDING", parent__fsp=wu)
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -375,19 +435,25 @@ def test_nis_notification_xml_post_transfer_to_fsp(mock_flow, wu, api_client, ad
     assert response["Content-Type"] == "application/xml"
     mock_instance.store.assert_called_once()
 
-    payment_record.refresh_from_db()
-    assert payment_record.success is False
-    assert "Store by FSP:" in payment_record.message
-    assert "push_notification" in payment_record.fsp_data
-    assert len(payment_record.fsp_data["push_notification"]) == 1
+    payment_record_transfer_to_fsp.refresh_from_db()
+    assert payment_record_transfer_to_fsp.success is False
+    assert "Store by FSP:" in payment_record_transfer_to_fsp.message
+    assert "push_notification" in payment_record_transfer_to_fsp.fsp_data
+    assert len(payment_record_transfer_to_fsp.fsp_data["push_notification"]) == 1
+
+
+@pytest.fixture
+def payment_record_transfer_to_fsp(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="PENDING", parent__fsp=wu)
 
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 @patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_xml_post_transfer_to_fsp_not_pending(mock_flow, wu, api_client, admin_user):
+def test_nis_notification_xml_post_transfer_to_fsp_not_pending(
+    mock_flow, wu, api_client, admin_user, payment_record_transfer_to_fsp_not_pending
+):
     url = reverse("western_union:nis-notification-xml-view")
-    PaymentRecordFactory(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)
 
     mock_instance = MagicMock()
     mock_flow.return_value = mock_instance
@@ -400,3 +466,8 @@ def test_nis_notification_xml_post_transfer_to_fsp_not_pending(mock_flow, wu, ap
     assert response.status_code == 200
     assert response["Content-Type"] == "application/xml"
     mock_instance.store.assert_not_called()
+
+
+@pytest.fixture
+def payment_record_transfer_to_fsp_not_pending(wu):
+    return PaymentRecordFactory.create(fsp_code="2323589126420060", status="TRANSFERRED_TO_FSP", parent__fsp=wu)

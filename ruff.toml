@@ -86,6 +86,6 @@ line-ending = "auto"
 [lint.per-file-ignores]
 ".semgrep/**/*.py" = ["ALL"]
 "docs/**.py" = ["TC002", "U"]
-"tests/**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999", "PT006", "PLC0415", "TC002"]
+"tests/**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "PLR0917", "ANN", "N999", "PT006", "PLC0415", "TC002"]
 "src/**/migrations/*.py" = ["E501", ]
 "src/hope_payment_gateway/version.py" = ["ALL", ]

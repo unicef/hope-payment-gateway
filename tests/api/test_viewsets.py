@@ -16,42 +16,42 @@ from factories import (
 
 @frozenfixture()
 def acc_type(request, db):
-    return AccountTypeFactory()
+    return AccountTypeFactory.create()
 
 
 @frozenfixture()
 def dm(request, db):
-    return DeliveryMechanismFactory()
+    return DeliveryMechanismFactory.create()
 
 
 @frozenfixture()
 def fsp(request, db):
-    return FinancialServiceProviderFactory()
+    return FinancialServiceProviderFactory.create()
 
 
 @frozenfixture()
 def p_instruction(request, fsp):
-    return PaymentInstructionFactory(fsp=fsp)
+    return PaymentInstructionFactory.create(fsp=fsp)
 
 
 @frozenfixture()
 def p_record(request, db, p_instruction):
-    return PaymentRecordFactory(parent=p_instruction)
+    return PaymentRecordFactory.create(parent=p_instruction)
 
 
 @frozenfixture()
 def corridor(request, db):
-    return CorridorFactory()
+    return CorridorFactory.create()
 
 
 @frozenfixture()
 def service_provider_code(request, db):
-    return ServiceProviderCodeFactory()
+    return ServiceProviderCodeFactory.create()
 
 
 @frozenfixture()
 def configuration(request, db, fsp):
-    return FinancialServiceProviderConfigFactory(fsp=fsp)
+    return FinancialServiceProviderConfigFactory.create(fsp=fsp)
 
 
 @pytest.mark.django_db
