@@ -100,16 +100,23 @@ def pr_for_admin_test(pi_for_admin_test):
 
 
 @pytest.fixture
-def instruction_with_template():
+def pi_with_template():
     fsp = FinancialServiceProviderFactory.create()
     dm = DeliveryMechanismFactory.create()
     office = OfficeFactory.create()
     country = CountryFactory.create()
-    template = ExportTemplateFactory.create(
-        fsp=fsp, delivery_mechanism=dm, office=office, country=country, query="obj.remote_id"
+    return PaymentInstructionFactory.create(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
+
+
+@pytest.fixture
+def export_template_for_pi(pi_with_template):
+    return ExportTemplateFactory.create(
+        fsp=pi_with_template.fsp,
+        delivery_mechanism=pi_with_template.delivery_mechanism,
+        office=pi_with_template.office,
+        country=pi_with_template.country,
+        query="obj.remote_id",
     )
-    pi = PaymentInstructionFactory.create(fsp=fsp, delivery_mechanism=dm, office=office, country=country)
-    return pi, template
 
 
 @pytest.fixture
@@ -644,8 +651,11 @@ def test_payment_record_admin_fsp_method(fsp_for_admin_test, pi_for_admin_test, 
 
 
 @pytest.mark.django_db
-def test_payment_instruction_admin_generate_records(rf, admin_user, mock_messages, instruction_with_template):
-    pi, template = instruction_with_template
+def test_payment_instruction_admin_generate_records(
+    rf, admin_user, mock_messages, pi_with_template, export_template_for_pi
+):
+    pi = pi_with_template
+    template = export_template_for_pi
 
     admin_site = AdminSite()
     pi_admin = PaymentInstructionAdmin(PaymentInstruction, admin_site)
