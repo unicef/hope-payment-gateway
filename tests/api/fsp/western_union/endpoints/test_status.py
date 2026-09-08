@@ -133,3 +133,47 @@ def payment_record_status_no_matching(wu):
         parent__fsp=wu,
         status=PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
     )
+
+
+@pytest.mark.parametrize(
+    "mock_response,missing_key",
+    [
+        ({}, "'content_response'"),
+        ({"content_response": {}}, "'payment_transactions'"),
+        (
+            {"content_response": {"payment_transactions": {}}},
+            "'payment_transaction'",
+        ),
+        (
+            {"content_response": {"payment_transactions": {"payment_transaction": [{}]}}},
+            "'pay_status_description'",
+        ),
+    ],
+    ids=[
+        "missing_content_response",
+        "missing_payment_transactions",
+        "missing_payment_transaction",
+        "missing_pay_status_description",
+    ],
+)
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_status_update_key_error(wu, wu_client, payment_record_status_no_matching, mock_response, missing_key):
+    pr = payment_record_status_no_matching
+    with patch.object(wu_client, "response_context", return_value=mock_response):
+        resp = WesternUnionClient().status(pr.fsp_code, True)
+        pr.refresh_from_db()
+        assert resp["code"] == 400
+        assert missing_key in resp["title"]
+        assert resp["error"] == mock_response
+        assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_status_update_no_key_error_on_false(wu, wu_client, payment_record_status_no_matching):
+    pr = payment_record_status_no_matching
+    mock_response = {}
+    with patch.object(wu_client, "response_context", return_value=mock_response):
+        resp = WesternUnionClient().status(pr.fsp_code, False)
+        assert resp == mock_response

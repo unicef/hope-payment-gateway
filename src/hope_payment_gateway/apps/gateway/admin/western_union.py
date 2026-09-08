@@ -142,7 +142,10 @@ class WesternUnionAdminMixin:
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
             context["msg"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
-            context.update(WesternUnionClient().status(obj.fsp_code, True))
+            resp = WesternUnionClient().status(obj.fsp_code, True)
+            if resp.get("code") not in (None, 200):
+                messages.warning(request, resp.get("title") or resp.get("error") or "Status Update failed")
+            context.update(resp)
         else:
             messages.warning(request, "Missing MTCN")
         return TemplateResponse(request, "request.html", context)
