@@ -53,7 +53,7 @@ OPTIONAL = {
     "FTP_WESTERN_UNION_USERNAME": (str, ""),
     "HOST": (str, "http://localhost:8000"),
     "LOGIN_ENABLED": (bool, False),
-    "SECURE_HSTS_SECONDS": (int, 60),
+    "SECURE_HSTS_SECONDS": (int, 31536000),
     "SESSION_COOKIE_HTTPONLY": (bool, True),
     "SECURE_SSL_REDIRECT": (bool, True),
     "SECURE_HSTS_PRELOAD": (bool, True),
