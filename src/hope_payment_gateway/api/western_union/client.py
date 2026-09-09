@@ -377,9 +377,14 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 f"SOAP_HTTP_Port_{wu_env}",
             )
             if update:
-                wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
-                    "pay_status_description"
-                ]
+                try:
+                    wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
+                        "pay_status_description"
+                    ]
+                except KeyError as e:
+                    msg = f"Missing key in WU status response: {e}"
+                    logger.warning(msg)
+                    return {"title": msg, "code": 400, "error": response}
                 status = {
                     "PAID": PaymentRecordState.TRANSFERRED_TO_BENEFICIARY,
                     "WCQ": PaymentRecordState.TRANSFERRED_TO_FSP,
