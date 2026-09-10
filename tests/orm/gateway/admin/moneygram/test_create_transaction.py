@@ -26,6 +26,8 @@ def payment_record(mg):
     ("method", "title", "permission", "path"),
     [
         ("create_transaction", "Create Transaction", "can_create_transaction", "mg_create_transaction"),
+        ("draft_transaction", "Draft Transaction", "can_draft_transaction", "mg_draft_transaction"),
+        ("commit_transaction", "Commit Transaction", "can_commit_transaction", "mg_commit_transaction"),
         ("quote", "Quote", "can_quote_transaction", "mg_quote_transaction"),
         ("status", "Status", "can_check_status", "mg_status"),
         ("status_update", "Status Upload", "can_update_status", "mg_status_update"),
@@ -66,6 +68,8 @@ def test_handle_mg_response_called_correctly(
     ("permission", "path"),
     [
         ("can_create_transaction", "mg_create_transaction"),
+        ("can_draft_transaction", "mg_draft_transaction"),
+        ("can_commit_transaction", "mg_commit_transaction"),
         ("can_quote_transaction", "mg_quote_transaction"),
         ("can_check_status", "mg_status"),
         ("can_update_status", "mg_status_update"),

@@ -5,6 +5,7 @@ from constance.test import override_config
 from django.contrib.auth.models import Permission
 from django.core.exceptions import PermissionDenied
 from unittest.mock import patch
+from viewflow.fsm import TransitionNotAllowed
 
 from hope_payment_gateway.apps.gateway.admin import PaymentRecordAdmin
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
@@ -12,6 +13,7 @@ from tests.factories.payment import (
     PaymentInstructionFactory,
     PaymentRecordFactory,
 )
+from . import assert_error_redirect
 
 
 @pytest.fixture
@@ -78,3 +80,21 @@ def test_wu_cancel_missing_mtcn(user_with_permissions, western_union_admin_insta
 
     assert response.status_code == 200
     assert "obj" not in response.context_data
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@patch("hope_payment_gateway.apps.gateway.admin.western_union.WesternUnionClient")
+def test_wu_cancel_transition_not_allowed(
+    mock_wu_client, user_with_permissions, western_union_admin_instance, payment_record, client
+):
+    mock_wu_client.return_value.refund.side_effect = TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
+
+    payment_record.auth_code = "1234567890"
+    payment_record.fsp_data = {"test_data": "value"}
+    payment_record.save()
+
+    client.force_login(user_with_permissions)
+    url = reverse("admin:gateway_paymentrecord_wu_cancel", args=[payment_record.pk])
+    response = client.get(url)
+    assert_error_redirect(response, payment_record)

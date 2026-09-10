@@ -21,7 +21,7 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 import typing
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING:  # pragma: no cover
     from django.http import HttpRequest
 
 

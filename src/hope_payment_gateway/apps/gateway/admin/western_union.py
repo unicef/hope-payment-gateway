@@ -7,6 +7,8 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 import typing
+from viewflow.fsm import TransitionNotAllowed
+
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.exceptions import (
     InvalidCorridorError,
@@ -18,7 +20,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentRecord,
 )
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING:  # pragma: no cover
     from django.http import HttpRequest, HttpResponseRedirect
 
 
@@ -116,6 +118,9 @@ class WesternUnionAdminMixin:
         except PaymentRecord.DoesNotExist:
             messages.add_message(request, messages.ERROR, "Cannot find Payment Record")
             return redirect(reverse("admin:gateway_paymentrecord_change", args=[obj.pk]))
+        except TransitionNotAllowed as e:
+            self.message_user(request, str(e), messages.ERROR)
+            return redirect(reverse("admin:gateway_paymentrecord_change", args=[obj.pk]))
 
     @view(
         html_attrs={"style": "background-color:yellow;color:blue"},
@@ -176,7 +181,11 @@ class WesternUnionAdminMixin:
         obj = PaymentRecord.objects.get(pk=pk)
         if mtcn := obj.auth_code:
             context["obj"] = f"Search request through MTCN \nPARAM: mtcn {mtcn}"
-            context.update(WesternUnionClient().refund(obj.fsp_code, obj.fsp_data))
+            try:
+                context.update(WesternUnionClient().refund(obj.fsp_code, obj.fsp_data))
+            except TransitionNotAllowed as e:
+                self.message_user(request, str(e), messages.ERROR)
+                return redirect(reverse("admin:gateway_paymentrecord_change", args=[obj.pk]))
 
         return TemplateResponse(request, "request.html", context)
 
