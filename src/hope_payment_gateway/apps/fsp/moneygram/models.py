@@ -7,7 +7,9 @@ class MoneyGram(models.Model):
         default_permissions = ()
         permissions = (
             ("can_prepare_payment", "MoneyGram: Can Prepare Transaction"),
+            ("can_draft_transaction", "MoneyGram: Can Draft Transaction"),
             ("can_create_transaction", "MoneyGram: Can Create Transaction"),
+            ("can_commit_transaction", "MoneyGram: Can Commit Transaction"),
             ("can_quote_transaction", "MoneyGram: Can Quote Transaction"),
             ("can_check_status", "MoneyGram: Can Check Status"),
             ("can_update_status", "MoneyGram: Can Update Status"),
