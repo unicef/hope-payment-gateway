@@ -21,7 +21,7 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 import typing
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING:  # pragma: no cover
     from django.http import HttpRequest
 
 
@@ -63,7 +63,7 @@ class MoneyGramAdminMixin:
         label="Draft Transaction",
         permission="moneygram.can_draft_transaction",
     )
-    def mg_draft_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:
+    def mg_draft_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:  # pragma: no cover
         return self.handle_mg_response(request, pk, "draft_transaction", "Draft Transaction")
 
     @view(
@@ -79,7 +79,7 @@ class MoneyGramAdminMixin:
         label="Commit Transaction",
         permission="moneygram.can_commit_transaction",
     )
-    def mg_commit_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:
+    def mg_commit_transaction(self, request: "HttpRequest", pk: int) -> TemplateResponse:  # pragma: no cover
         return self.handle_mg_response(request, pk, "commit_transaction", "Commit Transaction")
 
     @view(

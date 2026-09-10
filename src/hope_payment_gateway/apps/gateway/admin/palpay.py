@@ -10,7 +10,7 @@ from viewflow.fsm import TransitionNotAllowed
 from hope_payment_gateway.api.palpay.client import PalPayClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecord
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING:  # pragma: no cover
     from django.http import HttpRequest
 
 logger = logging.getLogger(__name__)
