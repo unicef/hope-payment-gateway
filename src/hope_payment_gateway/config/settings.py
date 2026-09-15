@@ -184,4 +184,6 @@ LOGIN_ENABLED = env("LOGIN_ENABLED")
 MAX_CSV_UPLOAD_ROWS = env.int("MAX_CSV_UPLOAD_ROWS")
 
 SUPERUSERS = env("SUPERUSERS").split(",")
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = env.int("DATA_UPLOAD_MAX_MEMORY_SIZE")
 from .fragments import *  # noqa
