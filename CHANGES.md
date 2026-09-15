@@ -1,3 +1,8 @@
+1.19.1
+======
+* customizable DATA_UPLOAD_MAX_MEMORY_SIZE
+
+
 1.19.0
 ======
 * Western Union: Status update admin action runs as an async job and requires the `western_union.can_update_status` permission
