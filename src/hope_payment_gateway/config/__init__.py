@@ -82,6 +82,8 @@ OPTIONAL = {
     "SESSION_COOKIE_NAME": (str, "hpg_session"),
     "SESSION_COOKIE_PATH": (str, "/"),
     "SESSION_COOKIE_SECURE": (bool, True),
+    "SESSION_COOKIE_AGE": (int, 86400),
+    "SESSION_EXPIRE_AT_BROWSER_CLOSE": (bool, True),
     "STATIC_URL": (str, "/static/"),
     "STATIC_ROOT": (str, "/tmp/static/"),  # noqa
     "STREAMING_BROKER_URL": (str, "", ""),
