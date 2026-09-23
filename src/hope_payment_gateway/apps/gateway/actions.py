@@ -28,7 +28,8 @@ from hope_payment_gateway.api.moneygram.client import MoneyGramClient
 from hope_payment_gateway.apps.fsp.moneygram import REFUND_CHOICES
 from hope_payment_gateway.apps.fsp.moneygram.tasks import moneygram_update
 from hope_payment_gateway.apps.fsp.western_union.tasks import western_union_update_status
-from hope_payment_gateway.apps.gateway.models import AsyncJob, PaymentInstruction
+from hope_payment_gateway.apps.gateway.models import AsyncJob, PaymentInstruction, PaymentRecordState
+from hope_payment_gateway.apps.gateway.tasks import cancel_records
 from hope_payment_gateway.apps.gateway.templatetags.payment import clean_value
 
 
@@ -275,6 +276,23 @@ def western_union_update_status_action(modeladmin, request, queryset):
     messages.info(request, _(f"Scheduled Western Union status update for {len(ids)} record(s)"))
 
 
+def cancel_payment_records(modeladmin, request, queryset):
+    if not request.user.has_perm("gateway.can_cancel_records"):
+        messages.error(request, _("Sorry you do not have rights to execute this action"))
+        return
+    ids = list(queryset.filter(status=PaymentRecordState.TRANSFERRED_TO_FSP).values_list("id", flat=True))
+    job = AsyncJob.objects.create(
+        description="Cancel payment records",
+        type=AsyncJob.JobType.STANDARD_TASK,
+        owner=request.user,
+        action=fqn(cancel_records),
+        config={"ids": ids},
+    )
+    job.queue()
+    messages.info(request, _(f"Scheduled cancellation of {len(ids)} record(s)"))
+
+
 moneygram_update_status.short_description = "MoneyGram: update status"
 moneygram_refund.short_description = "MoneyGram: mass refund"
 western_union_update_status_action.short_description = "Western Union: update status"
+cancel_payment_records.short_description = "Cancel selected transferred to FSP records"
