@@ -39,6 +39,7 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentInstruction,
     PaymentRecordState,
 )
+from hope_payment_gateway.apps.gateway.tasks import cancel_records
 from csv import excel_tab
 from strategy_field.utils import fqn
 
@@ -240,9 +241,8 @@ def refund_request_invalid_form(request_with_messages, mg_records_with_code):
 
 
 @pytest.fixture
-def cancel_request_with_permission(request_with_messages):
-    request_with_messages.user = MagicMock()
-    request_with_messages.user.has_perm.return_value = True
+def cancel_request_with_permission(request_with_messages, admin_user):
+    request_with_messages.user = admin_user
     return request_with_messages
 
 
@@ -685,6 +685,7 @@ def test_cancel_payment_records_without_permission(
     response = cancel_payment_records(modeladmin, cancel_request_without_permission, queryset)
 
     assert response is None
+    assert AsyncJob.objects.count() == 0
     mock_messages["error"].assert_called_once_with(
         cancel_request_without_permission, "Sorry you do not have rights to execute this action"
     )
@@ -694,7 +695,9 @@ def test_cancel_payment_records_without_permission(
 
 
 @pytest.mark.django_db
-def test_cancel_payment_records_only_transferred_to_fsp(
+@patch("hope_payment_gateway.apps.gateway.actions.AsyncJob.queue")
+def test_cancel_payment_records_schedules_async_job(
+    mock_queue,
     modeladmin,
     cancel_request_with_permission,
     transferred_records,
@@ -702,23 +705,34 @@ def test_cancel_payment_records_only_transferred_to_fsp(
     mock_messages,
 ):
     ids = [record.id for record in transferred_records + non_transferred_records]
-    original_status = {record.id: record.status for record in non_transferred_records}
+    original_status = {record.id: record.status for record in transferred_records + non_transferred_records}
     queryset = PaymentRecord.objects.filter(id__in=ids)
 
     cancel_payment_records(modeladmin, cancel_request_with_permission, queryset)
 
-    for record in transferred_records:
-        record.refresh_from_db()
-        assert record.status == PaymentRecordState.CANCELLED
-    for record in non_transferred_records:
+    job = AsyncJob.objects.get()
+    assert job.description == "Cancel payment records"
+    assert job.type == AsyncJob.JobType.STANDARD_TASK
+    assert job.owner == cancel_request_with_permission.user
+    assert job.action == fqn(cancel_records)
+    assert job.config == {"ids": [record.id for record in transferred_records]}
+    mock_queue.assert_called_once_with()
+    mock_messages["info"].assert_called_once_with(
+        cancel_request_with_permission, "Scheduled cancellation of 2 record(s)"
+    )
+    for record in transferred_records + non_transferred_records:
         record.refresh_from_db()
         assert record.status == original_status[record.id]
-    mock_messages["info"].assert_called_once_with(cancel_request_with_permission, "Cancelled 2 record(s)")
 
 
 @pytest.mark.django_db
+@patch("hope_payment_gateway.apps.gateway.actions.AsyncJob.queue")
 def test_cancel_payment_records_no_eligible(
-    modeladmin, cancel_request_with_permission, non_transferred_records, mock_messages
+    mock_queue,
+    modeladmin,
+    cancel_request_with_permission,
+    non_transferred_records,
+    mock_messages,
 ):
     id_list = [record.id for record in non_transferred_records]
     original_status = {record.id: record.status for record in non_transferred_records}
@@ -726,10 +740,16 @@ def test_cancel_payment_records_no_eligible(
 
     cancel_payment_records(modeladmin, cancel_request_with_permission, queryset)
 
+    job = AsyncJob.objects.get()
+    assert job.config == {"ids": []}
+    assert job.action == fqn(cancel_records)
+    mock_queue.assert_called_once_with()
+    mock_messages["info"].assert_called_once_with(
+        cancel_request_with_permission, "Scheduled cancellation of 0 record(s)"
+    )
     for record in non_transferred_records:
         record.refresh_from_db()
         assert record.status == original_status[record.id]
-    mock_messages["info"].assert_called_once_with(cancel_request_with_permission, "Cancelled 0 record(s)")
 
 
 @pytest.mark.django_db
