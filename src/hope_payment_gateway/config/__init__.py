@@ -83,7 +83,7 @@ OPTIONAL = {
     "SESSION_COOKIE_PATH": (str, "/"),
     "SESSION_COOKIE_SECURE": (bool, True),
     "SESSION_COOKIE_AGE": (int, 86400),
-    "SESSION_EXPIRE_AT_BROWSER_CLOSE": (bool, True),
+    "SESSION_EXPIRE_AT_BROWSER_CLOSE": (bool, False),
     "STATIC_URL": (str, "/static/"),
     "STATIC_ROOT": (str, "/tmp/static/"),  # noqa
     "STREAMING_BROKER_URL": (str, "", ""),
