@@ -25,6 +25,7 @@ from jsoneditor.forms import JSONEditor
 from hope_payment_gateway.apps.fsp.utils import extrapolate_errors
 from hope_payment_gateway.apps.gateway.actions import (
     TemplateExportForm,
+    cancel_payment_records,
     export_as_template,
     export_as_template_impl,
     moneygram_refund,
@@ -93,7 +94,13 @@ class PaymentRecordAdmin(
     }
     raw_id_fields = ("parent",)
 
-    actions = [export_as_template, moneygram_update_status, moneygram_refund, western_union_update_status_action]
+    actions = [
+        export_as_template,
+        moneygram_update_status,
+        moneygram_refund,
+        western_union_update_status_action,
+        cancel_payment_records,
+    ]
 
     def get_queryset(self, request: "HttpRequest") -> QuerySet:
         return super().get_queryset(request).select_related("parent__fsp")

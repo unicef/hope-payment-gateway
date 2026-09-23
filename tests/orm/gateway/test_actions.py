@@ -19,6 +19,7 @@ from factories import (
 )
 from hope_payment_gateway.apps.gateway.actions import (
     TemplateExportForm,
+    cancel_payment_records,
     export_as_template_impl,
     export_as_template,
     export_payment_instruction_to_email,
@@ -32,7 +33,12 @@ from hope_payment_gateway.apps.gateway.admin.base import (
     PaymentInstructionAdmin,
     PaymentRecordAdmin,
 )
-from hope_payment_gateway.apps.gateway.models import AsyncJob, PaymentRecord, PaymentInstruction
+from hope_payment_gateway.apps.gateway.models import (
+    AsyncJob,
+    PaymentRecord,
+    PaymentInstruction,
+    PaymentRecordState,
+)
 from csv import excel_tab
 from strategy_field.utils import fqn
 
@@ -231,6 +237,34 @@ def refund_request_invalid_form(request_with_messages, mg_records_with_code):
     request_with_messages.user = MagicMock()
     request_with_messages.user.has_perm.return_value = True
     return request_with_messages
+
+
+@pytest.fixture
+def cancel_request_with_permission(request_with_messages):
+    request_with_messages.user = MagicMock()
+    request_with_messages.user.has_perm.return_value = True
+    return request_with_messages
+
+
+@pytest.fixture
+def cancel_request_without_permission(request_with_messages):
+    request_with_messages.user = MagicMock()
+    request_with_messages.user.has_perm.return_value = False
+    return request_with_messages
+
+
+@pytest.fixture
+def transferred_records():
+    return PaymentRecordFactory.create_batch(2, status=PaymentRecordState.TRANSFERRED_TO_FSP)
+
+
+@pytest.fixture
+def non_transferred_records():
+    return [
+        PaymentRecordFactory.create(status=PaymentRecordState.PENDING),
+        PaymentRecordFactory.create(status=PaymentRecordState.CANCELLED),
+        PaymentRecordFactory.create(status=PaymentRecordState.TRANSFERRED_TO_BENEFICIARY),
+    ]
 
 
 @pytest.mark.parametrize(
@@ -640,6 +674,62 @@ def test_refund_with_invalid_form(modeladmin, refund_request_invalid_form, mg_re
                         assert render_args[2]["adminform"] == mock_admin_form
 
                         assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_cancel_payment_records_without_permission(
+    modeladmin, cancel_request_without_permission, transferred_records, mock_messages
+):
+    queryset = PaymentRecord.objects.filter(id__in=[record.id for record in transferred_records])
+
+    response = cancel_payment_records(modeladmin, cancel_request_without_permission, queryset)
+
+    assert response is None
+    mock_messages["error"].assert_called_once_with(
+        cancel_request_without_permission, "Sorry you do not have rights to execute this action"
+    )
+    for record in transferred_records:
+        record.refresh_from_db()
+        assert record.status == PaymentRecordState.TRANSFERRED_TO_FSP
+
+
+@pytest.mark.django_db
+def test_cancel_payment_records_only_transferred_to_fsp(
+    modeladmin,
+    cancel_request_with_permission,
+    transferred_records,
+    non_transferred_records,
+    mock_messages,
+):
+    ids = [record.id for record in transferred_records + non_transferred_records]
+    original_status = {record.id: record.status for record in non_transferred_records}
+    queryset = PaymentRecord.objects.filter(id__in=ids)
+
+    cancel_payment_records(modeladmin, cancel_request_with_permission, queryset)
+
+    for record in transferred_records:
+        record.refresh_from_db()
+        assert record.status == PaymentRecordState.CANCELLED
+    for record in non_transferred_records:
+        record.refresh_from_db()
+        assert record.status == original_status[record.id]
+    mock_messages["info"].assert_called_once_with(cancel_request_with_permission, "Cancelled 2 record(s)")
+
+
+@pytest.mark.django_db
+def test_cancel_payment_records_no_eligible(
+    modeladmin, cancel_request_with_permission, non_transferred_records, mock_messages
+):
+    id_list = [record.id for record in non_transferred_records]
+    original_status = {record.id: record.status for record in non_transferred_records}
+    queryset = PaymentRecord.objects.filter(id__in=id_list)
+
+    cancel_payment_records(modeladmin, cancel_request_with_permission, queryset)
+
+    for record in non_transferred_records:
+        record.refresh_from_db()
+        assert record.status == original_status[record.id]
+    mock_messages["info"].assert_called_once_with(cancel_request_with_permission, "Cancelled 0 record(s)")
 
 
 @pytest.mark.django_db

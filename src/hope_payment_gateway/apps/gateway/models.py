@@ -344,6 +344,9 @@ class PaymentRecord(TimeStampedModel):
             self.fsp_data["push_notification"] = []
         self.fsp_data["push_notification"].append(payload)
 
+    class Meta:
+        permissions = (("can_cancel_records", "Can Cancel Records"),)
+
 
 class AsyncJob(AsyncJobModel):
     instruction = models.ForeignKey(
