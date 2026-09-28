@@ -381,7 +381,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                     wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
                         "pay_status_description"
                     ]
-                except KeyError as e:
+                except (KeyError, IndexError, TypeError) as e:
                     msg = f"Missing key in WU status response: {e}"
                     logger.warning(msg)
                     return {"title": msg, "code": 400, "error": response}
