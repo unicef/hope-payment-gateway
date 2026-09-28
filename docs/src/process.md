@@ -69,6 +69,28 @@ and related Payment Record which:
 
 - status: pending, sent_to_pg, sent_to_fsp
 
+## Collecting payment records
+
+`hope_payment_gateway.apps.gateway.tasks.collect_payment_records` returns the primary keys of the
+Payment Records matching the arguments it is given:
+
+    collect_payment_records(status=PaymentRecordState.PENDING, instruction=123)
+
+Every argument narrows the records to select and is ignored when `None`, so calling the task without
+arguments collects every payment record. The supported arguments are:
+
+- `ids`: the Payment Record primary keys
+- `status`: a single `PaymentRecordState` or a collection of them
+- `office`: the Office primary key of the parent Payment Instruction
+- `instruction`: the Payment Instruction primary key
+
+The task returns the record ids so that callers can chain further processing on them. It is meant to
+be scheduled through django-celery-beat: create a `PeriodicTask` in the admin pointing at
+`hope_payment_gateway.apps.gateway.tasks.collect_payment_records`, with an hourly `IntervalSchedule`
+as a sensible default, and optionally add arguments in the `args`/`kwargs` fields. The same arguments
+can be passed to an `AsyncJob`, whose `config` maps straight onto them.
+
+
 ## Resync
 
 It is possible to resync with the following script, but we're working on a django button to resync Payment Plan or a single Payment Record.

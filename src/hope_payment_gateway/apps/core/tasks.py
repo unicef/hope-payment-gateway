@@ -48,10 +48,14 @@ def sync_job_task(pk: int, version: int) -> dict[str, Any]:
             scope = sentry_sdk.get_current_scope()
             if job.owner:
                 sentry_sdk.set_user({"id": job.owner.pk, "email": job.owner.email})
-            return job.execute()
+            result = job.execute()
         except Exception:
             # error is logged in job.execute
+            job.set_local_status(AsyncJob.FAILURE)
             raise
+        else:
+            job.set_local_status(AsyncJob.SUCCESS)
+            return result
         finally:
             scope.clear()
 

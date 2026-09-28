@@ -357,3 +357,23 @@ class AsyncJob(AsyncJobModel):
         blank=True,
     )
     celery_task_name = "hope_payment_gateway.apps.core.tasks.sync_job_task"
+
+    def set_local_status(self, status: str) -> None:
+        self.local_status = status
+        self.save(update_fields=["local_status"])
+
+    @property
+    def verbose_status(self) -> str:
+        """Return the job status, falling back to the locally persisted one.
+
+        Celery results are expired from the result backend after
+        `CELERY_RESULT_EXPIRES` seconds, after which `task_status` can no longer
+        tell a finished job from a lost one and reports `MISSING`. `local_status`
+        survives that cleanup, so it takes over once Celery forgot the task.
+        """
+        status = self.task_status
+        if not self.local_status or self.local_status == status:
+            return status
+        if status == self.MISSING:
+            return self.local_status
+        return f"{status} ({self.local_status})"
