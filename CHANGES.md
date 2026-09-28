@@ -1,3 +1,8 @@
+1.20.1
+======
+* Western Union: Suppress TypeError when the status response returns a plain string instead of a transaction object
+
+
 1.20.0
 ======
 * Admin: Added `cancel selected payment records` changelist action (requires the `gateway.can_cancel_records` permission); runs as an `AsyncJob` and only cancels records in `TRANSFERRED_TO_FSP` status
