@@ -54,6 +54,7 @@ def use_override_settings(settings):
     settings.MONEYGRAM_HOST = "https://sandboxapi.moneygram.com"
     settings.PALPAY_HOST = "https://sandbox.palpay.ps"
     settings.SECRET_KEY = "6311bc92d3d1ebf12ae2aa54d8aaeeafa9e8cdb4"
+    settings.SECURE_SSL_REDIRECT = False
 
 
 @pytest.fixture
