@@ -1,3 +1,11 @@
+1.20.0
+======
+* Admin: Added `cancel selected payment records` changelist action (requires the `gateway.can_cancel_records` permission); runs as an `AsyncJob` and only cancels records in `TRANSFERRED_TO_FSP` status
+* Core: Added missing HTTP security headers (CSP, HSTS, and friends) to all responses
+* Core: Hardened session cookie to a 1-day max-age
+* AsyncJob: Persist final status locally so SUCCESS/FAILURE survive Celery result expiry
+
+
 1.19.1
 ======
 * customizable DATA_UPLOAD_MAX_MEMORY_SIZE
