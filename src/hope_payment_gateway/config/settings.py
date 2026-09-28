@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     "adminfilters",
     "adminfilters.depot",
     "smart_env",
+    "csp",
     "smart_admin.apps.SmartTemplateConfig",
     "import_export",
     "constance",
@@ -65,6 +66,7 @@ MIDDLEWARE = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -99,6 +101,20 @@ STORAGES = {
 
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = ("*",)
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
+SECURE_CONTENT_TYPE_NOSNIFF = env("SECURE_CONTENT_TYPE_NOSNIFF")
+SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS")
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env("SECURE_HSTS_INCLUDE_SUBDOMAINS")
+SECURE_HSTS_PRELOAD = env("SECURE_HSTS_PRELOAD")
+SECURE_PROXY_SSL_HEADER = env("SECURE_PROXY_SSL_HEADER")
+SECURE_REFERRER_POLICY = env("SECURE_REFERRER_POLICY")
+SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
+SESSION_COOKIE_AGE = env("SESSION_COOKIE_AGE")
+SESSION_EXPIRE_AT_BROWSER_CLOSE = env("SESSION_EXPIRE_AT_BROWSER_CLOSE")
+# The obsolete X-XSS-Protection header is deliberately NOT set, see
+# https://owasp.org/www-project-secure-headers/#x-xss-protection
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
