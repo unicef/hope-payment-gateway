@@ -3,5 +3,6 @@ nav:
   - contributing.md
   - settings.md
   - Setup: setup
+  - Gateway: gateway
   - Western Union: wu
   - MoneyGram: mg
