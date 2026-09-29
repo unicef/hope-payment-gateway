@@ -79,6 +79,8 @@ class PaymentRecordAdmin(
         "payout_date",
         "fsp_code",
         "auth_code",
+        "created",
+        "modified",
     )
     list_filter = (
         "status",
