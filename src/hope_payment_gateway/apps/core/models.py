@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -8,15 +9,17 @@ from unicef_security.models import AbstractUser, SecurityMixin, TimeStampedModel
 class Singleton(ABCMeta):
     """Metaclass that ensures only one instance exists per class."""
 
-    _instances = {}
+    _instances: dict[type, object] = {}
 
-    def __call__(cls, *args, **kwargs):
+    # `cls._instances` (not `Singleton._instances`) is required so that
+    # `SubClass._instances = {}` can reset the cache, which the tests rely on.
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
-class User(TimeStampedModel, SecurityMixin, AbstractUser):
+class User(TimeStampedModel, SecurityMixin, AbstractUser):  # type: ignore[misc]
     class Meta:
         app_label = "core"
 

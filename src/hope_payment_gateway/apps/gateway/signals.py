@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -11,11 +11,14 @@ from hope_payment_gateway.apps.stream.handlers import (
     notify_record_change,
 )
 
+if TYPE_CHECKING:
+    from django.db import models
+
 logger = logging.getLogger(__name__)
 
 
 @receiver(pre_save, sender=PaymentInstruction)
-def instruction_updated(sender: Any, instance: PaymentInstruction, **kwargs: dict) -> None:
+def instruction_updated(sender: "type[models.Model]", instance: PaymentInstruction, **kwargs: Any) -> None:
     if flag_enabled("ENABLE_STREAMING") and instance.pk:
         try:
             old_instance = PaymentInstruction.objects.get(pk=instance.pk)
@@ -28,7 +31,7 @@ def instruction_updated(sender: Any, instance: PaymentInstruction, **kwargs: dic
 
 
 @receiver(pre_save, sender=PaymentRecord)
-def record_updated(sender: Any, instance: PaymentRecord, **kwargs: Any) -> None:
+def record_updated(sender: "type[models.Model]", instance: PaymentRecord, **kwargs: Any) -> None:
     if flag_enabled("ENABLE_STREAMING") and instance.pk:
         try:
             old_instance = PaymentRecord.objects.get(pk=instance.pk)

@@ -1261,6 +1261,20 @@ wheels = [
 ]
 
 [[package]]
+name = "djangorestframework-stubs"
+version = "3.18.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django-stubs" },
+    { name = "types-pyyaml" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6b/71/a7727b07e0433da02fb1ea22994f492ecb437a1fe7be5bf952dbb545a0f5/djangorestframework_stubs-3.18.1.tar.gz", hash = "sha256:65ed4a9ea094616759a2cba4fe0ad85efe25b471b28281b790bfefb46704c64a", size = 32439, upload-time = "2026-08-25T22:49:27.506Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f7/1c/e266828fe2b78484651667976f8539e47b4e511a266424b890f613c6b7ad/djangorestframework_stubs-3.18.1-py3-none-any.whl", hash = "sha256:a2021f45f7759b493504c2a721f112ec4fd677753590c1ba346f4ebfb49a7f03", size = 55685, upload-time = "2026-08-25T22:49:26.178Z" },
+]
+
+[[package]]
 name = "djangorestframework-xml"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1667,12 +1681,20 @@ docs = [
     { name = "mkdocs-simple-hooks" },
     { name = "mkdocstrings", extra = ["python"] },
 ]
+type-check = [
+    { name = "django-stubs" },
+    { name = "djangorestframework-stubs" },
+    { name = "mypy" },
+    { name = "types-defusedxml" },
+    { name = "types-django-filter" },
+    { name = "types-paramiko" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "celery", extras = ["redis"] },
     { name = "dj-static" },
-    { name = "django", specifier = "<6" },
+    { name = "django" },
     { name = "django-admin-extra-buttons" },
     { name = "django-admin-sync" },
     { name = "django-adminactions" },
@@ -1782,6 +1804,14 @@ docs = [
     { name = "mkdocs-pdf-export-plugin" },
     { name = "mkdocs-simple-hooks" },
     { name = "mkdocstrings", extras = ["python"] },
+]
+type-check = [
+    { name = "django-stubs" },
+    { name = "djangorestframework-stubs" },
+    { name = "mypy" },
+    { name = "types-defusedxml" },
+    { name = "types-django-filter" },
+    { name = "types-paramiko" },
 ]
 
 [[package]]
@@ -3780,12 +3810,45 @@ wheels = [
 ]
 
 [[package]]
+name = "types-defusedxml"
+version = "0.7.0.20260504"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/d2/4553c8fa9cdebfe1e84b950cf790a4d2376a97fa016e43f7c65323fa6c7d/types_defusedxml-0.7.0.20260504.tar.gz", hash = "sha256:2ab2828a3f97111ba1c16cee273ad4124a831fc9198c41bf8368ff6ea48ad300", size = 10729, upload-time = "2026-05-04T05:22:50.192Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bf/2d/8a4b5ba1d732b8bc691f0efbb1c6f77cb5f6f473b2afe181d83d910773c5/types_defusedxml-0.7.0.20260504-py3-none-any.whl", hash = "sha256:a959e3a0a43b93e464bd625d91ec9193a2703ddc10443bdd627792485fae0b10", size = 13467, upload-time = "2026-05-04T05:22:49.319Z" },
+]
+
+[[package]]
+name = "types-django-filter"
+version = "26.1.0.20260906"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django-stubs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0d/b4/c4fc2da1f6454adc5ecb8ddfaf808984851edd9ca3cbccac82dd81375786/types_django_filter-26.1.0.20260906.tar.gz", hash = "sha256:f2c1fc5507364641de2bec6a5b035c4fc7fbe23a1478cbbe89e8cf42214845d7", size = 16211, upload-time = "2026-09-06T06:35:38.985Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/42/a9/e670ce4d002f419b80b9532b2362067bcd91d854d919ece1b319e0e7dde6/types_django_filter-26.1.0.20260906-py3-none-any.whl", hash = "sha256:77673baa89a01f241aaa3b52495391df9f73ed64dc5c9366d48bbf951acd898a", size = 19447, upload-time = "2026-09-06T06:35:37.997Z" },
+]
+
+[[package]]
 name = "types-freezegun"
 version = "1.1.10"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/31/0d/2a0485b7f693437570da1b005cbc06748252d24a5a24e521a0bcf4f8912e/types-freezegun-1.1.10.tar.gz", hash = "sha256:cb3a2d2eee950eacbaac0673ab50499823365ceb8c655babb1544a41446409ec", size = 2861, upload-time = "2022-06-09T09:19:19.568Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/96/48/3380ecdafe5646f4e9e31814297073aeb6929c474212377189cbee228b50/types_freezegun-1.1.10-py3-none-any.whl", hash = "sha256:fadebe72213e0674036153366205038e1f95c8ca96deb4ef9b71ddc15413543e", size = 2904, upload-time = "2022-06-09T09:19:17.892Z" },
+]
+
+[[package]]
+name = "types-paramiko"
+version = "5.0.0.20260724"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/66/c2/445549ed6f0944352f2b91d88d16bbdc3993a4d6dbbedb81c557b3cad85a/types_paramiko-5.0.0.20260724.tar.gz", hash = "sha256:37e7f3f2196cf187c89649ad836621c675bc318369d80fa78051507a4ae770c9", size = 28548, upload-time = "2026-07-24T04:59:59.889Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4c/16/fca52784f979821e2205ff514322d0e83452536acc4807a79ddb2085bbb2/types_paramiko-5.0.0.20260724-py3-none-any.whl", hash = "sha256:40c7083803a5a28ab7a8d2fe4cd9b7746d0a03538598582ce68f60967a2ad272", size = 37125, upload-time = "2026-07-24T04:59:58.955Z" },
 ]
 
 [[package]]

@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any
+
 from rest_framework import serializers
 
 from hope_payment_gateway.apps.gateway.models import (
@@ -12,32 +14,35 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentRecord,
 )
 
+if TYPE_CHECKING:
+    from hope_payment_gateway.apps.core.models import System
 
-class AccountTypeSerializer(serializers.ModelSerializer):
+
+class AccountTypeSerializer(serializers.ModelSerializer[AccountType]):
     class Meta:
         model = AccountType
         fields = ("id", "key", "label", "unique_fields")
 
 
-class OfficeSerializer(serializers.ModelSerializer):
+class OfficeSerializer(serializers.ModelSerializer[Office]):
     class Meta:
         model = Office
         fields = ("id", "name", "code", "slug")
 
 
-class CountrySerializer(serializers.ModelSerializer):
+class CountrySerializer(serializers.ModelSerializer[Country]):
     class Meta:
         model = Country
         fields = ("id", "name", "iso_code2", "iso_code3")
 
 
-class DeliveryMechanismSerializer(serializers.ModelSerializer):
+class DeliveryMechanismSerializer(serializers.ModelSerializer[DeliveryMechanism]):
     class Meta:
         model = DeliveryMechanism
         fields = ("id", "code", "name", "description", "account_type", "transfer_type")
 
 
-class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer):
+class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer[FinancialServiceProviderConfig]):
     country_iso_code2 = serializers.CharField(source="country.iso_code2", allow_null=True)
     country_iso_code3 = serializers.CharField(source="country.iso_code3", allow_null=True)
     office_code = serializers.CharField(source="office.code", allow_null=True)
@@ -66,7 +71,7 @@ class FinancialServiceProviderConfigNestedSerializer(serializers.ModelSerializer
         )
 
 
-class FinancialServiceProviderLightSerializer(serializers.ModelSerializer):
+class FinancialServiceProviderLightSerializer(serializers.ModelSerializer[FinancialServiceProvider]):
     class Meta:
         model = FinancialServiceProvider
         fields = (
@@ -76,7 +81,7 @@ class FinancialServiceProviderLightSerializer(serializers.ModelSerializer):
         )
 
 
-class FinancialServiceProviderSerializer(serializers.ModelSerializer):
+class FinancialServiceProviderSerializer(serializers.ModelSerializer[FinancialServiceProvider]):
     configs = FinancialServiceProviderConfigNestedSerializer(many=True, read_only=True)
 
     class Meta:
@@ -90,7 +95,7 @@ class FinancialServiceProviderSerializer(serializers.ModelSerializer):
         )
 
 
-class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
+class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer[FinancialServiceProviderConfig]):
     fsp = FinancialServiceProviderLightSerializer()
     delivery_mechanism = DeliveryMechanismSerializer()
     office = OfficeSerializer()
@@ -109,14 +114,16 @@ class FinancialServiceProviderConfigSerializer(serializers.ModelSerializer):
         )
 
 
-class PaymentInstructionSerializer(serializers.ModelSerializer):
-    fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
+class PaymentInstructionSerializer(serializers.ModelSerializer[PaymentInstruction]):
+    fsp: serializers.PrimaryKeyRelatedField[FinancialServiceProvider] = serializers.PrimaryKeyRelatedField(
+        queryset=FinancialServiceProvider.objects.all()
+    )
     office = serializers.SlugRelatedField(queryset=Office.objects.all(), slug_field="slug", required=False)
     country = serializers.SlugRelatedField(queryset=Country.objects.all(), slug_field="iso_code3", required=False)
     delivery_mechanism = serializers.SlugRelatedField(
         slug_field="code", queryset=DeliveryMechanism.objects.all(), required=False
     )
-    system = serializers.PrimaryKeyRelatedField(read_only=True)  # handled in the view
+    system: "serializers.PrimaryKeyRelatedField[System]" = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = PaymentInstruction
@@ -134,7 +141,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
             "payload",
         )
 
-    def create(self, validated_data) -> PaymentInstruction | None:
+    def create(self, validated_data: dict[str, Any]) -> PaymentInstruction:
         try:
             instance = PaymentInstruction.objects.get(
                 remote_id=validated_data["remote_id"], system=validated_data["system"]
@@ -147,8 +154,13 @@ class PaymentInstructionSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class PaymentRecordLightSerializer(serializers.ModelSerializer):
-    parent = serializers.ReadOnlyField(source="parent.remote_id")
+class PaymentRecordLightSerializer(serializers.ModelSerializer[PaymentRecord]):
+    # The `parent` field name shadows `Field.parent` from the DRF stubs, so the
+    # assignment needs an ignore. Both serializers pin it to the common `Field`
+    # base so the read-only/writable override in `PaymentRecordSerializer` is valid.
+    parent: serializers.Field[Any, Any, Any, Any] = serializers.ReadOnlyField(  # type: ignore[assignment]
+        source="parent.remote_id"
+    )
 
     class Meta:
         model = PaymentRecord
@@ -169,7 +181,9 @@ class PaymentRecordLightSerializer(serializers.ModelSerializer):
 
 
 class PaymentRecordSerializer(PaymentRecordLightSerializer):
-    parent = serializers.SlugRelatedField(slug_field="remote_id", queryset=PaymentInstruction.objects.all())
+    parent: serializers.Field[Any, Any, Any, Any] = serializers.SlugRelatedField(
+        slug_field="remote_id", queryset=PaymentInstruction.objects.all()
+    )
 
     class Meta:
         model = PaymentRecord
@@ -190,7 +204,7 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
         )
 
 
-class ExportTemplateSerializer(serializers.ModelSerializer):
+class ExportTemplateSerializer(serializers.ModelSerializer[ExportTemplate]):
     fsp = serializers.PrimaryKeyRelatedField(queryset=FinancialServiceProvider.objects.all())
     office = serializers.PrimaryKeyRelatedField(queryset=Office.objects.all(), required=False)
     country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all(), required=False)
