@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from django.db.models import Prefetch
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
@@ -120,6 +121,8 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction]
 
     def perform_create(self, serializer: "BaseSerializer[Any]") -> None:
         owner = self.request.user
+        if not isinstance(owner, User):
+            raise PermissionDenied("Authenticated user is required")
         system = System.objects.get(owner_id=owner.pk)
         obj = serializer.save(system=system)
         config_key = obj.payload.get("config_key", None)

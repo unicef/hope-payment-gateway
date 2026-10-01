@@ -2,6 +2,7 @@ import json
 from unittest.mock import patch
 
 import pytest
+from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 from rest_framework import status
 from factories import (
@@ -520,6 +521,19 @@ def test_payment_instruction_perform_create_no_destination_country(api_client, t
     instruction = PaymentInstruction.objects.get(remote_id="new_remote_id_3", system=system)
     assert instruction.office.code == "office_only"
     assert instruction.country is None
+
+
+@pytest.mark.django_db
+def test_payment_instruction_create_unauthenticated_user(api_client, no_country_setup):
+    fsp = no_country_setup["fsp"]
+    url = reverse("rest:payment-instruction-list")
+    data = {"remote_id": "anon_remote_id", "fsp": fsp.id, "payload": {}, "external_code": "anon_code"}
+
+    api_client.force_authenticate(user=AnonymousUser())
+    response = api_client.post(url, data=data, format="json")
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert not PaymentInstruction.objects.filter(remote_id="anon_remote_id").exists()
 
 
 # ──────────────────────────────────────────────
