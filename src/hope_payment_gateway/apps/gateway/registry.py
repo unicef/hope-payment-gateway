@@ -1,13 +1,17 @@
 import logging
+from typing import TYPE_CHECKING, Any
 
 from django.core.exceptions import ObjectDoesNotExist
 from strategy_field.registry import Registry
+
+if TYPE_CHECKING:  # pragma: no cover
+    from hope_payment_gateway.apps.gateway.models import Country, FinancialServiceProvider
 
 logger = logging.getLogger(__name__)
 
 
 class FSPProcessor:
-    def __init__(self, fsp) -> None:
+    def __init__(self, fsp: "FinancialServiceProvider") -> None:
         self.fsp = fsp
 
     def label(self) -> str:
@@ -16,7 +20,7 @@ class FSPProcessor:
     def notify(self) -> None:
         pass  # pragma: no-cover
 
-    def get_configuration(self, destination_country, delivery_mechanism):
+    def get_configuration(self, destination_country: "Country", delivery_mechanism: str) -> dict[str, Any]:
         """Retrieve FSP configuration for a given country and delivery mechanism.
 
         Falls back to the base FSP configuration if no country-specific config exists.

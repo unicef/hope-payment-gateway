@@ -24,7 +24,7 @@ dynamic = [
 dependencies = [
   "celery[redis]",
   "dj-static",
-  "django<6",
+  "django",
   "django-admin-extra-buttons",
   "django-admin-sync",
   "django-adminactions",
@@ -138,6 +138,14 @@ docs = [
   "mkdocs-pdf-export-plugin",
   "mkdocs-simple-hooks",
   "mkdocstrings[python]",
+]
+type-check = [
+  "django-stubs",
+  "djangorestframework-stubs",
+  "mypy",
+  "types-defusedxml",
+  "types-django-filter",
+  "types-paramiko",
 ]
 
 [tool.hatch]

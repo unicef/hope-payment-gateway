@@ -49,6 +49,7 @@ from hope_payment_gateway.apps.gateway.models import (
 )
 
 if TYPE_CHECKING:
+    from admin_extra_buttons.buttons import StandardButton  # pragma: no-cover
     from django.http import HttpResponsePermanentRedirect, HttpRequest, HttpResponseRedirect  # pragma: no-cover
 
 logger = logging.getLogger(__name__)
@@ -79,6 +80,8 @@ class PaymentRecordAdmin(
         "payout_date",
         "fsp_code",
         "auth_code",
+        "created",
+        "modified",
     )
     list_filter = (
         "status",
@@ -246,7 +249,7 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         return TemplateResponse(request, "admin/gateway/import_records_csv.html", context)
 
     @link()
-    def records(self, button: button) -> str | None:
+    def records(self, button: StandardButton) -> None:
         if "original" in button.context:
             obj = button.context["original"]
             url = reverse("admin:gateway_paymentrecord_changelist")
@@ -254,7 +257,6 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             button.visible = True
         else:
             button.visible = False
-        return None
 
     @view(
         html_attrs={"style": "background-color:#88FF88;color:black"},

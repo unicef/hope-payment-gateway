@@ -1,7 +1,9 @@
+from typing import TYPE_CHECKING, Any, cast
+
 from django.db.models import Prefetch
 from rest_framework.decorators import action
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
 from strategy_field.utils import fqn
 from viewflow.fsm import TransitionNotAllowed
@@ -27,7 +29,7 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentRecordSerializer,
 )
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
-from hope_payment_gateway.apps.core.models import System
+from hope_payment_gateway.apps.core.models import System, User
 from hope_payment_gateway.apps.gateway.actions import export_payment_instruction_to_email
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
@@ -44,13 +46,17 @@ from hope_payment_gateway.apps.gateway.models import (
     PaymentRecord,
 )
 
+if TYPE_CHECKING:
+    from rest_framework.request import Request
+    from rest_framework.serializers import BaseSerializer
+
 
 class ProtectedMixin:
-    def destroy(self, request, pk=None):
+    def destroy(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
         raise NotImplementedError
 
 
-class AccountTypeViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
+class AccountTypeViewSet(ProtectedMixin, ModelViewSet[AccountType], TokenRequiredView):  # type: ignore[misc]
     serializer_class = AccountTypeSerializer
     queryset = AccountType.objects.all()
 
@@ -58,7 +64,7 @@ class AccountTypeViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     search_fields = ["key", "label"]
 
 
-class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
+class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet[DeliveryMechanism], TokenRequiredView):  # type: ignore[misc]
     serializer_class = DeliveryMechanismSerializer
     queryset = DeliveryMechanism.objects.select_related("account_type")
 
@@ -66,7 +72,11 @@ class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     search_fields = ["code", "name"]
 
 
-class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
+class FinancialServiceProviderViewSet(
+    ProtectedMixin,
+    ModelViewSet[FinancialServiceProvider],
+    TokenRequiredView,  # type: ignore[misc]
+):
     serializer_class = FinancialServiceProviderSerializer
     queryset = FinancialServiceProvider.objects.prefetch_related(
         Prefetch(
@@ -83,7 +93,11 @@ class FinancialServiceProviderViewSet(ProtectedMixin, ModelViewSet, TokenRequire
     search_fields = ["name", "vendor_number", "remote_id"]
 
 
-class ConfigurationViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
+class ConfigurationViewSet(
+    ProtectedMixin,
+    ModelViewSet[FinancialServiceProviderConfig],
+    TokenRequiredView,  # type: ignore[misc]
+):
     serializer_class = FinancialServiceProviderConfigSerializer
     queryset = FinancialServiceProviderConfig.objects.select_related(
         "fsp",
@@ -96,7 +110,7 @@ class ConfigurationViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
     search_fields = ["description"]
 
 
-class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
+class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction], TokenRequiredView):  # type: ignore[misc]
     serializer_class = PaymentInstructionSerializer
     queryset = PaymentInstruction.objects.select_related("fsp", "delivery_mechanism", "office", "country")
 
@@ -104,9 +118,9 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
     filterset_class = PaymentInstructionFilter
     search_fields = ["external_code", "remote_id"]
 
-    def perform_create(self, serializer) -> None:
+    def perform_create(self, serializer: "BaseSerializer[Any]") -> None:
         owner = self.request.user
-        system = System.objects.get(owner=owner)
+        system = System.objects.get(owner_id=owner.pk)
         obj = serializer.save(system=system)
         config_key = obj.payload.get("config_key", None)
         obj.save()
@@ -126,7 +140,7 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
 
             obj.save()
 
-    def _change_status(self, status):
+    def _change_status(self, status: str) -> Response:
         instruction = self.get_object()
         try:
             flow = PaymentInstructionFlow(instruction)
@@ -138,31 +152,31 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"])
-    def open(self, request, remote_id=None):
+    def open(self, request: "Request", remote_id: str | None = None) -> Response:
         return self._change_status("open")
 
     @action(detail=True, methods=["post"])
-    def ready(self, request, remote_id=None):
+    def ready(self, request: "Request", remote_id: str | None = None) -> Response:
         return self._change_status("ready")
 
     @action(detail=True, methods=["post"])
-    def close(self, request, remote_id=None):
+    def close(self, request: "Request", remote_id: str | None = None) -> Response:
         return self._change_status("close")
 
     @action(detail=True, methods=["post"])
-    def finalize(self, request, remote_id=None):
+    def finalize(self, request: "Request", remote_id: str | None = None) -> Response:
         return self._change_status("finalize")
 
     @action(detail=True, methods=["post"])
-    def process(self, request, remote_id=None):
+    def process(self, request: "Request", remote_id: str | None = None) -> Response:
         return self._change_status("process")
 
     @action(detail=True, methods=["post"])
-    def abort(self, request, remote_id=None):
+    def abort(self, request: "Request", remote_id: str | None = None) -> Response:
         return self._change_status("abort")
 
     @action(detail=True, methods=["post"])
-    def add_records(self, request, remote_id=None):
+    def add_records(self, request: "Request", remote_id: str | None = None) -> Response:
         obj = self.get_object()
         if obj.status != PaymentInstructionState.OPEN:
             return Response(
@@ -172,12 +186,14 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
                 },
                 status=HTTP_400_BAD_REQUEST,
             )
-        data = request.data.copy()
+        data = cast("list[dict[str, Any]]", request.data.copy())
         for record in data:
             record["parent"] = obj.remote_id
         serializer = PaymentRecordSerializer(data=data, many=True)
         if serializer.is_valid():
-            totals = serializer.save()
+            # `many=True` builds a `ListSerializer` at runtime, which the DRF
+            # stubs do not model, so `save()` is reported as a single instance.
+            totals = cast("list[PaymentRecord]", serializer.save())
             return Response(
                 {
                     "remote_id": obj.remote_id,
@@ -196,22 +212,23 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
         )
 
     @action(detail=True)  # , methods=["post"])
-    def download(self, request, remote_id=None):
+    def download(self, request: "Request", remote_id: str | None = None) -> Response:
         obj = self.get_object()
         export = obj.selected_export
         if not export:
             return Response({"status_error": "No template found"}, status=HTTP_400_BAD_REQUEST)
 
-        if not request.user.email:
+        user = request.user
+        if not isinstance(user, User) or not user.email:
             return Response({"status_error": "User email is required"}, status=HTTP_400_BAD_REQUEST)
 
         job = AsyncJob.objects.create(
             description="Payment instruction export",
             type=AsyncJob.JobType.STANDARD_TASK,
-            owner=request.user,
+            owner=user,
             instruction=obj,
             action=fqn(export_payment_instruction_to_email),
-            config={"payment_instruction_id": obj.pk, "send_to": request.user.email},
+            config={"payment_instruction_id": obj.pk, "send_to": user.email},
         )
         job.queue()
         return Response(
@@ -220,20 +237,20 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView)
         )
 
 
-class PaymentRecordViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
+class PaymentRecordViewSet(ProtectedMixin, ModelViewSet[PaymentRecord], TokenRequiredView):  # type: ignore[misc]
     serializer_class = PaymentRecordSerializer
     queryset = PaymentRecord.objects.select_related("parent")
     lookup_field = "remote_id"
     filterset_class = PaymentRecordFilter
     search_fields = ("remote_id", "record_code")
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> "type[BaseSerializer[Any]]":
         if self.action == "list":
             return PaymentRecordLightSerializer
         return super().get_serializer_class()
 
     @action(detail=True, methods=["post"])
-    def cancel(self, request, **kwargs):
+    def cancel(self, request: "Request", **kwargs: Any) -> Response:
         record = self.get_object()
         try:
             WesternUnionClient().refund(record.fsp_code, record.get_payload())
@@ -242,7 +259,7 @@ class PaymentRecordViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
             return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
 
 
-class ExportTemplateViewSet(ProtectedMixin, ModelViewSet, TokenRequiredView):
+class ExportTemplateViewSet(ProtectedMixin, ModelViewSet[ExportTemplate], TokenRequiredView):  # type: ignore[misc]
     serializer_class = ExportTemplateSerializer
     queryset = ExportTemplate.objects.select_related("fsp")
     filterset_class = ExportTemplateFilter

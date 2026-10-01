@@ -14,7 +14,7 @@ DATABASES = {
     "default": env.db("DATABASE_URL"),
 }
 
-INSTALLED_APPS = (
+INSTALLED_APPS: tuple[str, ...] = (
     "hope_payment_gateway.web",
     "hope_payment_gateway.apps.core.apps.AppConfig",
     "hope_payment_gateway.apps.gateway.apps.AppConfig",
@@ -61,7 +61,7 @@ INSTALLED_APPS = (
     "anymail",
 )
 
-MIDDLEWARE = (
+MIDDLEWARE: tuple[str, ...] = (
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -87,7 +87,7 @@ MEDIA_ROOT = env("MEDIA_ROOT")
 MEDIA_URL = env("MEDIA_URL")
 STATIC_ROOT = env("STATIC_ROOT")
 STATIC_URL = env("STATIC_URL")
-STATICFILES_DIRS = []
+STATICFILES_DIRS: list[str] = []
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",

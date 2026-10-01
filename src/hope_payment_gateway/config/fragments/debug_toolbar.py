@@ -3,6 +3,6 @@ from hope_payment_gateway.config.settings import DEBUG, INSTALLED_APPS, MIDDLEWA
 if DEBUG:  # pragma: no cover
     INSTALLED_APPS += ("debug_toolbar",)  # noqa
     MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)  # noqa
-    DEBUG_TOOLBAR_CONFIG = {
+    DEBUG_TOOLBAR_CONFIG: dict[str, bool] = {
         "SHOW_TEMPLATE_CONTEXT": True,
     }

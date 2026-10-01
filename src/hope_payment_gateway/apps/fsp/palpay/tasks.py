@@ -5,6 +5,7 @@ import openpyxl
 import requests
 from constance import config
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from strategy_field.utils import fqn
 
 from hope_payment_gateway.api.palpay.client import PalPayClient
@@ -24,8 +25,14 @@ def palpay_notify(instruction_id: int) -> None:
 
 
 @app.task()
-def palpay_money_transfer(pk: int) -> None:
+def palpay_money_transfer(pk: int) -> dict[str, str | int]:
     instruction = PaymentInstruction.objects.get(pk=pk)
+
+    # Fail loudly here rather than letting `requests` raise a cryptic
+    # "Invalid URL '': No scheme supplied" deep inside the task.
+    endpoint = settings.PALPAY_INSTRUCTION_POST
+    if not endpoint:
+        raise ImproperlyConfigured("PALPAY_INSTRUCTION_POST is not set")
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -56,7 +63,7 @@ def palpay_money_transfer(pk: int) -> None:
         )
     }
     try:
-        response = requests.post(settings.PALPAY_INSTRUCTION_POST, files=files, timeout=60)
+        response = requests.post(endpoint, files=files, timeout=60)
         response.raise_for_status()
         return {"status": "success", "code": response.status_code}
     except requests.RequestException as e:

@@ -1,4 +1,5 @@
 import csv
+from typing import Any
 
 from adminactions.api import delimiters, quotes
 from django.contrib.postgres.fields import ArrayField
@@ -24,7 +25,7 @@ class AccountType(TimeStampedModel):
         blank=True,
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.label
 
 
@@ -215,20 +216,20 @@ class PaymentInstruction(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.external_code} - {self.status}"
 
-    def get_payload(self) -> dict:
-        payload = self.payload.copy()
+    def get_payload(self) -> dict[str, Any]:
+        payload = dict(self.payload or {})
         if self.delivery_mechanism:
             payload["delivery_mechanism"] = self.delivery_mechanism.code
         if self.country:
             config_payload = self.fsp.strategy.get_configuration(
                 self.country,
-                self.payload.get("delivery_mechanism", "cash_over_the_counter"),
+                (self.payload or {}).get("delivery_mechanism", "cash_over_the_counter"),
             )
             payload.update(config_payload)
         return payload
 
     @property
-    def configuration(self):
+    def configuration(self) -> "FinancialServiceProviderConfig | None":
         return (
             FinancialServiceProviderConfig.objects.filter(
                 delivery_mechanism=self.delivery_mechanism,
@@ -241,7 +242,7 @@ class PaymentInstruction(TimeStampedModel):
         )
 
     @property
-    def selected_export(self):
+    def selected_export(self) -> "ExportTemplate | None":
         if self.export:
             return self.export
         return (
@@ -330,14 +331,14 @@ class PaymentRecord(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.record_code} / {self.status}"
 
-    def get_payload(self) -> dict:
+    def get_payload(self) -> dict[str, Any]:
         payload = self.parent.get_payload()
-        payload.update(self.payload)
+        payload.update(self.payload or {})
         payload["payment_record_code"] = self.record_code
         payload["remote_id"] = self.remote_id
         return payload
 
-    def add_push_notification(self, payload):
+    def add_push_notification(self, payload: dict[str, Any]) -> None:
         if self.fsp_data is None:
             self.fsp_data = {}
         if "push_notification" not in self.fsp_data:

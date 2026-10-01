@@ -1,10 +1,14 @@
 import unicodedata
+from typing import Any
 
 import phonenumbers
 from phonenumbers.phonenumberutil import NumberParseException
 
 
-def get_phone_number(raw_phone_no):
+def get_phone_number(raw_phone_no: str | None) -> tuple[int | str | None, int | None]:
+    if raw_phone_no is None:
+        return None, None
+
     try:
         phone_no = phonenumbers.parse(raw_phone_no, None)
         phone_number = phone_no.national_number
@@ -16,13 +20,13 @@ def get_phone_number(raw_phone_no):
     return phone_number, country_code
 
 
-def get_account_field(payload, field_name, default=None):
+def get_account_field(payload: dict[str, Any], field_name: str, default: Any = None) -> Any:
     if account_dict := payload.get("account"):
         return account_dict.get(field_name, default)
     return default
 
 
-def extrapolate_errors(data):
+def extrapolate_errors(data: dict[str, Any]) -> list[str]:
     msgs = []
     if "errors" in data:
         for error in data["errors"]:
@@ -37,7 +41,7 @@ def extrapolate_errors(data):
     return msgs
 
 
-def ascii_name(value):
+def ascii_name(value: str) -> str:
     """Remove accents and non-ASCII characters from a name string."""
     nfkd = unicodedata.normalize("NFD", value)
     return (
