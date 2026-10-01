@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 import requests
 from constance.test import override_config
+from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 from factories import PaymentInstructionFactory, PaymentRecordFactory
 
@@ -123,6 +124,14 @@ def test_palpay_money_transfer_error(mock_post, palpay_instruction_with_record_e
 
     assert result["status"] == "error"
     assert "Connection refused" in result["message"]
+
+
+@pytest.mark.django_db
+@override_settings(PALPAY_INSTRUCTION_POST="")
+def test_palpay_money_transfer_unconfigured_endpoint(palpay_instruction_with_record):
+    """An unconfigured endpoint must fail loudly, not POST to an empty URL."""
+    with pytest.raises(ImproperlyConfigured, match="PALPAY_INSTRUCTION_POST"):
+        palpay_money_transfer(palpay_instruction_with_record.pk)
 
 
 @pytest.mark.django_db
