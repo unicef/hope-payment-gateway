@@ -1,5 +1,6 @@
 1.20.1
 ======
+* Western Union: Return `None` instead of the bare `dict` class as the `response_context` placeholder, and stop parsing the status payload when the upstream call failed. Previously a failed `PayStatus` call made the status update log the nonsensical `Missing key in WU status response: dict['payment_transactions'] is not a generic class` instead of the actual upstream error
 * Western Union: Suppress TypeError when the status response returns a plain string instead of a transaction object
 
 

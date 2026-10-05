@@ -97,7 +97,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     @staticmethod
     def response_context(client, service_name, payload, wsdl_name=None, port=None):
-        response = dict
+        response = None
         error = ""
         display_format = "string"
         try:
@@ -377,6 +377,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 f"SOAP_HTTP_Port_{wu_env}",
             )
             if update:
+                if response.get("code") not in (None, 200):
+                    return response
                 try:
                     wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
                         "pay_status_description"
