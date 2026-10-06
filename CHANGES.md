@@ -1,5 +1,6 @@
 1.20.1
 ======
+* Western Union: Keep MTCNs that start with `0` intact. The NIS notification XML parser coerced every numeric-looking node to `int`, so `0123456789` became `123456789` and Western Union rejected the follow-up call with `E9389 INVALID MTCN LENGTH. MTCN MUST BE 10 CHARACTERS IN LENGTH`
 * Western Union: Return `None` instead of the bare `dict` class as the `response_context` placeholder, and stop parsing the status payload when the upstream call failed. Previously a failed `PayStatus` call made the status update log the nonsensical `Missing key in WU status response: dict['payment_transactions'] is not a generic class` instead of the actual upstream error
 * Western Union: Suppress TypeError when the status response returns a plain string instead of a transaction object
 
