@@ -205,6 +205,30 @@ def test_status_update_upstream_failure(wu, wu_client, payment_record_status_no_
 
 @pytest.mark.django_db
 @override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_status_uses_auth_code_mtcn(wu, wu_client):
+    pr = PaymentRecordFactory.create(
+        fsp_code="2323589126420060",
+        record_code="ref-1",
+        auth_code="0123456789",
+        fsp_data={
+            "mtcn": 123456789,
+            "foreign_remote_system": {"identifier": "IDENTIFIER", "reference_no": "REFNO", "counter_id": "COUNTER"},
+        },
+        parent__fsp=wu,
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+    )
+    mock_response = {
+        "content_response": {"payment_transactions": {"payment_transaction": [{"pay_status_description": "PAID"}]}}
+    }
+    with patch.object(wu_client, "response_context", return_value=mock_response) as mock_ctx:
+        WesternUnionClient().status(pr.fsp_code, True)
+    sent_payload = mock_ctx.call_args.args[2]
+    assert sent_payload["mtcn"] == "0123456789"
+    assert len(sent_payload["mtcn"]) == 10
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
 def test_status_update_no_key_error_on_false(wu, wu_client, payment_record_status_no_matching):
     pr = payment_record_status_no_matching
     mock_response = {}

@@ -120,7 +120,7 @@ def _test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_use
     assert payment_record.message == "Transferred to Beneficiary by Push Notification"
     assert payment_record.payout_amount == 85.00  # from XML expected_payout_amount
     assert payment_record.payout_date.strftime("%Y-%m-%d") == "2023-08-23"
-    assert payment_record.fsp_data["mtcn"] == "3634673433"
+    assert str(payment_record.fsp_data["mtcn"]) == "3634673433"
     assert "push_notification" in payment_record.fsp_data
     assert len(payment_record.fsp_data["push_notification"]) == 1
 
@@ -137,25 +137,6 @@ def test_nis_notification_xml_post_success(mock_flow, wu, api_client, admin_user
     _test_nis_notification_xml_post_success(
         mock_flow, wu, api_client, admin_user, file_name="push_notification.xml", payment_record=payment_record_success
     )
-
-
-@pytest.mark.django_db
-@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
-@patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
-def test_nis_notification_keeps_leading_zero_mtcn(mock_flow, wu, api_client, admin_user, payment_record_success):
-    url = reverse("western_union:nis-notification-xml-view")
-    mock_flow.return_value = MagicMock()
-
-    xml = (Path(__file__).parent / "push_notification.xml").read_text()
-    xml = xml.replace("<mtcn>3634673433</mtcn>", "<mtcn>0123456789</mtcn>")
-    response = api_client.generic(method="POST", path=url, data=xml, content_type="application/xml", user=admin_user)
-
-    assert response.status_code == 200
-    payment_record_success.refresh_from_db()
-    mtcn = payment_record_success.fsp_data["mtcn"]
-    assert isinstance(mtcn, str)
-    assert mtcn == "0123456789"
-    assert len(mtcn) == 10
 
 
 @pytest.mark.django_db

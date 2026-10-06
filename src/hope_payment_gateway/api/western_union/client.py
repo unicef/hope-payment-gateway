@@ -363,7 +363,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             )
             wu_env = config.WESTERN_UNION_WHITELISTED_ENV
             frm = pr.fsp_data.get("foreign_remote_system", None)
-            mtcn = pr.fsp_data.get("mtcn", None)
+            mtcn = pr.auth_code or pr.fsp_data.get("mtcn", None)
             payload = {
                 "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
                 "mtcn": mtcn,
@@ -479,7 +479,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 fsp_code=transaction_id,
                 parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
             )
-            mtcn = pr.fsp_data.get("mtcn", None)
+            mtcn = pr.auth_code or pr.fsp_data.get("mtcn", None)
             frm = pr.fsp_data.get("foreign_remote_system", None)
             response = self.search_request(frm, mtcn)
             payload = response["content_response"]

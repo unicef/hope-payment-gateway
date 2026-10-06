@@ -1,6 +1,5 @@
 import copy
 import logging
-from typing import Any
 
 import sentry_sdk
 from constance import config
@@ -37,25 +36,8 @@ class WesternUnionApi(APIView):
     serializer_class = None
 
 
-class LeadZeroSafeXMLParser(XMLParser):  # type: ignore[misc]
-    """XMLParser that does not discard leading zeros.
-
-    DRF's ``XMLParser._type_convert`` turns every numeric-looking text node into
-    an ``int``. That corrupts identifiers such as the MTCN: ``0123456789``
-    becomes ``123456789``, so when it is sent back to Western Union the request
-    fails with ``E9389 INVALID MTCN LENGTH. MTCN MUST BE 10 CHARACTERS IN
-    LENGTH``. A value that only looks numeric because of its leading zeros is
-    left as text.
-    """
-
-    def _type_convert(self, value: str | None) -> Any:
-        if value is not None and len(value) > 1 and value.startswith("0") and value.isdigit():
-            return value
-        return super()._type_convert(value)
-
-
 class XMLViewMixin:
-    parser_classes = (LeadZeroSafeXMLParser,)
+    parser_classes = (XMLParser,)
     renderer_classes = (XMLRenderer,)
 
 
@@ -94,10 +76,8 @@ class NisNotificationView(WesternUnionApi):
             )
 
         push_payload = copy.deepcopy(payload)
-        # Identifiers are always strings, never numbers, so they can be sent
-        # back to WU unchanged.
-        fsp_code = str(payload["transaction_id"])
-        mtcn = str(payload["money_transfer_control"]["mtcn"])
+        fsp_code = payload["transaction_id"]
+        mtcn = payload["money_transfer_control"]["mtcn"]
         notification_type = payload["notification_type"]
         reason_code = payload.get("reason_code", None)
 
