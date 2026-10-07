@@ -1,9 +1,10 @@
 from datetime import date
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import pytest
 import responses
 from constance.test import override_config
 from factories import PaymentRecordFactory
+from zeep.exceptions import TransportError
 
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.gateway.models import PaymentRecordState
@@ -184,6 +185,46 @@ def test_status_update_type_error(wu, wu_client, payment_record_status_no_matchi
         assert resp["code"] == 400
         assert resp["error"] == mock_response
         assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_status_update_upstream_failure(wu, wu_client, payment_record_status_no_matching):
+    pr = payment_record_status_no_matching
+    service = Mock()
+    service.PayStatus.side_effect = TransportError("Transport Error", status_code=500)
+    with patch.object(wu_client.status_client, "bind", return_value=service):
+        resp = WesternUnionClient().status(pr.fsp_code, True)
+        pr.refresh_from_db()
+        assert resp["code"] == 400
+        assert resp["title"] == "Transport Error [500]"
+        assert resp["content_response"] is None
+        assert "Missing key" not in resp["title"]
+        assert pr.status == PaymentRecordState.TRANSFERRED_TO_BENEFICIARY
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_status_uses_auth_code_mtcn(wu, wu_client):
+    pr = PaymentRecordFactory.create(
+        fsp_code="2323589126420060",
+        record_code="ref-1",
+        auth_code="0123456789",
+        fsp_data={
+            "mtcn": 123456789,
+            "foreign_remote_system": {"identifier": "IDENTIFIER", "reference_no": "REFNO", "counter_id": "COUNTER"},
+        },
+        parent__fsp=wu,
+        status=PaymentRecordState.TRANSFERRED_TO_FSP,
+    )
+    mock_response = {
+        "content_response": {"payment_transactions": {"payment_transaction": [{"pay_status_description": "PAID"}]}}
+    }
+    with patch.object(wu_client, "response_context", return_value=mock_response) as mock_ctx:
+        WesternUnionClient().status(pr.fsp_code, True)
+    sent_payload = mock_ctx.call_args.args[2]
+    assert sent_payload["mtcn"] == "0123456789"
+    assert len(sent_payload["mtcn"]) == 10
 
 
 @pytest.mark.django_db

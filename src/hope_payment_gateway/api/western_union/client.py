@@ -97,7 +97,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
 
     @staticmethod
     def response_context(client, service_name, payload, wsdl_name=None, port=None):
-        response = dict
+        response = None
         error = ""
         display_format = "string"
         try:
@@ -363,7 +363,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             )
             wu_env = config.WESTERN_UNION_WHITELISTED_ENV
             frm = pr.fsp_data.get("foreign_remote_system", None)
-            mtcn = pr.fsp_data.get("mtcn", None)
+            mtcn = pr.auth_code or pr.fsp_data.get("mtcn", None)
             payload = {
                 "channel": {"type": "H2H", "name": "CHANNEL", "version": "9500"},
                 "mtcn": mtcn,
@@ -377,6 +377,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 f"SOAP_HTTP_Port_{wu_env}",
             )
             if update:
+                if response.get("code") not in (None, 200):
+                    return response
                 try:
                     wu_status = response["content_response"]["payment_transactions"]["payment_transaction"][0][
                         "pay_status_description"
@@ -477,7 +479,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
                 fsp_code=transaction_id,
                 parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
             )
-            mtcn = pr.fsp_data.get("mtcn", None)
+            mtcn = pr.auth_code or pr.fsp_data.get("mtcn", None)
             frm = pr.fsp_data.get("foreign_remote_system", None)
             response = self.search_request(frm, mtcn)
             payload = response["content_response"]
