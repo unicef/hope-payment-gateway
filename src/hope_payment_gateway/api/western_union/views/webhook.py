@@ -4,6 +4,7 @@ import logging
 import sentry_sdk
 from constance import config
 from django.http import HttpResponse
+from flags.state import flag_enabled
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
@@ -117,7 +118,10 @@ class NisNotificationView(WesternUnionApi):
                 flow.confirm()
                 pr.success = True
                 pr.message = "Transferred to Beneficiary by Push Notification"
-                pr.payout_amount = payout_amount / 100
+                if flag_enabled("WESTERN_UNION_RECONCILIATION_AMOUNT_ON", office=pr.parent.office):
+                    pr.payout_amount = payout_amount / 100
+                else:
+                    pr.payout_amount = (pr.payload or {}).get("amount")
                 pr.payout_date = payload["money_transfer_control"]["date"]
                 pr.fsp_data.update(
                     {

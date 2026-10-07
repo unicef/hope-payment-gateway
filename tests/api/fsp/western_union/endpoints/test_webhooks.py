@@ -1,9 +1,11 @@
+from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import pytest
 import responses
 from constance.test import override_config
+from django.test import override_settings
 from django.urls import reverse
 from factories import PaymentRecordFactory
 from viewflow.fsm import TransitionNotAllowed
@@ -151,6 +153,63 @@ def test_nis_notification_xml_post_success_apn(mock_flow, wu, api_client, admin_
         file_name="push_notification_success_apn.xml",
         payment_record=payment_record_success,
     )
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@override_settings(
+    FLAGS={
+        "WESTERN_UNION_RECONCILIATION_AMOUNT_ON": [{"condition": "office not in", "value": ["OFF-EXCLUDED"]}],
+    }
+)
+@patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
+def test_nis_notification_xml_uses_payload_amount_for_excluded_office(mock_flow, wu, api_client, admin_user):
+    url = reverse("western_union:nis-notification-xml-view")
+    mock_flow.return_value = MagicMock()
+    pr = PaymentRecordFactory.create(
+        fsp_code="2323589126420060",
+        status="TRANSFERRED_TO_FSP",
+        payload={"amount": "42.50"},
+        parent__fsp=wu,
+        parent__office__code="OFF-EXCLUDED",
+    )
+    with open(Path(__file__).parent / "push_notification.xml", "r") as xml:
+        response = api_client.generic(
+            method="POST", path=url, data=xml.read(), content_type="application/xml", user=admin_user
+        )
+
+    assert response.status_code == 200
+    pr.refresh_from_db()
+    assert pr.payout_amount == Decimal("42.50")
+    assert pr.payout_amount != Decimal("85.00")
+
+
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@override_settings(
+    FLAGS={
+        "WESTERN_UNION_RECONCILIATION_AMOUNT_ON": [{"condition": "office not in", "value": ["OFF-EXCLUDED"]}],
+    }
+)
+@patch("hope_payment_gateway.api.western_union.views.webhook.PaymentRecordFlow")
+def test_nis_notification_xml_uses_notification_amount_for_other_office(mock_flow, wu, api_client, admin_user):
+    url = reverse("western_union:nis-notification-xml-view")
+    mock_flow.return_value = MagicMock()
+    pr = PaymentRecordFactory.create(
+        fsp_code="2323589126420060",
+        status="TRANSFERRED_TO_FSP",
+        payload={"amount": "42.50"},
+        parent__fsp=wu,
+        parent__office__code="OFF-INCLUDED",
+    )
+    with open(Path(__file__).parent / "push_notification.xml", "r") as xml:
+        response = api_client.generic(
+            method="POST", path=url, data=xml.read(), content_type="application/xml", user=admin_user
+        )
+
+    assert response.status_code == 200
+    pr.refresh_from_db()
+    assert pr.payout_amount == Decimal("85.00")
 
 
 def _test_nis_notification_xml_post_cancel(mock_flow, wu, api_client, admin_user, file_name, payment_record):
