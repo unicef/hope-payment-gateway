@@ -11,4 +11,5 @@ class AppConfig(BaseAppConfig):
         from hope_payment_gateway.apps.gateway.registry import DefaultProcessor  # noqa
 
         registry.register(DefaultProcessor)
+        import hope_payment_gateway.apps.gateway.conditions  # noqa
         import hope_payment_gateway.apps.gateway.signals  # noqa
