@@ -31,7 +31,7 @@ OPTIONAL = {
     "CELERY_TASK_EAGER_PROPAGATES": (bool, True),
     "CORS_ORIGIN_ALLOW_ALL": (bool, False),
     "CSRF_COOKIE_SECURE": (bool, True),
-    "DATA_UPLOAD_MAX_MEMORY_SIZE": (int, 5242880),
+    "DATA_UPLOAD_MAX_MEMORY_SIZE": (int, 10485760),
     "DEBUG": (bool, False, "Django DEBUG"),
     "MAILJET_API_URL": (str, "https://api.mailjet.com/v3.1/"),
     "MAILJET_API_KEY": (str, "", "Mailjet API key"),
