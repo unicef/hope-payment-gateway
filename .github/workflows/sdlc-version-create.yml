@@ -5,6 +5,9 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*' # Allows semver format and any suffix (i.e. 'rc1')
 
+permissions:
+  contents: read
+
 jobs:
   prepare-version:
     name: "Prepare version number"

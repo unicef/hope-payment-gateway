@@ -5,6 +5,9 @@ on:
     branches:
       - "**"
 
+permissions:
+  contents: read
+
 jobs:
   prepare-docker:
     name: "Prepare Docker image tag"

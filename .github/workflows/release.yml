@@ -1,6 +1,10 @@
 on:
   push:
     tags: ["*"]
+
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build Docker Images

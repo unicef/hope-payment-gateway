@@ -19,6 +19,9 @@ on:
       azure-pat:
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

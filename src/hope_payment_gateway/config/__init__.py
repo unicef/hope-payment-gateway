@@ -64,7 +64,7 @@ OPTIONAL = {
     "SECURE_HSTS_PRELOAD": (bool, True),
     "SIGNING_BACKEND": (str, "django.core.signing.TimestampSigner"),
     "MEDIA_URL": (str, "/media/"),
-    "MEDIA_ROOT": (str, "/tmp/media/"),  # noqa
+    "MEDIA_ROOT": (str, "/tmp/media/"),  # noqa: S108  # nosec B108
     "MAX_CSV_UPLOAD_ROWS": (int, 10000),
     "MONEYGRAM_HOST": (str, ""),
     "MONEYGRAM_CLIENT_ID": (str, ""),
@@ -85,7 +85,7 @@ OPTIONAL = {
     "SESSION_COOKIE_AGE": (int, 86400),
     "SESSION_EXPIRE_AT_BROWSER_CLOSE": (bool, False),
     "STATIC_URL": (str, "/static/"),
-    "STATIC_ROOT": (str, "/tmp/static/"),  # noqa
+    "STATIC_ROOT": (str, "/tmp/static/"),  # noqa: S108  # nosec B108
     "STREAMING_BROKER_URL": (str, "", ""),
     "SUPERUSERS": (str, ""),
     "TIME_ZONE": (str, "UTC"),

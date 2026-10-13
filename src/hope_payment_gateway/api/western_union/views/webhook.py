@@ -61,7 +61,9 @@ class NisNotificationView(WesternUnionApi):
         try:
             payload = self.get_payload(request)
         except InvalidRequestError as e:
+            logger.warning("Invalid request: %s", e)
             return Response(
+                # codeql[py/stack-trace-exposure] intentional partner-facing validation detail
                 {"invalid_request": str(e)},
                 status=HTTP_400_BAD_REQUEST,
             )
@@ -71,7 +73,9 @@ class NisNotificationView(WesternUnionApi):
         try:
             payload = self.get_payload(request)
         except InvalidRequestError as e:
+            logger.warning("Invalid request: %s", e)
             return Response(
+                # codeql[py/stack-trace-exposure] intentional partner-facing validation detail
                 {"invalid_request": str(e)},
                 status=HTTP_400_BAD_REQUEST,
             )
@@ -95,7 +99,12 @@ class NisNotificationView(WesternUnionApi):
             payload["ack_message"] = "Acknowledged"
             resp = self.prepare_response(payload)
         except ValidationError as exp:
-            return Response({"validation_error": str(exp)}, status=HTTP_400_BAD_REQUEST)
+            logger.warning("Validation error: %s", exp)
+            return Response(
+                # codeql[py/stack-trace-exposure] intentional partner-facing validation detail
+                {"validation_error": str(exp)},
+                status=HTTP_400_BAD_REQUEST,
+            )
 
         try:
             pr = PaymentRecord.objects.get(
