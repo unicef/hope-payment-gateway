@@ -291,6 +291,8 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
             record_code=record_code,
             parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
         )
+        if pr.status == PaymentRecordState.TRANSFERRED_TO_FSP:
+            return {"code": 200, "message": "Already transferred to FSP"}
         if pr.status != PaymentRecordState.PENDING:
             raise TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
         try:
