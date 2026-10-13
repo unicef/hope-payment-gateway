@@ -17,6 +17,7 @@ on:
   release:
   workflow_dispatch:
 
+permissions: {}
 
 jobs:
   dump:

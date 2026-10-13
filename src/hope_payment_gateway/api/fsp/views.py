@@ -1,3 +1,4 @@
+import logging
 from typing import TYPE_CHECKING, Any, cast
 
 from django.db.models import Prefetch
@@ -50,6 +51,9 @@ from hope_payment_gateway.apps.gateway.models import (
 if TYPE_CHECKING:
     from rest_framework.request import Request
     from rest_framework.serializers import BaseSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 class ProtectedMixin:
@@ -152,7 +156,12 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction]
             instruction.save()
             return Response({"status": instruction.status})
         except TransitionNotAllowed as exc:
-            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+            logger.warning("Transition not allowed: %s", exc)
+            return Response(
+                # codeql[py/stack-trace-exposure] intentional client-facing state error
+                {"status_error": str(exc)},
+                status=HTTP_400_BAD_REQUEST,
+            )
 
     @action(detail=True, methods=["post"])
     def open(self, request: "Request", remote_id: str | None = None) -> Response:
@@ -259,7 +268,12 @@ class PaymentRecordViewSet(ProtectedMixin, ModelViewSet[PaymentRecord], TokenReq
             WesternUnionClient().refund(record.fsp_code, record.get_payload())
             return Response({"message": "cancel triggered"})
         except TransitionNotAllowed as exc:
-            return Response({"status_error": str(exc)}, status=HTTP_400_BAD_REQUEST)
+            logger.warning("Transition not allowed: %s", exc)
+            return Response(
+                # codeql[py/stack-trace-exposure] intentional client-facing state error
+                {"status_error": str(exc)},
+                status=HTTP_400_BAD_REQUEST,
+            )
 
 
 class ExportTemplateViewSet(ProtectedMixin, ModelViewSet[ExportTemplate], TokenRequiredView):  # type: ignore[misc]

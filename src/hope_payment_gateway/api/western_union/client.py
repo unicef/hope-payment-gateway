@@ -163,7 +163,7 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         try:
             counter_ids = base_payload.get("counter_id", "N/A")
             counter_id = (
-                random.choice(counter_ids)  # noqa
+                random.choice(counter_ids)  # noqa: S311  # nosec B311
                 if isinstance(counter_ids, list)
                 else counter_ids
             )
