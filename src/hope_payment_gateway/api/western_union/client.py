@@ -10,7 +10,7 @@ from defusedxml.minidom import parseString
 from django.db import transaction
 from requests import Session
 from requests.exceptions import ConnectTimeout
-from viewflow.fsm import TransitionNotAllowed
+from viewflow.fsm import NoTransition, TransitionNotAllowed
 from zeep import Client, Settings
 from zeep.exceptions import Fault, TransportError
 from zeep.helpers import serialize_object
@@ -347,7 +347,11 @@ class WesternUnionClient(FSPClient, metaclass=Singleton):
         flow = PaymentRecordFlow(pr)
         if response["code"] == 200:
             pr.message, pr.success = "Send Money Store: Success", True
-            flow.store()
+            try:
+                flow.store()
+            except NoTransition:
+                if pr.status != PaymentRecordState.TRANSFERRED_TO_FSP:
+                    raise
         else:
             pr.message, pr.success = f"Send Money Store: {response['error']}", False
             flow.fail()

@@ -2,6 +2,7 @@ import logging
 
 from django.utils.module_loading import import_string
 from strategy_field.utils import fqn
+from viewflow.fsm import NoTransition, TransitionNotAllowed
 
 from hope_payment_gateway.apps.core.tasks import lock_job
 from hope_payment_gateway.apps.fsp.exceptions import (
@@ -28,8 +29,21 @@ def notify_records_to_fsp(client_fqn, instruction_id):
         try:
             client.create_transaction(record.get_payload())
             success_count += 1
-        except TokenError, PayloadError, InvalidCorridorError:
+        except (
+            TokenError,
+            PayloadError,
+            InvalidCorridorError,
+        ):
             logging.warning(f"{record.record_code} transaction did not succeed")
+        except (
+            NoTransition,
+            TransitionNotAllowed,
+        ):
+            record.refresh_from_db()
+            if record.status == PaymentRecordState.TRANSFERRED_TO_FSP:
+                success_count += 1
+            else:
+                logging.warning(f"{record.record_code} transaction did not succeed")
     if total > 0 and success_count == total:
         pi.status = PaymentInstructionState.PROCESSED
         pi.save()
