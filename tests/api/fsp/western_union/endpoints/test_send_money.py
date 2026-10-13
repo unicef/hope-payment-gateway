@@ -4,6 +4,7 @@ import pytest
 import responses
 from constance.test import override_config
 from factories import CorridorFactory, PaymentRecordFactory
+from viewflow.fsm import NoTransition
 
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.fsp.exceptions import (
@@ -337,6 +338,80 @@ def test_send_complete_send_money_validation_response_error(wu, wu_client, payme
 @pytest.fixture
 def payment_record_validation_response_error(wu):
     return PaymentRecordFactory.create(record_code="Y3snz233UkGt1Gw4", parent__fsp=wu)
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_send_complete_already_transferred(wu, wu_client, payment_record_send_complete):
+    responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
+    responses._add_from_file(file_path="tests/api/fsp/western_union/endpoints/send_money_validation.yaml")
+
+    record_code = "Y3snz233UkGt1Gw4"
+    payload = {
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
+        "first_name": "Aliyah",
+        "last_name": "GRAY",
+        "account": {
+            "number": "+94786661137",
+        },
+        "source_country": "US",
+        "source_currency": "USD",
+        "transaction_type": "WMF",
+        "destination_country": "ES",
+        "destination_currency": "EUR",
+        "duplication_enabled": "D",
+        "amount": 199900,
+        "delivery_services_code": "000",
+    }
+    pr = payment_record_send_complete
+
+    def store_already_transferred(payload):
+        PaymentRecord.objects.filter(record_code=record_code).update(status=PaymentRecordState.TRANSFERRED_TO_FSP)
+        return {"code": 200}
+
+    with patch.object(wu_client, "send_money_store", side_effect=store_already_transferred):
+        response = wu_client.create_transaction(payload)
+        pr.refresh_from_db()
+        assert response["code"] == 200
+        assert pr.success is True
+        assert pr.status == PaymentRecordState.TRANSFERRED_TO_FSP
+
+
+@responses.activate
+@pytest.mark.django_db
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+def test_send_complete_unexpected_state_raises(wu, wu_client, payment_record_send_complete):
+    responses.patch("https://wugateway2pi.westernunion.com/SendmoneyValidation_Service_H2H")
+    responses._add_from_file(file_path="tests/api/fsp/western_union/endpoints/send_money_validation.yaml")
+
+    record_code = "Y3snz233UkGt1Gw4"
+    payload = {
+        "remote_id": "681cbf43-a506-4bca-925c-cb10d89f6d92",
+        "payment_record_code": record_code,
+        "first_name": "Aliyah",
+        "last_name": "GRAY",
+        "account": {
+            "number": "+94786661137",
+        },
+        "source_country": "US",
+        "source_currency": "USD",
+        "transaction_type": "WMF",
+        "destination_country": "ES",
+        "destination_currency": "EUR",
+        "duplication_enabled": "D",
+        "amount": 199900,
+        "delivery_services_code": "000",
+    }
+
+    def store_unexpected_state(payload):
+        PaymentRecord.objects.filter(record_code=record_code).update(status=PaymentRecordState.ERROR)
+        return {"code": 200}
+
+    with patch.object(wu_client, "send_money_store", side_effect=store_unexpected_state):
+        with pytest.raises(NoTransition):
+            wu_client.create_transaction(payload)
 
 
 @responses.activate

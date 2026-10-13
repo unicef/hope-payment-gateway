@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
+from viewflow.fsm import NoTransition, TransitionNotAllowed
 
 from factories import PaymentInstructionFactory, FinancialServiceProviderFactory
 from hope_payment_gateway.apps.fsp.tasks_utils import (
@@ -9,6 +10,8 @@ from hope_payment_gateway.apps.fsp.tasks_utils import (
 from hope_payment_gateway.apps.gateway.models import (
     AsyncJob,
     PaymentInstructionState,
+    PaymentRecord,
+    PaymentRecordState,
 )
 from hope_payment_gateway.apps.fsp.exceptions import PayloadError, TokenError
 from tests.factories import PaymentRecordFactory
@@ -86,6 +89,42 @@ def test_notify_records_to_fsp_partial_success(mock_client, payment_instruction_
     notify_records_to_fsp("client_path", pi.id)
 
     assert mock_client.create_transaction.call_count == 3
+    pi.refresh_from_db()
+    assert pi.status == PaymentInstructionState.DRAFT
+
+
+@pytest.mark.django_db
+def test_notify_records_to_fsp_no_transition_already_transferred(mock_client, payment_instruction_with_2_records):
+    pi = payment_instruction_with_2_records
+
+    def raise_no_transition(payload):
+        PaymentRecord.objects.filter(record_code=payload["payment_record_code"]).update(
+            status=PaymentRecordState.TRANSFERRED_TO_FSP
+        )
+        raise NoTransition("store", PaymentRecordState.TRANSFERRED_TO_FSP)
+
+    mock_client.create_transaction.side_effect = raise_no_transition
+
+    notify_records_to_fsp("client_path", pi.id)
+
+    assert mock_client.create_transaction.call_count == 2
+    pi.refresh_from_db()
+    assert pi.status == PaymentInstructionState.PROCESSED
+
+
+@pytest.mark.django_db
+def test_notify_records_to_fsp_no_transition_unexpected_state(mock_client, payment_instruction_with_2_records):
+    pi = payment_instruction_with_2_records
+
+    def raise_transition_not_allowed(payload):
+        PaymentRecord.objects.filter(record_code=payload["payment_record_code"]).update(status=PaymentRecordState.ERROR)
+        raise TransitionNotAllowed("Cannot Trigger Transaction: Invalid Status")
+
+    mock_client.create_transaction.side_effect = raise_transition_not_allowed
+
+    notify_records_to_fsp("client_path", pi.id)
+
+    assert mock_client.create_transaction.call_count == 2
     pi.refresh_from_db()
     assert pi.status == PaymentInstructionState.DRAFT
 
