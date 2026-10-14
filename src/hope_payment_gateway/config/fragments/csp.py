@@ -1,4 +1,7 @@
-AZURE_BLOB = "https://*.blob.core.windows.net"
+from django.conf import settings
+
+account_name = (settings.STORAGES.get("staticfiles") or {}).get("OPTIONS", {}).get("account_name") or "*"
+AZURE_BLOB = f"https://{account_name}.blob.core.windows.net"
 
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
