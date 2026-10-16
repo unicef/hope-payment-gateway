@@ -35,7 +35,7 @@ INSTALLED_APPS: tuple[str, ...] = (
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
-    "django.contrib.admin",
+    "hope_payment_gateway.apps.core.admin_site.AdminConfig",
     "django_extensions",
     "django_filters",
     "jsoneditor",

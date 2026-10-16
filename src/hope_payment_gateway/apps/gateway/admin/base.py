@@ -12,7 +12,6 @@ from adminfilters.mixin import AdminFiltersMixin
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import TabularInline
-from django.db.models import JSONField, QuerySet
 from django.db.utils import IntegrityError
 from django.forms import FileField, FileInput, Form
 
@@ -20,7 +19,6 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django_celery_boost.admin import CeleryTaskModelAdmin
-from jsoneditor.forms import JSONEditor
 
 from hope_payment_gateway.apps.fsp.utils import extrapolate_errors
 from hope_payment_gateway.apps.gateway.actions import (
@@ -50,6 +48,7 @@ from hope_payment_gateway.apps.gateway.models import (
 
 if TYPE_CHECKING:
     from admin_extra_buttons.buttons import StandardButton  # pragma: no-cover
+    from django.db.models import QuerySet
     from django.http import HttpResponsePermanentRedirect, HttpRequest, HttpResponseRedirect  # pragma: no-cover
 
 logger = logging.getLogger(__name__)
@@ -92,9 +91,6 @@ class PaymentRecordAdmin(
     )
     search_fields = ("remote_id", "record_code", "fsp_code", "auth_code", "message")
     readonly_fields = ("fsp_data", "extra_data", "payout_date", "payout_amount")
-    formfield_overrides = {
-        JSONField: {"widget": JSONEditor},
-    }
     raw_id_fields = ("parent",)
 
     actions = [
@@ -145,9 +141,6 @@ class PaymentInstructionAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     )
     list_filter = ("fsp", "delivery_mechanism", "office", "country", "status", "active")
     search_fields = ("external_code", "remote_id", "fsp__name", "tag")
-    formfield_overrides = {
-        JSONField: {"widget": JSONEditor},
-    }
     raw_id_fields = ("fsp", "system", "office", "country")
 
     def get_queryset(self, request: "HttpRequest") -> QuerySet:
@@ -306,9 +299,6 @@ class FinancialServiceProviderAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     )
     search_fields = ("remote_id", "name", "vendor_number")
     inlines = (FinancialServiceProviderConfigInline,)
-    formfield_overrides = {
-        JSONField: {"widget": JSONEditor},
-    }
 
 
 @admin.register(FinancialServiceProviderConfig)
@@ -355,9 +345,6 @@ class AccountTypeAdmin(admin.ModelAdmin):
 class DeliveryMechanismAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_display = ("code", "name", "transfer_type", "account_type")
     search_fields = ("code", "name")
-    formfield_overrides = {
-        JSONField: {"widget": JSONEditor},
-    }
     list_filter = ("transfer_type",)
 
     def get_queryset(self, request: "HttpRequest") -> QuerySet:

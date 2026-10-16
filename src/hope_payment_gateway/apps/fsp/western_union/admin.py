@@ -2,10 +2,8 @@ from admin_extra_buttons.decorators import button, choice, view
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from constance import config
 from django.contrib import admin
-from django.db.models import JSONField
 import typing
 from django.template.response import TemplateResponse
-from jsoneditor.forms import JSONEditor
 from unicef_security.admin import is_superuser
 
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
@@ -38,9 +36,6 @@ class CorridorAdmin(ExtraButtonsMixin, admin.ModelAdmin):
         "destination_country",
         "destination_currency",
     )
-    formfield_overrides = {
-        JSONField: {"widget": JSONEditor},
-    }
 
     @button(permissions=is_superuser)
     def request(self, request) -> TemplateResponse:
