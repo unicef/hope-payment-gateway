@@ -1,10 +1,19 @@
-1.21.0
+1.22.0
 ======
 * Admin: Render the `JSONField`s declared read-only by an admin (e.g. payment record `fsp_data`, `extra_data`) read-only and pretty-printed, automatically and without any per-field wiring: they are excluded from the change form and shown as an indented JSON tree (`<pre>`), so they can no longer be edited by mistake. `JSONField`s that are not read-only (e.g. payment record `payload`) remain editable with the JSON editor widget
+* Core: Raised the default `DATA_UPLOAD_MAX_MEMORY_SIZE` from 5 MB (`5242880`) to 10 MB (`10485760`) so larger request bodies are accepted. It stays overridable through the `DATA_UPLOAD_MAX_MEMORY_SIZE` environment setting
+* Core: Build the CSP Azure blob origin from the staticfiles storage `account_name` (e.g. `https://myaccount.blob.core.windows.net`) instead of always allowing `https://*.blob.core.windows.net`; deployments without an `account_name` keep the previous wildcard
+* Security: Added explicit least-privilege `permissions` blocks to the GitHub Actions workflows (read-only by default, with `issues: write` / `pull-requests: write` granted only to the stale-issues workflow)
+* Security: Log `TransitionNotAllowed`, invalid-request and validation failures server-side (`logger.warning`) before returning the client-facing `status_error` / `invalid_request` / `validation_error` bodies on the payment instruction, payment record and NIS webhook endpoints. The response shape is unchanged, but the failures are now traceable in logs, and the intentional client-facing error details are annotated for CodeQL
+* Western Union: Made send-to-FSP handling idempotent when records are already `TRANSFERRED_TO_FSP` (retry-safe). The client and task utils now treat `NoTransition` as success in that case and continue processing remaining records
+* Dependencies: Refreshed the lock file (Django 6.0.9, djangorestframework 3.18.3, django-filter 26.2, social-auth-app-django 7.1, social-auth-core 6.1, newrelic 14, pre-commit 4.7, and friends)
+
+
+1.21.0
+======
 * Western Union: Keep MTCNs that start with `0` intact when calling the status and refund APIs. They now use the `auth_code` string (as returned by Western Union) instead of `fsp_data["mtcn"]`, which the NIS notification XML parser stored as an `int` and thus dropped the leading `0`, e.g. `0123456789` became `123456789`. Western Union rejected the follow-up call with `E9389 INVALID MTCN LENGTH. MTCN MUST BE 10 CHARACTERS IN LENGTH`
 * Western Union: Return `None` instead of the bare `dict` class as the `response_context` placeholder, and stop parsing the status payload when the upstream call failed. Previously a failed `PayStatus` call made the status update log the nonsensical `Missing key in WU status response: dict['payment_transactions'] is not a generic class` instead of the actual upstream error
 * Western Union: Added the `WESTERN_UNION_RECONCILIATION_AMOUNT_ON` django-flags flag (enabled by default). It controls whether a successful NIS notification sets `payout_amount` from the notification's `expected_payout_amount` (flag on) or from the payment record payload `amount` (flag off). The flag is off for the office codes listed in its `office not in` condition value, e.g. `[{"condition": "office not in", "value": ["OFFICE-CODE"]}]`; records without an office keep the default
-* Western Union: Made send-to-FSP handling idempotent when records are already `TRANSFERRED_TO_FSP` (retry-safe). The client and task utils now treat `NoTransition` as success in that case and continue processing remaining records.
 
 
 1.20.1
