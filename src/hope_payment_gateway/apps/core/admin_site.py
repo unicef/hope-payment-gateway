@@ -8,6 +8,7 @@ from django.contrib.admin.apps import AdminConfig as DjangoAdminConfig
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.safestring import mark_safe
+from jsoneditor.forms import JSONEditor
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
@@ -17,17 +18,26 @@ if TYPE_CHECKING:
 
 
 class PrettyJSONAdminMixin:
-    """Show ``JSONField`` values read-only, pretty-printed, without per-field wiring.
+    """Pretty-print read-only ``JSONField`` values, keep the rest editable.
 
-    JSON fields are system-managed and are never edited from the admin. This mixin
-    excludes every ``JSONField`` from the change form and adds an auto-generated
-    read-only display method (``<field>_display``) that pretty-prints the value.
+    A ``JSONField`` listed in the admin's ``readonly_fields`` (or returned by its
+    ``get_readonly_fields``) is system-managed: it is excluded from the change form
+    and rendered through an auto-generated read-only display method
+    (``<field>_display``). Any other ``JSONField`` stays on the form and uses the
+    :class:`JSONEditor` widget (redeclare ``formfield_overrides`` on the admin to
+    opt out).
     """
 
     model: type[Model]
 
+    formfield_overrides = {models.JSONField: {"widget": JSONEditor}}
+
     def _json_field_names(self) -> set[str]:
         return {field.name for field in self.model._meta.fields if isinstance(field, models.JSONField)}
+
+    def _readonly_json_field_names(self, request: HttpRequest, obj: Model | None = None) -> set[str]:
+        readonly = set(super().get_readonly_fields(request, obj) or [])  # type: ignore[misc]
+        return self._json_field_names() & readonly
 
     def _make_json_display(self, field_name: str) -> Callable[[Model], str]:
         def display(obj: Model) -> str:
@@ -46,14 +56,14 @@ class PrettyJSONAdminMixin:
 
     def get_exclude(self, request: HttpRequest, obj: Model | None = None) -> list[str]:
         exclude = list(super().get_exclude(request, obj) or [])  # type: ignore[misc]
-        for name in sorted(self._json_field_names()):
+        for name in sorted(self._readonly_json_field_names(request, obj)):
             if name not in exclude:
                 exclude.append(name)
         return exclude
 
     def get_readonly_fields(self, request: HttpRequest, obj: Model | None = None) -> list[str]:
-        json_names = self._json_field_names()
-        readonly = [name for name in super().get_readonly_fields(request, obj) if name not in json_names]  # type: ignore[misc]
+        json_names = self._readonly_json_field_names(request, obj)
+        readonly = [name for name in (super().get_readonly_fields(request, obj) or []) if name not in json_names]  # type: ignore[misc]
         for json_name in sorted(json_names):
             display = f"{json_name}_display"
             if display not in readonly:
