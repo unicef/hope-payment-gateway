@@ -140,6 +140,7 @@ class PaymentInstructionSerializer(serializers.ModelSerializer[PaymentInstructio
             "system",
             "payload",
         )
+        read_only_fields = ("status",)
 
     def create(self, validated_data: dict[str, Any]) -> PaymentInstruction:
         try:
@@ -202,6 +203,7 @@ class PaymentRecordSerializer(PaymentRecordLightSerializer):
             "payout_amount",
             "extra_data",
         )
+        read_only_fields = ("status",)
 
 
 class ExportTemplateSerializer(serializers.ModelSerializer[ExportTemplate]):

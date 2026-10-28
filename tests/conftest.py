@@ -1,8 +1,10 @@
 import os
 import tempfile
+from typing import Any
 
 import pytest
 import responses
+from hope_api_auth.models import APIToken
 from django.contrib.admin.sites import AdminSite
 from django.test import RequestFactory
 from hope_payment_gateway.apps.core.grant import Grant
@@ -201,19 +203,39 @@ def palpay(office):
     return palpay
 
 
+def _token_user_with_grants(*grants: Grant) -> tuple[Any, APIToken]:
+    user = UserFactory.create()
+    token = APITokenFactory.create(user=user, grants=[grant.name for grant in grants])
+    return user, token
+
+
 @pytest.fixture
 def token_user():
-    user = UserFactory.create()
-    user_permissions = [
+    return _token_user_with_grants(
         Grant.API_READ_ONLY,
         Grant.API_PLAN_UPLOAD,
         Grant.API_PLAN_MANAGE,
-    ]
-    token = APITokenFactory.create(
-        user=user,
-        grants=[c.name for c in user_permissions],
     )
-    return user, token
+
+
+@pytest.fixture
+def read_only_token_user():
+    return _token_user_with_grants(Grant.API_READ_ONLY)
+
+
+@pytest.fixture
+def plan_upload_token_user():
+    return _token_user_with_grants(Grant.API_PLAN_UPLOAD)
+
+
+@pytest.fixture
+def plan_manage_token_user():
+    return _token_user_with_grants(Grant.API_PLAN_MANAGE)
+
+
+@pytest.fixture
+def no_grant_token_user():
+    return _token_user_with_grants()
 
 
 @pytest.fixture
