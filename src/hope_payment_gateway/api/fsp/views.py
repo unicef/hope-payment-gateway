@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING, Any, cast
 
 from django.contrib.auth.models import AbstractBaseUser
 from django.db.models import Prefetch
-from hope_api_auth.views import TokenRequiredView
-from rest_framework import permissions as drf_permissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -13,6 +11,7 @@ from rest_framework.viewsets import ModelViewSet
 from strategy_field.utils import fqn
 from viewflow.fsm import TransitionNotAllowed
 
+from hope_payment_gateway.api.base import GrantRequiredTokenView, ProtectedMixin
 from hope_payment_gateway.api.fsp.filters import (
     AccountTypeFilter,
     DeliveryMechanismFilter,
@@ -35,7 +34,6 @@ from hope_payment_gateway.api.fsp.serializers import (
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
 from hope_payment_gateway.apps.core.grant import Grant
 from hope_payment_gateway.apps.core.models import System
-from hope_payment_gateway.apps.core.permissions import GrantPermission
 from hope_payment_gateway.apps.gateway.actions import export_payment_instruction_to_email
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
@@ -57,32 +55,7 @@ if TYPE_CHECKING:
     from rest_framework.serializers import BaseSerializer
 
 
-class GrantRequiredTokenView(TokenRequiredView):
-    permission_classes = [GrantPermission]
-    permission = Grant.API_READ_ONLY
-
-    def get_permissions(self):
-        # Override permission based on method
-        if self.request.method in drf_permissions.SAFE_METHODS:
-            self.permission = Grant.API_READ_ONLY
-        else:
-            # For write operations, determine based on action
-            action = getattr(self, "action", None)
-            if action in ["cancel", "open", "ready", "close", "finalize", "process", "abort", "destroy"]:
-                self.permission = Grant.API_PLAN_MANAGE
-            elif action in ["create", "update", "partial_update", "add_records"]:
-                self.permission = Grant.API_PLAN_UPLOAD
-            else:
-                self.permission = Grant.API_PLAN_MANAGE
-        return super().get_permissions()
-
-
 logger = logging.getLogger(__name__)
-
-
-class ProtectedMixin:
-    def destroy(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
-        raise NotImplementedError
 
 
 class AccountTypeViewSet(ProtectedMixin, ModelViewSet[AccountType], GrantRequiredTokenView):  # type: ignore[misc]
@@ -147,8 +120,8 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction]
     filterset_class = PaymentInstructionFilter
     search_fields = ["external_code", "remote_id"]
 
-    write_permission = Grant.API_PLAN_UPLOAD
-    required_grant_for_action = {
+    write_grant = Grant.API_PLAN_UPLOAD
+    action_grants = {
         "update": Grant.API_PLAN_MANAGE,
         "partial_update": Grant.API_PLAN_MANAGE,
         "open": Grant.API_PLAN_MANAGE,
@@ -293,8 +266,8 @@ class PaymentRecordViewSet(ProtectedMixin, ModelViewSet[PaymentRecord], GrantReq
     filterset_class = PaymentRecordFilter
     search_fields = ("remote_id", "record_code")
 
-    write_permission = Grant.API_PLAN_UPLOAD
-    required_grant_for_action = {
+    write_grant = Grant.API_PLAN_UPLOAD
+    action_grants = {
         "update": Grant.API_PLAN_MANAGE,
         "partial_update": Grant.API_PLAN_MANAGE,
         "cancel": Grant.API_PLAN_MANAGE,

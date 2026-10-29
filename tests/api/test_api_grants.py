@@ -5,11 +5,13 @@ from django.urls import reverse
 from rest_framework import status
 
 from factories import (
+    APITokenFactory,
     CorridorFactory,
     FinancialServiceProviderFactory,
     PaymentInstructionFactory,
     PaymentRecordFactory,
     ServiceProviderCodeFactory,
+    SuperUserFactory,
 )
 from hope_payment_gateway.apps.gateway.models import PaymentInstructionState
 
@@ -176,6 +178,29 @@ def test_plan_upload_token_cannot_cancel_payment_record(mock_refund, api_client,
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     mock_refund.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_read_only_token_cannot_delete_western_union_routing_data(api_client, read_only_token_user):
+    corridor = CorridorFactory.create()
+    authenticate(api_client, read_only_token_user)
+
+    response = api_client.delete(reverse("rest:wu-corridor-detail", args=[corridor.pk]))
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert CorridorFactory._meta.model.objects.filter(pk=corridor.pk).exists()
+
+
+@pytest.mark.django_db
+def test_superuser_is_not_bound_by_token_grants(api_client):
+    user = SuperUserFactory.create()
+    token = APITokenFactory.create(user=user, grants=[])
+    PaymentInstructionFactory.create()
+    api_client.force_authenticate(user=user, token=token)
+
+    response = api_client.get(reverse("rest:payment-instruction-list"))
+
+    assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.django_db
