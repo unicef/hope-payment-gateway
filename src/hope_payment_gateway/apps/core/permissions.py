@@ -1,14 +1,11 @@
-import typing
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from constance import config
 from rest_framework import permissions
-from rest_framework.request import Request
 
 from hope_payment_gateway.apps.core.grant import Grant
 
-
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from rest_framework.request import Request
 
 

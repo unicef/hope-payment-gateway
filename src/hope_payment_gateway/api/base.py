@@ -1,14 +1,12 @@
-import typing
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from hope_api_auth.views import TokenRequiredView
 from rest_framework import permissions as drf_permissions
 
-
 from hope_payment_gateway.apps.core.grant import Grant
 from hope_payment_gateway.apps.core.permissions import GrantPermission
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from rest_framework.request import Request
     from rest_framework.response import Response
 
