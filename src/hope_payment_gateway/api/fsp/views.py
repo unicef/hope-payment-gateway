@@ -1,16 +1,17 @@
 import logging
 from typing import TYPE_CHECKING, Any, cast
 
+from django.contrib.auth.models import AbstractBaseUser
 from django.db.models import Prefetch
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
+from rest_framework.viewsets import ModelViewSet
 from strategy_field.utils import fqn
 from viewflow.fsm import TransitionNotAllowed
 
-from hope_api_auth.views import TokenRequiredView
+from hope_payment_gateway.api.base import GrantRequiredTokenView, ProtectedMixin
 from hope_payment_gateway.api.fsp.filters import (
     AccountTypeFilter,
     DeliveryMechanismFilter,
@@ -31,7 +32,8 @@ from hope_payment_gateway.api.fsp.serializers import (
     PaymentRecordSerializer,
 )
 from hope_payment_gateway.api.western_union.client import WesternUnionClient
-from hope_payment_gateway.apps.core.models import System, User
+from hope_payment_gateway.apps.core.grant import Grant
+from hope_payment_gateway.apps.core.models import System
 from hope_payment_gateway.apps.gateway.actions import export_payment_instruction_to_email
 from hope_payment_gateway.apps.gateway.flows import PaymentInstructionFlow
 from hope_payment_gateway.apps.gateway.models import (
@@ -56,12 +58,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ProtectedMixin:
-    def destroy(self, request: "Request", *args: Any, **kwargs: Any) -> Response:
-        raise NotImplementedError
-
-
-class AccountTypeViewSet(ProtectedMixin, ModelViewSet[AccountType], TokenRequiredView):  # type: ignore[misc]
+class AccountTypeViewSet(ProtectedMixin, ModelViewSet[AccountType], GrantRequiredTokenView):  # type: ignore[misc]
     serializer_class = AccountTypeSerializer
     queryset = AccountType.objects.all()
 
@@ -69,7 +66,7 @@ class AccountTypeViewSet(ProtectedMixin, ModelViewSet[AccountType], TokenRequire
     search_fields = ["key", "label"]
 
 
-class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet[DeliveryMechanism], TokenRequiredView):  # type: ignore[misc]
+class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet[DeliveryMechanism], GrantRequiredTokenView):  # type: ignore[misc]
     serializer_class = DeliveryMechanismSerializer
     queryset = DeliveryMechanism.objects.select_related("account_type")
 
@@ -80,7 +77,7 @@ class DeliveryMechanismViewSet(ProtectedMixin, ModelViewSet[DeliveryMechanism], 
 class FinancialServiceProviderViewSet(
     ProtectedMixin,
     ModelViewSet[FinancialServiceProvider],
-    TokenRequiredView,  # type: ignore[misc]
+    GrantRequiredTokenView,  # type: ignore[misc]
 ):
     serializer_class = FinancialServiceProviderSerializer
     queryset = FinancialServiceProvider.objects.prefetch_related(
@@ -101,7 +98,7 @@ class FinancialServiceProviderViewSet(
 class ConfigurationViewSet(
     ProtectedMixin,
     ModelViewSet[FinancialServiceProviderConfig],
-    TokenRequiredView,  # type: ignore[misc]
+    GrantRequiredTokenView,  # type: ignore[misc]
 ):
     serializer_class = FinancialServiceProviderConfigSerializer
     queryset = FinancialServiceProviderConfig.objects.select_related(
@@ -115,7 +112,7 @@ class ConfigurationViewSet(
     search_fields = ["description"]
 
 
-class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction], TokenRequiredView):  # type: ignore[misc]
+class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction], GrantRequiredTokenView):  # type: ignore[misc]
     serializer_class = PaymentInstructionSerializer
     queryset = PaymentInstruction.objects.select_related("fsp", "delivery_mechanism", "office", "country")
 
@@ -123,9 +120,22 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction]
     filterset_class = PaymentInstructionFilter
     search_fields = ["external_code", "remote_id"]
 
+    write_grant = Grant.API_PLAN_UPLOAD
+    action_grants = {
+        "update": Grant.API_PLAN_MANAGE,
+        "partial_update": Grant.API_PLAN_MANAGE,
+        "open": Grant.API_PLAN_MANAGE,
+        "ready": Grant.API_PLAN_MANAGE,
+        "close": Grant.API_PLAN_MANAGE,
+        "finalize": Grant.API_PLAN_MANAGE,
+        "process": Grant.API_PLAN_MANAGE,
+        "abort": Grant.API_PLAN_MANAGE,
+        "add_records": Grant.API_PLAN_UPLOAD,
+    }
+
     def perform_create(self, serializer: "BaseSerializer[Any]") -> None:
         owner = self.request.user
-        if not isinstance(owner, User):
+        if not getattr(owner, "pk", None) or not isinstance(owner, AbstractBaseUser):
             raise PermissionDenied("Authenticated user is required")
         system = System.objects.get(owner_id=owner.pk)
         obj = serializer.save(system=system)
@@ -231,7 +241,7 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction]
             return Response({"status_error": "No template found"}, status=HTTP_400_BAD_REQUEST)
 
         user = request.user
-        if not isinstance(user, User) or not user.email:
+        if not getattr(user, "is_authenticated", False) or not getattr(user, "email", None):
             return Response({"status_error": "User email is required"}, status=HTTP_400_BAD_REQUEST)
 
         job = AsyncJob.objects.create(
@@ -249,12 +259,19 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction]
         )
 
 
-class PaymentRecordViewSet(ProtectedMixin, ModelViewSet[PaymentRecord], TokenRequiredView):  # type: ignore[misc]
+class PaymentRecordViewSet(ProtectedMixin, ModelViewSet[PaymentRecord], GrantRequiredTokenView):  # type: ignore[misc]
     serializer_class = PaymentRecordSerializer
     queryset = PaymentRecord.objects.select_related("parent")
     lookup_field = "remote_id"
     filterset_class = PaymentRecordFilter
     search_fields = ("remote_id", "record_code")
+
+    write_grant = Grant.API_PLAN_UPLOAD
+    action_grants = {
+        "update": Grant.API_PLAN_MANAGE,
+        "partial_update": Grant.API_PLAN_MANAGE,
+        "cancel": Grant.API_PLAN_MANAGE,
+    }
 
     def get_serializer_class(self) -> "type[BaseSerializer[Any]]":
         if self.action == "list":
@@ -276,7 +293,7 @@ class PaymentRecordViewSet(ProtectedMixin, ModelViewSet[PaymentRecord], TokenReq
             )
 
 
-class ExportTemplateViewSet(ProtectedMixin, ModelViewSet[ExportTemplate], TokenRequiredView):  # type: ignore[misc]
+class ExportTemplateViewSet(ProtectedMixin, ModelViewSet[ExportTemplate], GrantRequiredTokenView):  # type: ignore[misc]
     serializer_class = ExportTemplateSerializer
     queryset = ExportTemplate.objects.select_related("fsp")
     filterset_class = ExportTemplateFilter

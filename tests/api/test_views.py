@@ -1,10 +1,12 @@
 import json
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from factories import (
     FinancialServiceProviderConfigFactory,
     PaymentRecordFactory,
@@ -13,6 +15,7 @@ from factories import (
 )
 from viewflow.fsm import TransitionNotAllowed
 
+from hope_payment_gateway.api.fsp.views import PaymentInstructionViewSet
 from hope_payment_gateway.apps.gateway.models import PaymentInstructionState, PaymentInstruction
 from tests.factories import (
     AccountTypeFactory,
@@ -534,6 +537,15 @@ def test_payment_instruction_create_unauthenticated_user(api_client, no_country_
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert not PaymentInstruction.objects.filter(remote_id="anon_remote_id").exists()
+
+
+@pytest.mark.parametrize("owner", [SimpleNamespace(pk=None), SimpleNamespace(pk=1)])
+def test_payment_instruction_perform_create_requires_abstract_user(owner):
+    view = PaymentInstructionViewSet()
+    view.request = SimpleNamespace(user=owner)
+
+    with pytest.raises(PermissionDenied, match="Authenticated user is required"):
+        view.perform_create(MagicMock())
 
 
 # ──────────────────────────────────────────────
