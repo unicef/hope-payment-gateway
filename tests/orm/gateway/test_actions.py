@@ -175,7 +175,7 @@ def payment_records_for_export():
 
 @pytest.fixture
 def wu_records(wu):
-    return PaymentRecordFactory.create_batch(2, parent__fsp=wu)
+    return PaymentRecordFactory.create_batch(2, parent__fsp=wu, auth_code="1234567890")
 
 
 @pytest.fixture
@@ -542,6 +542,26 @@ def test_western_union_update_status_action(mock_queue, request_with_data, wu_re
     mock_queue.assert_called_once_with()
     mock_messages["info"].assert_called_once_with(
         request_with_data, "Scheduled Western Union status update for 2 record(s)"
+    )
+
+
+@override_config(WESTERN_UNION_VENDOR_NUMBER="12345")
+@pytest.mark.django_db
+@patch("hope_payment_gateway.apps.gateway.actions.AsyncJob.queue")
+def test_western_union_update_status_action_skips_records_without_auth_code(
+    mock_queue, request_with_data, wu, mock_messages
+):
+    with_auth_code = PaymentRecordFactory.create(parent__fsp=wu, auth_code="1234567890")
+    without_auth_code = PaymentRecordFactory.create(parent__fsp=wu, auth_code=None)
+    queryset = PaymentRecord.objects.filter(id__in=[with_auth_code.id, without_auth_code.id])
+
+    western_union_update_status_action(None, request_with_data, queryset)
+
+    job = AsyncJob.objects.get()
+    assert job.config == {"ids": [with_auth_code.id]}
+    mock_queue.assert_called_once_with()
+    mock_messages["info"].assert_called_once_with(
+        request_with_data, "Scheduled Western Union status update for 1 record(s)"
     )
 
 
