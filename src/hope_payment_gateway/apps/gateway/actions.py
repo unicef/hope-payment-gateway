@@ -263,7 +263,10 @@ def western_union_update_status_action(modeladmin, request, queryset):
     if not request.user.has_perm("western_union.can_update_status"):
         messages.error(request, _("Sorry you do not have rights to execute this action"))
         return
-    qs = queryset.filter(parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER)
+    qs = queryset.filter(
+        parent__fsp__vendor_number=config.WESTERN_UNION_VENDOR_NUMBER,
+        auth_code__isnull=False,
+    ).exclude(auth_code="")
     ids = list(qs.values_list("id", flat=True))
     job = AsyncJob.objects.create(
         description="Western Union update status",
