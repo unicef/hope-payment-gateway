@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import os
 from functools import wraps
 
@@ -69,11 +69,11 @@ class LastModifiedRecorder(Recorder):
 
     def assert_modified(self, response: Response, stored: Response, path: str):
         value = response["modified"]
-        assert datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
+        assert dt.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
 
     def assert_created(self, response: Response, stored: Response, path: str):
         value = response["created"]
-        assert datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
+        assert dt.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
 
 
 class ExpectedErrorRecorder(Recorder):

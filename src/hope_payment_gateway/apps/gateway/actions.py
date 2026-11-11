@@ -1,6 +1,6 @@
 import collections
 import csv
-import datetime
+import datetime as dt
 import io
 import itertools
 from typing import Iterable
@@ -135,7 +135,7 @@ def export_as_template_impl(  # noqa
             context = Context({"obj": obj})
             for template in templates:
                 value = template.render(context)
-                if isinstance(value, datetime.datetime):  # pragma: no cover
+                if isinstance(value, dt.datetime):  # pragma: no cover
                     try:
                         value = dateformat.format(
                             value.astimezone(settingstime_zone),
@@ -144,9 +144,9 @@ def export_as_template_impl(  # noqa
                     except ValueError:
                         # astimezone() cannot be applied to a naive datetime
                         value = dateformat.format(value, config["datetime_format"])
-                elif isinstance(value, datetime.date):  # pragma: no cover
+                elif isinstance(value, dt.date):  # pragma: no cover
                     value = dateformat.format(value, config["date_format"])
-                elif isinstance(value, datetime.time):  # pragma: no cover
+                elif isinstance(value, dt.time):  # pragma: no cover
                     value = dateformat.format(value, config["time_format"])
                 row.append(smart_str(value))
             yield writer.writerow(row)
@@ -186,6 +186,12 @@ export_as_template.short_description = "Export as Template"
 
 
 def export_payment_instruction_to_email(payment_instruction_id: int, send_to: str) -> str:
+    """Render a Payment Instruction to CSV using its selected export template and email it.
+
+    Used by the REST ``download`` endpoint (and any AsyncJob that carries the
+    ``payment_instruction_id`` / ``send_to`` config) to produce the
+    ``payment_instruction_{remote_id or pk}.csv`` attachment.
+    """
     instruction = PaymentInstruction.objects.prefetch_related("records").get(pk=payment_instruction_id)
     export = instruction.selected_export
     if not export:

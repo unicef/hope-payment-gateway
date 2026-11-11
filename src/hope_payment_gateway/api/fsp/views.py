@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from django.contrib.auth.models import AbstractBaseUser
 from django.db.models import Prefetch
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -233,8 +234,27 @@ class PaymentInstructionViewSet(ProtectedMixin, ModelViewSet[PaymentInstruction]
             status=HTTP_400_BAD_REQUEST,
         )
 
+    @extend_schema(
+        summary="Export (download) a payment instruction",
+        description=(
+            "Schedule an asynchronous export of every Payment Record of the given "
+            "Payment Instruction. The instruction is resolved by its `remote_id` "
+            "(for example a UUID such as `edd92c3b-797f-4008-b412-3c064e4a5d6e`). "
+            "The selected `ExportTemplate` is resolved from the instruction (forced "
+            "`export` first, otherwise the first matching template by FSP, delivery "
+            "mechanism, office and country). The resulting CSV is rendered from "
+            "the template's `query` and emailed as an attachment to the "
+            "authenticated user. The request must be authenticated with a token and "
+            "the user must have an email address."
+        ),
+        responses={
+            202: OpenApiResponse(description="Export accepted and queued"),
+            400: OpenApiResponse(description="No template found or user email missing"),
+        },
+    )
     @action(detail=True)  # , methods=["post"])
     def download(self, request: "Request", remote_id: str | None = None) -> Response:
+        """Schedule an export of the payment instruction and email the CSV."""
         obj = self.get_object()
         export = obj.selected_export
         if not export:
