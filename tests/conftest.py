@@ -48,6 +48,9 @@ def pytest_configure(config):
         "markers", "skip_buttons(*buttons): skip test for specified admin buttons, format: 'app.ModelAdmin:button_name'"
     )
     config.addinivalue_line("markers", "admin: mark test as part of the admin test suite")
+    from django.conf import settings
+
+    settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 
 @pytest.fixture(autouse=True)
