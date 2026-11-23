@@ -21,7 +21,7 @@
 
 ### 1. Clone repo and install requirements
     git clone https://github.com/unicef/hope-payment-gateway
-    uv venv .venv --python 3.14
+    uv venv .venv --python 3.15
     source .venv/bin/activate
     uv sync
     pre-commit install
